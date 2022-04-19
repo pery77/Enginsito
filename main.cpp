@@ -1,14 +1,10 @@
-#include "raylib.h"
+#include "engine.h"
 
-int main()
-{
-    SetTargetFPS(60);
-    InitWindow(320,200,"Enginsito");
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
-        ClearBackground(BLACK);
-        EndDrawing();
-    }
-    
+int main(int argc, char* argv[])
+{	
+	//Create engine and start.
+	pery::Engine* engine = new pery::Engine();
+	engine->Go();
+
+	delete engine;  //Deallocate engine from memory
 }
