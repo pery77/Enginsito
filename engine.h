@@ -2,38 +2,40 @@
 #include "raylib.h"
 #include <string>
 
-namespace pery {
+#define max(a, b) ((a)>(b)? (a) : (b))
+#define min(a, b) ((a)<(b)? (a) : (b))
 
-	class Engine {
+class Engine {
 
-	public:
-		//Screen constant values.
-		const int ScreenWidth {320};
-		const int ScreenHeight {200};
-		const int ScreenScale {4};
+public:
+	//Screen constant values.
+	const int GameScreenWidth {320};
+	const int GameScreenHeight {200};
 
-		Engine();
-		~Engine();
+	Engine();
+	~Engine();
 
-		//Start the engine
-		void Go();
+	//Start the engine
+	void Go();
 
-	private:
 
-		void Init();		 //Initialize engine.
-		void MainLoop();	 //Main loop
-		void RenderFrame();  //Draw loop
-		void ProcessInput(); //Keys events loop.
-		void Update();		 //Update loop.
+private:
+	void Init();		 //Initialize engine.
+	void MainLoop();	 //Main loop
+	void RenderFrame();  //Draw loop
+	void ProcessInput(); //Keys events loop.
+	void Update();		 //Update loop.
+	void UpdateMouse();
 
-		void LoadLevel(std::string name);
+	//Tools
+	Vector2 ClampValue(Vector2 value, Vector2 min, Vector2 max);
+	void UpdateGameScreenRects();
 
-		//Main texture for render
-		RenderTexture2D mainRender;
-
-		//Rectangles for render main texture in screen or window.
-		Rectangle sourceRec = { 0.0f, 0.0f, (float)ScreenWidth, -(float)ScreenHeight };
-		Rectangle scaledRec = { 0.0f, 0.0f, (float)ScreenWidth * (float)ScreenScale, (float)ScreenHeight * (float)ScreenScale };
-
-	};
-}
+	//Main texture for render
+	RenderTexture2D mainRender;
+	float screenScale;
+	Rectangle gameRect;
+	Rectangle gameScaledRect;
+	Vector2 mouse;
+	Vector2 virtualMouse;
+};

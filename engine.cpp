@@ -1,46 +1,53 @@
 #include "engine.h"
 
-pery::Engine::Engine()
+Engine::Engine()
 {
 
 }
 
-pery::Engine::~Engine()
+Engine::~Engine()
 {
 	printf("Unload Engine");
 	UnloadRenderTexture(mainRender);
 }
 
 //Initialize engine.
-void pery::Engine::Init()
+void Engine::Init()
 {
-	//Set Vsync
-	SetConfigFlags(FLAG_VSYNC_HINT);
+	const int windowWidth = GameScreenWidth*3;
+    const int windowHeight = GameScreenHeight*3;
+
+	//Set Vsync and make the window resizeable
+	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
+
 	//Create window
-	InitWindow(ScreenWidth * ScreenScale, ScreenHeight * ScreenScale, "Enginsito");
+	InitWindow(windowWidth, windowHeight, "Enginsito");
+	SetWindowMinSize(GameScreenWidth, GameScreenHeight);
 	SetTargetFPS(60);
-	//ToggleFullscreen();
+
 	//Create main texture and disable texture filter.
-	mainRender = LoadRenderTexture(ScreenWidth, ScreenHeight);
-	SetTextureFilter(mainRender.texture, 0);
+	mainRender = LoadRenderTexture(GameScreenWidth, GameScreenHeight);
+	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_POINT);
 
 	//Create glow effect.
-	//glow = new Glow(ScreenWidth, ScreenHeight);
+	//glow = new Glow(GameScreenWidth, ScreenHeight);
 	//glow->SetFilter(1);
 
 }
 
 //Start engine.
-void pery::Engine::Go()
+void Engine::Go()
 {
 	Init();
 	MainLoop();
 }
 
-void pery::Engine::MainLoop()
+void Engine::MainLoop()
 {
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
+		UpdateMouse();
+		UpdateGameScreenRects();
 		ProcessInput();
 		RenderFrame();
 		Update();
@@ -49,38 +56,48 @@ void pery::Engine::MainLoop()
 	CloseWindow();					// Close window and OpenGL context
 }
 
-void pery::Engine::ProcessInput()
+void Engine::ProcessInput()
 {
-	
+	if(IsKeyReleased(KEY_F10))
+	{
+		SetWindowSize(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
+	}
 	if(IsKeyReleased(KEY_F11))
+	{
 		ToggleFullscreen();
+	}
 }
 
-void pery::Engine::Update()
+
+void Engine::Update()
 {
 
 }
 
 //Draw loop.
-void pery::Engine::RenderFrame()
+void Engine::RenderFrame()
 {
-
 	BeginDrawing();
-	ClearBackground(BLANK);
+
 	//Draw game to texture.
 	BeginTextureMode(mainRender);
 	//DrawBackground solid color.
-	DrawRectangleLines(0,0,ScreenWidth,ScreenHeight,RED);
+	ClearBackground(BLACK);
+	DrawRectangleLines(0,0,GameScreenWidth,GameScreenHeight,RED);
+
+	DrawText(TextFormat("Default Mouse: [%i , %i]", (int)mouse.x, (int)mouse.y), 0, 0, 8, GREEN);
+    DrawText(TextFormat("Virtual Mouse: [%i , %i]", (int)virtualMouse.x, (int)virtualMouse.y), 0, 10, 8, YELLOW);
 
 	EndTextureMode();
 
 	ClearBackground(BLACK);
 
-
 	//Blend texture for postprocess effect.
 	BeginBlendMode(1);
+
 	//Draw main texture scaled to screen.
-	DrawTexturePro(mainRender.texture, sourceRec, scaledRec, { 0, 0 }, 0, WHITE);
+	DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0.0f, 0.0f }, 0.0f, WHITE);
+	
 	//Draw glow frist pass (big glow effect)
 	//glow->BigGlow(mainRender.texture);
 	//DrawTexturePro(glow->BlurTexture, sourceRec, scaledRec, { 0, 0 }, 0, WHITE);
@@ -93,4 +110,35 @@ void pery::Engine::RenderFrame()
 	EndBlendMode();
 
 	EndDrawing();
+}
+
+//Tools
+Vector2 Engine::ClampValue(Vector2 value, Vector2 min, Vector2 max)
+{
+    Vector2 result = value;
+    result.x = (result.x > max.x)? max.x : result.x;
+    result.x = (result.x < min.x)? min.x : result.x;
+    result.y = (result.y > max.y)? max.y : result.y;
+    result.y = (result.y < min.y)? min.y : result.y;
+    return result;
+}
+
+void Engine::UpdateMouse()
+{
+		screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
+
+		mouse = GetMousePosition();
+        virtualMouse = { 0 };
+        virtualMouse.x = (mouse.x - (GetScreenWidth() - (GameScreenWidth*screenScale))*0.5f)/screenScale;
+        virtualMouse.y = (mouse.y - (GetScreenHeight() - (GameScreenHeight*screenScale))*0.5f)/screenScale;
+        virtualMouse = ClampValue(virtualMouse, { 0, 0 }, 
+			(Vector2){ static_cast<float>(GameScreenWidth), static_cast<float>(GameScreenHeight) });
+}
+
+void Engine::UpdateGameScreenRects()
+{
+	gameRect = { 0.0f, 0.0f, static_cast<float>(GameScreenWidth), -static_cast<float>(GameScreenHeight)};
+	gameScaledRect = {(GetScreenWidth() - (static_cast<float>(GameScreenWidth)*screenScale))*0.5f,
+						(GetScreenHeight() - (static_cast<float>(GameScreenHeight)*screenScale))*0.5f,
+						static_cast<float>(GameScreenWidth)*screenScale, static_cast<float>(GameScreenHeight)*screenScale};
 }
