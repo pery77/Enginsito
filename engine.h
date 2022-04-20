@@ -24,17 +24,23 @@ public:
 	~Engine();
 
 	//Start the engine
-	void Go();
-	virtual void Tick();		 //Update loop.
-	virtual void Draw();
-	virtual void OverDraw();
+	void Run();
+
+	virtual void Init();		//Initialize engine.
+	virtual void Tick();		//Update loop.
+	virtual void Draw();		//Draw inside the game.	
+	virtual void OverDraw();	//Draw in window.
+
+	Vector2i GetVirtualMousePosition()	{
+		return Vector2i{(int)virtualMouse.x, (int)virtualMouse.y};
+	}
+
 private:
-	void Init();		 //Initialize engine.
 	void MainLoop();	 //Main loop
 	void RenderFrame();  //Draw loop
 	void ProcessInput(); //Keys events loop.
-	void UpdateMouse();
-	void FullScreen();
+	void UpdateMouse();	 //Mouse updates
+	void FullScreen();   //Controll fullscreen.
 	void UpdateGameScreenRects();
 
 	//Tools

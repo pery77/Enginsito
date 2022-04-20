@@ -2,17 +2,17 @@
 
 Engine::Engine()
 {
-
+	printf("Starting Enginsito\n");
 }
 
 Engine::~Engine()
 {
-	printf("Unload Engine");
+	printf("Unload Enginsito\n");
 	UnloadRenderTexture(mainRender);
 }
 
-//Initialize engine.
-void Engine::Init()
+//Start engine.
+void Engine::Run()
 {
 	const int windowWidth = GameScreenWidth*3;
     const int windowHeight = GameScreenHeight*3;
@@ -29,17 +29,10 @@ void Engine::Init()
 	mainRender = LoadRenderTexture(GameScreenWidth, GameScreenHeight);
 	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_POINT);
 
-
-
 	//Create glow effect.
 	//glow = new Glow(GameScreenWidth, ScreenHeight);
 	//glow->SetFilter(1);
 
-}
-
-//Start engine.
-void Engine::Go()
-{
 	Init();
 	MainLoop();
 }
@@ -75,44 +68,30 @@ void Engine::RenderFrame()
 {
 	BeginDrawing();
 
-	//Draw game to texture.
-	BeginTextureMode(mainRender);
-	//DrawBackground solid color.
-	ClearBackground({31,20,15,255});
-	DrawRectangleLines(0,0,GameScreenWidth,GameScreenHeight,RED);
+		//Draw game to texture.
+		BeginTextureMode(mainRender);
+			Draw();
+		EndTextureMode();
 
-	DrawText(TextFormat("Default Mouse: [%i , %i]", (int)mouse.x, (int)mouse.y), 0, 0, 8, GREEN);
-    DrawText(TextFormat("Virtual Mouse: [%i , %i]", (int)virtualMouse.x, (int)virtualMouse.y), 0, 10, 8, YELLOW);
-    DrawText(TextFormat("game r: [%f]", GameRatio), 0, 20, 8, YELLOW);
-    DrawText(TextFormat("apect: [%f]",currentAspectRatio), 0, 30, 8, BLUE);
-   
-	DrawPixel(virtualMouse.x, virtualMouse.y,WHITE);
+		ClearBackground(BLACK);
 
+		//Blend texture for postprocess effect.
+		BeginBlendMode(1);
+			//Draw main texture scaled to screen.
+			DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0.0f, 0.0f }, 0.0f, WHITE);
+		
+			//Draw glow frist pass (big glow effect)
+			//glow->BigGlow(mainRender.texture);
+			//DrawTexturePro(glow->BlurTexture, sourceRec, scaledRec, { 0, 0 }, 0, WHITE);
+			//Draw glow second pass
+			//glow->SetValues(.5, 1.1, 1.5);
+			//glow->SetValues(.99, 0.1, 0.1);
+			//glow->BlurTexture = glow->DrawGlow(mainRender.texture);
+			//DrawTexturePro(glow->BlurTexture, sourceRec, scaledRec, { 0, 0 }, 0, WHITE);
+			//End draw main + postprocess 
+		EndBlendMode();
 
-	Draw();
-
-	EndTextureMode();
-
-	ClearBackground(BLACK);
-
-	//Blend texture for postprocess effect.
-	BeginBlendMode(1);
-
-	//Draw main texture scaled to screen.
-	DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0.0f, 0.0f }, 0.0f, WHITE);
-	
-	//Draw glow frist pass (big glow effect)
-	//glow->BigGlow(mainRender.texture);
-	//DrawTexturePro(glow->BlurTexture, sourceRec, scaledRec, { 0, 0 }, 0, WHITE);
-	//Draw glow second pass
-	//glow->SetValues(.5, 1.1, 1.5);
-	//glow->SetValues(.99, 0.1, 0.1);
-	//glow->BlurTexture = glow->DrawGlow(mainRender.texture);
-	//DrawTexturePro(glow->BlurTexture, sourceRec, scaledRec, { 0, 0 }, 0, WHITE);
-	//End draw main + postprocess 
-	EndBlendMode();
-
-	OverDraw();
+		OverDraw();
 
 	EndDrawing();
 }
@@ -130,27 +109,27 @@ Vector2 Engine::ClampValue(Vector2 value, Vector2 min, Vector2 max)
 
 void Engine::UpdateMouse()
 {
-		mouse = GetMousePosition();
-        virtualMouse = { 0 };
-        virtualMouse.x = (mouse.x - (GetScreenWidth() - (GameScreenWidth*screenScale))*0.5f)/screenScale;
-        virtualMouse.y = (mouse.y - (GetScreenHeight() - (GameScreenHeight*screenScale))*0.5f)/screenScale;
-        virtualMouse = ClampValue(virtualMouse, { 0, 0 },{ static_cast<float>(GameScreenWidth), static_cast<float>(GameScreenHeight) });
+	mouse = GetMousePosition();
+    virtualMouse = { 0 };
+    virtualMouse.x = (mouse.x - (GetScreenWidth() - (GameScreenWidth*screenScale))*0.5f)/screenScale;
+    virtualMouse.y = (mouse.y - (GetScreenHeight() - (GameScreenHeight*screenScale))*0.5f)/screenScale;
+    virtualMouse = ClampValue(virtualMouse, { 0, 0 },{ (float)GameScreenWidth, (float)GameScreenHeight});
 }
 
 void Engine::UpdateGameScreenRects()
 {
-	printf("Updating\n");
 	screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
 	gameRect = { 0.0f, 0.0f, (float)(GameScreenWidth), -(float)(GameScreenHeight)};
-	gameScaledRect = {(GetScreenWidth() - ((float)(GameScreenWidth)*screenScale))*0.5f,
-						(GetScreenHeight() - ((float)(GameScreenHeight)*screenScale))*0.5f,
-						(float)(GameScreenWidth)*screenScale, (float)(GameScreenHeight)*screenScale};
+	gameScaledRect = {(GetScreenWidth() - ((float)(GameScreenWidth)*screenScale)) * 0.5f,
+					  (GetScreenHeight() - ((float)(GameScreenHeight)*screenScale)) * 0.5f,
+						(float)(GameScreenWidth)*screenScale, (float)(GameScreenHeight) * screenScale};
+
 	currentAspectRatio = (float)GetScreenWidth()/GetScreenHeight();
 
 	if (currentAspectRatio != GameRatio) 
 	{
 		SetWindowSize((currentAspectRatio > GameRatio) ? GameScreenWidth * screenScale : GetScreenWidth(), 
-					 (currentAspectRatio > GameRatio) ? GetScreenHeight() : GameScreenHeight * screenScale);
+					  (currentAspectRatio > GameRatio) ? GetScreenHeight() : GameScreenHeight * screenScale);
 		UpdateGameScreenRects();
 	}
 }
@@ -180,6 +159,7 @@ void Engine::FullScreen()
 
 }
 
+void Engine::Init(){}
 void Engine::Tick(){}
 void Engine::Draw(){}
 void Engine::OverDraw(){}
