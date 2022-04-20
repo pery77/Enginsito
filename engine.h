@@ -1,4 +1,6 @@
-#pragma once
+#ifndef ENGINE_H_
+#define ENGINE_H_
+
 #include "raylib.h"
 #include <string>
 
@@ -26,6 +28,7 @@ private:
 	void ProcessInput(); //Keys events loop.
 	void Update();		 //Update loop.
 	void UpdateMouse();
+	void FullScreen();
 
 	//Tools
 	Vector2 ClampValue(Vector2 value, Vector2 min, Vector2 max);
@@ -34,8 +37,11 @@ private:
 	//Main texture for render
 	RenderTexture2D mainRender;
 	float screenScale;
+	float previusWindowsWidth;
+	float previusWindowsHeight;
 	Rectangle gameRect;
 	Rectangle gameScaledRect;
 	Vector2 mouse;
 	Vector2 virtualMouse;
 };
+#endif  //ENGINE_H_

@@ -29,6 +29,8 @@ void Engine::Init()
 	mainRender = LoadRenderTexture(GameScreenWidth, GameScreenHeight);
 	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_POINT);
 
+
+
 	//Create glow effect.
 	//glow = new Glow(GameScreenWidth, ScreenHeight);
 	//glow->SetFilter(1);
@@ -44,13 +46,14 @@ void Engine::Go()
 
 void Engine::MainLoop()
 {
+	UpdateGameScreenRects();
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
+		if(IsWindowResized()) UpdateGameScreenRects();
 		UpdateMouse();
-		UpdateGameScreenRects();
 		ProcessInput();
-		RenderFrame();
 		Update();
+		RenderFrame();
 	}		
 
 	CloseWindow();					// Close window and OpenGL context
@@ -58,13 +61,9 @@ void Engine::MainLoop()
 
 void Engine::ProcessInput()
 {
-	if(IsKeyReleased(KEY_F10))
+	if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER)))
 	{
-		SetWindowSize(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
-	}
-	if(IsKeyReleased(KEY_F11))
-	{
-		ToggleFullscreen();
+		FullScreen();
 	}
 }
 
@@ -87,6 +86,9 @@ void Engine::RenderFrame()
 
 	DrawText(TextFormat("Default Mouse: [%i , %i]", (int)mouse.x, (int)mouse.y), 0, 0, 8, GREEN);
     DrawText(TextFormat("Virtual Mouse: [%i , %i]", (int)virtualMouse.x, (int)virtualMouse.y), 0, 10, 8, YELLOW);
+    DrawText(TextFormat("ssss ss: [%i , %i]", (int)gameScaledRect.width, (int)gameScaledRect.height), 0, 20, 8, YELLOW);
+    DrawText(TextFormat("ssss ss: [%i , %i]", (int)GetScreenWidth(), (int)GetScreenHeight()), 0, 30, 8, BLUE);
+   
 
 	EndTextureMode();
 
@@ -125,20 +127,38 @@ Vector2 Engine::ClampValue(Vector2 value, Vector2 min, Vector2 max)
 
 void Engine::UpdateMouse()
 {
-		screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
-
 		mouse = GetMousePosition();
         virtualMouse = { 0 };
         virtualMouse.x = (mouse.x - (GetScreenWidth() - (GameScreenWidth*screenScale))*0.5f)/screenScale;
         virtualMouse.y = (mouse.y - (GetScreenHeight() - (GameScreenHeight*screenScale))*0.5f)/screenScale;
-        virtualMouse = ClampValue(virtualMouse, { 0, 0 }, 
-			(Vector2){ static_cast<float>(GameScreenWidth), static_cast<float>(GameScreenHeight) });
+        virtualMouse = ClampValue(virtualMouse, { 0, 0 },{ static_cast<float>(GameScreenWidth), static_cast<float>(GameScreenHeight) });
 }
 
 void Engine::UpdateGameScreenRects()
 {
+	screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
 	gameRect = { 0.0f, 0.0f, static_cast<float>(GameScreenWidth), -static_cast<float>(GameScreenHeight)};
 	gameScaledRect = {(GetScreenWidth() - (static_cast<float>(GameScreenWidth)*screenScale))*0.5f,
 						(GetScreenHeight() - (static_cast<float>(GameScreenHeight)*screenScale))*0.5f,
 						static_cast<float>(GameScreenWidth)*screenScale, static_cast<float>(GameScreenHeight)*screenScale};
+
+}
+
+void Engine::FullScreen()
+{
+	if (!IsWindowFullscreen())
+	{
+		previusWindowsWidth = GetScreenWidth();
+		previusWindowsHeight = GetScreenHeight();
+		SetWindowSize(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
+		UpdateGameScreenRects();
+		ToggleFullscreen();
+	}
+	else
+	{
+		ToggleFullscreen();
+		SetWindowSize(previusWindowsWidth, previusWindowsHeight);
+		UpdateGameScreenRects();
+	}
+
 }
