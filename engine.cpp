@@ -47,12 +47,15 @@ void Engine::Go()
 void Engine::MainLoop()
 {
 	UpdateGameScreenRects();
+	HideCursor();
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
 		if(IsWindowResized()) UpdateGameScreenRects();
 		UpdateMouse();
 		ProcessInput();
-		Update();
+
+		Tick();
+
 		RenderFrame();
 	}		
 
@@ -67,12 +70,6 @@ void Engine::ProcessInput()
 	}
 }
 
-
-void Engine::Update()
-{
-
-}
-
 //Draw loop.
 void Engine::RenderFrame()
 {
@@ -81,14 +78,18 @@ void Engine::RenderFrame()
 	//Draw game to texture.
 	BeginTextureMode(mainRender);
 	//DrawBackground solid color.
-	ClearBackground(BLACK);
+	ClearBackground({31,20,15,255});
 	DrawRectangleLines(0,0,GameScreenWidth,GameScreenHeight,RED);
 
 	DrawText(TextFormat("Default Mouse: [%i , %i]", (int)mouse.x, (int)mouse.y), 0, 0, 8, GREEN);
     DrawText(TextFormat("Virtual Mouse: [%i , %i]", (int)virtualMouse.x, (int)virtualMouse.y), 0, 10, 8, YELLOW);
-    DrawText(TextFormat("ssss ss: [%i , %i]", (int)gameScaledRect.width, (int)gameScaledRect.height), 0, 20, 8, YELLOW);
-    DrawText(TextFormat("ssss ss: [%i , %i]", (int)GetScreenWidth(), (int)GetScreenHeight()), 0, 30, 8, BLUE);
+    DrawText(TextFormat("game r: [%f]", GameRatio), 0, 20, 8, YELLOW);
+    DrawText(TextFormat("apect: [%f]",currentAspectRatio), 0, 30, 8, BLUE);
    
+	DrawPixel(virtualMouse.x, virtualMouse.y,WHITE);
+
+
+	Draw();
 
 	EndTextureMode();
 
@@ -110,6 +111,8 @@ void Engine::RenderFrame()
 	//DrawTexturePro(glow->BlurTexture, sourceRec, scaledRec, { 0, 0 }, 0, WHITE);
 	//End draw main + postprocess 
 	EndBlendMode();
+
+	OverDraw();
 
 	EndDrawing();
 }
@@ -136,12 +139,20 @@ void Engine::UpdateMouse()
 
 void Engine::UpdateGameScreenRects()
 {
+	printf("Updating\n");
 	screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
-	gameRect = { 0.0f, 0.0f, static_cast<float>(GameScreenWidth), -static_cast<float>(GameScreenHeight)};
-	gameScaledRect = {(GetScreenWidth() - (static_cast<float>(GameScreenWidth)*screenScale))*0.5f,
-						(GetScreenHeight() - (static_cast<float>(GameScreenHeight)*screenScale))*0.5f,
-						static_cast<float>(GameScreenWidth)*screenScale, static_cast<float>(GameScreenHeight)*screenScale};
+	gameRect = { 0.0f, 0.0f, (float)(GameScreenWidth), -(float)(GameScreenHeight)};
+	gameScaledRect = {(GetScreenWidth() - ((float)(GameScreenWidth)*screenScale))*0.5f,
+						(GetScreenHeight() - ((float)(GameScreenHeight)*screenScale))*0.5f,
+						(float)(GameScreenWidth)*screenScale, (float)(GameScreenHeight)*screenScale};
+	currentAspectRatio = (float)GetScreenWidth()/GetScreenHeight();
 
+	if (currentAspectRatio != GameRatio) 
+	{
+		SetWindowSize((currentAspectRatio > GameRatio) ? GameScreenWidth * screenScale : GetScreenWidth(), 
+					 (currentAspectRatio > GameRatio) ? GetScreenHeight() : GameScreenHeight * screenScale);
+		UpdateGameScreenRects();
+	}
 }
 
 void Engine::FullScreen()
@@ -150,7 +161,13 @@ void Engine::FullScreen()
 	{
 		previusWindowsWidth = GetScreenWidth();
 		previusWindowsHeight = GetScreenHeight();
-		SetWindowSize(GetMonitorWidth(GetCurrentMonitor()), GetMonitorHeight(GetCurrentMonitor()));
+
+		for(auto currentR : resolution16_10)
+		{
+			SetWindowSize(currentR.x, currentR.y);
+			float currentRatio =(float)GetScreenWidth()/GetScreenHeight();
+			if(currentRatio==GameRatio) break;
+		}
 		UpdateGameScreenRects();
 		ToggleFullscreen();
 	}
@@ -162,3 +179,7 @@ void Engine::FullScreen()
 	}
 
 }
+
+void Engine::Tick(){}
+void Engine::Draw(){}
+void Engine::OverDraw(){}
