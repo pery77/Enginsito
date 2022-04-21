@@ -48,14 +48,16 @@ private:
 
 	//Main texture for render
 	RenderTexture2D mainRender;
-	float screenScale;
-	float previusWindowsWidth;
-	float previusWindowsHeight;
-	float currentAspectRatio;
+	float screenScale = {};
+	float previusWindowsWidth = {};
+	float previusWindowsHeight = {};
+	float currentAspectRatio = {};
 	Rectangle gameRect;
 	Rectangle gameScaledRect;
 	Vector2 mouse;
 	Vector2 virtualMouse;
+	
+	Shader shader;
 
 	Vector2i resolution16_10[5] = {
 		{2560,1600},
@@ -64,6 +66,5 @@ private:
 		{1440,900},
 		{1280,800}
 		};
-
 };
 #endif  //ENGINE_H_

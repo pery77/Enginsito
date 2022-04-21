@@ -29,9 +29,10 @@ void Engine::Run()
 	mainRender = LoadRenderTexture(GameScreenWidth, GameScreenHeight);
 	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_POINT);
 
-	//Create glow effect.
-	//glow = new Glow(GameScreenWidth, ScreenHeight);
-	//glow->SetFilter(1);
+	shader = LoadShader(0, "crt.fs");//LoadShaderCode to embebed.
+
+	UpdateGameScreenRects();
+	HideCursor();
 
 	Init();
 	MainLoop();
@@ -39,8 +40,7 @@ void Engine::Run()
 
 void Engine::MainLoop()
 {
-	UpdateGameScreenRects();
-	HideCursor();
+	
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
 		if(IsWindowResized()) UpdateGameScreenRects();
@@ -74,22 +74,18 @@ void Engine::RenderFrame()
 		EndTextureMode();
 
 		ClearBackground(BLACK);
-
+/*
 		//Blend texture for postprocess effect.
 		BeginBlendMode(1);
 			//Draw main texture scaled to screen.
-			DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0.0f, 0.0f }, 0.0f, WHITE);
-		
-			//Draw glow frist pass (big glow effect)
-			//glow->BigGlow(mainRender.texture);
-			//DrawTexturePro(glow->BlurTexture, sourceRec, scaledRec, { 0, 0 }, 0, WHITE);
-			//Draw glow second pass
-			//glow->SetValues(.5, 1.1, 1.5);
-			//glow->SetValues(.99, 0.1, 0.1);
-			//glow->BlurTexture = glow->DrawGlow(mainRender.texture);
-			//DrawTexturePro(glow->BlurTexture, sourceRec, scaledRec, { 0, 0 }, 0, WHITE);
-			//End draw main + postprocess 
+			DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0, 0 }, 0.0f, WHITE);
+
 		EndBlendMode();
+*/
+		//Main Draw (draw game target texture in screen)
+        BeginShaderMode(shader);
+			DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0, 0 }, 0.0f, WHITE);              
+        EndShaderMode();
 
 		OverDraw();
 
@@ -115,7 +111,6 @@ void Engine::UpdateMouse()
     virtualMouse.y = (mouse.y - (GetScreenHeight() - (GameScreenHeight*screenScale))*0.5f)/screenScale;
     virtualMouse = ClampValue(virtualMouse, { 0, 0 },{ (float)GameScreenWidth, (float)GameScreenHeight});
 }
-
 void Engine::UpdateGameScreenRects()
 {
 	screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
@@ -130,7 +125,7 @@ void Engine::UpdateGameScreenRects()
 	{
 		SetWindowSize((currentAspectRatio > GameRatio) ? GameScreenWidth * screenScale : GetScreenWidth(), 
 					  (currentAspectRatio > GameRatio) ? GetScreenHeight() : GameScreenHeight * screenScale);
-		UpdateGameScreenRects();
+		UpdateGameScreenRects(); //Al compilador no le gusta nada esto aquí, mirar... peta si CFLAGS += -s -O1
 	}
 }
 
