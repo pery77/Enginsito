@@ -11,11 +11,14 @@ Engine::~Engine()
 	UnloadRenderTexture(mainRender);
 }
 
+
+
 //Start engine.
 void Engine::Run()
 {
 	const int windowWidth = GameScreenWidth*3;
     const int windowHeight = GameScreenHeight*3;
+
 
 	//Set Vsync and make the window resizeable
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
@@ -27,9 +30,9 @@ void Engine::Run()
 
 	//Create main texture and disable texture filter.
 	mainRender = LoadRenderTexture(GameScreenWidth, GameScreenHeight);
-	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_POINT);
-
-	shader = LoadShader(0, "crt.fs");//LoadShaderCode to embebed.
+	//SetTextureFilter(mainRender.texture, TEXTURE_FILTER_POINT);
+	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_ANISOTROPIC_8X);
+	shader = LoadShader(0, crtFile);//LoadShaderCode to embebed.
 
 	UpdateGameScreenRects();
 	HideCursor();
@@ -60,6 +63,11 @@ void Engine::ProcessInput()
 	if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER)))
 	{
 		FullScreen();
+	}
+
+	if(IsKeyReleased(KEY_F10))
+	{
+		shader = LoadShader(0, crtFile);
 	}
 }
 
