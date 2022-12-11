@@ -22,86 +22,97 @@ code = "/*
 shader_type canvas_item;
 render_mode blend_mix;
 */
+
+#version 330
+
 uniform bool enabled = true;
 
 // Curvature Toggle
 uniform bool useCurvature = true;
 // Curvature Distance
-uniform float curvatureDistance: hint_range(0.1, 3.0, 0.1) = 1.6;
-uniform float barrelPower: hint_range(-10.1, 10.0, 0.1) = 1.6;
+uniform float curvatureDistance = 1.6;
+uniform float barrelPower = 1.6;
 // Curvature Radius
-uniform float curvatureRadius: hint_range(0.1, 10.0, 0.1) = 2.0;
+uniform float curvatureRadius = 2.0;
 // Corner Size
-uniform float cornersize: hint_range(0.01, 1.0, 0.005) = 0.03;
+uniform float cornersize = 0.03;
 // Corner Smoothness
-uniform float cornersmooth: hint_range(50.0, 500.0, 10.0) = 100.0;
+uniform float cornersmooth = 100.0;
 
 
 // Horizontal Tilt
-uniform float x_tilt: hint_range(-0.5, 0.5, 0.05) = 0.0;
+uniform float x_tilt = 0.0;
 // Vertical Tilt
 
-uniform float y_tilt: hint_range(-0.5, 0.5, 0.05) = 0.0;
+uniform float y_tilt= 0.0;
 // Horiz. Overscan %
-uniform float overscan_x: hint_range(-125.0, 125.0, 1.0) = 100.0;
+uniform float overscan_x = 100.0;
 // Vert. Overscan %
-uniform float overscan_y: hint_range(-125.0, 125.0, 1.0) = 100.0;
+uniform float overscan_y = 100.0;
 
-uniform vec4 border_color : hint_color;
+uniform vec4 border_color;
 
-uniform float vignetteIntensity: hint_range(0.0, 1.0, 0.05) = 0.25;
-uniform float vignetteOpacity: hint_range(0.0, 2.0, 0.05) = 1.0;
+uniform float vignetteIntensity = 0.25;
+uniform float vignetteOpacity = 1.0;
 
 // hardScan
-uniform float hardScan: hint_range(-20.0, 0.0, 1.0) = -8.0;
+uniform float hardScan = -8.0;
 // hardPix
-uniform float hardPix: hint_range(-20.0, 0.0, 1.0) = -3.0;
+uniform float hardPix = -3.0;
 
 // brightness boost
-uniform float brightBoost: hint_range(0.0, 2.0, 0.05) = 1.0;
+uniform float brightBoost = 1.0;
 // bloom-x soft
-uniform float hardBloomPix: hint_range(-2.0, -0.5, 0.1) = -1.5;
+uniform float hardBloomPix = -1.5;
 // bloom-y soft
-uniform float hardBloomScan: hint_range(-4.0, -1.0, 0.1) = -2.0;
+uniform float hardBloomScan = -2.0;
 // bloom ammount
-uniform float bloomAmount: hint_range(0.0, 1.0, 0.05) = 0.15;
+uniform float bloomAmount = 0.15;
 // filter kernel shape
-uniform float shape: hint_range(1.0, 10.0, 0.05) = 2.0;
+uniform float shape = 2.0;
 
 
-uniform float hue: hint_range(0.0, 1.0, 0.01) = 0.0;
-uniform float saturation: hint_range(0.0, 2.0, 0.01) = 1.0;
-uniform float brightness: hint_range(0.0, 2.0, 0.01) = 1.0;
-uniform float contrast: hint_range(0.0, 2.0, 0.01) = 1.0;
-uniform float distortion: hint_range(0.0, 2.0, 0.01) = 0.001;
-uniform float flicker: hint_range(0.0, 1.0, 0.01) = 0.001;
-uniform float noiseAmount: hint_range(0.0, 1.0, 0.01) = 0.001;
-uniform float noiseSize: hint_range(0.0, 1.0, 0.01) = 0.001;
+uniform float hue = 0.0;
+uniform float saturation = 1.0;
+uniform float brightness = 1.0;
+uniform float contrast = 1.0;
+uniform float distortion = 0.001;
+uniform float flicker = 0.001;
+uniform float noiseAmount = 0.001;
+uniform float noiseSize = 0.001;
 
 
-uniform vec2 TextureSize;
-uniform float GrilleSize: hint_range(0.0, 6.0, 1.0) = 3.0;
+uniform vec2 TextureSize = vec2(320,200);
+uniform float GrilleSize = 3.0;
 uniform sampler2D grille;
 // maskDark
-uniform float maskDark: hint_range(0.0, 2.0, 0.1) = 0.5;
+uniform float maskDark = 0.5;
 // maskLight
-uniform float maskLight: hint_range(0.0, 2.0, 0.1) = 1.5;
+uniform float maskLight = 1.5;
 // shadowMask
-uniform float shadowMask: hint_range(0.0, 4.0, 1.0) = 3.0;
+uniform float shadowMask = 3.0;
 
 //Blur
-uniform float blur_directions: hint_range(0.0, 32.0, 1.0) = 5.0;
-uniform float blur_quality: hint_range(4.0, 16.0, 1.0) = 9.0;
-uniform float blur_size: hint_range(1.0, 20.0, 1.0) = 10.0;
-uniform float blur_amount: hint_range(0.0, 1.0, 0.01) = 0.5;
+uniform float blur_directions = 5.0;
+uniform float blur_quality = 9.0;
+uniform float blur_size = 10.0;
+uniform float blur_amount = 0.5;
 uniform vec2 chromatic;
 
-varying vec2 overscan;
-varying vec2 aspect;
-varying vec3 stretch;
-varying vec2 sinangle;
-varying vec2 cosangle;
+  vec2 overscan;
+  vec2 aspect;
+  vec3 stretch;
+  vec2 sinangle;
+  vec2 cosangle;
 
+float TIME = 0.0;
+in vec2 fragTexCoord;
+vec2 UV = fragTexCoord;
+vec2 FRAGCOORD = UV;
+uniform sampler2D texture0;
+float SCREEN_PIXEL_SIZE = 0.001;
+
+out vec4 COLOR;
 
 //Cuvature functions
 float intersect(vec2 xy) {
@@ -464,7 +475,9 @@ void vertex() {
 
 void main() {
 
-	vec2 xy = useCurvature ? transform(UV.xy) : UV.xy;
+vertex();
+
+	vec2 xy = useCurvature ? transform(fragTexCoord.xy) : fragTexCoord.xy;
 	float cval = useCurvature ? corner(xy) : 1.0;
 	
 	float x = sin(0.1*TIME+(xy.y*10.0))
@@ -473,9 +486,9 @@ void main() {
 
     x *= distortion * distortion * 0.05;
 	
-	vec3 outColor = Tri(TEXTURE, xy + x);
-	vec3 bloom = Bloom(TEXTURE, xy + x);
-	vec4 blur = blur_amount > 0.0 ? blur(TEXTURE, xy + x) : vec4(0.0);
+	vec3 outColor = Tri(texture0, xy + x);
+	vec3 bloom = Bloom(texture0, xy + x);
+	vec4 blur = blur_amount > 0.0 ? blur(texture0, xy + x) : vec4(0.0);
 	
 	outColor += bloom * bloomAmount;
 	
@@ -512,9 +525,12 @@ void main() {
 	outColor += mix (vec3(0.0) , blur.rgb * blur.rgb, blur_amount);
 	
 	if (enabled) 
+	{
 		COLOR = mix (border , vec4(ToSrgb(outColor.rgb), 1.0), cval); 
+		COLOR = vec4(Tri(texture0, xy + x), 1); 
+	}
 	else
-		COLOR = texture(TEXTURE, UV);
+		COLOR = texture(texture0, fragTexCoord.xy);
 		
 } /*"
 
