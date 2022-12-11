@@ -3,12 +3,6 @@
 
 #include "raylib.h"
 #include <string>
- extern "C" 
- {
-#include "include/lua.h"
-#include "include/lualib.h"
-#include "include/lauxlib.h"
- }
 
 #define max(a, b) ((a)>(b)? (a) : (b))
 #define min(a, b) ((a)<(b)? (a) : (b))
@@ -25,7 +19,7 @@ public:
 	const int GameScreenWidth {320};
 	const int GameScreenHeight {200};
 	const float GameRatio {(float)GameScreenWidth/GameScreenHeight};
-	const char * crtFile = "assets/peryCRTDeluxe.fs";
+	const char * crtFile = "assets/pery_crt_deluxe.fs";
 
 	Engine();
 	~Engine();

@@ -1,3 +1,4 @@
+/*
 [gd_resource type="ShaderMaterial" load_steps=3 format=2]
 
 [ext_resource path="res://art/Grille_2.png" type="Texture" id=1]
@@ -17,10 +18,10 @@ code = "/*
 	Software Foundation; either version 2 of the License, or (at your option)
 	any later version.
 */
-
+/*
 shader_type canvas_item;
 render_mode blend_mix;
-
+*/
 uniform bool enabled = true;
 
 // Curvature Toggle
@@ -461,7 +462,7 @@ void vertex() {
 	stretch = maxscale();
 }
 
-void fragment() {
+void main() {
 
 	vec2 xy = useCurvature ? transform(UV.xy) : UV.xy;
 	float cval = useCurvature ? corner(xy) : 1.0;
@@ -515,7 +516,7 @@ void fragment() {
 	else
 		COLOR = texture(TEXTURE, UV);
 		
-} "
+} /*"
 
 [resource]
 shader = SubResource( 1 )
@@ -559,3 +560,4 @@ shader_param/blur_size = 3.0
 shader_param/blur_amount = 0.2
 shader_param/chromatic = Vector2( -0.947, -0.48 )
 shader_param/grille = ExtResource( 1 )
+*/
