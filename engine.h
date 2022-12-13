@@ -19,7 +19,14 @@ public:
 	const int GameScreenWidth {320};
 	const int GameScreenHeight {200};
 	const float GameRatio {(float)GameScreenWidth/GameScreenHeight};
-	const char * crtFile = "assets/pery_crt_deluxe.fs";
+	const char * crtFileVs = "assets/pery_crt_deluxe.vs";
+	const char * crtFileFs = "assets/pery_crt_deluxe.fs";
+
+	float time;
+
+	int timeLoc;
+	int overscanLoc;
+
 
 	Engine();
 	~Engine();
@@ -43,6 +50,9 @@ private:
 	void UpdateMouse();	 //Mouse updates
 	void FullScreen();   //Controll fullscreen.
 	void UpdateGameScreenRects();
+
+	void InitCRTShader();
+	void UpdateCRTShader();
 
 	//Tools
 	Vector2 ClampValue(Vector2 value, Vector2 min, Vector2 max);

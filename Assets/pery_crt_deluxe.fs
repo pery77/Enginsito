@@ -88,27 +88,26 @@ uniform sampler2D grille;
 // maskDark
 uniform float maskDark = 0.5;
 // maskLight
-uniform float maskLight = 1.5;
+uniform float maskLight = 0.5;
 // shadowMask
 uniform float shadowMask = 3.0;
 
 //Blur
 uniform float blur_directions = 5.0;
 uniform float blur_quality = 9.0;
-uniform float blur_size = 10.0;
+uniform float blur_size = 2.0;
 uniform float blur_amount = 0.5;
-uniform vec2 chromatic;
+uniform vec2 chromatic = vec2(1.0,0);
 
-  vec2 overscan;
-  vec2 aspect;
-  vec3 stretch;
-  vec2 sinangle;
-  vec2 cosangle;
+vec2 overscan;
+vec2 aspect;
+vec3 stretch;
+vec2 sinangle;
+vec2 cosangle;
 
-float TIME = 0.0;
+uniform float uTime;
+
 in vec2 fragTexCoord;
-vec2 UV = fragTexCoord;
-vec2 FRAGCOORD = UV;
 uniform sampler2D texture0;
 float SCREEN_PIXEL_SIZE = 0.001;
 
@@ -400,7 +399,7 @@ vec3 applyHSBEffect(vec3 startColor){
 
 //Noise
 float rand(vec2 co){
-	float speed = 0.001 * TIME;
+	float speed = 0.001 * uTime;
 	return fract((sin( dot(co.xy , vec2(100.0 * speed, 1.0 * speed) )) * 10000.0+ speed));
 }
             
@@ -464,7 +463,7 @@ void vertex() {
 
 	overscan = vec2(1.00,1.00);
 
-	aspect = vec2(1.0, 0.5625);
+	aspect = vec2(1.0, 0.625);
 	
 	const vec2 angle = vec2(0.0, 0.0);
 	
@@ -473,46 +472,46 @@ void vertex() {
 	stretch = maxscale();
 }
 
+
 void main() {
-
 vertex();
-
 	vec2 xy = useCurvature ? transform(fragTexCoord.xy) : fragTexCoord.xy;
 	float cval = useCurvature ? corner(xy) : 1.0;
 	
-	float x = sin(0.1*TIME+(xy.y*10.0))
-    	* sin(0.2*TIME+(xy.y*80.01))
-    	* cos(0.3*TIME+(xy.y*40.01));
+	float x = sin(0.1*uTime+(xy.y*10.0))
+    	* sin(0.2*uTime+(xy.y*80.01))
+    	* cos(0.3*uTime+(xy.y*40.01));
 
     x *= distortion * distortion * 0.05;
 	
-	vec3 outColor = Tri(texture0, xy + x);
+	vec3 outColor = Tri(texture0, xy + x*100);
+
 	vec3 bloom = Bloom(texture0, xy + x);
 	vec4 blur = blur_amount > 0.0 ? blur(texture0, xy + x) : vec4(0.0);
-	
+
 	outColor += bloom * bloomAmount;
 	
 	outColor = applyHSBEffect(outColor.rgb);
 	
 	if (shadowMask > 0.0)
-	    outColor *= Mask( FRAGCOORD.xy * 1.00001);
+	    outColor *= Mask( fragTexCoord.xy *320*4);
 	else
 	{
 		if (GrilleSize > 0.0)
 		{
-			vec2 pos = fract(FRAGCOORD.xy * 0.04166 * GrilleSize);
+			vec2 pos = fract(fragTexCoord.xy * 0.04166 * GrilleSize);
 			outColor *= texture(grille, pos).rgb + maskDark;
 		}
 		else
 		{
-			outColor *= texture(grille, UV * (1.0/SCREEN_PIXEL_SIZE) * 0.2).rgb + maskDark;
+			outColor *= texture(grille, fragTexCoord * (1.0/SCREEN_PIXEL_SIZE) * 0.2).rgb + maskDark;
 		}
 
 		
 	}
 		
 	/* Flicker */
-	outColor *= (1.0 - flicker * 0.2 * (sin(50.0*TIME+xy.y*2.0)*0.5+0.5));
+	outColor *= (1.0 - flicker * 0.2 * (sin(50.0*uTime+xy.y*2.0)*0.5+0.5));
 	
 	/* Noise */
 	float nA = noiseAmount*noiseAmount;
@@ -527,10 +526,13 @@ vertex();
 	if (enabled) 
 	{
 		COLOR = mix (border , vec4(ToSrgb(outColor.rgb), 1.0), cval); 
-		COLOR = vec4(Tri(texture0, xy + x), 1); 
 	}
 	else
 		COLOR = texture(texture0, fragTexCoord.xy);
+
+
+
+	//COLOR = vec4(fragTexCoord.xy.y,0,0,1);	
 		
 } /*"
 

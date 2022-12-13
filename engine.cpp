@@ -11,13 +11,11 @@ Engine::~Engine()
 	UnloadRenderTexture(mainRender);
 }
 
-
-
 //Start engine.
 void Engine::Run()
 {
-	const int windowWidth = GameScreenWidth*3;
-    const int windowHeight = GameScreenHeight*3;
+	const int windowWidth = GameScreenWidth*4;
+    const int windowHeight = GameScreenHeight*4;
 
 
 	//Set Vsync and make the window resizeable
@@ -30,25 +28,34 @@ void Engine::Run()
 
 	//Create main texture and disable texture filter.
 	mainRender = LoadRenderTexture(GameScreenWidth, GameScreenHeight);
-	//SetTextureFilter(mainRender.texture, TEXTURE_FILTER_POINT);
-	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_ANISOTROPIC_8X);
-	shader = LoadShader(0, crtFile);//LoadShaderCode to embebed.
-
+	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_POINT);
+	
+	shader = LoadShader(crtFileVs, crtFileFs);//LoadShaderCode to embebed.
+	time = 0.0f;
+	
 	UpdateGameScreenRects();
 	HideCursor();
+
+	InitCRTShader();
 
 	Init();
 	MainLoop();
 }
 
 void Engine::MainLoop()
-{
-	
+{    
 	while (!WindowShouldClose())    // Detect window close button or ESC key
 	{
+		time = (float)GetTime();
+
+		UpdateCRTShader();
+
+
+
 		if(IsWindowResized()) UpdateGameScreenRects();
 		UpdateMouse();
 		ProcessInput();
+
 
 		Tick();
 
@@ -67,7 +74,7 @@ void Engine::ProcessInput()
 
 	if(IsKeyReleased(KEY_F10))
 	{
-		shader = LoadShader(0, crtFile);
+		shader = LoadShader(crtFileVs, crtFileFs);
 	}
 }
 
@@ -166,3 +173,12 @@ void Engine::Init(){}
 void Engine::Tick(){}
 void Engine::Draw(){}
 void Engine::OverDraw(){}
+
+void Engine::InitCRTShader()
+{
+    timeLoc = GetShaderLocation(shader, "uTime");
+}
+void Engine::UpdateCRTShader()
+{
+    SetShaderValue(shader, timeLoc, &time, SHADER_UNIFORM_FLOAT);
+}
