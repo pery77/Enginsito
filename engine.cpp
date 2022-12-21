@@ -1,4 +1,6 @@
 #include "engine.h"
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
 
 Engine::Engine()
 {
@@ -50,12 +52,9 @@ void Engine::MainLoop()
 
 		UpdateCRTShader();
 
-
-
 		if(IsWindowResized()) UpdateGameScreenRects();
 		UpdateMouse();
 		ProcessInput();
-
 
 		Tick();
 
@@ -172,7 +171,11 @@ void Engine::FullScreen()
 void Engine::Init(){}
 void Engine::Tick(){}
 void Engine::Draw(){}
-void Engine::OverDraw(){}
+void Engine::OverDraw()
+{
+	DrawRectangle(0,0,GameScreenWidth,GameScreenHeight, (Color){ 0, 0, 0, 220});
+    if (GuiButton(Rectangle{10,10,100,20},  "FullScreen")) { ToggleFullscreen(); }
+}
 
 void Engine::InitCRTShader()
 {
