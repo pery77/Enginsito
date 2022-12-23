@@ -5,6 +5,9 @@
 #include "raylib.h"
 #include <string>
 
+#include <fstream>
+#include "inipp.h"
+
 #define max(a, b) ((a)>(b)? (a) : (b))
 #define min(a, b) ((a)<(b)? (a) : (b))
 
@@ -26,6 +29,8 @@ public:
 	float time;
 
 	int timeLoc;
+	int blurMaxPassLoc;
+	int blurPassLoc;
 	int overscanLoc;
 
 
@@ -69,7 +74,8 @@ private:
 	Vector2 mouse;
 	Vector2 virtualMouse;
 	
-	Shader shader;
+	Shader crtShader;
+	Shader blur;
 
 	Vector2i resolution16_10[5] = {
 		{2560,1600},

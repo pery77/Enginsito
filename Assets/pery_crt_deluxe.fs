@@ -1,10 +1,4 @@
 /*
-[gd_resource type="ShaderMaterial" load_steps=3 format=2]
-
-[ext_resource path="res://art/Grille_2.png" type="Texture" id=1]
-
-[sub_resource type="Shader" id=1]
-code = "/*
 	This shader is based in:
 	Libretro's crt-geom.glsl
 	Source: https://github.com/libretro/glsl-shaders/blob/master/crt/shaders/crt-geom.glsl
@@ -50,7 +44,7 @@ uniform float overscan_x = 100.0;
 // Vert. Overscan %
 uniform float overscan_y = 100.0;
 
-uniform vec4 border_color;
+uniform vec4 border_color = vec4 (0.2,0.2,0.2,0.2);
 
 uniform float vignetteIntensity = 0.25;
 uniform float vignetteOpacity = 1.0;
@@ -65,7 +59,7 @@ uniform float brightBoost = 1.0;
 // bloom-x soft
 uniform float hardBloomPix = -1.5;
 // bloom-y soft
-uniform float hardBloomScan = -2.0;
+uniform float hardBloomScan = -10.0;
 // bloom ammount
 uniform float bloomAmount = 0.15;
 // filter kernel shape
@@ -76,10 +70,10 @@ uniform float hue = 0.0;
 uniform float saturation = 1.0;
 uniform float brightness = 1.0;
 uniform float contrast = 1.0;
-uniform float distortion = 0.001;
+uniform float distortion = 0.5;
 uniform float flicker = 0.001;
-uniform float noiseAmount = 0.001;
-uniform float noiseSize = 0.001;
+uniform float noiseAmount = 0.01;
+uniform float noiseSize = 0.01;
 
 
 uniform vec2 TextureSize = vec2(320,200);
@@ -473,18 +467,19 @@ void vertex() {
 }
 
 
+
 void main() {
 vertex();
 	vec2 xy = useCurvature ? transform(fragTexCoord.xy) : fragTexCoord.xy;
 	float cval = useCurvature ? corner(xy) : 1.0;
 	
 	float x = sin(0.1*uTime+(xy.y*10.0))
-    	* sin(0.2*uTime+(xy.y*80.01))
-    	* cos(0.3*uTime+(xy.y*40.01));
+    	* sin(0.2*uTime+(xy.y*80.0))
+    	* cos(0.3*uTime+(xy.y*40.0));
 
     x *= distortion * distortion * 0.05;
-	
-	vec3 outColor = Tri(texture0, xy + x*100);
+	x=0;
+	vec3 outColor = Tri(texture0, xy + x);
 
 	vec3 bloom = Bloom(texture0, xy + x);
 	vec4 blur = blur_amount > 0.0 ? blur(texture0, xy + x) : vec4(0.0);
@@ -523,6 +518,26 @@ vertex();
 	/* Blur */
 	outColor += mix (vec3(0.0) , blur.rgb * blur.rgb, blur_amount);
 	
+
+    float n = mix(0.9, 1, noise(xy*300)); //Noise
+	float f = mix(0.98, 1, (sin(60.0*uTime+xy.y*2.0)*0.5+0.5));//Fliker
+
+	float ch = -0.0015;
+
+
+	float r = texture(texture0, xy - vec2(-ch,0)).r;
+	float g = texture(texture0, xy).g;
+	float b = texture(texture0, xy - vec2(ch,0)).b;
+	vec3 bo = vec3(cval,cval,cval);
+
+	vec4 col = vec4(r,g,b,1)*n*f;
+	col = vec4((bloom.rgb + col.rgb) * 0.5,1);
+	COLOR = mix (col*border_color, col, cval);
+	//COLOR = vec4((bloom.rgb),1);
+
+	return;
+
+
 	if (enabled) 
 	{
 		COLOR = mix (border , vec4(ToSrgb(outColor.rgb), 1.0), cval); 
@@ -531,51 +546,6 @@ vertex();
 		COLOR = texture(texture0, fragTexCoord.xy);
 
 
-
 	//COLOR = vec4(fragTexCoord.xy.y,0,0,1);	
 		
-} /*"
-
-[resource]
-shader = SubResource( 1 )
-shader_param/enabled = true
-shader_param/useCurvature = true
-shader_param/curvatureDistance = 1.6
-shader_param/barrelPower = 1.6
-shader_param/curvatureRadius = 2.0
-shader_param/cornersize = 0.03
-shader_param/cornersmooth = 100.0
-shader_param/x_tilt = 0.0
-shader_param/y_tilt = 0.0
-shader_param/overscan_x = 100.0
-shader_param/overscan_y = 100.0
-shader_param/border_color = Color( 0.152941, 0.14902, 0.14902, 1 )
-shader_param/vignetteIntensity = 0.25
-shader_param/vignetteOpacity = 1.0
-shader_param/hardScan = -9.0
-shader_param/hardPix = -3.0
-shader_param/brightBoost = 1.2
-shader_param/hardBloomPix = -1.5
-shader_param/hardBloomScan = -2.0
-shader_param/bloomAmount = 0.15
-shader_param/shape = 2.0
-shader_param/hue = 0.0
-shader_param/saturation = 1.0
-shader_param/brightness = 1.0
-shader_param/contrast = 1.0
-shader_param/distortion = 0.12
-shader_param/flicker = 0.27
-shader_param/noiseAmount = 0.14
-shader_param/noiseSize = 0.21
-shader_param/TextureSize = Vector2( 384, 216 )
-shader_param/GrilleSize = 0.0
-shader_param/maskDark = 0.5
-shader_param/maskLight = 1.1
-shader_param/shadowMask = 0.0
-shader_param/blur_directions = 10.0
-shader_param/blur_quality = 10.0
-shader_param/blur_size = 3.0
-shader_param/blur_amount = 0.2
-shader_param/chromatic = Vector2( -0.947, -0.48 )
-shader_param/grille = ExtResource( 1 )
-*/
+}

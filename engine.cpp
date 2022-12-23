@@ -2,6 +2,8 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
+#include "config.h"
+
 Engine::Engine()
 {
 	printf("Starting Enginsito\n");
@@ -16,8 +18,21 @@ Engine::~Engine()
 //Start engine.
 void Engine::Run()
 {
-	const int windowWidth = GameScreenWidth*4;
-    const int windowHeight = GameScreenHeight*4;
+	inipp::Ini<char> ini;
+	std::ifstream is("assets/config.ini");
+	ini.parse(is);
+
+	int size = 1;
+
+	int crt_enabled;
+
+	inipp::get_value(ini.sections["window"], "size", size);
+	inipp::get_value(ini.sections["crt"], "enabled", crt_enabled);
+
+
+
+	const int windowWidth = GameScreenWidth * size;
+    const int windowHeight = GameScreenHeight * size;
 
 
 	//Set Vsync and make the window resizeable
@@ -30,9 +45,10 @@ void Engine::Run()
 
 	//Create main texture and disable texture filter.
 	mainRender = LoadRenderTexture(GameScreenWidth, GameScreenHeight);
-	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_POINT);
-	
-	shader = LoadShader(crtFileVs, crtFileFs);//LoadShaderCode to embebed.
+	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_BILINEAR);
+	SetTextureWrap(mainRender.texture,TEXTURE_WRAP_MIRROR_REPEAT );
+
+	crtShader = LoadShader(crtFileVs, crtFileFs);//LoadShaderCode to embebed.
 	time = 0.0f;
 	
 	UpdateGameScreenRects();
@@ -73,7 +89,7 @@ void Engine::ProcessInput()
 
 	if(IsKeyReleased(KEY_F10))
 	{
-		shader = LoadShader(crtFileVs, crtFileFs);
+		crtShader = LoadShader(crtFileVs, crtFileFs);
 	}
 }
 
@@ -88,19 +104,17 @@ void Engine::RenderFrame()
 		EndTextureMode();
 
 		ClearBackground(BLACK);
-/*
+
 		//Blend texture for postprocess effect.
 		BeginBlendMode(1);
-			//Draw main texture scaled to screen.
-			DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0, 0 }, 0.0f, WHITE);
-
-		EndBlendMode();
-*/
+        
 		//Main Draw (draw game target texture in screen)
-        BeginShaderMode(shader);
+        BeginShaderMode(crtShader);
 			DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0, 0 }, 0.0f, WHITE);              
         EndShaderMode();
 
+		
+		EndBlendMode();
 		OverDraw();
 
 	EndDrawing();
@@ -173,15 +187,18 @@ void Engine::Tick(){}
 void Engine::Draw(){}
 void Engine::OverDraw()
 {
+	return;
 	DrawRectangle(0,0,GameScreenWidth,GameScreenHeight, (Color){ 0, 0, 0, 220});
     if (GuiButton(Rectangle{10,10,100,20},  "FullScreen")) { ToggleFullscreen(); }
 }
 
 void Engine::InitCRTShader()
 {
-    timeLoc = GetShaderLocation(shader, "uTime");
+    timeLoc = GetShaderLocation(crtShader, "uTime");
+	//blurMaxPassLoc = GetShaderLocation(blur, "uBlurMaxPass");
+	//blurPassLoc = GetShaderLocation(blur, "uBlurPass");
 }
 void Engine::UpdateCRTShader()
 {
-    SetShaderValue(shader, timeLoc, &time, SHADER_UNIFORM_FLOAT);
+    SetShaderValue(crtShader, timeLoc, &time, SHADER_UNIFORM_FLOAT);
 }
