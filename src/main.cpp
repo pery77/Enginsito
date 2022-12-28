@@ -83,35 +83,32 @@ static int cls(struct mb_interpreter_t* s, void** l) {
 	return result;
 }
 
-static int getMouse(struct mb_interpreter_t* s, void** l)
-{
-    int result = MB_FUNC_OK;
-    
-	void* v0 = 0;
-	void* v1 = 0;
-	mb_value_t val0;
-	mb_value_t val1;
 
+static int getkey(struct mb_interpreter_t* s, void** l)
+{
+    mb_value_t arg[1];
+    mb_make_nil(arg[0]);
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+    int k = 0;
+
+    mb_value_t routine;
+
+    int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	mb_check(mb_attempt_open_bracket(s, l));
-
-	mb_check(mb_get_var(s, l, &v0, true));
-	mb_check(mb_get_var(s, l, &v1, true));
-
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &k));
+	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	mb_get_var_value(s, v0, &val0);
-	mb_get_var_value(s, v1, &val1);
-    val0.value.integer = (int)GetMousePosition().x;
-    val1.value.integer = (int)GetMousePosition().y;
-	mb_set_var_value(s, v0, val0);
-	mb_set_var_value(s, v1, val1);
+    ret.value.integer = IsKeyDown(k);
 
-    context = *l;
+    mb_check(mb_push_value(s, l, ret));
+
 	return result;
 }
-
 void ReadIni()
 {
     inipp::Ini<char> ini;
@@ -138,11 +135,10 @@ void OpenBas()
 
 	mb_reg_fun(bas, drawtext);
 	mb_reg_fun(bas, cls);
-	mb_reg_fun(bas, getMouse);
+	mb_reg_fun(bas, getkey);
 
     mb_load_file(bas, f);
-
-
+    
 	run = mb_run(bas, true);
     e = mb_get_last_error(bas, &f, &pos, &row, &col);
 
@@ -169,6 +165,12 @@ int main(int argc, char *argv[])
     mb_value_t drawRoutine;
     mb_value_t endRoutine;
 
+    mb_value_t valueMouseX;
+    valueMouseX.type=MB_DT_INT;
+    mb_value_t valueMouseY;
+    valueMouseY.type=MB_DT_INT;
+
+
     bool running = false;
 
     // Game Loop
@@ -178,6 +180,12 @@ int main(int argc, char *argv[])
         // Update
         if (running)
         {
+            valueMouseX.value.integer = (int)GetMousePosition().x;
+            mb_add_var(bas,&context, "MOUSEX",valueMouseX, true);
+
+            valueMouseY.value.integer = (int)GetMousePosition().y;
+            mb_add_var(bas,&context, "MOUSEY",valueMouseY, true);
+
             mb_get_routine(bas, &context, "TICK", &tickRoutine);
             mb_eval_routine(bas, &context, tickRoutine, arg, 0, NULL);
         }

@@ -1,25 +1,21 @@
+import "assets/tools.bas"
+x = 0
 def init()
-    print "init";
+    x = 3
 enddef
 
-mouseX = 4
-
-def tick()
-    getMouse(mouseX, mouseY);
-enddef
-
+DEF tick()
+    IF getkey(65) = TRUE THEN x=x+1 ENDIF
+    IF getkey(68) = TRUE THEN x=x-1 ENDIF
+ENDDEF
 
 def draw()
-
     cls("1345a2")
-    'getMouse(mouseX, mouseY);
-    FOR i = 1 TO 10
-    drawtext("BOOMMM %02i", MOUSEX + i * 10 ,MOUSEy+i * 20, 20,"ff2098", mouseX)
+    FOR i = 1 TO x
+        drawtext("BOOMMM %02i", MOUSEX + i * 10 ,MOUSEy+i * 20, 20,"ff2098", x)
     NEXT
-    
 enddef
 
 def end()
     print "end";
 enddef
-
