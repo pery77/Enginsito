@@ -63,7 +63,6 @@ static int drawtext(struct mb_interpreter_t* s, void** l) {
 	return result;
 }
 
-
 static int cls(struct mb_interpreter_t* s, void** l) {
 	int result = MB_FUNC_OK;
 
@@ -81,6 +80,35 @@ static int cls(struct mb_interpreter_t* s, void** l) {
 
     ClearBackground(stringToColor(col));
 
+	return result;
+}
+
+static int getMouse(struct mb_interpreter_t* s, void** l)
+{
+    int result = MB_FUNC_OK;
+    
+	void* v0 = 0;
+	void* v1 = 0;
+	mb_value_t val0;
+	mb_value_t val1;
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+
+	mb_check(mb_get_var(s, l, &v0, true));
+	mb_check(mb_get_var(s, l, &v1, true));
+
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	mb_get_var_value(s, v0, &val0);
+	mb_get_var_value(s, v1, &val1);
+    val0.value.integer = (int)GetMousePosition().x;
+    val1.value.integer = (int)GetMousePosition().y;
+	mb_set_var_value(s, v0, val0);
+	mb_set_var_value(s, v1, val1);
+
+    context = *l;
 	return result;
 }
 
@@ -110,6 +138,7 @@ void OpenBas()
 
 	mb_reg_fun(bas, drawtext);
 	mb_reg_fun(bas, cls);
+	mb_reg_fun(bas, getMouse);
 
     mb_load_file(bas, f);
 
@@ -129,58 +158,74 @@ int main(int argc, char *argv[])
     const int screenWidth = 640;
     const int screenHeight = 480;
 
-    InitWindow(screenWidth, screenHeight, "Raylib Template");
-
-    
+    InitWindow(screenWidth, screenHeight, "peryEngine");
     SetTargetFPS(60);
 
-    mb_value_t routine;
-    mb_value_t args[1];
-     mb_value_t ret;
-    mb_make_string(args[0], "-- c --");
-    mb_make_nil(ret);
+    mb_value_t arg[1];
+    mb_make_nil(arg[0]);
 
-    mb_value_t mouseX;
-    mb_make_int(mouseX, GetMousePosition().x);
-    mb_get_value_by_name(bas, &context, "MOUSEX", &mouseX);
+    mb_value_t initRoutine;
+    mb_value_t tickRoutine;
     mb_value_t drawRoutine;
+    mb_value_t endRoutine;
+
+    bool running = false;
 
     // Game Loop
     while (!WindowShouldClose())
     {
+
         // Update
+        if (running)
+        {
+            mb_get_routine(bas, &context, "TICK", &tickRoutine);
+            mb_eval_routine(bas, &context, tickRoutine, arg, 0, NULL);
+        }
 
         // Draw
         BeginDrawing();
-        ClearBackground(BLACK);
-
-        mouseX.value.integer = (int)GetMousePosition().x;
-        //mb_get_value_by_name(bas, &context, "MOUSEX", &mouseX);
-        mb_set_var_value(bas, &context, mouseX);
-
-        printf("%i ", mouseX.value.integer);
-
-	    DrawRectangle(0,0,size,200, (Color){ 0, 0, 0, 220});
-        if (GuiButton(Rectangle{5,5,100,20},  "Open")) { OpenBas(); }
-        /*
-        if (GuiButton(Rectangle{5,35,100,20},  "Hola")) 
+        if (!running)
         {
-            mb_get_routine(bas, &context, "HOLA", &routine);
-            mb_eval_routine(bas, &context, routine, args, 1, &ret);
-        }*/
+            ClearBackground(BLACK);
+            DrawText("Press F5",0,0,20,RED);
+        }
+
+        if (running)
+        {
             mb_get_routine(bas, &context, "DRAW", &drawRoutine);
-            mb_eval_routine(bas, &context, drawRoutine, args, 0, NULL);
-/*
-            mb_value_t routine;
-            mb_value_t args[1];
-            mb_value_t ret;
-            mb_make_string(args[0], "n");
-            mb_make_nil(ret);
+            mb_eval_routine(bas, &context, drawRoutine, arg, 0, NULL);
+        }
 
-            mb_get_routine(bas, &context, "draw", &routine);
-            mb_eval_routine(bas, &context, routine, args, 1, &ret);*/
+        if (IsKeyReleased(KEY_F5)) 
+        { 
+            if (running)
+            {
+                mb_get_routine(bas, &context, "END", &endRoutine);
+                mb_eval_routine(bas, &context, endRoutine, arg, 0, NULL);
+                running = false;
+            }
+            OpenBas(); 
+            if (!running)
+            {
+                running = true;
+                mb_get_routine(bas, &context, "INIT", &initRoutine);
+                mb_eval_routine(bas, &context, initRoutine, arg, 0, NULL);
+            }
 
-            DrawFPS(550, 15);
+        }
+        if (IsKeyReleased(KEY_F6)) 
+        { 
+            if (running)
+            {
+                mb_get_routine(bas, &context, "END", &endRoutine);
+                mb_eval_routine(bas, &context, endRoutine, arg, 0, NULL);
+                running = false;
+                mb_close(&bas);
+	            mb_dispose();
+            }
+        }
+
+        DrawFPS(550, 15);
 
         EndDrawing();
     }
