@@ -1,88 +1,89 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build debug",
-            "type": "process",
-            "command": "make",
+            "label": "task-build-debug",
+            "command": "g++",
             "args": [
-                "PLATFORM=PLATFORM_DESKTOP",
-                "BUILD_MODE=DEBUG"
+                "-g",
+                "-std=c++17",
+                "-m64",
+                "-O0",
+                "-Wno-missing-braces", 
+                "-Wall",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/src/*.c",
+                "-o",
+                "${workspaceFolder}/dist/peryEngine.exe",
+                "-I./src",
+                "-I./src/include",
+                "-I${workspaceFolder}/libs/raylib/include",                
+                "-static-libgcc",
+                "-static-libstdc++",
+                "-L${workspaceFolder}/libs/raylib/lib",
+                "-lraylib",
+                "-lopengl32",
+                "-lgdi32",
+                "-lwinmm"
             ],
-            "windows": {
-                "command": "C:/raylib/w64devkit/bin/mingw32-make.exe",
-                "args": [
-                    "RAYLIB_PATH=C:/raylib/raylib",
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
-                    "OBJS=*.cpp",
-                    "BUILD_MODE=DEBUG"
-                ]
+            "options": {
+                "cwd": "${workspaceFolder}"
             },
-            "osx": {
-                "args": [
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
-                    "OBJS=*.cpp",
-                    "BUILD_MODE=DEBUG"
-                ]
-            },
-            "linux": {
-                "args": [
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
-                    "DESTDIR=/home/linuxbrew/.linuxbrew",
-                    "RAYLIB_LIBTYPE=SHARED",
-                    "EXAMPLE_RUNTIME_PATH=/home/linuxbrew/.linuxbrew/lib",
-                    "OBJS=*.cpp",
-                    "BUILD_MODE=DEBUG"
-                ]
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": [
-                "$gcc"
+            "type": "shell",
+            "group": "build",
+            "problemMatcher": [],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "task-clean"
             ]
         },
         {
-            "label": "build release",
-            "type": "process",
-            "command": "make",
+            "label": "task-build-release",
+            "command": "g++",
             "args": [
-                "PLATFORM=PLATFORM_DESKTOP"
+                "-std=c++17",
+                "-m64",
+                "-O3",
+                "-mwindows",
+                "${workspaceFolder}/src/*.cpp",
+                "${workspaceFolder}/src/*.c",
+                "${workspaceFolder}/src/my.o",
+                "-o",
+                "${workspaceFolder}/dist/peryEngine.exe",
+                "-I./src",
+                "-I./src/include",
+                "-I${workspaceFolder}/libs/raylib/include",    
+                "-static-libgcc",
+                "-static-libstdc++",
+                "-L${workspaceFolder}/libs/raylib/lib",
+                "-lraylib",
+                "-lopengl32",
+                "-lgdi32",
+                "-lwinmm"
             ],
-            "windows": {
-                "command": "C:/raylib/w64devkit/bin/mingw32-make.exe",
-                "args": [
-                    "RAYLIB_PATH=C:/raylib/raylib",
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
-                    "OBJS=*.cpp"
-                ]
+            "options": {
+                "cwd": "${workspaceFolder}"
             },
-            "osx": {
-                "args": [
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
-                    "OBJS=*.cpp"
-                ]
-            },
-            "linux": {
-                "args": [
-                    "PROJECT_NAME=${fileBasenameNoExtension}",
-                    "DESTDIR=/home/linuxbrew/.linuxbrew",
-                    "RAYLIB_LIBTYPE=SHARED",
-                    "EXAMPLE_RUNTIME_PATH=/home/linuxbrew/.linuxbrew/lib",
-                    "OBJS=*.cpp"
-                ]
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "detail": "compiler: C:\\raylib\\w64devkit\\bin\\g++.exe"
+            "type": "shell",
+            "group": "build",
+            "problemMatcher": [],
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "task-clean",
+                "task-my-rc-build"         
+            ]
+        },
+        {
+            "label": "task-my-rc-build",
+            "command": "windres ${workspaceFolder}/src/my.rc ${workspaceFolder}/src/my.o",
+            "type": "shell",
+            "group": "build"
+        },
+        {
+            "label": "task-clean",
+            "command": "del ${workspaceFolder}/dist/*.exe ; del ${workspaceFolder}/src/*.o",
+            "type": "shell",
+            "group": "build"
         }
     ]
 }
