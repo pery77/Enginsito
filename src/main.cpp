@@ -1,9 +1,3 @@
-// Raylib Template C++17 64bits
-//
-// MIT License - Copyright (C) 2021 Fredy Rogez
-// This file is subject to the terms and conditions defined in
-// file "LICENSE", which is part of this source code package.
-
 #include "raylib.h"
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
@@ -14,7 +8,6 @@
 #include "inipp.h"
 
 #include "my_basic.h"
-//#include "rayfun.h"
 
 
 struct mb_interpreter_t* bas = NULL;
@@ -30,18 +23,15 @@ static Color stringToColor(char* col)
     unsigned char b = num % 0x100;
 
     return Color{r,g,b,255};
-    
 }
 
-static int drawtext(struct mb_interpreter_t* s, void** l) {
-	int result = MB_FUNC_OK;
-
+static int drawtext(struct mb_interpreter_t* s, void** l)
+{
 	char* arg = 0;
 	int x = 0;
 	int y = 0;
 	int size = 0;
 	char* col = 0;
-	int value = 0;
 
 	mb_assert(s && l);
 
@@ -53,16 +43,38 @@ static int drawtext(struct mb_interpreter_t* s, void** l) {
 		mb_check(mb_pop_int(s, l, &y));
 		mb_check(mb_pop_int(s, l, &size));
 		mb_check(mb_pop_string(s, l, &col));
+	}
+
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    DrawText(arg, x, y, size, stringToColor(col));
+
+	return MB_FUNC_OK;
+}
+static int textformat(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+
+	char* arg = 0;
+	int value = 0;
+
+    mb_value_t ret;
+    mb_make_string(ret, 0);
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_string(s, l, &arg));
 		mb_check(mb_pop_int(s, l, &value));
 	}
 
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    DrawText(TextFormat(arg, value) ,x, y, size, stringToColor(col));
-
+    ret.value.string = (char *)TextFormat(arg, value);
+    mb_check(mb_push_value(s, l, ret));
 	return result;
 }
-
 static int cls(struct mb_interpreter_t* s, void** l) {
 	int result = MB_FUNC_OK;
 
@@ -83,8 +95,7 @@ static int cls(struct mb_interpreter_t* s, void** l) {
 	return result;
 }
 
-
-static int getkey(struct mb_interpreter_t* s, void** l)
+static int getkeydown(struct mb_interpreter_t* s, void** l)
 {
     mb_value_t arg[1];
     mb_make_nil(arg[0]);
@@ -109,6 +120,39 @@ static int getkey(struct mb_interpreter_t* s, void** l)
 
 	return result;
 }
+
+static int mousex(struct mb_interpreter_t* s, void** l)
+{
+    mb_value_t x;
+    mb_make_int(x, 0);
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    x.value.integer = (int)GetMousePosition().x;
+    mb_check(mb_push_value(s, l, x));
+
+	return MB_FUNC_OK;
+}
+static int mousey(struct mb_interpreter_t* s, void** l)
+{
+    mb_value_t y;
+    mb_make_int(y, 0);
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    y.value.integer = (int)GetMousePosition().y;
+
+    mb_check(mb_push_value(s, l, y));
+
+	return MB_FUNC_OK;
+}
+
 void ReadIni()
 {
     inipp::Ini<char> ini;
@@ -135,7 +179,10 @@ void OpenBas()
 
 	mb_reg_fun(bas, drawtext);
 	mb_reg_fun(bas, cls);
-	mb_reg_fun(bas, getkey);
+	mb_reg_fun(bas, getkeydown);
+	mb_reg_fun(bas, mousex);
+	mb_reg_fun(bas, mousey);
+	mb_reg_fun(bas, textformat);
 
     mb_load_file(bas, f);
     
