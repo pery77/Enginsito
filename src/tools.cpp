@@ -51,8 +51,39 @@ Color palette[] = {
     {0,255,255,255},{255,255,255,255}
 };
 
-Color tools::getColor(int id){
+Tools::Tools(){
+}
+Tools::~Tools(){
+}
+
+Color Tools::GetColor(int id){
     if (id < 0 ) id = 0;
     if (id > 255) id = 255;
     return palette[id];
+}
+
+int Tools::GetVirtualMouse(bool isXAxis){   
+    float screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
+	float mouse = isXAxis ? GetMousePosition().x : GetMousePosition().y;
+    float screen = isXAxis ? GetScreenWidth() : GetScreenHeight();
+    float gamescreen = isXAxis ? GameScreenWidth : GameScreenHeight;
+    float value = (mouse - (screen - (gamescreen*screenScale)) * 0.5f) / screenScale;
+    return (int)Clamp(value, 0,(float)gamescreen);
+}
+
+void Tools::UpdateGameScreenRects(){
+	float screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
+	gameRect = { 0.0f, 0.0f, (float)(GameScreenWidth), -(float)(GameScreenHeight)};
+	gameScaledRect = {(GetScreenWidth() - ((float)(GameScreenWidth)*screenScale)) * 0.5f,
+					  (GetScreenHeight() - ((float)(GameScreenHeight)*screenScale)) * 0.5f,
+						(float)(GameScreenWidth)*screenScale, (float)(GameScreenHeight) * screenScale};
+
+	currentAspectRatio = (float)GetScreenWidth()/GetScreenHeight();
+
+	if (currentAspectRatio != GameRatio) 
+	{
+		SetWindowSize((currentAspectRatio > GameRatio) ? GameScreenWidth * screenScale : GetScreenWidth(), 
+					  (currentAspectRatio > GameRatio) ? GetScreenHeight() : GameScreenHeight * screenScale);
+		UpdateGameScreenRects(); //Al compilador no le gusta nada esto aquí, mirar... peta si CFLAGS += -s -O1
+	}
 }

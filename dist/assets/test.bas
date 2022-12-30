@@ -9,11 +9,19 @@ DEF tick()
 ENDDEF
 
 def draw()
-    cls(x)
-    for i = 0 to 255
-        drawtext(textformat("color: %03i ",i) ,0 ,i*10 ,20 ,i)
-    next
-    drawtext(textformat("mouse: %03i x ",mouse.x()) + textformat("%03i",mouse.y()), 0 , 0 , 20, 30)
+    cls(0)
+   
+    'for i = 0 to 100 step 2
+    ''    for j = 0 to 10
+    ''    drawrect(i*2 ,j*2 ,2 ,2,(i+j) mod 255)
+    ''    drawrect(i*2 ,j*2+32 ,2 ,2,(i+j) mod 255)
+    ''    drawrect(i*2 ,j*2+64 ,2 ,2,(i+j) mod 255)
+    ''    next
+    'next
+    
+    drawtext(textformat("mouse: %03i x ",mouse.x()) + textformat("%03i",mouse.y()), 0 , 0 , 1, 2)
+    drawrect(mouse.x(), mouse.y(),319,199,8,1)
+    drawrect(0,0,mouse.x(), mouse.y(),6,0)
 enddef
 
 def end()

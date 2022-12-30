@@ -33,6 +33,7 @@ class mbManager{
         //Draw
         static int cls(struct mb_interpreter_t* s, void** l);
         static int drawtext(struct mb_interpreter_t* s, void** l);
+        static int drawrect(struct mb_interpreter_t* s, void** l);
         //Tools
         static int textformat(struct mb_interpreter_t* s, void** l);
         //Input

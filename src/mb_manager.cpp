@@ -1,14 +1,17 @@
 #include "mb_manager.h"
 #include "tools.h"
 #include <assert.h>
+Tools* tools;
 
 mbManager::mbManager()
 {
 	nullArg[0].type = MB_DT_NIL;
+	tools = new Tools();
 }
 
 mbManager::~mbManager()
 {
+	delete tools;
 }
 
 void mbManager::doRoutine(char* routineName, mb_value_t routine){
@@ -43,6 +46,7 @@ void mbManager::OpenBas()
 
 	mb_reg_fun(bas, cls);
 	mb_reg_fun(bas, drawtext);
+	mb_reg_fun(bas, drawrect);
 	
 	mb_reg_fun(bas, textformat);
 
@@ -85,7 +89,7 @@ int mbManager::cls(struct mb_interpreter_t* s, void** l) {
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ClearBackground(tools::getColor(col));
+    ClearBackground(tools->GetColor(col));
 
 	return MB_FUNC_OK;
 }
@@ -109,7 +113,41 @@ int mbManager::drawtext(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    DrawText(arg, x, y, size, tools::getColor(col));
+    DrawText(arg, x, y, size, tools->GetColor(col));
+
+	return MB_FUNC_OK;
+}
+int mbManager::drawrect(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+	int col = 0;
+	int style = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &x));
+		mb_check(mb_pop_int(s, l, &y));
+		mb_check(mb_pop_int(s, l, &w));
+		mb_check(mb_pop_int(s, l, &h));
+		mb_check(mb_pop_int(s, l, &col));
+		mb_check(mb_pop_int(s, l, &style));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	switch (style)
+	{
+		case 0:
+			DrawRectangleLines(x, y, w, h, tools->GetColor(col));
+			break;
+		default:
+			DrawRectangle(x, y, w, h, tools->GetColor(col));
+			break;
+	}
 
 	return MB_FUNC_OK;
 }
@@ -166,7 +204,7 @@ int mbManager::mouseX(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    position.value.integer = (int)GetMousePosition().x;
+    position.value.integer = tools->GetVirtualMouse(true);
 
     mb_check(mb_push_value(s, l, position));
 
@@ -183,7 +221,7 @@ int mbManager::mouseY(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    position.value.integer = (int)GetMousePosition().x;
+    position.value.integer = tools->GetVirtualMouse(false);
 
     mb_check(mb_push_value(s, l, position));
 
