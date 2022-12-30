@@ -45,10 +45,14 @@ void mbManager::OpenBas()
 	mb_reg_fun(bas, drawtext);
 	
 	mb_reg_fun(bas, textformat);
-	
+
 	mb_reg_fun(bas, getkeydown);
-	mb_reg_fun(bas, mouseposition);
-	
+
+	mb_begin_module(bas, "MOUSE");
+		mb_register_func(bas, "X", mouseX); 
+		mb_register_func(bas, "Y", mouseY); 
+	mb_end_module(bas);
+
     mb_load_file(bas, f);
     
 	run = mb_run(bas, true);
@@ -152,21 +156,34 @@ int mbManager::getkeydown(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;
 }
-int mbManager::mouseposition(struct mb_interpreter_t* s, void** l){
+int mbManager::mouseX(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
+
     mb_value_t position;
     mb_make_int(position, 0);
 
-	int axis = 0;
-
 	mb_check(mb_attempt_open_bracket(s, l));
-	    if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_int(s, l, &axis));
-	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    position.value.integer = axis == 0 ? (int)GetMousePosition().x : (int)GetMousePosition().y;
+    position.value.integer = (int)GetMousePosition().x;
+
+    mb_check(mb_push_value(s, l, position));
+
+	return MB_FUNC_OK;
+}
+
+int mbManager::mouseY(struct mb_interpreter_t* s, void** l){
+	
+	mb_assert(s && l);
+	
+    mb_value_t position;
+    mb_make_int(position, 0);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    position.value.integer = (int)GetMousePosition().x;
 
     mb_check(mb_push_value(s, l, position));
 
