@@ -1,6 +1,6 @@
 x=0;
 def init()
-    x = 3
+    x = 7
 enddef
 
 
@@ -10,11 +10,11 @@ DEF tick()
 ENDDEF
 
 def draw()
-    'cls(23)
+    cls(x)
     for i = 0 to 255
-        drawtext("HOLA" ,0 ,i*10 ,20 ,i)
+        drawtext(textformat("color: %03i ",i) ,0 ,i*10 ,20 ,i)
     next
-    'drawtext(textformat("mouse: %03i x ",mousex()) + textformat("%03i",mousey()), 0 , 0 , 20, 30)
+     drawtext(textformat("mouse: %03i x ",mouseposition(0)) + textformat("%03i",mouseposition(1)), 0 , 0 , 20, 30)
 enddef
 
 def end()

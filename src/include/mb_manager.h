@@ -30,6 +30,12 @@ class mbManager{
         mb_value_t endRoutine;
 
         void doRoutine(char* routineName, mb_value_t routine);
-
+        //Draw
+        static int cls(struct mb_interpreter_t* s, void** l);
         static int drawtext(struct mb_interpreter_t* s, void** l);
+        //Tools
+        static int textformat(struct mb_interpreter_t* s, void** l);
+        //Input
+        static int getkeydown(struct mb_interpreter_t* s, void** l);
+        static int mouseposition(struct mb_interpreter_t* s, void** l);
 };
