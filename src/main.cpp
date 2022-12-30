@@ -2,36 +2,26 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
-#include <fstream>
 #include <sstream>
 #include <assert.h>
-#include "inipp.h"
+
+#include "ini_reader.h"
 
 #include "my_basic.h"
+#include "tools.h"
+#include "mb_manager.h"
 
 
 struct mb_interpreter_t* bas = NULL;
 static void* context = NULL;
 
-int size = 1;
-
-static Color stringToColor(char* col)
-{
-    int num = std::stoi(col, 0, 16);
-    unsigned char r = num / 0x10000;
-    unsigned char g = (num / 0x100) % 0x100;
-    unsigned char b = num % 0x100;
-
-    return Color{r,g,b,255};
-}
-
 static int drawtext(struct mb_interpreter_t* s, void** l)
 {
-	char* arg = 0;
+    char* arg = 0;
 	int x = 0;
 	int y = 0;
 	int size = 0;
-	char* col = 0;
+	int col = 0;
 
 	mb_assert(s && l);
 
@@ -42,12 +32,12 @@ static int drawtext(struct mb_interpreter_t* s, void** l)
 		mb_check(mb_pop_int(s, l, &x));
 		mb_check(mb_pop_int(s, l, &y));
 		mb_check(mb_pop_int(s, l, &size));
-		mb_check(mb_pop_string(s, l, &col));
+		mb_check(mb_pop_int(s, l, &col));
 	}
 
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    DrawText(arg, x, y, size, stringToColor(col));
+    DrawText(arg, x, y, size, tools::getColor(col));
 
 	return MB_FUNC_OK;
 }
@@ -78,19 +68,17 @@ static int textformat(struct mb_interpreter_t* s, void** l) {
 static int cls(struct mb_interpreter_t* s, void** l) {
 	int result = MB_FUNC_OK;
 
-	char* col;
+	int col;
 
 	mb_assert(s && l);
 
 	mb_check(mb_attempt_open_bracket(s, l));
-
 	if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_string(s, l, &col));
+		mb_check(mb_pop_int(s, l, &col));
 	}
-
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ClearBackground(stringToColor(col));
+    ClearBackground(tools::getColor(col));
 
 	return result;
 }
@@ -153,17 +141,7 @@ static int mousey(struct mb_interpreter_t* s, void** l)
 	return MB_FUNC_OK;
 }
 
-void ReadIni()
-{
-    inipp::Ini<char> ini;
-	std::ifstream is("assets/config.ini");
-	ini.parse(is);
 
-	int crt_enabled;
-
-	inipp::get_value(ini.sections["window"], "size", size);
-	inipp::get_value(ini.sections["crt"], "enabled", crt_enabled);
-}
 
 void OpenBas()
 {
@@ -198,6 +176,8 @@ void OpenBas()
 
 int main(int argc, char *argv[])
 {
+    iniReader* config = new iniReader();
+
     const int screenWidth = 640;
     const int screenHeight = 480;
 
@@ -223,7 +203,6 @@ int main(int argc, char *argv[])
     // Game Loop
     while (!WindowShouldClose())
     {
-
         // Update
         if (running)
         {
@@ -289,6 +268,8 @@ int main(int argc, char *argv[])
 	mb_dispose();
 
     CloseWindow();   
+
+    delete config;
 
     return 0;
 }
