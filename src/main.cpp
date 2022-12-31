@@ -9,8 +9,9 @@
 #include "mb_manager.h"
 
 RenderTexture2D mainRender;
+RenderTexture2D bufferTexture;
 
-
+Shader blurShader;
 
 int main(int argc, char *argv[])
 {
@@ -33,6 +34,12 @@ int main(int argc, char *argv[])
 	mainRender = LoadRenderTexture(tools->GameScreenWidth, tools->GameScreenHeight);
 	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(mainRender.texture,TEXTURE_WRAP_MIRROR_REPEAT );
+
+    bufferTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
+	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT );
+
+    blurShader = LoadShader(0, "assets/blur.fs");
 
     tools->UpdateGameScreenRects();
 
@@ -95,20 +102,21 @@ int main(int argc, char *argv[])
         EndTextureMode();
 
         // Main draw
-
+        BeginTextureMode(bufferTexture);
         ClearBackground(BLACK);
-		//Blend texture for postprocess effect.
-		//BeginBlendMode(1);
-        
-		//Main Draw (draw game target texture in screen)
-        //BeginShaderMode(crtShader);
+        BeginShaderMode(blurShader);
+            int pass = GetShaderLocation(blurShader, "pass");
+            int p = IsKeyDown(KEY_A);
+            SetShaderValue(blurShader, pass, &p, SHADER_UNIFORM_INT);
 			DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect, { 0, 0 }, 0.0f, WHITE);              
-       // EndShaderMode();
 
-		
-		//EndBlendMode();
+        EndShaderMode();
+        EndTextureMode();
 
         // Engine draw
+        //Final Draw
+        DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,GetScreenWidth(), -GetScreenHeight()},
+         (Rectangle){0,0,GetScreenWidth(), GetScreenHeight()}, { 0, 0 }, 0.0f, WHITE);              
 
         if(showFps){
             DrawFPS(0, 0);
