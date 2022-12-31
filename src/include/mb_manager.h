@@ -4,6 +4,7 @@
 #include "../../libs/raylib/include/raylib.h"
 #include <sstream>
 #include <assert.h>
+#include "tools.h"
 
 class mbManager{
 
@@ -11,7 +12,7 @@ class mbManager{
         struct mb_interpreter_t* bas = NULL;
         void* context = NULL;
 
-        mbManager();
+        mbManager(Tools* toolsref);
         ~mbManager();
 
         void init();

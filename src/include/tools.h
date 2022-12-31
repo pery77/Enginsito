@@ -21,7 +21,7 @@ class Tools{
         void UpdateGameScreenRects();
         int GetVirtualMouse(bool isXAxis);
     
-    	//float screenScale = {min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight)};
+	    float screenScale = {};
 	    float previusWindowsWidth = {};
 	    float previusWindowsHeight = {};
 	    float currentAspectRatio = {};

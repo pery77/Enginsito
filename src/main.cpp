@@ -2,12 +2,9 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
-#include <sstream>
-#include <assert.h>
-
 #include "ini_reader.h"
-
 #include "my_basic.h"
+
 #include "tools.h"
 #include "mb_manager.h"
 
@@ -16,8 +13,8 @@ RenderTexture2D mainRender;
 int main(int argc, char *argv[])
 {
     iniReader* config = new iniReader();
-    mbManager* basic = new mbManager();
     Tools* tools = new Tools();
+    mbManager* basic = new mbManager(tools);
 
     const int windowWidth = tools->GameScreenWidth * config->size;
     const int windowHeight = tools->GameScreenHeight * config->size;

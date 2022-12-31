@@ -63,7 +63,6 @@ Color Tools::GetColor(int id){
 }
 
 int Tools::GetVirtualMouse(bool isXAxis){   
-    float screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
 	float mouse = isXAxis ? GetMousePosition().x : GetMousePosition().y;
     float screen = isXAxis ? GetScreenWidth() : GetScreenHeight();
     float gamescreen = isXAxis ? GameScreenWidth : GameScreenHeight;
@@ -72,7 +71,7 @@ int Tools::GetVirtualMouse(bool isXAxis){
 }
 
 void Tools::UpdateGameScreenRects(){
-	float screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
+	screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
 	gameRect = { 0.0f, 0.0f, (float)(GameScreenWidth), -(float)(GameScreenHeight)};
 	gameScaledRect = {(GetScreenWidth() - ((float)(GameScreenWidth)*screenScale)) * 0.5f,
 					  (GetScreenHeight() - ((float)(GameScreenHeight)*screenScale)) * 0.5f,

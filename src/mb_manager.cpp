@@ -1,23 +1,22 @@
 #include "mb_manager.h"
 #include "tools.h"
 #include <assert.h>
+
 Tools* tools;
 
-mbManager::mbManager()
-{
+mbManager::mbManager(Tools* toolsref){
 	nullArg[0].type = MB_DT_NIL;
-	tools = new Tools();
+	tools = toolsref;
 }
 
-mbManager::~mbManager()
-{
-	delete tools;
+mbManager::~mbManager(){
 }
 
 void mbManager::doRoutine(char* routineName, mb_value_t routine){
 	mb_get_routine(bas, &context, routineName, &routine);
     mb_eval_routine(bas, &context, routine, nullArg, 0, NULL);
 }
+
 // Main loop
 void mbManager::init(){
 	doRoutine("INIT", mbManager::initRoutine);
@@ -32,6 +31,7 @@ void mbManager::end(){
 	doRoutine("END", mbManager::endRoutine);
 }
 
+// Init and close
 void mbManager::OpenBas()
 {
     const char *f = "assets/test.bas";
