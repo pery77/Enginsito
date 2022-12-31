@@ -37,6 +37,7 @@ class MBManager{
         static int drawrect(struct mb_interpreter_t* s, void** l);
         //Tools
         static int textformat(struct mb_interpreter_t* s, void** l);
+        static int delta(struct mb_interpreter_t* s, void** l);
         //Input
         static int getkeydown(struct mb_interpreter_t* s, void** l);
         static int mouseX(struct mb_interpreter_t* s, void** l);

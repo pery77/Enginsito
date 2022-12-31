@@ -49,6 +49,7 @@ void MBManager::OpenBas()
 	mb_reg_fun(bas, drawrect);
 	
 	mb_reg_fun(bas, textformat);
+	mb_reg_fun(bas, delta);
 
 	mb_reg_fun(bas, getkeydown);
 
@@ -62,8 +63,7 @@ void MBManager::OpenBas()
 	run = mb_run(bas, true);
     e = mb_get_last_error(bas, &f, &pos, &row, &col);
 
-    if(run > 0)
-    {
+    if(run > 0){
         printf("Run code: %i, \n",run);
         printf("ERROR Code: %i, pos = %i, row  = %i col = %i \n",e , pos, row, col);
     }
@@ -77,7 +77,7 @@ void MBManager::CloseBas()
 
 // Raylib funcions
 // Draw
-int MBManager::cls(struct mb_interpreter_t* s, void** l) {
+int MBManager::cls(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
 	
@@ -152,24 +152,53 @@ int MBManager::drawrect(struct mb_interpreter_t* s, void** l){
 	return MB_FUNC_OK;
 }
 //Tools
-int MBManager::textformat(struct mb_interpreter_t* s, void** l) {
+int MBManager::textformat(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
 
 	char* arg = 0;
-	int value = 0;
+	mb_value_t value;
+
     mb_value_t ret;
     mb_make_string(ret, 0);
-
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
 		mb_check(mb_pop_string(s, l, &arg));
-		mb_check(mb_pop_int(s, l, &value));
+		mb_check(mb_pop_value(s, l, &value));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ret.value.string = (char *)TextFormat(arg, value);
+	if (value.type == MB_DT_INT){
+    	ret.value.string = (char *)TextFormat(arg, value.value.integer);
+	}else{
+    	ret.value.string = (char *)TextFormat(arg, value.value.float_point);
+	}
+
+    mb_check(mb_push_value(s, l, ret));
+	return MB_FUNC_OK;
+
+	/*
+	TODO: MULTIPLE ARGS, darle una pensadita
+	while(mb_has_arg(s, l)) {
+	mb_check(mb_pop_real(s, l, &tmp));
+	if(tmp < ret)
+		ret = tmp;
+	}
+	*/
+}
+int MBManager::delta(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = (int)(GetFrameTime()*1000);
+
 
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;

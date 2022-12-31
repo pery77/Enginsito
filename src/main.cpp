@@ -43,31 +43,31 @@ int main(int argc, char *argv[])
     while (!WindowShouldClose())
     {
         // Engine keys
-        if(IsKeyReleased(KEY_F1)) {
+        if(IsKeyReleased(KEY_F1)){
             showFps = !showFps;
         }
 
-        if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER)))	    {
+        if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER))){
 		    tools->FullScreen();
 	    }
 
         if(IsWindowResized()) tools->UpdateGameScreenRects();
 
         //Interpreter
-        if (IsKeyReleased(KEY_F5))        { 
-            if (running)            {
+        if (IsKeyReleased(KEY_F5)){ 
+            if (running){
                 basic->end();
-                running = false;
             }
+            
             basic->OpenBas(); 
-            if (!running)            {
-                basic->init();
-                running = true;
-            }
 
+            HideCursor();
+            basic->init();
+            running = true;
         }
         if (IsKeyReleased(KEY_F6)){ 
             if (running){
+                ShowCursor();
                 basic->end();
                 running = false;
                 basic->CloseBas();
@@ -85,14 +85,10 @@ int main(int argc, char *argv[])
         //Draw game to texture.
 		BeginTextureMode(mainRender);
 
-        if (!running)
-        {
+        if (!running){
             ClearBackground(BLACK);
             DrawText("Press F5",0,0,20,RED);
-        }
-
-        if (running)
-        {
+        }else{
             basic->draw();
         }
 
