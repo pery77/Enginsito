@@ -6,14 +6,14 @@
 #include <assert.h>
 #include "tools.h"
 
-class mbManager{
+class MBManager{
 
     public:
         struct mb_interpreter_t* bas = NULL;
         void* context = NULL;
 
-        mbManager(Tools* toolsref);
-        ~mbManager();
+        MBManager(Tools* toolsref);
+        ~MBManager();
 
         void init();
         void tick();

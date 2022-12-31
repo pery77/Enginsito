@@ -5,6 +5,11 @@
 #define max(a, b) ((a)>(b)? (a) : (b))
 #define min(a, b) ((a)<(b)? (a) : (b))
 
+struct Vector2i {
+	int x;
+	int y;
+};
+
 class Tools{
     public:
 
@@ -19,6 +24,7 @@ class Tools{
         Color GetColor(int col);
 
         void UpdateGameScreenRects();
+        void FullScreen();
         int GetVirtualMouse(bool isXAxis);
     
 	    float screenScale = {};
@@ -28,5 +34,11 @@ class Tools{
 	    Rectangle gameRect;
 	    Rectangle gameScaledRect;
 
-        private:
+        Vector2i resolution16_10[5] = {
+		{2560,1600},
+		{1920,1200},
+		{1680,1050},
+		{1440,900},
+		{1280,800}
+		};
 };

@@ -83,6 +83,29 @@ void Tools::UpdateGameScreenRects(){
 	{
 		SetWindowSize((currentAspectRatio > GameRatio) ? GameScreenWidth * screenScale : GetScreenWidth(), 
 					  (currentAspectRatio > GameRatio) ? GetScreenHeight() : GameScreenHeight * screenScale);
-		UpdateGameScreenRects(); //Al compilador no le gusta nada esto aquí, mirar... peta si CFLAGS += -s -O1
+		UpdateGameScreenRects();
+	}
+}
+
+void Tools::FullScreen(){
+    if (!IsWindowFullscreen())
+	{
+		previusWindowsWidth = GetScreenWidth();
+		previusWindowsHeight = GetScreenHeight();
+
+		for(auto currentR : resolution16_10)
+		{
+			SetWindowSize(currentR.x, currentR.y);
+			float currentRatio =(float)GetScreenWidth()/GetScreenHeight();
+			if(currentRatio==GameRatio) break;
+		}
+		UpdateGameScreenRects();
+		ToggleFullscreen();
+	}
+	else
+	{
+		ToggleFullscreen();
+		SetWindowSize(previusWindowsWidth, previusWindowsHeight);
+		UpdateGameScreenRects();
 	}
 }

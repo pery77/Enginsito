@@ -4,35 +4,35 @@
 
 Tools* tools;
 
-mbManager::mbManager(Tools* toolsref){
+MBManager::MBManager(Tools* toolsref){
 	nullArg[0].type = MB_DT_NIL;
 	tools = toolsref;
 }
 
-mbManager::~mbManager(){
+MBManager::~MBManager(){
 }
 
-void mbManager::doRoutine(char* routineName, mb_value_t routine){
+void MBManager::doRoutine(char* routineName, mb_value_t routine){
 	mb_get_routine(bas, &context, routineName, &routine);
     mb_eval_routine(bas, &context, routine, nullArg, 0, NULL);
 }
 
 // Main loop
-void mbManager::init(){
-	doRoutine("INIT", mbManager::initRoutine);
+void MBManager::init(){
+	doRoutine("INIT", MBManager::initRoutine);
 }
-void mbManager::tick(){
-	doRoutine("TICK", mbManager::tickRoutine);
+void MBManager::tick(){
+	doRoutine("TICK", MBManager::tickRoutine);
 }
-void mbManager::draw(){
-	doRoutine("DRAW", mbManager::drawRoutine);
+void MBManager::draw(){
+	doRoutine("DRAW", MBManager::drawRoutine);
 }
-void mbManager::end(){
-	doRoutine("END", mbManager::endRoutine);
+void MBManager::end(){
+	doRoutine("END", MBManager::endRoutine);
 }
 
 // Init and close
-void mbManager::OpenBas()
+void MBManager::OpenBas()
 {
     const char *f = "assets/test.bas";
     int pos;
@@ -68,7 +68,7 @@ void mbManager::OpenBas()
         printf("ERROR Code: %i, pos = %i, row  = %i col = %i \n",e , pos, row, col);
     }
 }
-void mbManager::CloseBas()
+void MBManager::CloseBas()
 {
 	mb_close(&bas);
 	mb_dispose();
@@ -77,7 +77,7 @@ void mbManager::CloseBas()
 
 // Raylib funcions
 // Draw
-int mbManager::cls(struct mb_interpreter_t* s, void** l) {
+int MBManager::cls(struct mb_interpreter_t* s, void** l) {
 	
 	mb_assert(s && l);
 	
@@ -93,7 +93,7 @@ int mbManager::cls(struct mb_interpreter_t* s, void** l) {
 
 	return MB_FUNC_OK;
 }
-int mbManager::drawtext(struct mb_interpreter_t* s, void** l){
+int MBManager::drawtext(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
 
@@ -117,7 +117,7 @@ int mbManager::drawtext(struct mb_interpreter_t* s, void** l){
 
 	return MB_FUNC_OK;
 }
-int mbManager::drawrect(struct mb_interpreter_t* s, void** l){
+int MBManager::drawrect(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
 
@@ -152,7 +152,7 @@ int mbManager::drawrect(struct mb_interpreter_t* s, void** l){
 	return MB_FUNC_OK;
 }
 //Tools
-int mbManager::textformat(struct mb_interpreter_t* s, void** l) {
+int MBManager::textformat(struct mb_interpreter_t* s, void** l) {
 
 	mb_assert(s && l);
 
@@ -175,7 +175,7 @@ int mbManager::textformat(struct mb_interpreter_t* s, void** l) {
 	return MB_FUNC_OK;
 }
 // Input  
-int mbManager::getkeydown(struct mb_interpreter_t* s, void** l){
+int MBManager::getkeydown(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
 
@@ -194,7 +194,7 @@ int mbManager::getkeydown(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;
 }
-int mbManager::mouseX(struct mb_interpreter_t* s, void** l){
+int MBManager::mouseX(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
 
@@ -211,7 +211,7 @@ int mbManager::mouseX(struct mb_interpreter_t* s, void** l){
 	return MB_FUNC_OK;
 }
 
-int mbManager::mouseY(struct mb_interpreter_t* s, void** l){
+int MBManager::mouseY(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
 	

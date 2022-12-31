@@ -10,11 +10,13 @@
 
 RenderTexture2D mainRender;
 
+
+
 int main(int argc, char *argv[])
 {
     iniReader* config = new iniReader();
     Tools* tools = new Tools();
-    mbManager* basic = new mbManager(tools);
+    MBManager* basic = new MBManager(tools);
 
     const int windowWidth = tools->GameScreenWidth * config->size;
     const int windowHeight = tools->GameScreenHeight * config->size;
@@ -35,23 +37,47 @@ int main(int argc, char *argv[])
     tools->UpdateGameScreenRects();
 
     bool running = false;
+    bool showFps = false;
 
     // Game Loop
     while (!WindowShouldClose())
     {
-
-        if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER)))
-	    {
-		    tools->UpdateGameScreenRects();
-	    }
-
-        // Update
-        if (running)
-        {
-            basic->tick();
+        // Engine keys
+        if(IsKeyReleased(KEY_F1)) {
+            showFps = !showFps;
         }
 
+        if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER)))	    {
+		    tools->FullScreen();
+	    }
 
+        if(IsWindowResized()) tools->UpdateGameScreenRects();
+
+        //Interpreter
+        if (IsKeyReleased(KEY_F5))        { 
+            if (running)            {
+                basic->end();
+                running = false;
+            }
+            basic->OpenBas(); 
+            if (!running)            {
+                basic->init();
+                running = true;
+            }
+
+        }
+        if (IsKeyReleased(KEY_F6)){ 
+            if (running){
+                basic->end();
+                running = false;
+                basic->CloseBas();
+            }
+        }
+
+        // Update
+        if (running){
+            basic->tick();
+        }
 
         // Draw
         BeginDrawing();
@@ -70,32 +96,9 @@ int main(int argc, char *argv[])
             basic->draw();
         }
 
-        if (IsKeyReleased(KEY_F5)) 
-        { 
-            if (running)
-            {
-                basic->end();
-                running = false;
-            }
-            basic->OpenBas(); 
-            if (!running)
-            {
-                basic->init();
-                running = true;
-            }
-
-        }
-        if (IsKeyReleased(KEY_F6)) 
-        { 
-            if (running)
-            {
-                basic->end();
-                running = false;
-                basic->CloseBas();
-            }
-        }
-
         EndTextureMode();
+
+        // Main draw
 
         ClearBackground(BLACK);
 		//Blend texture for postprocess effect.
@@ -109,14 +112,23 @@ int main(int argc, char *argv[])
 		
 		//EndBlendMode();
 
-        DrawFPS(0, 15);
+        // Engine draw
+
+        if(showFps){
+            DrawFPS(0, 0);
+        }
+
+        //if (GuiButton(Rectangle{0,10,100,20},  "FullScreen")) { ToggleFullscreen(); }
+
         EndDrawing();
     }
 
+    CloseWindow();
+
     basic->CloseBas();
-    CloseWindow();   
 
     delete config;
+    delete basic;
 
     return 0;
 }
