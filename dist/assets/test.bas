@@ -20,7 +20,7 @@ def draw()
     next
     
     drawtext(textformat("mouse: %03i x ",mouse.x()) + textformat("%03i",mouse.y()), 0 , 0 , 1, 2)
-    drawrect(mouse.x(), mouse.y(),319,199,8,1)
+    drawrect(mouse.x(), mouse.y(),319,199,8,0)
     drawrect(0,0,mouse.x(), mouse.y(),6,0)
     drawtext(textformat("delta: %04i ms",delta()), 0 , 8 , 1, 26)
     drawtext(textformat("%04f",7/22), 0 , 16 , 1, 26)

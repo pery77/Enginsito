@@ -40,6 +40,9 @@ int main(int argc, char *argv[])
 	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT );
 
     blurShader = LoadShader(0, "assets/blur.fs");
+    int pass = GetShaderLocation(blurShader, "pass");
+    int offset = GetShaderLocation(blurShader, "offset");
+
 
     tools->UpdateGameScreenRects();
 
@@ -102,17 +105,45 @@ int main(int argc, char *argv[])
         EndTextureMode();
 
         // Main draw
-        BeginTextureMode(bufferTexture);
-        ClearBackground(BLACK);
-        BeginShaderMode(blurShader);
-            int pass = GetShaderLocation(blurShader, "pass");
-            int p = IsKeyDown(KEY_A);
-            SetShaderValue(blurShader, pass, &p, SHADER_UNIFORM_INT);
-			DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect, { 0, 0 }, 0.0f, WHITE);              
+        BeginBlendMode(0);
 
-        EndShaderMode();
+        BeginShaderMode(blurShader);
+
+        BeginTextureMode(bufferTexture);
+            ClearBackground(BLACK);
+			DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect, { 0, 0 }, 0.0f, WHITE); 
         EndTextureMode();
 
+        int p = 0;
+        float o = 0;
+
+            SetShaderValue(blurShader, pass, &p, SHADER_UNIFORM_INT);
+  for (int i = 1; i < 4; ++i)
+  {
+        BeginTextureMode(bufferTexture);
+            o = GetMouseY()/(50.0*i);
+            SetShaderValue(blurShader, offset, &o, SHADER_UNIFORM_FLOAT);
+            DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,GetScreenWidth(), -GetScreenHeight()},
+            (Rectangle){0,0,GetScreenWidth(), GetScreenHeight()}, { 0, 0 }, 0.0f, WHITE); 
+        EndTextureMode();
+  }
+
+p = 1;
+            SetShaderValue(blurShader, pass, &p, SHADER_UNIFORM_INT);
+  for (int i = 1; i < 3; ++i)
+  {
+        BeginTextureMode(bufferTexture);
+            o = GetMouseX()/(50.0*i);
+            SetShaderValue(blurShader, offset, &o, SHADER_UNIFORM_FLOAT);
+            DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,GetScreenWidth(), -GetScreenHeight()},
+            (Rectangle){0,0,GetScreenWidth(), GetScreenHeight()}, { 0, 0 }, 0.0f, WHITE); 
+        EndTextureMode();
+  }
+        EndShaderMode();
+
+        EndBlendMode();
+            
+        ClearBackground(BLACK);
         // Engine draw
         //Final Draw
         DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,GetScreenWidth(), -GetScreenHeight()},
