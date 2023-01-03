@@ -24,6 +24,8 @@ def draw()
     drawrect(0,0,mouse.x(), mouse.y(),6,0)
     drawtext(textformat("delta: %04i ms",delta()), 0 , 8 , 1, 26)
     drawtext(textformat("%04f",7/22), 0 , 16 , 1, 26)
+    drawrect(0, 0,320,200,2,0)
+    drawrect(mouse.x(), mouse.y(),1,1,250,1)
 
 enddef
 

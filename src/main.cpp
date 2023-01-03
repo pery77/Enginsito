@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
 	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(mainRender.texture,TEXTURE_WRAP_MIRROR_REPEAT );
 
-    bufferTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    //bufferTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    bufferTexture = LoadRenderTexture(320, 200);
 	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT );
 
@@ -107,13 +108,15 @@ int main(int argc, char *argv[])
         // Main draw
         BeginBlendMode(0);
 
-        BeginShaderMode(blurShader);
-
+        //BeginShaderMode(blurShader);
+bufferTexture.texture.width = tools->gameScaledRect.width;
+bufferTexture.texture.height = tools->gameScaledRect.height;
         BeginTextureMode(bufferTexture);
             ClearBackground(BLACK);
-			DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect, { 0, 0 }, 0.0f, WHITE); 
+			DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect,
+            { 0, 0 }, 0.0f, WHITE); 
         EndTextureMode();
-
+/*
         int p = 0;
         float o = 0;
 
@@ -142,12 +145,23 @@ p = 1;
         EndShaderMode();
 
         EndBlendMode();
-            
-        ClearBackground(BLACK);
+     */       
+        //ClearBackground(BLACK);
         // Engine draw
         //Final Draw
-        DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,GetScreenWidth(), -GetScreenHeight()},
-         (Rectangle){0,0,GetScreenWidth(), GetScreenHeight()}, { 0, 0 }, 0.0f, WHITE);              
+
+        DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
+        tools->gameScaledRect, { 0, 0 }, 0.0f, WHITE);              
+
+        float screenScale = min((float)GetScreenWidth()/(float)bufferTexture.texture.width,(float)GetScreenHeight()/(float)bufferTexture.texture.height);
+        GuiLabel((Rectangle){0,0,100,10},TextFormat("sc %f",tools->screenScale));
+        GuiLabel((Rectangle){0,20,100,10},TextFormat("x %f",tools->gameScaledRect.x));
+        GuiLabel((Rectangle){0,40,100,10},TextFormat("y %f",tools->gameScaledRect.y));
+        GuiLabel((Rectangle){0,60,100,10},TextFormat("w %f",tools->gameScaledRect.width));
+        GuiLabel((Rectangle){0,80,100,10},TextFormat("h %f",tools->gameScaledRect.height));
+        GuiLabel((Rectangle){0,100,100,10},TextFormat("sw %i",GetScreenWidth()));
+        GuiLabel((Rectangle){0,110,100,10},TextFormat("sh %i",GetScreenHeight()));
+
 
         if(showFps){
             DrawFPS(0, 0);
