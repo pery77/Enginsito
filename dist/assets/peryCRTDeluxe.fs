@@ -6,6 +6,7 @@ in vec4 fragColor;
 
 // Input uniform values
 uniform sampler2D texture0;
+uniform sampler2D blurTexture;
 
 // Output fragment color
 out vec4 finalColor;
@@ -15,8 +16,10 @@ out vec4 finalColor;
 void main()
 {
     // Texel color fetching from texture sampler
-    vec4 texelColor = texture(texture0, fragTexCoord);
+    vec4 texelColor = texture2D(texture0, fragTexCoord);
+    vec4 blurColor = texture2D(blurTexture, fragTexCoord);
+    texelColor *= blurColor;
 
     // Calculate final fragment color
-    finalColor = vec4(texelColor.rgb, texelColor.a);
+    finalColor = vec4(texelColor.rgb, 1);
 }

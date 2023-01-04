@@ -48,7 +48,10 @@ int main(int argc, char *argv[])
     int offsetLoc = GetShaderLocation(blurShader, "offset");
     Vector2 resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
     //CRT shader
-    //crtShader = LoadShader(0, "assets/crt.fs");
+    crtShader = LoadShader(0, "assets/peryCRTDeluxe.fs");
+    int blurTextureLoc = GetShaderLocation(crtShader, "blurTexture");
+    int resolutionCRTLoc = GetShaderLocation(crtShader, "resolution");
+    SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
 
     tools->UpdateGameScreenRects();
     bool running = false;
@@ -116,8 +119,8 @@ int main(int argc, char *argv[])
                 BeginTextureMode(bufferTexture);
                     ClearBackground(BLACK);
                     DrawTexturePro(mainRender.texture, tools->gameRect, 
-                    (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height},
-                    { 0, 0 }, 0.0f, WHITE); 
+                                    (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height},
+                                    { 0, 0 }, 0.0f, WHITE); 
                 EndTextureMode();
 
                 // Start Blur
@@ -129,24 +132,27 @@ int main(int argc, char *argv[])
                         SetShaderValue(blurShader, offsetLoc, &blur.offset, SHADER_UNIFORM_FLOAT);
                         BeginTextureMode(bufferTexture);
                             DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
-                            (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height}, 
-                            { 0, 0 }, 0.0f, WHITE);   
+                                            (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height}, 
+                                            { 0, 0 }, 0.0f, WHITE);   
                         EndTextureMode();
                     }
                 EndShaderMode();
 
             EndBlendMode();
    
-        // Final Draw
-        ClearBackground(BLACK);
-        DrawTexturePro(bufferTexture.texture, 
-        (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
-        tools->gameScaledRect, { 0, 0 }, 0.0f, WHITE);                     
+            // Final Draw
+            ClearBackground(BLACK);
+            BeginShaderMode(crtShader);
+                SetShaderValue(crtShader, resolutionCRTLoc, &resolution, SHADER_UNIFORM_VEC2);
+                SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
+                DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect,
+                                { 0, 0 }, 0.0f, WHITE); 
+            EndShaderMode();
 
-        // Engine over draw
-        if(showFps){
-            DrawFPS(0, 0);
-        }
+            // Engine over draw
+            if(showFps){
+                DrawFPS(0, 0);
+            }
 
         EndDrawing();
     }
@@ -160,5 +166,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-

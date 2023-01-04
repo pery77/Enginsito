@@ -41,7 +41,6 @@ class Tools{
 
 		BlurPass blurPasses[5] = {{0,2},{0,3},{0,8},{1,2},{1,3}};
 
-
         Vector2i resolution16_10[5] = {
 		{2560,1600},
 		{1920,1200},
