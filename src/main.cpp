@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
 	SetTextureWrap(mainRender.texture,TEXTURE_WRAP_MIRROR_REPEAT );
 
     bufferTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+
 	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT );
 
@@ -114,13 +115,12 @@ int main(int argc, char *argv[])
                 // Copy game texture to buffer texutre
                 BeginTextureMode(bufferTexture);
                     ClearBackground(BLACK);
-                    DrawTexturePro(mainRender.texture, tools->gameRect, 
-                    (Rectangle){0,0,bufferTexture.texture.width ,bufferTexture.texture.height}, { 0, 0 }, 0.0f, WHITE); 
+                    DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect,
+                    { 0, 0 }, 0.0f, WHITE); 
                 EndTextureMode();
 /*
                 // Start Blur
                 BeginShaderMode(blurShader);
-
 
 
         int p = 0;
@@ -163,10 +163,8 @@ p = 1;
        //ClearBackground(BLACK);
         // Final Draw
 
-        DrawTexturePro(bufferTexture.texture,
-        (Rectangle){0,0,GetScreenWidth(), -GetScreenHeight()},
-        (Rectangle){0,0,1280, 800},
-        {0,0},0, WHITE);          
+        DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
+        tools->gameScaledRect, { 0, 0 }, 0.0f, WHITE);                     
 
 
         // Engine over draw
@@ -177,6 +175,13 @@ p = 1;
          y = GuiSlider((Rectangle){50,60,300,30},"Y", TextFormat("%f",y),y,320,1280);
         GuiLabel((Rectangle){50,10,300,30},TextFormat("%f", bufferTexture.texture.height/(float)GetScreenHeight()));
 
+        GuiLabel((Rectangle){0,0,100,10},TextFormat("sc %f",tools->screenScale));
+        GuiLabel((Rectangle){0,20,100,10},TextFormat("x %f",tools->gameScaledRect.x));
+        GuiLabel((Rectangle){0,40,100,10},TextFormat("y %f",tools->gameScaledRect.y));
+        GuiLabel((Rectangle){0,60,100,10},TextFormat("w %f",tools->gameScaledRect.width));
+        GuiLabel((Rectangle){0,80,100,10},TextFormat("h %f",tools->gameScaledRect.height));
+        GuiLabel((Rectangle){0,100,100,10},TextFormat("sw %i",GetScreenWidth()));
+        GuiLabel((Rectangle){0,110,100,10},TextFormat("sh %i",GetScreenHeight()));
         //if (GuiButton(Rectangle{0,10,100,20},  "FullScreen")) { ToggleFullscreen(); }
 
         EndDrawing();

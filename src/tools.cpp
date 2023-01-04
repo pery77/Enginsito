@@ -72,10 +72,8 @@ int Tools::GetVirtualMouse(bool isXAxis){
 
 void Tools::UpdateGameScreenRects(){
 	screenScale = min((float)GetScreenWidth()/GameScreenWidth,(float)GetScreenHeight()/GameScreenHeight);
-	gameRect = { 0.0f, 0.0f, (float)(GameScreenWidth), -(float)(GameScreenHeight)};
-	gameScaledRect = {(GetScreenWidth() - ((float)(GameScreenWidth)*screenScale)) * 0.5f,
-					  (GetScreenHeight() - ((float)(GameScreenHeight)*screenScale)) * 0.5f,
-						(float)(GameScreenWidth)*screenScale, (float)(GameScreenHeight) * screenScale};
+	gameRect = { 0, 0, (float)(GameScreenWidth), -(float)(GameScreenHeight)};
+	gameScaledRect = {0, 0,	(float)GetScreenWidth(), (float)GetScreenHeight()};
 
 	currentAspectRatio = (float)GetScreenWidth()/GetScreenHeight();
 
