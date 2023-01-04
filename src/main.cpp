@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(mainRender.texture,TEXTURE_WRAP_MIRROR_REPEAT );
 
-    bufferTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+    bufferTexture = LoadRenderTexture(tools->GameScreenWidth * 8 , tools->GameScreenHeight * 8);
 
 	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT );
@@ -67,10 +67,7 @@ int main(int argc, char *argv[])
         if(IsWindowResized()) 
         {
             tools->UpdateGameScreenRects();
-            bufferTexture.texture.width = tools->gameScaledRect.width;
-            bufferTexture.texture.height = tools->gameScaledRect.height;
         }
-
         //Interpreter
         if (IsKeyReleased(KEY_F5)){ 
             if (running){
@@ -115,10 +112,11 @@ int main(int argc, char *argv[])
                 // Copy game texture to buffer texutre
                 BeginTextureMode(bufferTexture);
                     ClearBackground(BLACK);
-                    DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect,
+                    DrawTexturePro(mainRender.texture, tools->gameRect, 
+                    (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height},
                     { 0, 0 }, 0.0f, WHITE); 
                 EndTextureMode();
-/*
+
                 // Start Blur
                 BeginShaderMode(blurShader);
 
@@ -135,9 +133,9 @@ int main(int argc, char *argv[])
             BeginTextureMode(bufferTexture);
                 o = GetMouseY()/(50.0*i);
                 SetShaderValue(blurShader, offsetLoc, &o, SHADER_UNIFORM_FLOAT);
-                DrawTexturePro(bufferTexture.texture, 
-                (Rectangle){tools->gameScaledRect.x, tools->gameScaledRect.y, tools->gameScaledRect.width, -tools->gameScaledRect.height},
-                tools->gameScaledRect, { 0, 0 }, 0.0f, WHITE); 
+        DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
+        (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height}, 
+        { 0, 0 }, 0.0f, WHITE);   
             EndTextureMode();
   }
 
@@ -149,18 +147,18 @@ p = 1;
         BeginTextureMode(bufferTexture);
             o = GetMouseX()/(50.0*i);
             SetShaderValue(blurShader, offsetLoc, &o, SHADER_UNIFORM_FLOAT);
-            DrawTexturePro(bufferTexture.texture, 
-            (Rectangle){tools->gameScaledRect.x, tools->gameScaledRect.y, tools->gameScaledRect.width, -tools->gameScaledRect.height},
-            tools->gameScaledRect, { 0, 0 }, 0.0f, WHITE); 
+        DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
+        (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height},
+         { 0, 0 }, 0.0f, WHITE);   
         EndTextureMode();
   }
         EndShaderMode();
 
         EndBlendMode();
-            */
+   
 
 
-       //ClearBackground(BLACK);
+       ClearBackground(BLACK);
         // Final Draw
 
         DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
@@ -172,8 +170,8 @@ p = 1;
             DrawFPS(0, 0);
         }
 
-         y = GuiSlider((Rectangle){50,60,300,30},"Y", TextFormat("%f",y),y,320,1280);
-        GuiLabel((Rectangle){50,10,300,30},TextFormat("%f", bufferTexture.texture.height/(float)GetScreenHeight()));
+         y = GuiSlider((Rectangle){20,160,300,30},"Y", TextFormat("%f",y),y,320,1280);
+        //GuiLabel((Rectangle){50,10,300,30},TextFormat("%f", bufferTexture.texture.height/(float)GetScreenHeight()));
 
         GuiLabel((Rectangle){0,0,100,10},TextFormat("sc %f",tools->screenScale));
         GuiLabel((Rectangle){0,20,100,10},TextFormat("x %f",tools->gameScaledRect.x));
