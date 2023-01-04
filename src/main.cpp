@@ -35,8 +35,8 @@ int main(int argc, char *argv[])
 	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(mainRender.texture,TEXTURE_WRAP_MIRROR_REPEAT );
 
-    //bufferTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
-    bufferTexture = LoadRenderTexture(320, 200);
+    bufferTexture = LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+
 	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT );
 
@@ -109,8 +109,8 @@ int main(int argc, char *argv[])
         BeginBlendMode(0);
 
         //BeginShaderMode(blurShader);
-bufferTexture.texture.width = tools->gameScaledRect.width;
-bufferTexture.texture.height = tools->gameScaledRect.height;
+//bufferTexture.texture.width = tools->gameScaledRect.width * 0.5/tools->screenScale;
+//bufferTexture.texture.height = tools->gameScaledRect.height * 0.5/tools->screenScale;
         BeginTextureMode(bufferTexture);
             ClearBackground(BLACK);
 			DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect,
