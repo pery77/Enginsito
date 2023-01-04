@@ -14,6 +14,8 @@ RenderTexture2D bufferTexture;
 Shader blurShader;
 Shader crtShader;
 
+Texture test;
+
 int main(int argc, char *argv[])
 {
     iniReader* config = new iniReader();
@@ -51,11 +53,15 @@ int main(int argc, char *argv[])
     crtShader = LoadShader(0, "assets/peryCRTDeluxe.fs");
     int blurTextureLoc = GetShaderLocation(crtShader, "blurTexture");
     int resolutionCRTLoc = GetShaderLocation(crtShader, "resolution");
+    int testLoc = GetShaderLocation(crtShader, "test");
     SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
 
     tools->UpdateGameScreenRects();
     bool running = false;
     bool showFps = false;
+
+    test = LoadTexture("assets/test.png");
+    float t;
 
     // Game Loop
     while (!WindowShouldClose())
@@ -107,7 +113,8 @@ int main(int argc, char *argv[])
             BeginTextureMode(mainRender);
                 if (!running){
                     ClearBackground(GRAY);
-                    DrawText("Press F5",0,0,20,RED);
+                    DrawTexture(test, 0, 0, WHITE);
+                    DrawText("Press F5",0,0,8,RED);
                 }else{
                     basic->draw();
                 }
@@ -144,6 +151,7 @@ int main(int argc, char *argv[])
             ClearBackground(BLACK);
             BeginShaderMode(crtShader);
                 SetShaderValue(crtShader, resolutionCRTLoc, &resolution, SHADER_UNIFORM_VEC2);
+                SetShaderValue(crtShader, testLoc, &t, SHADER_UNIFORM_FLOAT);
                 SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
                 DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect,
                                 { 0, 0 }, 0.0f, WHITE); 
@@ -152,6 +160,7 @@ int main(int argc, char *argv[])
             // Engine over draw
             if(showFps){
                 DrawFPS(0, 0);
+                t = GuiSlider((Rectangle){0,16,300,30},"",TextFormat("%f",t),t,0,4);
             }
 
         EndDrawing();
