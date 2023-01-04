@@ -12,6 +12,7 @@ RenderTexture2D mainRender;
 RenderTexture2D bufferTexture;
 
 Shader blurShader;
+Shader crtShader;
 
 int main(int argc, char *argv[])
 {
@@ -40,17 +41,18 @@ int main(int argc, char *argv[])
 	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT );
 
+    //Blur shader
     blurShader = LoadShader(0, "assets/blur.fs");
     int pass = GetShaderLocation(blurShader, "pass");
     int resolutionLoc = GetShaderLocation(blurShader, "resolution");
     int offsetLoc = GetShaderLocation(blurShader, "offset");
-
+    Vector2 resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
+    //CRT shader
+    //crtShader = LoadShader(0, "assets/crt.fs");
 
     tools->UpdateGameScreenRects();
     bool running = false;
     bool showFps = false;
-    
-    float y = 1;
 
     // Game Loop
     while (!WindowShouldClose())
@@ -67,6 +69,7 @@ int main(int argc, char *argv[])
         if(IsWindowResized()) 
         {
             tools->UpdateGameScreenRects();
+            resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
         }
         //Interpreter
         if (IsKeyReleased(KEY_F5)){ 
@@ -108,7 +111,7 @@ int main(int argc, char *argv[])
             EndTextureMode();
 
             // Main draw
-            BeginBlendMode(0);
+            BeginBlendMode(0); // 0 Alpha (blur) 1 Additive (glow)
                 // Copy game texture to buffer texutre
                 BeginTextureMode(bufferTexture);
                     ClearBackground(BLACK);
@@ -119,68 +122,31 @@ int main(int argc, char *argv[])
 
                 // Start Blur
                 BeginShaderMode(blurShader);
+                    SetShaderValue(blurShader, resolutionLoc, &resolution, SHADER_UNIFORM_VEC2);
+                    for (auto blur : tools->blurPasses)
+                    {
+                        SetShaderValue(blurShader, pass, &blur.passType, SHADER_UNIFORM_INT);
+                        SetShaderValue(blurShader, offsetLoc, &blur.offset, SHADER_UNIFORM_FLOAT);
+                        BeginTextureMode(bufferTexture);
+                            DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
+                            (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height}, 
+                            { 0, 0 }, 0.0f, WHITE);   
+                        EndTextureMode();
+                    }
+                EndShaderMode();
 
-
-        int p = 0;
-        float o = 0;
-        Vector2 resolution = {GetScreenWidth(), GetScreenHeight()};
- 
-        SetShaderValue(blurShader, resolutionLoc, &resolution, SHADER_UNIFORM_VEC2);
-        SetShaderValue(blurShader, pass, &p, SHADER_UNIFORM_INT);
-
-  for (int i = 1; i < 4; ++i)
-  {
-            BeginTextureMode(bufferTexture);
-                o = GetMouseY()/(50.0*i);
-                SetShaderValue(blurShader, offsetLoc, &o, SHADER_UNIFORM_FLOAT);
-        DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
-        (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height}, 
-        { 0, 0 }, 0.0f, WHITE);   
-            EndTextureMode();
-  }
-
-p = 1;
-            SetShaderValue(blurShader, pass, &p, SHADER_UNIFORM_INT);
-           
-  for (int i = 1; i < 3; ++i)
-  {
-        BeginTextureMode(bufferTexture);
-            o = GetMouseX()/(50.0*i);
-            SetShaderValue(blurShader, offsetLoc, &o, SHADER_UNIFORM_FLOAT);
-        DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
-        (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height},
-         { 0, 0 }, 0.0f, WHITE);   
-        EndTextureMode();
-  }
-        EndShaderMode();
-
-        EndBlendMode();
+            EndBlendMode();
    
-
-
-       ClearBackground(BLACK);
         // Final Draw
-
-        DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
+        ClearBackground(BLACK);
+        DrawTexturePro(bufferTexture.texture, 
+        (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
         tools->gameScaledRect, { 0, 0 }, 0.0f, WHITE);                     
-
 
         // Engine over draw
         if(showFps){
             DrawFPS(0, 0);
         }
-
-         y = GuiSlider((Rectangle){20,160,300,30},"Y", TextFormat("%f",y),y,320,1280);
-        //GuiLabel((Rectangle){50,10,300,30},TextFormat("%f", bufferTexture.texture.height/(float)GetScreenHeight()));
-
-        GuiLabel((Rectangle){0,0,100,10},TextFormat("sc %f",tools->screenScale));
-        GuiLabel((Rectangle){0,20,100,10},TextFormat("x %f",tools->gameScaledRect.x));
-        GuiLabel((Rectangle){0,40,100,10},TextFormat("y %f",tools->gameScaledRect.y));
-        GuiLabel((Rectangle){0,60,100,10},TextFormat("w %f",tools->gameScaledRect.width));
-        GuiLabel((Rectangle){0,80,100,10},TextFormat("h %f",tools->gameScaledRect.height));
-        GuiLabel((Rectangle){0,100,100,10},TextFormat("sw %i",GetScreenWidth()));
-        GuiLabel((Rectangle){0,110,100,10},TextFormat("sh %i",GetScreenHeight()));
-        //if (GuiButton(Rectangle{0,10,100,20},  "FullScreen")) { ToggleFullscreen(); }
 
         EndDrawing();
     }

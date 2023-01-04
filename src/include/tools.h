@@ -10,6 +10,11 @@ struct Vector2i {
 	int y;
 };
 
+struct BlurPass{
+	int passType; //Pass 0 downScale, other upScale
+	float offset;
+};
+
 class Tools{
     public:
 
@@ -33,6 +38,9 @@ class Tools{
 	    float currentAspectRatio = {};
 	    Rectangle gameRect;
 	    Rectangle gameScaledRect;
+
+		BlurPass blurPasses[5] = {{0,2},{0,3},{0,8},{1,2},{1,3}};
+
 
         Vector2i resolution16_10[5] = {
 		{2560,1600},
