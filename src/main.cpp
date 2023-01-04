@@ -53,12 +53,15 @@ int main(int argc, char *argv[])
     crtShader = LoadShader(0, "assets/peryCRTDeluxe.fs");
     int blurTextureLoc = GetShaderLocation(crtShader, "blurTexture");
     int resolutionCRTLoc = GetShaderLocation(crtShader, "resolution");
+    int uTimeLoc = GetShaderLocation(crtShader, "uTime");
     int testLoc = GetShaderLocation(crtShader, "test");
     SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
 
     tools->UpdateGameScreenRects();
     bool running = false;
     bool showFps = false;
+
+    float uTime;
 
     test = LoadTexture("assets/test.png");
     float t;
@@ -80,6 +83,8 @@ int main(int argc, char *argv[])
             tools->UpdateGameScreenRects();
             resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
         }
+        uTime = GetTime();
+        
         //Interpreter
         if (IsKeyReleased(KEY_F5)){ 
             if (running){
@@ -151,6 +156,7 @@ int main(int argc, char *argv[])
             ClearBackground(BLACK);
             BeginShaderMode(crtShader);
                 SetShaderValue(crtShader, resolutionCRTLoc, &resolution, SHADER_UNIFORM_VEC2);
+                SetShaderValue(crtShader, uTimeLoc, &uTime, SHADER_UNIFORM_FLOAT);
                 SetShaderValue(crtShader, testLoc, &t, SHADER_UNIFORM_FLOAT);
                 SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
                 DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect,
