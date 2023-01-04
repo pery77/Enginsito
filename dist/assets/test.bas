@@ -10,7 +10,7 @@ ENDDEF
 
     print(7/22)
 def draw()
-    cls(0)
+    cls(x)
    
     for i = 0 to 128
         drawrect(i*2 ,30 ,2 ,2,i,0)
@@ -24,6 +24,7 @@ def draw()
     drawrect(0,0,mouse.x(), mouse.y(),6,0)
     drawtext(textformat("delta: %04i ms",delta()), 0 , 8 , 1, 26)
     drawtext(textformat("%04f",7/22), 0 , 16 , 1, 26)
+    drawrect(0,0,320,200,2,0)
 
 enddef
 

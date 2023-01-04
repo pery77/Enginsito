@@ -6,9 +6,9 @@ in vec4 fragColor;
 
 // Input uniform values
 uniform sampler2D texture0;
-uniform int pass = 0;
-uniform vec2 resolution = vec2(1280,800);
-uniform float offset = 3.0;
+uniform int pass;
+uniform vec2 resolution;
+uniform float offset;
 
 // Output fragment color
 out vec4 finalColor;
