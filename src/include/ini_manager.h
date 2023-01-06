@@ -1,6 +1,6 @@
 #pragma once
 
-#include "inipp.h"
+#include "ini.h"
 #include <fstream>
 
 class iniReader

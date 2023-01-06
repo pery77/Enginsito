@@ -38,6 +38,7 @@ class Tools{
 	    float currentAspectRatio = {};
 	    Rectangle gameRect;
 	    Rectangle gameScaledRect;
+	    Vector2 resolution;
 
 		BlurPass blurPasses[5] = {{0,2},{0,3},{0,8},{1,2},{1,3}};
 

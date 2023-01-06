@@ -2,7 +2,7 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
-#include "ini_reader.h"
+#include "ini_manager.h"
 #include "my_basic.h"
 
 #include "tools.h"
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
     int pass = GetShaderLocation(blurShader, "pass");
     int resolutionLoc = GetShaderLocation(blurShader, "resolution");
     int offsetLoc = GetShaderLocation(blurShader, "offset");
-    Vector2 resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
+
     //CRT shader
     crtShader = LoadShader(0, "assets/peryCRTDeluxe.fs");
     int blurTextureLoc = GetShaderLocation(crtShader, "blurTexture");
@@ -81,7 +81,6 @@ int main(int argc, char *argv[])
         if(IsWindowResized()) 
         {
             tools->UpdateGameScreenRects();
-            resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
         }
         uTime = GetTime();
         
@@ -137,7 +136,7 @@ int main(int argc, char *argv[])
 
                 // Start Blur
                 BeginShaderMode(blurShader);
-                    SetShaderValue(blurShader, resolutionLoc, &resolution, SHADER_UNIFORM_VEC2);
+                    SetShaderValue(blurShader, resolutionLoc, &tools->resolution, SHADER_UNIFORM_VEC2);
                     for (auto blur : tools->blurPasses)
                     {
                         SetShaderValue(blurShader, pass, &blur.passType, SHADER_UNIFORM_INT);
@@ -155,7 +154,7 @@ int main(int argc, char *argv[])
             // Final Draw
             ClearBackground(BLACK);
             BeginShaderMode(crtShader);
-                SetShaderValue(crtShader, resolutionCRTLoc, &resolution, SHADER_UNIFORM_VEC2);
+                SetShaderValue(crtShader, resolutionCRTLoc, &tools->resolution, SHADER_UNIFORM_VEC2);
                 SetShaderValue(crtShader, uTimeLoc, &uTime, SHADER_UNIFORM_FLOAT);
                 SetShaderValue(crtShader, testLoc, &t, SHADER_UNIFORM_FLOAT);
                 SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
