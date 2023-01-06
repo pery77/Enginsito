@@ -12,6 +12,9 @@ uniform vec2 resolution;
 uniform float uTime;
 uniform float test;
 
+uniform float uBlurPower;
+uniform float uBlurFactor;
+
 // Output fragment color
 out vec4 finalColor;
 
@@ -63,10 +66,11 @@ void main()
     vec3 texelColor = texture2D(texture0, uv).rgb;
     vec3 blurColor = texture2D(blurTexture, uv).rgb;
 
-    texelColor *= gamma(blurColor*test, 0.2);
+    texelColor += gamma(blurColor * uBlurPower, uBlurFactor);
 
-    float noiseF = mix(0.98, 1, noise(uv * 320));
-	float fliker = mix(0.99, 1, (sin(60.0*uTime+uv.y*2.0)*0.5+0.5));
+
+    float noiseF = mix(0.96, 1, noise(uv * 320));
+	float fliker = mix(0.98, 1, (sin(60.0*uTime+uv.y*4.0)*0.5+0.5));
 
     texelColor *= vignette(uv) * noiseF * fliker;
 

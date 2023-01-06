@@ -7,20 +7,14 @@
 
 #include "tools.h"
 #include "mb_manager.h"
-
-RenderTexture2D mainRender;
-RenderTexture2D bufferTexture;
-
-Shader blurShader;
-Shader crtShader;
+#include "postProcessing.h"
 
 Texture test;
 
 int main(int argc, char *argv[])
 {
-    iniReader* config = new iniReader();
+    IniManager* config = new IniManager();
     Tools* tools = new Tools();
-    MBManager* basic = new MBManager(tools);
 
     const int windowWidth = tools->GameScreenWidth * config->size;
     const int windowHeight = tools->GameScreenHeight * config->size;
@@ -33,38 +27,14 @@ int main(int argc, char *argv[])
 	SetWindowMinSize(tools->GameScreenWidth, tools->GameScreenHeight);
 	SetTargetFPS(60);
 
-    //Create main texture and disable texture filter.
-	mainRender = LoadRenderTexture(tools->GameScreenWidth, tools->GameScreenHeight);
-	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_BILINEAR);
-	SetTextureWrap(mainRender.texture,TEXTURE_WRAP_MIRROR_REPEAT );
-
-    bufferTexture = LoadRenderTexture(tools->GameScreenWidth * 8 , tools->GameScreenHeight * 8);
-
-	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
-	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT );
-
-    //Blur shader
-    blurShader = LoadShader(0, "assets/blur.fs");
-    int pass = GetShaderLocation(blurShader, "pass");
-    int resolutionLoc = GetShaderLocation(blurShader, "resolution");
-    int offsetLoc = GetShaderLocation(blurShader, "offset");
-
-    //CRT shader
-    crtShader = LoadShader(0, "assets/peryCRTDeluxe.fs");
-    int blurTextureLoc = GetShaderLocation(crtShader, "blurTexture");
-    int resolutionCRTLoc = GetShaderLocation(crtShader, "resolution");
-    int uTimeLoc = GetShaderLocation(crtShader, "uTime");
-    int testLoc = GetShaderLocation(crtShader, "test");
-    SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
+    MBManager* basic = new MBManager(tools);
+    PostProcessing* postProcessing = new PostProcessing(tools);
 
     tools->UpdateGameScreenRects();
     bool running = false;
     bool showFps = false;
 
-    float uTime;
-
     test = LoadTexture("assets/test.png");
-    float t;
 
     // Game Loop
     while (!WindowShouldClose())
@@ -82,7 +52,8 @@ int main(int argc, char *argv[])
         {
             tools->UpdateGameScreenRects();
         }
-        uTime = GetTime();
+
+        postProcessing->uTime = GetTime();
         
         //Interpreter
         if (IsKeyReleased(KEY_F5)){ 
@@ -114,7 +85,7 @@ int main(int argc, char *argv[])
         BeginDrawing();
 
             //Draw game to texture.
-            BeginTextureMode(mainRender);
+            BeginTextureMode(postProcessing->mainRender);
                 if (!running){
                     ClearBackground(GRAY);
                     DrawTexture(test, 0, 0, WHITE);
@@ -126,46 +97,21 @@ int main(int argc, char *argv[])
 
             // Main draw
             BeginBlendMode(0); // 0 Alpha (blur) 1 Additive (glow)
-                // Copy game texture to buffer texutre
-                BeginTextureMode(bufferTexture);
-                    ClearBackground(BLACK);
-                    DrawTexturePro(mainRender.texture, tools->gameRect, 
-                                    (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height},
-                                    { 0, 0 }, 0.0f, WHITE); 
-                EndTextureMode();
-
-                // Start Blur
-                BeginShaderMode(blurShader);
-                    SetShaderValue(blurShader, resolutionLoc, &tools->resolution, SHADER_UNIFORM_VEC2);
-                    for (auto blur : tools->blurPasses)
-                    {
-                        SetShaderValue(blurShader, pass, &blur.passType, SHADER_UNIFORM_INT);
-                        SetShaderValue(blurShader, offsetLoc, &blur.offset, SHADER_UNIFORM_FLOAT);
-                        BeginTextureMode(bufferTexture);
-                            DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
-                                            (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height}, 
-                                            { 0, 0 }, 0.0f, WHITE);   
-                        EndTextureMode();
-                    }
-                EndShaderMode();
-
+                postProcessing->RenderMain();
+                postProcessing->RenderBlur();
             EndBlendMode();
    
             // Final Draw
             ClearBackground(BLACK);
-            BeginShaderMode(crtShader);
-                SetShaderValue(crtShader, resolutionCRTLoc, &tools->resolution, SHADER_UNIFORM_VEC2);
-                SetShaderValue(crtShader, uTimeLoc, &uTime, SHADER_UNIFORM_FLOAT);
-                SetShaderValue(crtShader, testLoc, &t, SHADER_UNIFORM_FLOAT);
-                SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
-                DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect,
-                                { 0, 0 }, 0.0f, WHITE); 
-            EndShaderMode();
+            postProcessing->RenderFinal();
 
             // Engine over draw
             if(showFps){
                 DrawFPS(0, 0);
-                t = GuiSlider((Rectangle){0,16,300,30},"",TextFormat("%f",t),t,0,4);
+                postProcessing->uBlurPower = 
+                    GuiSlider((Rectangle){0,16,300,20},"", TextFormat("%f",postProcessing->uBlurPower),postProcessing->uBlurPower ,0,3);
+                postProcessing->uBlurFactor = 
+                    GuiSlider((Rectangle){0,50,300,20},"", TextFormat("%f",postProcessing->uBlurFactor),postProcessing->uBlurFactor ,0.2,2);
             }
 
         EndDrawing();

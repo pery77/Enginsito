@@ -1,13 +1,13 @@
 #include "include/ini_manager.h"
 
-iniReader::iniReader(){
+IniManager::IniManager(){
 	readIni();
 }
 
-iniReader::~iniReader(){
+IniManager::~IniManager(){
 }
 
-void iniReader::readIni(){
+void IniManager::readIni(){
 	mINI::INIFile file("assets/config.ini");
 	mINI::INIStructure ini;
 	file.read(ini);
