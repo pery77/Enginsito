@@ -10,11 +10,13 @@
 #include "postProcessing.h"
 
 Texture test;
+static Tools* tools = new Tools();
 
 int main(int argc, char *argv[])
 {
     IniManager* config = new IniManager();
-    Tools* tools = new Tools();
+    tools = new Tools();
+    MBManager* basic = new MBManager(tools);
 
     const int windowWidth = tools->GameScreenWidth * config->size;
     const int windowHeight = tools->GameScreenHeight * config->size;
@@ -27,7 +29,6 @@ int main(int argc, char *argv[])
 	SetWindowMinSize(tools->GameScreenWidth, tools->GameScreenHeight);
 	SetTargetFPS(60);
 
-    MBManager* basic = new MBManager(tools);
     PostProcessing* postProcessing = new PostProcessing(tools);
 
     tools->UpdateGameScreenRects();

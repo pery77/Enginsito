@@ -1,14 +1,15 @@
 x=0;
 def init()
-    x = 7
+    x = 1
 enddef
 
 DEF tick()
-    IF getkeydown(65) = 1 THEN x=x+1 ENDIF
-    IF getkeydown(68) = 1 THEN x=x-1 ENDIF
+    IF getkeydown(65) = 1 THEN x=x-1 ENDIF
+    IF getkeydown(68) = 1 THEN x=x+1 ENDIF
 ENDDEF
 
-    print(7/22)
+print(7/22);
+
 def draw()
     cls(x)
    

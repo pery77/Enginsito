@@ -2,7 +2,6 @@
 #include <assert.h>
 
 Tools* tools;
-
 MBManager::MBManager(Tools* toolsref){
 	nullArg[0].type = MB_DT_NIL;
 	tools = toolsref;

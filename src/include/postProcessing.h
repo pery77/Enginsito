@@ -16,7 +16,7 @@ class PostProcessing{
     float uTime;
     float uTest;
 
-    float uBlurPower = 1;
+    float uBlurPower = 0.5;
     float uBlurFactor = 1;
 
     private:
