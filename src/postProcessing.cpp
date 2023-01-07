@@ -26,7 +26,7 @@ void PostProcessing::setUpShaders(){
     blurShader = LoadShader(0, "assets/blur.fs");
 
     //CRT shader
-    crtShader = LoadShader(0, "assets/peryCRTDeluxe.fs");
+    crtShader = LoadShader("assets/peryCRTDeluxe.vs", "assets/peryCRTDeluxe.fs");
     SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
 
 
@@ -41,6 +41,7 @@ void PostProcessing::setUpShaders(){
     resolutionCRTLoc = GetShaderLocation(crtShader, "resolution");
     uTimeLoc = GetShaderLocation(crtShader, "uTime");
     testLoc = GetShaderLocation(crtShader, "test");
+    curvatureLoc = GetShaderLocation(crtShader, "curvatureDistance");
 
     blurPowerLoc = GetShaderLocation(crtShader, "uBlurPower");
     blurFactorLoc = GetShaderLocation(crtShader, "uBlurFactor");
@@ -76,6 +77,7 @@ void PostProcessing::RenderFinal(){
         SetShaderValue(crtShader, resolutionCRTLoc, &tools->resolution, SHADER_UNIFORM_VEC2);
         SetShaderValue(crtShader, uTimeLoc, &uTime, SHADER_UNIFORM_FLOAT);
         SetShaderValue(crtShader, testLoc, &uTest, SHADER_UNIFORM_FLOAT);
+        SetShaderValue(crtShader, curvatureLoc, &uCurvature, SHADER_UNIFORM_FLOAT);
         
         SetShaderValue(crtShader, blurPowerLoc, &uBlurPower, SHADER_UNIFORM_FLOAT);
         SetShaderValue(crtShader, blurFactorLoc, &uBlurFactor, SHADER_UNIFORM_FLOAT);

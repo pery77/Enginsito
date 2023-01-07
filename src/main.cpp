@@ -115,6 +115,8 @@ int main(int argc, char *argv[])
                     GuiSlider((Rectangle){0,70,300,20},"", TextFormat("%f",postProcessing->uBlurFactor),postProcessing->uBlurFactor ,0.2,2);
                                postProcessing->uTest = 
                     GuiSlider((Rectangle){0,90,300,20},"", TextFormat("%f",postProcessing->uTest),postProcessing->uTest ,-10,10);
+                                                   postProcessing->uCurvature = 
+                    GuiSlider((Rectangle){0,110,300,20},"", TextFormat("%f",postProcessing->uCurvature),postProcessing->uCurvature ,-10,10);
             }
 
         EndDrawing();

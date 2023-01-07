@@ -16,18 +16,20 @@ uniform float test;
 uniform float uBlurPower;
 uniform float uBlurFactor;
 
-uniform float vignetteIntensity = 0.15;
+uniform float vignetteIntensity = 0.20;
 
 uniform float hardScan = -8.0;
 uniform float chromatic = 0.5;
 
 const vec2 textureSize = vec2(320,200);
+uniform float curvatureDistance = 1;
 
 out vec4 finalColor;
 
 //
 float vignette(vec2 uv){
 	uv *= 1.0 - uv.xy;
+	if (uv.x < 0 ) return 0;
 	float vignette = uv.x * uv.y * 15.0;
 	return clamp(pow(vignette, vignetteIntensity),0.0, 1.0);
 }
@@ -78,9 +80,15 @@ float scan(vec2 pos, float off) {
 	return gaus(dst + off, hardScan);
 }
 
-void main()
-{
+void main(){
+
     vec2 uv = fragTexCoord;
+
+    //Curvature    
+    float strength  = 0.15;
+	vec2 dist  = .5 - uv;
+    uv.x = (uv.x - dist.y * dist.y * dist.x * strength/(resolution.x/resolution.y));
+    uv.y = (uv.y - dist.x * dist.x * dist.y * strength);
 
     float texelR = texture2D(texture0, vec2(uv.x + (chromatic * 0.003125), uv.y)).r;
     float texelG = texture2D(texture0, uv).g;
@@ -90,15 +98,18 @@ void main()
     vec3 blurColor = texture2D(blurTexture, uv).rgb;
     vec3 grille = texture2D(grilleTexture, uv * resolution.x * 0.1 ).rgb;
 
-	texelColor += grille * 0.3;
-    texelColor += gamma(blurColor * uBlurPower, uBlurFactor);
-
-
     float noiseF = mix(0.96, 1, noise(uv * 320));
 	float fliker = mix(0.98, 1, (sin(60.0*uTime+uv.y*4.0)*0.5+0.5));
 	float scanline = scan(uv,-1.0) + scan(uv,0.0) + scan(uv,1.0);
+    vec3 blur = gamma(blurColor * uBlurPower, uBlurFactor);
 
-    texelColor *= vignette(uv) * noiseF * fliker * scanline;
+	texelColor += grille * 0.1;
+    texelColor += blur;
+    texelColor *= scanline;
+    texelColor *= noiseF;
+    texelColor *= fliker;
+    texelColor *= vignette(uv);
 
     finalColor = vec4(texelColor, 1);
+
 }

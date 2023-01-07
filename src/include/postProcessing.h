@@ -15,6 +15,7 @@ class PostProcessing{
     RenderTexture2D mainRender;
     float uTime;
     float uTest;
+    float uCurvature;
 
     float uBlurPower = 0.5;
     float uBlurFactor = 1;
@@ -39,6 +40,7 @@ class PostProcessing{
     int resolutionCRTLoc;
     int uTimeLoc;
     int testLoc;
+    int curvatureLoc;
 
     int blurPowerLoc;
     int blurFactorLoc;
