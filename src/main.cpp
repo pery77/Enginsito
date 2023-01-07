@@ -110,9 +110,11 @@ int main(int argc, char *argv[])
             if(showFps){
                 DrawFPS(0, 0);
                 postProcessing->uBlurPower = 
-                    GuiSlider((Rectangle){0,16,300,20},"", TextFormat("%f",postProcessing->uBlurPower),postProcessing->uBlurPower ,0,3);
+                    GuiSlider((Rectangle){0,50,300,20},"", TextFormat("%f",postProcessing->uBlurPower),postProcessing->uBlurPower ,0,20);
                 postProcessing->uBlurFactor = 
-                    GuiSlider((Rectangle){0,50,300,20},"", TextFormat("%f",postProcessing->uBlurFactor),postProcessing->uBlurFactor ,0.2,2);
+                    GuiSlider((Rectangle){0,70,300,20},"", TextFormat("%f",postProcessing->uBlurFactor),postProcessing->uBlurFactor ,0.2,2);
+                               postProcessing->uTest = 
+                    GuiSlider((Rectangle){0,90,300,20},"", TextFormat("%f",postProcessing->uTest),postProcessing->uTest ,-10,10);
             }
 
         EndDrawing();
