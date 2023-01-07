@@ -23,6 +23,7 @@ class PostProcessing{
     Tools* tools;
 
     RenderTexture2D bufferTexture;
+    Texture grilleTexture;
     Shader crtShader;
     Shader blurShader;
     void setUpShaders();
@@ -33,6 +34,7 @@ class PostProcessing{
     int offsetLoc;
 
     // CRT shader locations
+    int grilleLoc;
     int blurTextureLoc;
     int resolutionCRTLoc;
     int uTimeLoc;

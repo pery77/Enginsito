@@ -7,6 +7,7 @@ in vec4 fragColor;
 // Input uniform values
 uniform sampler2D texture0;
 uniform sampler2D blurTexture;
+uniform sampler2D grilleTexture;
 
 uniform vec2 resolution;
 uniform float uTime;
@@ -15,11 +16,10 @@ uniform float test;
 uniform float uBlurPower;
 uniform float uBlurFactor;
 
-uniform float vignetteIntensity = 0.25;
+uniform float vignetteIntensity = 0.15;
 
-uniform float hardScan = -4.0;
-
-
+uniform float hardScan = -8.0;
+uniform float chromatic = 0.5;
 
 const vec2 textureSize = vec2(320,200);
 
@@ -82,14 +82,15 @@ void main()
 {
     vec2 uv = fragTexCoord;
 
-    float texelR = texture2D(texture0, vec2(uv.x + (test * 0.003125), uv.y)).r;
+    float texelR = texture2D(texture0, vec2(uv.x + (chromatic * 0.003125), uv.y)).r;
     float texelG = texture2D(texture0, uv).g;
-    float texelB = texture2D(texture0, vec2(uv.x - (test * 0.003125), uv.y)).b;
+    float texelB = texture2D(texture0, vec2(uv.x - (chromatic * 0.003125), uv.y)).b;
 
     vec3 texelColor = vec3(texelR, texelG, texelB);
     vec3 blurColor = texture2D(blurTexture, uv).rgb;
+    vec3 grille = texture2D(grilleTexture, uv * resolution.x * 0.1 ).rgb;
 
-	
+	texelColor += grille * 0.3;
     texelColor += gamma(blurColor * uBlurPower, uBlurFactor);
 
 
@@ -98,5 +99,6 @@ void main()
 	float scanline = scan(uv,-1.0) + scan(uv,0.0) + scan(uv,1.0);
 
     texelColor *= vignette(uv) * noiseF * fliker * scanline;
+
     finalColor = vec4(texelColor, 1);
 }

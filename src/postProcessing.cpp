@@ -10,11 +10,17 @@ void PostProcessing::setUpShaders(){
 
 	mainRender = LoadRenderTexture(tools->GameScreenWidth, tools->GameScreenHeight);
 	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_BILINEAR);
-	SetTextureWrap(mainRender.texture,TEXTURE_WRAP_MIRROR_REPEAT );
+	SetTextureWrap(mainRender.texture,TEXTURE_WRAP_MIRROR_REPEAT);
 
     bufferTexture = LoadRenderTexture(tools->GameScreenWidth * 8 , tools->GameScreenHeight * 8);
 	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
-	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT );
+	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT);
+
+    grilleTexture = LoadTexture("assets/grille.png");
+    GenTextureMipmaps(&grilleTexture);
+	SetTextureFilter(grilleTexture, TEXTURE_FILTER_BILINEAR);
+	SetTextureWrap(grilleTexture,TEXTURE_WRAP_REPEAT);
+    
 
     //Blur shader
     blurShader = LoadShader(0, "assets/blur.fs");
@@ -30,6 +36,7 @@ void PostProcessing::setUpShaders(){
     offsetLoc = GetShaderLocation(blurShader, "offset");
 
     // CRT shader locations
+    grilleLoc = GetShaderLocation(crtShader, "grilleTexture");
     blurTextureLoc = GetShaderLocation(crtShader, "blurTexture");
     resolutionCRTLoc = GetShaderLocation(crtShader, "resolution");
     uTimeLoc = GetShaderLocation(crtShader, "uTime");
@@ -73,6 +80,7 @@ void PostProcessing::RenderFinal(){
         SetShaderValue(crtShader, blurPowerLoc, &uBlurPower, SHADER_UNIFORM_FLOAT);
         SetShaderValue(crtShader, blurFactorLoc, &uBlurFactor, SHADER_UNIFORM_FLOAT);
 
+        SetShaderValueTexture(crtShader, grilleLoc, grilleTexture);
         SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
         DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect,
                                 { 0, 0 }, 0.0f, WHITE); 
