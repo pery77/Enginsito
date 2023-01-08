@@ -1,18 +1,18 @@
 time = 0
-dim keys(10)
-dim chars(10)
+l = list()
 
 def init()
 enddef
 
-    l = list(1, 1, 2, 3, 5, 8)
-
 
 DEF tick()
-    IF keydown(65) = 1 THEN x=x-1 ENDIF
-    IF keydown(68) = 1 THEN x=x+1 ENDIF
-    k = getkeychar()
-    IF k <> 0 THEN print(k); ENDIF
+
+    k = getkey()
+    IF k <> 0 THEN 
+     push(l,k)
+     IF len(l)>5 THEN remove(l,0) ENDIF
+    ENDIF
+
 ENDDEF
 
 
@@ -34,7 +34,7 @@ def draw()
     x=0
     i = iterator(l)
     while move_next(i)
-        drawtext(textformat("%03i",get(i)), 32, x*8, 1, 234)
+        drawtext(textformat("%03i",get(i)), 32, x*8+8, 1, 234)
         x=x+1
     wend
 
@@ -46,7 +46,7 @@ def draw()
     drawtext(textformat("%03i",keyreleased(65)), 0, 32, 1, 175)
 
 goto no;
-    for n = 0 to 1
+    for n = 0 to 100
         drawpixel(rnd(0,319), rnd(0,199), rnd(0,255))
         'drawline(rnd(0,319), rnd(0,199), rnd(0,319), rnd(0,199),rnd(1,3),rnd(0,255))
         'drawcircle(rnd(0,319), rnd(0,199), rnd(1,20), rnd(0,1), rnd(0,255))
