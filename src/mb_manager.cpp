@@ -55,7 +55,12 @@ void MBManager::OpenBas(){
 	mb_reg_fun(bas, textformat);
 	mb_reg_fun(bas, delta);
 
-	mb_reg_fun(bas, getkeydown);
+	mb_reg_fun(bas, keypressed);
+	mb_reg_fun(bas, keydown);
+	mb_reg_fun(bas, keyreleased);
+	mb_reg_fun(bas, keyup);
+	mb_reg_fun(bas, getkey);
+	mb_reg_fun(bas, getkeychar);
 
 	mb_begin_module(bas, "MOUSE");
 		mb_register_func(bas, "X", mouseX); 
@@ -76,7 +81,6 @@ void MBManager::CloseBas(){
 	mb_close(&bas);
 	mb_dispose();
 }
-
 
 // Raylib funcions
 // Draw
@@ -356,8 +360,27 @@ int MBManager::delta(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;
 }
-// Input  
-int MBManager::getkeydown(struct mb_interpreter_t* s, void** l){
+// Input
+int MBManager::keypressed(struct mb_interpreter_t* s, void** l){
+	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+    int keyCode = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &keyCode));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = IsKeyPressed(keyCode);
+    mb_check(mb_push_value(s, l, ret));
+	return MB_FUNC_OK;
+}
+int MBManager::keydown(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
 
@@ -376,6 +399,74 @@ int MBManager::getkeydown(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;
 }
+int MBManager::keyreleased(struct mb_interpreter_t* s, void** l){
+	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+    int keyCode = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &keyCode));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = IsKeyReleased(keyCode);
+    mb_check(mb_push_value(s, l, ret));
+	return MB_FUNC_OK;
+}
+int MBManager::keyup(struct mb_interpreter_t* s, void** l){
+	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+    int keyCode = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &keyCode));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = IsKeyUp(keyCode);
+    mb_check(mb_push_value(s, l, ret));
+	return MB_FUNC_OK;
+}
+
+int MBManager::getkey(struct mb_interpreter_t* s, void** l){
+	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = GetKeyPressed();
+    mb_check(mb_push_value(s, l, ret));
+	return MB_FUNC_OK;
+}
+int MBManager::getkeychar(struct mb_interpreter_t* s, void** l){
+	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = GetCharPressed();
+    mb_check(mb_push_value(s, l, ret));
+	return MB_FUNC_OK;
+}
+
 int MBManager::mouseX(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
@@ -392,7 +483,6 @@ int MBManager::mouseX(struct mb_interpreter_t* s, void** l){
 
 	return MB_FUNC_OK;
 }
-
 int MBManager::mouseY(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
