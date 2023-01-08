@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "DEBUG",
+      "name": "BUILD DEBUG-RUN",
       "type": "cppdbg",
       "request": "launch",
       "program": "${workspaceFolder}/dist/peryEngine.exe",
@@ -16,6 +16,53 @@
       "externalConsole": true,
       "MIMode": "gdb",
       "preLaunchTask": "task-build-debug",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "windows": {
+        "program": "${workspaceFolder}/dist/peryEngine.exe",
+        "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
+      }
+    },
+    {
+      "name": "BUILD RELEASE-RUN",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/peryEngine.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/dist",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "gdb",
+      "preLaunchTask": "task-build-release",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "windows": {
+        "program": "${workspaceFolder}/dist/peryEngine.exe",
+        "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
+      }
+    },
+    {
+      "name": "RUN LAST",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/peryEngine.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/dist",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "gdb",
       "setupCommands": [
         {
           "description": "Enable pretty-printing for gdb",
