@@ -30,8 +30,7 @@ void MBManager::end(){
 }
 
 // Init and close
-void MBManager::OpenBas()
-{
+void MBManager::OpenBas(){
     const char *f = "assets/test.bas";
     int pos;
     unsigned short row;
@@ -43,8 +42,15 @@ void MBManager::OpenBas()
 	mb_open(&bas);
 
 	mb_reg_fun(bas, cls);
-	mb_reg_fun(bas, drawtext);
+
+	mb_reg_fun(bas, drawpixel);
+	mb_reg_fun(bas, drawline);
+	mb_reg_fun(bas, drawcircle);
+	mb_reg_fun(bas, drawellipse);
+	mb_reg_fun(bas, drawtriangle);
 	mb_reg_fun(bas, drawrect);
+
+	mb_reg_fun(bas, drawtext);
 	
 	mb_reg_fun(bas, textformat);
 	mb_reg_fun(bas, delta);
@@ -66,8 +72,7 @@ void MBManager::OpenBas()
         printf("ERROR Code: %i, pos = %i, row  = %i col = %i \n",e , pos, row, col);
     }
 }
-void MBManager::CloseBas()
-{
+void MBManager::CloseBas(){
 	mb_close(&bas);
 	mb_dispose();
 }
@@ -91,6 +96,189 @@ int MBManager::cls(struct mb_interpreter_t* s, void** l){
 
 	return MB_FUNC_OK;
 }
+
+int MBManager::drawpixel(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+	int x = 0;
+	int y = 0;
+	int col = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &x));
+		mb_check(mb_pop_int(s, l, &y));
+		mb_check(mb_pop_int(s, l, &col));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	DrawPixel(x, y, tools->GetColor(col));
+
+	return MB_FUNC_OK;
+}
+int MBManager::drawline(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+	int x1 = 0;
+	int y1 = 0;
+	int x2 = 0;
+	int y2 = 0;
+	int thick = 0;
+	int col = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &x1));
+		mb_check(mb_pop_int(s, l, &y1));
+		mb_check(mb_pop_int(s, l, &x2));
+		mb_check(mb_pop_int(s, l, &y2));
+		mb_check(mb_pop_int(s, l, &thick));
+		mb_check(mb_pop_int(s, l, &col));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	DrawLineEx((Vector2){x1,y1}, (Vector2){x2,y2}, thick, tools->GetColor(col));
+
+	return MB_FUNC_OK;
+}
+int MBManager::drawcircle(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+	int x = 0;
+	int y = 0;
+	int r = 0;
+	int style = 0;
+	int col = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &x));
+		mb_check(mb_pop_int(s, l, &y));
+		mb_check(mb_pop_int(s, l, &r));
+		mb_check(mb_pop_int(s, l, &style));
+		mb_check(mb_pop_int(s, l, &col));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	switch (style){
+		case 0:
+			DrawCircleLines(x, y, r, tools->GetColor(col));
+			break;
+		default:
+			DrawCircle(x, y, r, tools->GetColor(col));
+			break;
+	}
+
+	return MB_FUNC_OK;
+}
+int MBManager::drawellipse(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+	int x = 0;
+	int y = 0;
+	int rh = 0;
+	int rv = 0;
+	int style = 0;
+	int col = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &x));
+		mb_check(mb_pop_int(s, l, &y));
+		mb_check(mb_pop_int(s, l, &rh));
+		mb_check(mb_pop_int(s, l, &rv));
+		mb_check(mb_pop_int(s, l, &style));
+		mb_check(mb_pop_int(s, l, &col));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	switch (style){
+		case 0:
+			DrawEllipseLines(x, y, rh, rv, tools->GetColor(col));
+			break;
+		default:
+			DrawEllipse(x, y, rh, rv, tools->GetColor(col));
+			break;
+	}
+
+	return MB_FUNC_OK;
+}
+int MBManager::drawtriangle(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+	int x1 = 0;
+	int y1 = 0;
+	int x2 = 0;
+	int y2 = 0;
+	int x3 = 0;
+	int y3 = 0;
+	int style = 0;
+	int col = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &x1));
+		mb_check(mb_pop_int(s, l, &y1));
+		mb_check(mb_pop_int(s, l, &x2));
+		mb_check(mb_pop_int(s, l, &y2));
+		mb_check(mb_pop_int(s, l, &x3));
+		mb_check(mb_pop_int(s, l, &y3));
+		mb_check(mb_pop_int(s, l, &style));
+		mb_check(mb_pop_int(s, l, &col));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	switch (style){
+		case 0:
+			DrawTriangleLines((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, tools->GetColor(col));
+			break;
+		default:
+			DrawTriangle((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, tools->GetColor(col));
+			break;
+	}
+
+	return MB_FUNC_OK;
+}
+int MBManager::drawrect(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+	int style = 0;
+	int col = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &x));
+		mb_check(mb_pop_int(s, l, &y));
+		mb_check(mb_pop_int(s, l, &w));
+		mb_check(mb_pop_int(s, l, &h));
+		mb_check(mb_pop_int(s, l, &style));
+		mb_check(mb_pop_int(s, l, &col));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	switch (style)
+	{
+		case 0:
+			DrawRectangleLines(x, y, w, h, tools->GetColor(col));
+			break;
+		default:
+			DrawRectangle(x, y, w, h, tools->GetColor(col));
+			break;
+	}
+
+	return MB_FUNC_OK;
+}
+
 int MBManager::drawtext(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
@@ -115,40 +303,7 @@ int MBManager::drawtext(struct mb_interpreter_t* s, void** l){
 
 	return MB_FUNC_OK;
 }
-int MBManager::drawrect(struct mb_interpreter_t* s, void** l){
 
-	mb_assert(s && l);
-
-	int x = 0;
-	int y = 0;
-	int w = 0;
-	int h = 0;
-	int col = 0;
-	int style = 0;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_int(s, l, &x));
-		mb_check(mb_pop_int(s, l, &y));
-		mb_check(mb_pop_int(s, l, &w));
-		mb_check(mb_pop_int(s, l, &h));
-		mb_check(mb_pop_int(s, l, &col));
-		mb_check(mb_pop_int(s, l, &style));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-	switch (style)
-	{
-		case 0:
-			DrawRectangleLines(x, y, w, h, tools->GetColor(col));
-			break;
-		default:
-			DrawRectangle(x, y, w, h, tools->GetColor(col));
-			break;
-	}
-
-	return MB_FUNC_OK;
-}
 //Tools
 int MBManager::textformat(struct mb_interpreter_t* s, void** l){
 

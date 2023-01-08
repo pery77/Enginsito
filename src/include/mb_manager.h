@@ -33,8 +33,16 @@ class MBManager{
         void doRoutine(char* routineName, mb_value_t routine);
         //Draw
         static int cls(struct mb_interpreter_t* s, void** l);
-        static int drawtext(struct mb_interpreter_t* s, void** l);
+        //Shapes
+        static int drawpixel(struct mb_interpreter_t* s, void** l);
+        static int drawline(struct mb_interpreter_t* s, void** l);
+        static int drawcircle(struct mb_interpreter_t* s, void** l);
+        static int drawellipse(struct mb_interpreter_t* s, void** l);
+        static int drawtriangle(struct mb_interpreter_t* s, void** l);
         static int drawrect(struct mb_interpreter_t* s, void** l);
+        //Text
+        static int drawtext(struct mb_interpreter_t* s, void** l);
+
         //Tools
         static int textformat(struct mb_interpreter_t* s, void** l);
         static int delta(struct mb_interpreter_t* s, void** l);

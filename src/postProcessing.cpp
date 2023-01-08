@@ -26,7 +26,7 @@ void PostProcessing::setUpShaders(){
     blurShader = LoadShader(0, "assets/blur.fs");
 
     //CRT shader
-    crtShader = LoadShader("assets/peryCRTDeluxe.vs", "assets/peryCRTDeluxe.fs");
+    crtShader = LoadShader(0, "assets/peryCRTDeluxe.fs");
     SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
 
 
