@@ -1,10 +1,18 @@
 time = 0
+dim keys(10)
+dim chars(10)
+
 def init()
 enddef
+
+    l = list(1, 1, 2, 3, 5, 8)
+
 
 DEF tick()
     IF keydown(65) = 1 THEN x=x-1 ENDIF
     IF keydown(68) = 1 THEN x=x+1 ENDIF
+    k = getkeychar()
+    IF k <> 0 THEN print(k); ENDIF
 ENDDEF
 
 
@@ -23,6 +31,12 @@ def draw()
         next
     next
     ENDIF
+    x=0
+    i = iterator(l)
+    while move_next(i)
+        drawtext(textformat("%03i",get(i)), 32, x*8, 1, 234)
+        x=x+1
+    wend
 
     drawrect(0,0,319,9,1,175)
     drawtext(textformat("%06i",time), 0, 0, 1, 236)

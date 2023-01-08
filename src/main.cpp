@@ -10,6 +10,8 @@
 #include "postProcessing.h"
 
 Texture test;
+Sound fxWav;
+
 static Tools* tools = new Tools();
 
 int main(int argc, char *argv[])
@@ -29,6 +31,8 @@ int main(int argc, char *argv[])
 	SetWindowMinSize(tools->GameScreenWidth, tools->GameScreenHeight);
 	SetTargetFPS(60);
 
+    InitAudioDevice();  
+
     PostProcessing* postProcessing = new PostProcessing(tools);
 
     tools->UpdateGameScreenRects();
@@ -36,6 +40,7 @@ int main(int argc, char *argv[])
     bool showFps = false;
 
     test = LoadTexture("assets/test.png");
+    Sound fxWav = LoadSound("assets/sound.wav");
 
     // Game Loop
     while (!WindowShouldClose())
@@ -43,6 +48,7 @@ int main(int argc, char *argv[])
         // Engine keys
         if(IsKeyReleased(KEY_F1)){
             showFps = !showFps;
+            PlaySound(fxWav);
         }
 
         if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER))){
