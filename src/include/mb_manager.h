@@ -63,6 +63,4 @@ class MBManager{
         static int mouseDown(struct mb_interpreter_t* s, void** l);
         static int mouseReleased(struct mb_interpreter_t* s, void** l);
         static int mouseUp(struct mb_interpreter_t* s, void** l);  
-
-
 };

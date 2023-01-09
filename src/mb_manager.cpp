@@ -42,25 +42,29 @@ void MBManager::OpenBas(){
 	mb_open(&bas);
 
 	mb_reg_fun(bas, cls);
+	mb_begin_module(bas, "DRAW");
+		mb_register_func(bas, "PIXEL", drawPixel);
+		mb_register_func(bas, "LINE", drawLine);
+		mb_register_func(bas, "CIRCLE", drawCircle);
+		mb_register_func(bas, "ELLIPSE", drawEllipse);
+		mb_register_func(bas, "TRIANGLE", drawTriangle);
+		mb_register_func(bas, "RECT", drawRect);
 
-	mb_reg_fun(bas, drawPixel);
-	mb_reg_fun(bas, drawLine);
-	mb_reg_fun(bas, drawCircle);
-	mb_reg_fun(bas, drawEllipse);
-	mb_reg_fun(bas, drawTriangle);
-	mb_reg_fun(bas, drawRect);
+		mb_register_func(bas, "TEXT", drawText);
+		
+	mb_end_module(bas);
 
-	mb_reg_fun(bas, drawText);
-	
 	mb_reg_fun(bas, textFormat);
 	mb_reg_fun(bas, delta);
 
-	mb_reg_fun(bas, keyPressed);
-	mb_reg_fun(bas, keyDown);
-	mb_reg_fun(bas, keyReleased);
-	mb_reg_fun(bas, keyUp);
-	mb_reg_fun(bas, getKey);
-	mb_reg_fun(bas, getKeyChar);
+	mb_begin_module(bas, "KEY");
+		mb_register_func(bas, "PRESSED", keyPressed);
+		mb_register_func(bas, "DOWN", keyDown);
+		mb_register_func(bas, "RELEASED", keyReleased);
+		mb_register_func(bas, "UP", keyUp);
+		mb_register_func(bas, "GET", getKey);
+		mb_register_func(bas, "CHAR", getKeyChar);
+	mb_end_module(bas);
 
 	mb_begin_module(bas, "MOUSE");
 		mb_register_func(bas, "X", mouseX); 
