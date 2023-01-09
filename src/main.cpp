@@ -9,10 +9,15 @@
 #include "mb_manager.h"
 #include "postProcessing.h"
 
+#define RFXGEN_IMPLEMENTATION
+#include "rfxgen.h"
+
 Texture test;
 Sound fxWav;
 
 static Tools* tools = new Tools();
+#define MAX_WAVE_SLOTS 255
+int sc = 0;
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +47,37 @@ int main(int argc, char *argv[])
     test = LoadTexture("assets/test.png");
     Sound fxWav = LoadSound("assets/sound.wav");
 
+
+
+
+
+    WaveParams params[MAX_WAVE_SLOTS] = { 0 }; // Wave parameters for generation
+    Wave wave[MAX_WAVE_SLOTS] = { 0 };
+    Sound sound[MAX_WAVE_SLOTS] = { 0 };
+
+    for (int i = 0; i < MAX_WAVE_SLOTS; i++)
+    {
+        // Reset generation parameters
+        // NOTE: Random seed for generation is set
+        ResetWaveParams(&params[i]);
+        params[i] = GenRandomize();
+
+        // Default wave values
+        wave[i].sampleRate = RFXGEN_GEN_SAMPLE_RATE;
+        wave[i].sampleSize = RFXGEN_GEN_SAMPLE_SIZE;
+        wave[i].channels = RFXGEN_GEN_CHANNELS;
+        wave[i].frameCount = 10*wave[i].sampleRate;    // Max frame count for 10 seconds
+        wave[i].data = (float *)RL_CALLOC(wave[i].frameCount, sizeof(float));
+        wave[i].data = GenerateWave(params[i], &wave[i].frameCount);
+        sound[i] = LoadSoundFromWave(wave[i]);
+    }
+
+
+
+
+
+
+
     // Game Loop
     while (!WindowShouldClose())
     {
@@ -49,6 +85,12 @@ int main(int argc, char *argv[])
         if(IsKeyReleased(KEY_F1)){
             showFps = !showFps;
             PlaySound(fxWav);
+        }
+
+        if(IsKeyReleased(KEY_F2)){
+            PlaySound(sound[sc]);
+            printf("PLAy %i\n",sc++);
+            if (sc > MAX_WAVE_SLOTS - 1) sc = 0;
         }
 
         if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER))){
