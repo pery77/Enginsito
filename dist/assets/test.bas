@@ -12,6 +12,10 @@ DEF tick()
      push(l,k)
      IF len(l)>5 THEN remove(l,0) ENDIF
     ENDIF
+    m = mouse.wheel()
+    IF m <> 0 THEN
+    push(l, m)
+    endif
 
 ENDDEF
 
@@ -39,11 +43,13 @@ def draw()
     wend
 
     drawrect(0,0,319,9,1,175)
+    mb = 2
     drawtext(textformat("%06i",time), 0, 0, 1, 236)
-    drawtext(textformat("%03i",keyup(65)), 0, 8, 1, 175)
-    drawtext(textformat("%03i",keydown(65)), 0, 16, 1, 175)
-    drawtext(textformat("%03i",keypressed(65)), 0, 24, 1, 175)
-    drawtext(textformat("%03i",keyreleased(65)), 0, 32, 1, 175)
+    drawtext(textformat("%03i",mouse.up(mb)), 0, 8, 1, 175)
+    drawtext(textformat("%03i",mouse.down(mb)), 0, 16, 1, 175)
+    drawtext(textformat("%03i",mouse.pressed(mb)), 0, 24, 1, 175)
+    drawtext(textformat("%03i",mouse.released(mb)), 0, 32, 1, 175)
+    drawtext(textformat("%03i",mouse.wheel()), 0, 40, 1, 175)
 
 goto no;
     for n = 0 to 100
@@ -56,7 +62,8 @@ goto no;
         'drawtriangle(x, y, x + rnd(-10,10), y + rnd(-20,20), x + rnd(-20,20), y + rnd(-20,20), rnd(0,1), rnd(0,255))
 
     next
-    drawcircle(mouse.x(), mouse.y(),mouse.x()*0.1,1, 251)
+    
+    drawcircle(mouse.x(), mouse.y(),mouse.x()*0.1,1, 201+mouse.pressed(1)*20)
 no:
     'drawtext(textformat("mouse: %03i x ",mouse.x()) + textformat("%03i",mouse.y()), 0 , 0 , 1, 2)
     'drawrect(mouse.x(), mouse.y(),319,199,8,0)

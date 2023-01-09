@@ -44,12 +44,12 @@ class MBManager{
         static int drawText(struct mb_interpreter_t* s, void** l);
 
         //Tools
-        static int textformat(struct mb_interpreter_t* s, void** l);
+        static int textFormat(struct mb_interpreter_t* s, void** l);
         static int delta(struct mb_interpreter_t* s, void** l);
         //Input
         static int keyPressed(struct mb_interpreter_t* s, void** l);
         static int keyDown(struct mb_interpreter_t* s, void** l);
-        static int keyreleased(struct mb_interpreter_t* s, void** l);
+        static int keyReleased(struct mb_interpreter_t* s, void** l);
         static int keyUp(struct mb_interpreter_t* s, void** l);
         
         static int getKey(struct mb_interpreter_t* s, void** l);
@@ -57,4 +57,12 @@ class MBManager{
 
         static int mouseX(struct mb_interpreter_t* s, void** l);
         static int mouseY(struct mb_interpreter_t* s, void** l);
+        static int mouseWheel(struct mb_interpreter_t* s, void** l);  
+
+        static int mousePressed(struct mb_interpreter_t* s, void** l);
+        static int mouseDown(struct mb_interpreter_t* s, void** l);
+        static int mouseReleased(struct mb_interpreter_t* s, void** l);
+        static int mouseUp(struct mb_interpreter_t* s, void** l);  
+
+
 };
