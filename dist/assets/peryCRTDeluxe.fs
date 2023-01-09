@@ -19,7 +19,7 @@ uniform float uBlurFactor;
 uniform float vignetteIntensity = 0.20;
 
 uniform float hardScan = -8.0;
-uniform float chromatic = 0.5;
+uniform float chromatic = 0.3;
 
 const vec2 textureSize = vec2(320,200);
 uniform float curvatureDistance = 1;
@@ -27,11 +27,11 @@ uniform float curvatureDistance = 1;
 out vec4 finalColor;
 
 //
-float vignette(vec2 uv){
+vec3 vignette(vec2 uv, vec3 blur){
 	uv *= 1.0 - uv.xy;
-	if (uv.x < 0 ) return 0;
+	if (uv.x < 0 || uv.y < 0) return blur * 0.15;
 	float vignette = uv.x * uv.y * 15.0;
-	return clamp(pow(vignette, vignetteIntensity),0.0, 1.0);
+	return vec3(clamp(pow(vignette, vignetteIntensity),0.0, 1.0));
 }
 
 vec3 gamma(vec3 color, float outputGamma){
@@ -41,29 +41,19 @@ vec3 gamma(vec3 color, float outputGamma){
 //Noise
 float rand(vec2 co){
 	float speed = 0.001 * uTime;
-	return fract((sin( dot(co.xy , vec2(100.0 * speed, 1.0 * speed) )) * 10000.0+ speed));
+	return fract((sin( dot(co.xy , vec2(100.0 * speed, 1.0 * speed) )) * 16818.0+ speed));
 }
-            
-float noise (in vec2 st){
-	vec2 i = floor(st);
-	vec2 f = fract(st);
-
-	// Four corners in 2D of a tile
-	float a = rand(i);
-	float b = rand(i + vec2(1.0, 0.0));
-	float c = rand(i + vec2(0.0, 1.0));
-	float d = rand(i + vec2(1.0, 1.0));
-
-	// Smooth Interpolation
-	// Cubic Hermine Curve.  Same as SmoothStep()
-	vec2 u = f*f*(3.0-2.0*f);
-	u = smoothstep(0.,1.,f);
-	// Mix 4 coorners percentages
-	return mix(a, b, u.x) +
-       (c - a)* u.y * (1.0 - u.x) +
-       (d - b) * u.x * u.y;
+ 	
+float noise(vec2 p) {
+	p *= textureSize;
+	vec2 ip = floor(p);
+	vec2 u = fract(p);
+	u = u*u*(3.0-2.0*u);
+	float res = mix(
+		mix(rand(ip),rand(ip+vec2(1.0,0.0)),u.x),
+		mix(rand(ip+vec2(0.0,1.0)),rand(ip+vec2(1.0,1.0)),u.x),u.y);
+	return res*res;
 }
-
 
 vec2 dist(vec2 pos) {
 	pos = pos*vec4(textureSize, 1.0 / textureSize).xy;
@@ -96,19 +86,19 @@ void main(){
 
     vec3 texelColor = vec3(texelR, texelG, texelB);
     vec3 blurColor = texture2D(blurTexture, uv).rgb;
-    vec3 grille = texture2D(grilleTexture, uv * resolution.x * 0.1 ).rgb;
+    vec3 grille = texture2D(grilleTexture, uv * resolution.x * 0.08 ).rgb;
 
-    float noiseF = mix(0.96, 1, noise(uv * 320));
+    float noiseF = mix(0.92, 1, noise(uv));
 	float fliker = mix(0.98, 1, (sin(60.0*uTime+uv.y*4.0)*0.5+0.5));
 	float scanline = scan(uv,-1.0) + scan(uv,0.0) + scan(uv,1.0);
     vec3 blur = gamma(blurColor * uBlurPower, uBlurFactor);
 
-	texelColor += grille * 0.1;
+	texelColor += grille * 0.12;
     texelColor += blur;
     texelColor *= scanline;
     texelColor *= noiseF;
     texelColor *= fliker;
-    texelColor *= vignette(uv);
+    texelColor *= vignette(uv, blur);
 
     finalColor = vec4(texelColor, 1);
 

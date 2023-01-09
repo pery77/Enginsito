@@ -55,6 +55,10 @@ int main(int argc, char *argv[])
 		    tools->FullScreen();
 	    }
 
+        if(IsKeyReleased(KEY_F10)){
+		    postProcessing->ReloadShaders();
+	    }
+
         if(IsWindowResized()) 
         {
             tools->UpdateGameScreenRects();

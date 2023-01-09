@@ -56,6 +56,7 @@ goto no;
         'drawtriangle(x, y, x + rnd(-10,10), y + rnd(-20,20), x + rnd(-20,20), y + rnd(-20,20), rnd(0,1), rnd(0,255))
 
     next
+    drawcircle(mouse.x(), mouse.y(),mouse.x()*0.1,1, 251)
 no:
     'drawtext(textformat("mouse: %03i x ",mouse.x()) + textformat("%03i",mouse.y()), 0 , 0 , 1, 2)
     'drawrect(mouse.x(), mouse.y(),319,199,8,0)

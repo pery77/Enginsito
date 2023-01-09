@@ -20,14 +20,16 @@ class PostProcessing{
     float uBlurPower = 0.5;
     float uBlurFactor = 1;
 
+    void ReloadShaders();
+
     private:
     Tools* tools;
+    void setUpShaders();
 
     RenderTexture2D bufferTexture;
     Texture grilleTexture;
     Shader crtShader;
     Shader blurShader;
-    void setUpShaders();
 
     // Blur shader locations
     int pass;

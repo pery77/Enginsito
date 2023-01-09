@@ -34,26 +34,26 @@ class MBManager{
         //Draw
         static int cls(struct mb_interpreter_t* s, void** l);
         //Shapes
-        static int drawpixel(struct mb_interpreter_t* s, void** l);
-        static int drawline(struct mb_interpreter_t* s, void** l);
-        static int drawcircle(struct mb_interpreter_t* s, void** l);
-        static int drawellipse(struct mb_interpreter_t* s, void** l);
-        static int drawtriangle(struct mb_interpreter_t* s, void** l);
-        static int drawrect(struct mb_interpreter_t* s, void** l);
+        static int drawPixel(struct mb_interpreter_t* s, void** l);
+        static int drawLine(struct mb_interpreter_t* s, void** l);
+        static int drawCircle(struct mb_interpreter_t* s, void** l);
+        static int drawEllipse(struct mb_interpreter_t* s, void** l);
+        static int drawTriangle(struct mb_interpreter_t* s, void** l);
+        static int drawRect(struct mb_interpreter_t* s, void** l);
         //Text
-        static int drawtext(struct mb_interpreter_t* s, void** l);
+        static int drawText(struct mb_interpreter_t* s, void** l);
 
         //Tools
         static int textformat(struct mb_interpreter_t* s, void** l);
         static int delta(struct mb_interpreter_t* s, void** l);
         //Input
-        static int keypressed(struct mb_interpreter_t* s, void** l);
-        static int keydown(struct mb_interpreter_t* s, void** l);
+        static int keyPressed(struct mb_interpreter_t* s, void** l);
+        static int keyDown(struct mb_interpreter_t* s, void** l);
         static int keyreleased(struct mb_interpreter_t* s, void** l);
-        static int keyup(struct mb_interpreter_t* s, void** l);
+        static int keyUp(struct mb_interpreter_t* s, void** l);
         
-        static int getkey(struct mb_interpreter_t* s, void** l);
-        static int getkeychar(struct mb_interpreter_t* s, void** l);
+        static int getKey(struct mb_interpreter_t* s, void** l);
+        static int getKeyChar(struct mb_interpreter_t* s, void** l);
 
         static int mouseX(struct mb_interpreter_t* s, void** l);
         static int mouseY(struct mb_interpreter_t* s, void** l);

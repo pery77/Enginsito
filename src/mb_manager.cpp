@@ -43,24 +43,24 @@ void MBManager::OpenBas(){
 
 	mb_reg_fun(bas, cls);
 
-	mb_reg_fun(bas, drawpixel);
-	mb_reg_fun(bas, drawline);
-	mb_reg_fun(bas, drawcircle);
-	mb_reg_fun(bas, drawellipse);
-	mb_reg_fun(bas, drawtriangle);
-	mb_reg_fun(bas, drawrect);
+	mb_reg_fun(bas, drawPixel);
+	mb_reg_fun(bas, drawLine);
+	mb_reg_fun(bas, drawCircle);
+	mb_reg_fun(bas, drawEllipse);
+	mb_reg_fun(bas, drawTriangle);
+	mb_reg_fun(bas, drawRect);
 
-	mb_reg_fun(bas, drawtext);
+	mb_reg_fun(bas, drawText);
 	
 	mb_reg_fun(bas, textformat);
 	mb_reg_fun(bas, delta);
 
-	mb_reg_fun(bas, keypressed);
-	mb_reg_fun(bas, keydown);
+	mb_reg_fun(bas, keyPressed);
+	mb_reg_fun(bas, keyDown);
 	mb_reg_fun(bas, keyreleased);
-	mb_reg_fun(bas, keyup);
-	mb_reg_fun(bas, getkey);
-	mb_reg_fun(bas, getkeychar);
+	mb_reg_fun(bas, keyUp);
+	mb_reg_fun(bas, getKey);
+	mb_reg_fun(bas, getKeyChar);
 
 	mb_begin_module(bas, "MOUSE");
 		mb_register_func(bas, "X", mouseX); 
@@ -101,7 +101,7 @@ int MBManager::cls(struct mb_interpreter_t* s, void** l){
 	return MB_FUNC_OK;
 }
 
-int MBManager::drawpixel(struct mb_interpreter_t* s, void** l){
+int MBManager::drawPixel(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
 
@@ -121,7 +121,7 @@ int MBManager::drawpixel(struct mb_interpreter_t* s, void** l){
 
 	return MB_FUNC_OK;
 }
-int MBManager::drawline(struct mb_interpreter_t* s, void** l){
+int MBManager::drawLine(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
 
@@ -147,7 +147,7 @@ int MBManager::drawline(struct mb_interpreter_t* s, void** l){
 
 	return MB_FUNC_OK;
 }
-int MBManager::drawcircle(struct mb_interpreter_t* s, void** l){
+int MBManager::drawCircle(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
 
@@ -178,7 +178,7 @@ int MBManager::drawcircle(struct mb_interpreter_t* s, void** l){
 
 	return MB_FUNC_OK;
 }
-int MBManager::drawellipse(struct mb_interpreter_t* s, void** l){
+int MBManager::drawEllipse(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
 
@@ -211,7 +211,7 @@ int MBManager::drawellipse(struct mb_interpreter_t* s, void** l){
 
 	return MB_FUNC_OK;
 }
-int MBManager::drawtriangle(struct mb_interpreter_t* s, void** l){
+int MBManager::drawTriangle(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
 
@@ -248,7 +248,7 @@ int MBManager::drawtriangle(struct mb_interpreter_t* s, void** l){
 
 	return MB_FUNC_OK;
 }
-int MBManager::drawrect(struct mb_interpreter_t* s, void** l){
+int MBManager::drawRect(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
 
@@ -283,7 +283,7 @@ int MBManager::drawrect(struct mb_interpreter_t* s, void** l){
 	return MB_FUNC_OK;
 }
 
-int MBManager::drawtext(struct mb_interpreter_t* s, void** l){
+int MBManager::drawText(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
 
@@ -361,7 +361,7 @@ int MBManager::delta(struct mb_interpreter_t* s, void** l){
 	return MB_FUNC_OK;
 }
 // Input
-int MBManager::keypressed(struct mb_interpreter_t* s, void** l){
+int MBManager::keyPressed(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
 
@@ -380,7 +380,7 @@ int MBManager::keypressed(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;
 }
-int MBManager::keydown(struct mb_interpreter_t* s, void** l){
+int MBManager::keyDown(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
 
@@ -418,7 +418,7 @@ int MBManager::keyreleased(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;
 }
-int MBManager::keyup(struct mb_interpreter_t* s, void** l){
+int MBManager::keyUp(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
 
@@ -438,7 +438,7 @@ int MBManager::keyup(struct mb_interpreter_t* s, void** l){
 	return MB_FUNC_OK;
 }
 
-int MBManager::getkey(struct mb_interpreter_t* s, void** l){
+int MBManager::getKey(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
 
@@ -452,7 +452,7 @@ int MBManager::getkey(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;
 }
-int MBManager::getkeychar(struct mb_interpreter_t* s, void** l){
+int MBManager::getKeyChar(struct mb_interpreter_t* s, void** l){
 	
 	mb_assert(s && l);
 

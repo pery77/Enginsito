@@ -73,6 +73,7 @@ void PostProcessing::RenderBlur(){
 }
 
 void PostProcessing::RenderFinal(){
+
     BeginShaderMode(crtShader);
         SetShaderValue(crtShader, resolutionCRTLoc, &tools->resolution, SHADER_UNIFORM_VEC2);
         SetShaderValue(crtShader, uTimeLoc, &uTime, SHADER_UNIFORM_FLOAT);
@@ -87,4 +88,17 @@ void PostProcessing::RenderFinal(){
         DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect,
                                 { 0, 0 }, 0.0f, WHITE); 
     EndShaderMode();
+}
+
+void PostProcessing::ReloadShaders()
+{
+
+    UnloadRenderTexture(mainRender);
+    UnloadRenderTexture(bufferTexture);
+    UnloadTexture(grilleTexture);
+
+    UnloadShader(blurShader);
+    UnloadShader(crtShader);
+
+    setUpShaders();
 }
