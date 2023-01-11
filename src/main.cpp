@@ -28,21 +28,14 @@ static Tools* tools = new Tools();
 int sc = 0;
 
 
-tsf* ptsf = tsf_load_filename("assets/8bit.sf2");
+//tsf* ptsf = tsf_load_filename("assets/8bit.sf2");
 //tsf* ptsf = tsf_load_filename("assets/ins.sf2");
+tsf* ptsf = tsf_load_filename("assets/florestan-subset.sf2");
 
 void AudioInputCallback(void *buffer, unsigned int frames)
 {
 	int sampleCount = (frames / (0.5 * sizeof(short)));
 	tsf_render_short(ptsf, (short*)buffer, sampleCount, 0);
-}
-
-
-//void wait(unsigned int);
-
-void wait(unsigned int t)
-{
-    WaitTime(t * 0.001);
 }
 
 
@@ -98,9 +91,7 @@ int main(int argc, char *argv[])
 
 
 
-
-
-    tsf_set_output(ptsf, TSF_STEREO_INTERLEAVED, 44100, -10);          
+    tsf_set_output(ptsf, TSF_STEREO_INTERLEAVED, 44100, -7);          
 
 
     SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
@@ -116,31 +107,43 @@ int main(int argc, char *argv[])
         WaitTime(0.01);
     }
     */
-    //tsf_play(ptsf,0, "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2", 1.0f, wait);
+
+     const char* seq = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
+      seq = "C C# C C#         CC#CC#";
+     int counter = 0;
     // Game Loop
     while (!WindowShouldClose())
     {
 
 
-int k = GetKeyPressed();
-if (k!= 0)
-{
-    tsf_note_on(ptsf, sc, k, 1.0f);
-}
+    int k = GetKeyPressed();
+    if (k!= 0)
+    {
+        tsf_note_on(ptsf, sc, k, 1.0f);
+    }
 
 
 
+    tsf_play_async(ptsf, sc, seq, 1.0f);
+    if (seq && *seq && counter == 30) {
+        seq = tsf_play_await(ptsf, GetFrameTime());
+        counter = 0;
+    }
+    counter++;
 
         // Engine keys
         if(IsKeyReleased(KEY_F1)){
             showFps = !showFps;
+        
         }
 
         if(IsKeyReleased(KEY_F2)){
-            PlaySound(sound[sc]);
+            //PlaySound(sound[sc]);
             printf("PLAy %i\n",sc);
             if (sc > MAX_WAVE_SLOTS - 1) sc = 0;
-            tsf_play(ptsf,sc, "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2", 1.0f, wait);
+            //tsf_play_async(ptsf, sc,"ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2", 1.0);
+            seq = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
+            counter = 0;
             sc++;
         }
 
@@ -194,14 +197,6 @@ if (k!= 0)
                     ClearBackground(GRAY);
                     DrawTexture(test, 0, 0, WHITE);
                     DrawText("Press F5",0,0,8,RED);
-Vector2 position;
-             for (int i = 0; i < 200; i++)
-            {
-                position.x = (float)i;
-                //position.y = 128+ 50*(stream->buffer)[i*22050/200]/32000.0f;
-
-                DrawPixelV(position, RED);
-            }
                 }else{
                     basic->draw();
                 }
@@ -227,8 +222,10 @@ Vector2 position;
                                postProcessing->uTest = 
                     GuiSlider((Rectangle){0,90,300,20},"", TextFormat("%f",postProcessing->uTest),postProcessing->uTest ,-10,10);
                                                    postProcessing->uCurvature = 
-                    GuiSlider((Rectangle){0,110,300,20},"", TextFormat("%f",postProcessing->uCurvature),postProcessing->uCurvature ,-10,10);
+                    GuiSlider((Rectangle){0,110,300,20},"", TextFormat("%f",postProcessing->uCurvature),postProcessing->uCurvature ,0,1000);
             }
+    
+        sc =  GuiSlider((Rectangle){0,50,300,20},"", TextFormat("%i",sc),sc ,0,20);
 
         EndDrawing();
     }
