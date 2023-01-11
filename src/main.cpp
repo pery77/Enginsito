@@ -12,12 +12,28 @@
 #define RFXGEN_IMPLEMENTATION
 #include "rfxgen.h"
 
+#define TSF_IMPLEMENTATION
+#include "tsf.h"
+
+#define MAX_SAMPLES               512
+#define MAX_SAMPLES_PER_UPDATE   4096
+
 Texture test;
-Sound fxWav;
 
 static Tools* tools = new Tools();
-#define MAX_WAVE_SLOTS 255
+#define MAX_WAVE_SLOTS 32
 int sc = 0;
+
+
+//tsf* ptsf = tsf_load_filename("assets/8bit.sf2");
+tsf* ptsf = tsf_load_filename("assets/ins.sf2");
+
+void AudioInputCallback(void *buffer, unsigned int frames)
+{
+	int sampleCount = (frames / (0.5 * sizeof(short)));
+	tsf_render_short(ptsf, (short*)buffer, sampleCount, 0);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -45,10 +61,6 @@ int main(int argc, char *argv[])
     bool showFps = false;
 
     test = LoadTexture("assets/test.png");
-    Sound fxWav = LoadSound("assets/sound.wav");
-
-
-
 
 
     WaveParams params[MAX_WAVE_SLOTS] = { 0 }; // Wave parameters for generation
@@ -60,14 +72,14 @@ int main(int argc, char *argv[])
         // Reset generation parameters
         // NOTE: Random seed for generation is set
         ResetWaveParams(&params[i]);
-        params[i] = GenRandomize();
+        //params[i] = GenRandomize();
 
         // Default wave values
         wave[i].sampleRate = RFXGEN_GEN_SAMPLE_RATE;
         wave[i].sampleSize = RFXGEN_GEN_SAMPLE_SIZE;
         wave[i].channels = RFXGEN_GEN_CHANNELS;
         wave[i].frameCount = 10*wave[i].sampleRate;    // Max frame count for 10 seconds
-        wave[i].data = (float *)RL_CALLOC(wave[i].frameCount, sizeof(float));
+        //wave[i].data = (float *)RL_CALLOC(wave[i].frameCount, sizeof(float));
         wave[i].data = GenerateWave(params[i], &wave[i].frameCount);
         sound[i] = LoadSoundFromWave(wave[i]);
     }
@@ -77,14 +89,35 @@ int main(int argc, char *argv[])
 
 
 
+    tsf_set_output(ptsf, TSF_STEREO_INTERLEAVED, 44100, -10);          
+    tsf_play(ptsf, 0, "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2", 1.0f, 0);
+
+
+    SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
+    AudioStream stream = LoadAudioStream(44100, 16, 2);
+    SetAudioStreamCallback(stream, AudioInputCallback);
+
+    PlayAudioStream(stream);
+
+
 
     // Game Loop
     while (!WindowShouldClose())
     {
+
+
+int k = GetKeyPressed();
+if (k!= 0)
+{
+    tsf_note_on(ptsf, sc, k, 1.0f);
+}
+
+
+
+
         // Engine keys
         if(IsKeyReleased(KEY_F1)){
             showFps = !showFps;
-            PlaySound(fxWav);
         }
 
         if(IsKeyReleased(KEY_F2)){
@@ -143,6 +176,14 @@ int main(int argc, char *argv[])
                     ClearBackground(GRAY);
                     DrawTexture(test, 0, 0, WHITE);
                     DrawText("Press F5",0,0,8,RED);
+Vector2 position;
+             for (int i = 0; i < 200; i++)
+            {
+                position.x = (float)i;
+                //position.y = 128+ 50*(stream->buffer)[i*22050/200]/32000.0f;
+
+                DrawPixelV(position, RED);
+            }
                 }else{
                     basic->draw();
                 }
