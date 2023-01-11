@@ -15,6 +15,9 @@
 #define TSF_IMPLEMENTATION
 #include "tsf.h"
 
+#include<stdio.h>
+#include<stdlib.h>
+
 #define MAX_SAMPLES               512
 #define MAX_SAMPLES_PER_UPDATE   4096
 
@@ -25,13 +28,21 @@ static Tools* tools = new Tools();
 int sc = 0;
 
 
-//tsf* ptsf = tsf_load_filename("assets/8bit.sf2");
-tsf* ptsf = tsf_load_filename("assets/ins.sf2");
+tsf* ptsf = tsf_load_filename("assets/8bit.sf2");
+//tsf* ptsf = tsf_load_filename("assets/ins.sf2");
 
 void AudioInputCallback(void *buffer, unsigned int frames)
 {
 	int sampleCount = (frames / (0.5 * sizeof(short)));
 	tsf_render_short(ptsf, (short*)buffer, sampleCount, 0);
+}
+
+
+//void wait(unsigned int);
+
+void wait(unsigned int t)
+{
+    WaitTime(t * 0.001);
 }
 
 
@@ -90,7 +101,6 @@ int main(int argc, char *argv[])
 
 
     tsf_set_output(ptsf, TSF_STEREO_INTERLEAVED, 44100, -10);          
-    tsf_play(ptsf, 0, "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2", 1.0f, 0);
 
 
     SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
@@ -98,9 +108,15 @@ int main(int argc, char *argv[])
     SetAudioStreamCallback(stream, AudioInputCallback);
 
     PlayAudioStream(stream);
-
-
-
+    /*
+    const char* seq = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
+    tsf_play_async(ptsf, 0, seq, 1.0f);
+    while (seq && *seq) {
+        seq = tsf_play_await(ptsf, 10.0f / 1000.0f);
+        WaitTime(0.01);
+    }
+    */
+    //tsf_play(ptsf,0, "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2", 1.0f, wait);
     // Game Loop
     while (!WindowShouldClose())
     {
@@ -122,8 +138,10 @@ if (k!= 0)
 
         if(IsKeyReleased(KEY_F2)){
             PlaySound(sound[sc]);
-            printf("PLAy %i\n",sc++);
+            printf("PLAy %i\n",sc);
             if (sc > MAX_WAVE_SLOTS - 1) sc = 0;
+            tsf_play(ptsf,sc, "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2", 1.0f, wait);
+            sc++;
         }
 
         if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER))){
