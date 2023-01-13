@@ -68,13 +68,16 @@ goto no;
 
     next
     
-    draw.circle(mouse.x(), mouse.y(),mouse.x()*0.1,1, 201+mouse.pressed(1)*20)
+    draw.circle(mouse.x(), mouse.y(),mouse.x()*0.1,1, 201+mouse.down(0)*20)
 no:
     'draw.text(textformat("mouse: %03i x ",mouse.x()) + textformat("%03i",mouse.y()), 0 , 0 , 1, 2)
     'draw.rect(mouse.x(), mouse.y(),319,199,8,0)
     'draw.rect(0,0,mouse.x(), mouse.y(),6,0)
     'draw.text(textformat("%04f",7/22), 0 , 16 , 1, 26)
     'draw.rect(0,0,320,200,2,0)
+    for i = 0 to 20
+    sprite(mouse.x(),i*32,100,32);
+    next
 
 enddef
 

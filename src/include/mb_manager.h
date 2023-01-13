@@ -72,5 +72,8 @@ class MBManager{
 
         //Sound
         static int setSequence(struct mb_interpreter_t* s, void** l); 
-        static int playNote(struct mb_interpreter_t* s, void** l); 
+        static int playNote(struct mb_interpreter_t* s, void** l);
+
+        //Sprites
+        static int sprite(struct mb_interpreter_t* s, void** l);
 };

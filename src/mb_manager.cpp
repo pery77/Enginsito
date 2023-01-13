@@ -3,11 +3,13 @@
 
 Tools* tools;
 AudioManager* audioR;
+Texture2D texture;
 
 MBManager::MBManager(Tools* toolsref){
 	nullArg[0].type = MB_DT_NIL;
 	tools = toolsref;
 	audioR = new AudioManager();
+	texture = LoadTexture("assets/texture.png");
 }
 
 MBManager::~MBManager(){
@@ -85,6 +87,8 @@ void MBManager::OpenBas(){
 		mb_register_func(bas, "MUSIC", setSequence); 
 		mb_register_func(bas, "NOTE", playNote);
 	mb_end_module(bas);
+
+	mb_reg_fun(bas, sprite);
 
     mb_load_file(bas, f);
     
@@ -645,6 +649,28 @@ int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     audioR->PlayNote(key, voice, velocity);
+
+	return MB_FUNC_OK;
+}
+int MBManager::sprite(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+	int id = 0;
+	int x = 0;
+	int y = 0;
+	int size = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &id));
+		mb_check(mb_pop_int(s, l, &x));
+		mb_check(mb_pop_int(s, l, &y));
+		mb_check(mb_pop_int(s, l, &size));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    DrawTexturePro(texture, (Rectangle){id*size,0,size,size}, (Rectangle){x,y,size,size}, {0,0}, 0.0, WHITE);
 
 	return MB_FUNC_OK;
 }
