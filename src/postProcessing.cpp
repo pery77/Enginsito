@@ -1,4 +1,4 @@
-#include "include/postProcessing.h"
+#include "postProcessing.h"
 
 PostProcessing::PostProcessing(Tools* toolsref){
     tools = toolsref;
@@ -90,8 +90,7 @@ void PostProcessing::RenderFinal(){
     EndShaderMode();
 }
 
-void PostProcessing::ReloadShaders()
-{
+void PostProcessing::ReloadShaders(){
 
     UnloadRenderTexture(mainRender);
     UnloadRenderTexture(bufferTexture);

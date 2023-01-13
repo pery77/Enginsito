@@ -1,10 +1,8 @@
 #include "raylib.h"
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
-
-
-#include "ini_manager.h"
 #include "my_basic.h"
+
 #define TSF_IMPLEMENTATION
 #define RFXGEN_IMPLEMENTATION
 #include "tools.h"
@@ -12,18 +10,12 @@
 #include "mb_manager.h"
 #include "postProcessing.h"
 
-
 Texture test;
-
-static Tools* tools = new Tools();
-
-int sc = 0;
 
 int main(int argc, char *argv[])
 {
     IniManager* config = new IniManager();
-    tools = new Tools();
-    AudioManager* audio;
+    Tools* tools = new Tools();
 
     const int windowWidth = tools->GameScreenWidth * config->size;
     const int windowHeight = tools->GameScreenHeight * config->size;
@@ -54,13 +46,6 @@ int main(int argc, char *argv[])
         // Engine keys
         if(IsKeyReleased(KEY_F1)){
             showFps = !showFps;
-        }
-
-        if(IsKeyReleased(KEY_F2)){
-            PlaySound(audio->sound[sc]);
-            printf("PLAy %i\n",sc);
-            if (sc > MAX_WAVE_SLOTS - 1) sc = 0;
-            sc++;
         }
 
         if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER))){
@@ -100,7 +85,7 @@ int main(int argc, char *argv[])
         }
 
         // Update
-        basic->Update();
+        basic->UpdateAudio();
 
         if (running){
             basic->tick();
@@ -143,8 +128,6 @@ int main(int argc, char *argv[])
                     GuiSlider((Rectangle){0,110,300,20},"", TextFormat("%f",postProcessing->uCurvature),postProcessing->uCurvature ,0,1000);
             }
     
-        //sc =  GuiSlider((Rectangle){0,50,300,20},"", TextFormat("%i",sc),sc ,0,20);
-
         EndDrawing();
     }
 

@@ -23,7 +23,7 @@ class MBManager{
         void OpenBas();
         void CloseBas();
 
-        void Update();
+        void UpdateAudio();
 
     private:
         mb_value_t nullArg[1];

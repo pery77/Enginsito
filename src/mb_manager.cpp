@@ -12,7 +12,7 @@ MBManager::MBManager(Tools* toolsref){
 
 MBManager::~MBManager(){
 }
-void MBManager::Update(){
+void MBManager::UpdateAudio(){
 	audioR->Update();
 }
 void MBManager::doRoutine(char* routineName, mb_value_t routine){
@@ -633,16 +633,18 @@ int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 	mb_assert(s && l);
 
     int key;
+	int voice;
 	int velocity;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
 		mb_check(mb_pop_int(s, l, &key));
+		mb_check(mb_pop_int(s, l, &voice));
 		mb_check(mb_pop_int(s, l, &velocity));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->PlayNote(key, velocity);
+    audioR->PlayNote(key, voice, velocity);
 
 	return MB_FUNC_OK;
 }
