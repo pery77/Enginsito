@@ -3,8 +3,7 @@
 #include "ini.h"
 #include <fstream>
 
-class IniManager
-{
+class IniManager{
     public:
 
     	IniManager();
@@ -15,6 +14,5 @@ class IniManager
 
     private:
         void readIni();
-
 
 };

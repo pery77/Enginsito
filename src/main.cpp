@@ -9,35 +9,14 @@
 #include "mb_manager.h"
 #include "postProcessing.h"
 
-#define RFXGEN_IMPLEMENTATION
-#include "rfxgen.h"
-
 #define TSF_IMPLEMENTATION
-#include "tsf.h"
-
-#include<stdio.h>
-#include<stdlib.h>
-
-#define MAX_SAMPLES               512
-#define MAX_SAMPLES_PER_UPDATE   4096
+#define RFXGEN_IMPLEMENTATION
+#include "audio_manager.h"
 
 Texture test;
 
 static Tools* tools = new Tools();
-#define MAX_WAVE_SLOTS 32
 int sc = 0;
-
-
-//tsf* ptsf = tsf_load_filename("assets/8bit.sf2");
-//tsf* ptsf = tsf_load_filename("assets/ins.sf2");
-tsf* ptsf = tsf_load_filename("assets/florestan-subset.sf2");
-
-void AudioInputCallback(void *buffer, unsigned int frames)
-{
-	int sampleCount = (frames / (0.5 * sizeof(short)));
-	tsf_render_short(ptsf, (short*)buffer, sampleCount, 0);
-}
-
 
 int main(int argc, char *argv[])
 {
@@ -59,6 +38,7 @@ int main(int argc, char *argv[])
     InitAudioDevice();  
 
     PostProcessing* postProcessing = new PostProcessing(tools);
+    AudioManager* audio = new AudioManager();
 
     tools->UpdateGameScreenRects();
     bool running = false;
@@ -66,85 +46,33 @@ int main(int argc, char *argv[])
 
     test = LoadTexture("assets/test.png");
 
-
-    WaveParams params[MAX_WAVE_SLOTS] = { 0 }; // Wave parameters for generation
-    Wave wave[MAX_WAVE_SLOTS] = { 0 };
-    Sound sound[MAX_WAVE_SLOTS] = { 0 };
-
-    for (int i = 0; i < MAX_WAVE_SLOTS; i++)
-    {
-        // Reset generation parameters
-        // NOTE: Random seed for generation is set
-        ResetWaveParams(&params[i]);
-        //params[i] = GenRandomize();
-
-        // Default wave values
-        wave[i].sampleRate = RFXGEN_GEN_SAMPLE_RATE;
-        wave[i].sampleSize = RFXGEN_GEN_SAMPLE_SIZE;
-        wave[i].channels = RFXGEN_GEN_CHANNELS;
-        wave[i].frameCount = 10*wave[i].sampleRate;    // Max frame count for 10 seconds
-        //wave[i].data = (float *)RL_CALLOC(wave[i].frameCount, sizeof(float));
-        wave[i].data = GenerateWave(params[i], &wave[i].frameCount);
-        sound[i] = LoadSoundFromWave(wave[i]);
-    }
-
-
-
-
-    tsf_set_output(ptsf, TSF_STEREO_INTERLEAVED, 44100, -7);          
-
-
-    SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
-    AudioStream stream = LoadAudioStream(44100, 16, 2);
-    SetAudioStreamCallback(stream, AudioInputCallback);
-
-    PlayAudioStream(stream);
-    /*
-    const char* seq = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
-    tsf_play_async(ptsf, 0, seq, 1.0f);
-    while (seq && *seq) {
-        seq = tsf_play_await(ptsf, 10.0f / 1000.0f);
-        WaitTime(0.01);
-    }
-    */
-
-     const char* seq = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
-      seq = "C C# C C#         CC#CC#";
-     int counter = 0;
     // Game Loop
     while (!WindowShouldClose())
     {
 
-
-    int k = GetKeyPressed();
-    if (k!= 0)
-    {
-        tsf_note_on(ptsf, sc, k, 1.0f);
-    }
-
-
-
-    tsf_play_async(ptsf, sc, seq, 1.0f);
-    if (seq && *seq && counter == 30) {
-        seq = tsf_play_await(ptsf, GetFrameTime());
-        counter = 0;
-    }
-    counter++;
+        int k = GetKeyPressed();
+        if (k!= 0)
+        {
+            audio->PlayNote(k, 100);
+        }
 
         // Engine keys
         if(IsKeyReleased(KEY_F1)){
             showFps = !showFps;
-        
         }
 
         if(IsKeyReleased(KEY_F2)){
-            //PlaySound(sound[sc]);
+            PlaySound(audio->sound[sc]);
             printf("PLAy %i\n",sc);
             if (sc > MAX_WAVE_SLOTS - 1) sc = 0;
-            //tsf_play_async(ptsf, sc,"ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2", 1.0);
-            seq = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
-            counter = 0;
             sc++;
+        }
+
+        if(IsKeyReleased(KEY_F3)){
+            audio->SetSequence("CDEFGAB");
+        }
+        if(IsKeyReleased(KEY_F4)){
+            audio->Stop();
         }
 
         if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER))){
@@ -184,6 +112,8 @@ int main(int argc, char *argv[])
         }
 
         // Update
+        audio->Update();
+
         if (running){
             basic->tick();
         }
@@ -194,9 +124,9 @@ int main(int argc, char *argv[])
             //Draw game to texture.
             BeginTextureMode(postProcessing->mainRender);
                 if (!running){
-                    ClearBackground(GRAY);
-                    DrawTexture(test, 0, 0, WHITE);
-                    DrawText("Press F5",0,0,8,RED);
+                    ClearBackground(BLACK);
+                    //DrawTexture(test, 0, 0, WHITE);
+                    DrawText("CONSOLE HERE> _",0,0,8,WHITE);
                 }else{
                     basic->draw();
                 }
@@ -219,9 +149,9 @@ int main(int argc, char *argv[])
                     GuiSlider((Rectangle){0,50,300,20},"", TextFormat("%f",postProcessing->uBlurPower),postProcessing->uBlurPower ,0,20);
                 postProcessing->uBlurFactor = 
                     GuiSlider((Rectangle){0,70,300,20},"", TextFormat("%f",postProcessing->uBlurFactor),postProcessing->uBlurFactor ,0.2,2);
-                               postProcessing->uTest = 
+                postProcessing->uTest = 
                     GuiSlider((Rectangle){0,90,300,20},"", TextFormat("%f",postProcessing->uTest),postProcessing->uTest ,-10,10);
-                                                   postProcessing->uCurvature = 
+                postProcessing->uCurvature = 
                     GuiSlider((Rectangle){0,110,300,20},"", TextFormat("%f",postProcessing->uCurvature),postProcessing->uCurvature ,0,1000);
             }
     

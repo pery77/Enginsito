@@ -1,4 +1,4 @@
-#include "include/ini_manager.h"
+#include "ini_manager.h"
 
 IniManager::IniManager(){
 	readIni();
