@@ -27,8 +27,8 @@ class AudioManager {
     //tsf* ptsf = tsf_load_filename("assets/florestan-subset.sf2");
 
     void Update();
-
-    void SetSequence(const char* newSequence);
+    int voice = 0;
+    void SetSequence(const char* newSequence, int voice);
     const char* GetSequence();
 
     void PlayNote(int note, int voice, int volume);

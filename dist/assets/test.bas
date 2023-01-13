@@ -18,7 +18,7 @@ DEF tick()
         push(l, m)
     endif
 
-    IF key.released(32) THEN sound.music("e8e8f8g8g8f8e8d8c8c8d8e8d8c12c4") ENDIF
+    IF key.released(32) THEN sound.music("C C DDD   FF", 19) ENDIF
     IF key.pressed(72) THEN sound.note(60,20,100) ENDIF
     IF key.pressed(74) THEN sound.note(60,36,100) ENDIF
 

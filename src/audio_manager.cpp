@@ -27,8 +27,8 @@ AudioManager::AudioManager(){
         wave[i].data = GenerateWave(params[i], &wave[i].frameCount);
         sound[i] = LoadSoundFromWave(wave[i]);
     }
-    //ptsf = tsf_load_filename("assets/keygen.sf2");
-    ptsf = tsf_load_filename("assets/8bit.sf2");
+    ptsf = tsf_load_filename("assets/keygen.sf2");
+    
     SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
     AudioStream stream = LoadAudioStream(SAMPLERATE, SAMPLESIZE, CHANNELS);
     SetAudioStreamCallback(stream, audioInputCallback);
@@ -36,6 +36,7 @@ AudioManager::AudioManager(){
     PlayAudioStream(stream);
 
     tsf_set_output(ptsf, TSF_STEREO_INTERLEAVED, SAMPLERATE, -7); 
+
     //sequence = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
     GetPresets();
    
@@ -45,7 +46,7 @@ AudioManager::~AudioManager(){}
 
 void AudioManager::Update(){
 
-    tsf_play_async(ptsf, 10, sequence, 1.0f);
+    tsf_play_async(ptsf, voice, sequence, 1.0f);
 
     if (sequence && *sequence && audioTick == WAIT_TICKS) {
         sequence = tsf_play_await(ptsf, GetFrameTime());
@@ -61,8 +62,9 @@ void AudioManager::GetPresets()
 		printf("Preset #%d '%s'\n", i, tsf_get_presetname(ptsf, i));
 	}
 } 
-void AudioManager::SetSequence(const char* newSequence){
+void AudioManager::SetSequence(const char* newSequence, int newVoice){
     sequence = newSequence;
+    voice = newVoice;
     audioTick = 0;
 }
 const char* AudioManager::GetSequence(){
