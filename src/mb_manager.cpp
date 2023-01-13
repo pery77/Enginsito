@@ -2,14 +2,19 @@
 #include <assert.h>
 
 Tools* tools;
+AudioManager* audioR;
+
 MBManager::MBManager(Tools* toolsref){
 	nullArg[0].type = MB_DT_NIL;
 	tools = toolsref;
+	audioR = new AudioManager();
 }
 
 MBManager::~MBManager(){
 }
-
+void MBManager::Update(){
+	audioR->Update();
+}
 void MBManager::doRoutine(char* routineName, mb_value_t routine){
 	mb_get_routine(bas, &context, routineName, &routine);
     mb_eval_routine(bas, &context, routine, nullArg, 0, NULL);
@@ -74,6 +79,11 @@ void MBManager::OpenBas(){
 		mb_register_func(bas, "DOWN", mouseDown); 
 		mb_register_func(bas, "RELEASED", mouseReleased); 
 		mb_register_func(bas, "UP", mouseUp); 
+	mb_end_module(bas);
+
+	mb_begin_module(bas, "SOUND");
+		mb_register_func(bas, "MUSIC", setSequence); 
+		mb_register_func(bas, "NOTE", playNote);
 	mb_end_module(bas);
 
     mb_load_file(bas, f);
@@ -599,5 +609,40 @@ int MBManager::mouseUp(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = IsMouseButtonUp(keyCode);
     mb_check(mb_push_value(s, l, ret));
+	return MB_FUNC_OK;
+}
+int MBManager::setSequence(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+    char* arg = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_string(s, l, &arg));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SetSequence(arg);
+	printf(">> %s", arg);
+
+	return MB_FUNC_OK;
+}
+int MBManager::playNote(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+    int key;
+	int velocity;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &key));
+		mb_check(mb_pop_int(s, l, &velocity));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->PlayNote(key, velocity);
+
 	return MB_FUNC_OK;
 }

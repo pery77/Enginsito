@@ -1,8 +1,6 @@
 #include "audio_manager.h"
 
 tsf* ptsf;
-//int audioTick = 0;
-
 
 void audioInputCallback(void *buffer, unsigned int frames)
 {
@@ -37,7 +35,7 @@ AudioManager::AudioManager(){
     PlayAudioStream(stream);
 
     tsf_set_output(ptsf, TSF_STEREO_INTERLEAVED, 44100, -7); 
-sequence = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
+    //sequence = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
    
 }
 

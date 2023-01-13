@@ -2,27 +2,28 @@
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 
+
 #include "ini_manager.h"
 #include "my_basic.h"
-
+#define TSF_IMPLEMENTATION
+#define RFXGEN_IMPLEMENTATION
 #include "tools.h"
+
 #include "mb_manager.h"
 #include "postProcessing.h"
 
-#define TSF_IMPLEMENTATION
-#define RFXGEN_IMPLEMENTATION
-#include "audio_manager.h"
 
 Texture test;
 
 static Tools* tools = new Tools();
+
 int sc = 0;
 
 int main(int argc, char *argv[])
 {
     IniManager* config = new IniManager();
     tools = new Tools();
-    MBManager* basic = new MBManager(tools);
+    AudioManager* audio;
 
     const int windowWidth = tools->GameScreenWidth * config->size;
     const int windowHeight = tools->GameScreenHeight * config->size;
@@ -38,7 +39,7 @@ int main(int argc, char *argv[])
     InitAudioDevice();  
 
     PostProcessing* postProcessing = new PostProcessing(tools);
-    AudioManager* audio = new AudioManager();
+    MBManager* basic = new MBManager(tools);
 
     tools->UpdateGameScreenRects();
     bool running = false;
@@ -50,12 +51,6 @@ int main(int argc, char *argv[])
     while (!WindowShouldClose())
     {
 
-        int k = GetKeyPressed();
-        if (k!= 0)
-        {
-            audio->PlayNote(k, 100);
-        }
-
         // Engine keys
         if(IsKeyReleased(KEY_F1)){
             showFps = !showFps;
@@ -66,13 +61,6 @@ int main(int argc, char *argv[])
             printf("PLAy %i\n",sc);
             if (sc > MAX_WAVE_SLOTS - 1) sc = 0;
             sc++;
-        }
-
-        if(IsKeyReleased(KEY_F3)){
-            audio->SetSequence("CDEFGAB");
-        }
-        if(IsKeyReleased(KEY_F4)){
-            audio->Stop();
         }
 
         if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER))){
@@ -112,7 +100,7 @@ int main(int argc, char *argv[])
         }
 
         // Update
-        audio->Update();
+        basic->Update();
 
         if (running){
             basic->tick();
@@ -155,7 +143,7 @@ int main(int argc, char *argv[])
                     GuiSlider((Rectangle){0,110,300,20},"", TextFormat("%f",postProcessing->uCurvature),postProcessing->uCurvature ,0,1000);
             }
     
-        sc =  GuiSlider((Rectangle){0,50,300,20},"", TextFormat("%i",sc),sc ,0,20);
+        //sc =  GuiSlider((Rectangle){0,50,300,20},"", TextFormat("%i",sc),sc ,0,20);
 
         EndDrawing();
     }

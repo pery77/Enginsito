@@ -6,8 +6,6 @@
 #include <assert.h>
 #include "tools.h"
 
-
-
 class MBManager{
 
     public:
@@ -25,6 +23,8 @@ class MBManager{
         void OpenBas();
         void CloseBas();
 
+        void Update();
+
     private:
         mb_value_t nullArg[1];
         mb_value_t initRoutine;
@@ -33,8 +33,10 @@ class MBManager{
         mb_value_t endRoutine;
 
         void doRoutine(char* routineName, mb_value_t routine);
+
         //Draw
         static int cls(struct mb_interpreter_t* s, void** l);
+
         //Shapes
         static int drawPixel(struct mb_interpreter_t* s, void** l);
         static int drawLine(struct mb_interpreter_t* s, void** l);
@@ -42,12 +44,14 @@ class MBManager{
         static int drawEllipse(struct mb_interpreter_t* s, void** l);
         static int drawTriangle(struct mb_interpreter_t* s, void** l);
         static int drawRect(struct mb_interpreter_t* s, void** l);
+
         //Text
         static int drawText(struct mb_interpreter_t* s, void** l);
 
         //Tools
         static int textFormat(struct mb_interpreter_t* s, void** l);
         static int delta(struct mb_interpreter_t* s, void** l);
+
         //Input
         static int keyPressed(struct mb_interpreter_t* s, void** l);
         static int keyDown(struct mb_interpreter_t* s, void** l);
@@ -65,4 +69,8 @@ class MBManager{
         static int mouseDown(struct mb_interpreter_t* s, void** l);
         static int mouseReleased(struct mb_interpreter_t* s, void** l);
         static int mouseUp(struct mb_interpreter_t* s, void** l);  
+
+        //Sound
+        static int setSequence(struct mb_interpreter_t* s, void** l); 
+        static int playNote(struct mb_interpreter_t* s, void** l); 
 };

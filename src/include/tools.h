@@ -2,6 +2,8 @@
 #include "../../libs/raylib/include/raylib.h"
 #include "../../libs/raylib/include/raymath.h"
 
+#include "audio_manager.h"
+
 #define max(a, b) ((a)>(b)? (a) : (b))
 #define min(a, b) ((a)<(b)? (a) : (b))
 

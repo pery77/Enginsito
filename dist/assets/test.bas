@@ -10,12 +10,15 @@ DEF tick()
     k = key.get()
     IF k <> 0 THEN 
         push(l,k)
+        IF k <> 32 then sound.note(k,100) endif
         IF len(l)>5 THEN remove(l,0) ENDIF
     ENDIF
     m = mouse.wheel()
     IF m <> 0 THEN
         push(l, m)
     endif
+
+    IF key.released(32) THEN sound.music("L2 CFGA B8 C.4") ENDIF
 
 ENDDEF
 
