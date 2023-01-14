@@ -10,12 +10,15 @@
 #include "mb_manager.h"
 #include "postProcessing.h"
 
+#include "bios.h"
+
 Texture test;
 
 int main(int argc, char *argv[])
 {
     IniManager* config = new IniManager();
     Tools* tools = new Tools();
+    Bios* bios = new Bios();
 
     const int windowWidth = tools->GameScreenWidth * config->size;
     const int windowHeight = tools->GameScreenHeight * config->size;
@@ -97,9 +100,7 @@ int main(int argc, char *argv[])
             //Draw game to texture.
             BeginTextureMode(postProcessing->mainRender);
                 if (!running){
-                    ClearBackground(BLACK);
-                    //DrawTexture(test, 0, 0, WHITE);
-                    DrawText("CONSOLE HERE> _",0,0,8,WHITE);
+                    bios->Update();
                 }else{
                     basic->draw();
                 }
