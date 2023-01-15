@@ -23,4 +23,6 @@ class Tools{
         static Color GetColor(int col);
         static int GetVirtualMouse(bool isXAxis);
         static bool CompareFloats(float x, float y, float epsilon);
+
+        static void Trim(char * s);
 };

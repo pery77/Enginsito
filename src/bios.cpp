@@ -24,24 +24,34 @@ void Bios::Update(){
     int key = GetKeyPressed();
 
     if (key != 0){
-        //printf("Key: %i\n",key);
-        if (key == 257) {
-            ProcessCommand();
-            printf("liney: %i\n", lineY);
+        if (key == 257) { //Enter
             if (lineY > 180) screenLines.erase(0, screenLines.find("\n") + 1);
+            ProcessCommand();
         }
-        if (key == 259 && strlen(currentLine.c_str()) > 0) currentLine.pop_back();
+        if (key == 259 && strlen(currentLine.c_str()) > 0) currentLine.pop_back(); //Backspace
+        if (key == 261 && strlen(currentLine.c_str()) > 0) currentLine.clear(); //Delete
+        //printf("Key: %i\n",key);
     }
     if (ch != 0 && MeasureText(currentLine.c_str(),8) < 310){
-        //printf("Char: %i\n",ch);
         currentLine.push_back(char(ch));
+        //printf("Char: %i\n",ch);
     }
 }
 
+
+
 void Bios::ProcessCommand()
 {
+    Tools::Trim((char*)currentLine.c_str());
+    char delim[] = " ";
+    char *ptr = strtok((char*)currentLine.c_str(), delim);
+    while(ptr != NULL)
+	{
+		printf("'%s'\n", ptr);
+		ptr = strtok(NULL, delim);
+	}
+
     currentLine.push_back('\n');
     screenLines += currentLine;
-    printf("%s", screenLines.c_str());
-    currentLine = "";
+    currentLine.clear();;
 }

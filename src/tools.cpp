@@ -38,3 +38,13 @@ bool Tools::CompareFloats(float x, float y, float epsilon){
    if(fabs(x - y) < epsilon) return true;
       return false;
 }
+
+void Tools::Trim(char * s) {
+    char * p = s;
+    int l = strlen(p);
+
+    while(isspace(p[l - 1])) p[--l] = 0;
+    while(* p && isspace(* p)) ++p, --l;
+
+    memmove(s, p, l + 1);
+} 
