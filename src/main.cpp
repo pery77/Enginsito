@@ -28,7 +28,8 @@ int main(int argc, char *argv[]){
 	SetWindowMinSize(GAME_SCREEN_W, GAME_SCREEN_H);
 	SetTargetFPS(60);
 
-    InitAudioDevice();  
+    InitAudioDevice();
+    HideCursor();
 
     PostProcessing* postProcessing = new PostProcessing();
     MBManager* basic = new MBManager();
@@ -66,14 +67,11 @@ int main(int argc, char *argv[]){
             }
             
             basic->OpenBas(); 
-
-            HideCursor();
             basic->init();
             running = true;
         }
         if (IsKeyReleased(KEY_F6)){ 
             if (running){
-                ShowCursor();
                 basic->end();
                 running = false;
                 basic->CloseBas();

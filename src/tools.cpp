@@ -33,3 +33,8 @@ int Tools::GetVirtualMouse(bool isXAxis){
     float value = (mouse - (screen - (gamescreen * screenScale)) * 0.5f) / screenScale;
     return (int)Clamp(value, 0,(float)gamescreen);
 }
+
+bool Tools::CompareFloats(float x, float y, float epsilon){
+   if(fabs(x - y) < epsilon) return true;
+      return false;
+}

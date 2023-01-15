@@ -100,14 +100,9 @@ void PostProcessing::ReloadShaders(){
 
     setUpShaders();
 }
-bool compare_float(float x, float y, float epsilon = 0.1f){
-   if(fabs(x - y) < epsilon)
-      return true; //they are same
-      return false; //they are not same
-}
+
 
 void PostProcessing::UpdateGameScreenRects(){
-
 
 	screenScale = min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
 	gameRect = { 0, 0, (float)(GAME_SCREEN_W), -(float)(GAME_SCREEN_H)};
@@ -115,12 +110,11 @@ void PostProcessing::UpdateGameScreenRects(){
 	resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
 
 	currentAspectRatio = (float)GetScreenWidth()/GetScreenHeight();
-    bool aspectRatioOk = compare_float(currentAspectRatio , GAME_RATIO);
+    bool aspectRatioOk = Tools::CompareFloats(currentAspectRatio , GAME_RATIO, 0.05);
 
 	if (!aspectRatioOk) {
 		SetWindowSize((currentAspectRatio > GAME_RATIO) ? GAME_SCREEN_W * screenScale : GetScreenWidth(), 
 					  (currentAspectRatio > GAME_RATIO) ? GetScreenHeight() : GAME_SCREEN_H * screenScale);
-        //WaitTime(0.1);
         UpdateGameScreenRects();
 	}
 }
@@ -135,7 +129,7 @@ void PostProcessing::FullScreen(){
 		{
 			SetWindowSize(currentR.x, currentR.y);
 			float currentRatio =(float)GetScreenWidth()/GetScreenHeight();
-			if (compare_float(currentRatio,GAME_RATIO)) break;
+			if (Tools::CompareFloats(currentRatio, GAME_RATIO, 0.05)) break;
 		}
 		UpdateGameScreenRects();
 		ToggleFullscreen();
