@@ -18,8 +18,11 @@ uniform float uBlurFactor;
 
 uniform float vignetteIntensity = 0.20;
 
-uniform float hardScan = -8.0;
+uniform float hardScan = -6.0;
 uniform float chromatic = 0.3;
+
+uniform float grilleForce = 0.15;
+uniform float grilleLevel = 0.08;
 
 const vec2 textureSize = vec2(320,200);
 uniform float curvatureDistance = 1;
@@ -86,14 +89,14 @@ void main(){
 
     vec3 texelColor = vec3(texelR, texelG, texelB);
     vec3 blurColor = texture2D(blurTexture, uv).rgb;
-    vec3 grille = texture2D(grilleTexture, uv * resolution.x * 0.08 ).rgb;
+    vec3 grille = texture2D(grilleTexture, uv * resolution.x * grilleLevel ).rgb;
 
     float noiseF = mix(0.92, 1, noise(uv));
 	float fliker = mix(0.98, 1, (sin(60.0*uTime+uv.y*4.0)*0.5+0.5));
 	float scanline = scan(uv,-1.0) + scan(uv,0.0) + scan(uv,1.0);
     vec3 blur = gamma(blurColor * uBlurPower, uBlurFactor);
 
-	texelColor += grille * 0.12;
+	texelColor += grille * grilleForce;
     texelColor += blur;
     texelColor *= scanline;
     texelColor *= noiseF;

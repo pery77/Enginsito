@@ -2,11 +2,24 @@
 #include "../../libs/raylib/include/raylib.h"
 #include "tools.h"
 
+struct BlurPass{
+	int passType; //Pass 0 downScale, other upScale
+	float offset;
+};
+
 class PostProcessing{
 
     public:
-    PostProcessing(Tools* toolsref);
+    PostProcessing();
     ~PostProcessing();
+
+    Vector2i resolution16_10[5] = {
+    {2560,1600},
+    {1920,1200},
+    {1680,1050},
+    {1440,900},
+    {1280,800}
+    };
 
     void RenderMain();
     void RenderBlur();
@@ -22,14 +35,23 @@ class PostProcessing{
 
     void ReloadShaders();
 
+    void UpdateGameScreenRects();
+    void FullScreen();
+
+	float screenScale;
+	float previusWindowsWidth;
+	float previusWindowsHeight;
+	float currentAspectRatio;
+
     private:
-    Tools* tools;
     void setUpShaders();
 
     RenderTexture2D bufferTexture;
     Texture grilleTexture;
     Shader crtShader;
     Shader blurShader;
+
+	BlurPass blurPasses[5] = {{0,2},{0,3},{0,8},{1,2},{1,3}};
 
     // Blur shader locations
     int pass;
@@ -46,5 +68,9 @@ class PostProcessing{
 
     int blurPowerLoc;
     int blurFactorLoc;
+
+    Rectangle gameRect = { 0, 0, (float)(320), -(float)(200)};
+    Rectangle gameScaledRect { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
+    Vector2 resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
 
 };

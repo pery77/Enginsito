@@ -1,13 +1,11 @@
 #include "mb_manager.h"
 #include <assert.h>
 
-Tools* tools;
 AudioManager* audioR;
 Texture2D texture;
 
-MBManager::MBManager(Tools* toolsref){
+MBManager::MBManager(){
 	nullArg[0].type = MB_DT_NIL;
-	tools = toolsref;
 	audioR = new AudioManager();
 	texture = LoadTexture("assets/texture.png");
 }
@@ -119,7 +117,7 @@ int MBManager::cls(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ClearBackground(tools->GetColor(col));
+    ClearBackground(Tools::GetColor(col));
 
 	return MB_FUNC_OK;
 }
@@ -140,7 +138,7 @@ int MBManager::drawPixel(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	DrawPixel(x, y, tools->GetColor(col));
+	DrawPixel(x, y, Tools::GetColor(col));
 
 	return MB_FUNC_OK;
 }
@@ -166,7 +164,7 @@ int MBManager::drawLine(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	DrawLineEx((Vector2){x1,y1}, (Vector2){x2,y2}, thick, tools->GetColor(col));
+	DrawLineEx((Vector2){x1,y1}, (Vector2){x2,y2}, thick, Tools::GetColor(col));
 
 	return MB_FUNC_OK;
 }
@@ -192,10 +190,10 @@ int MBManager::drawCircle(struct mb_interpreter_t* s, void** l){
 
 	switch (style){
 		case 0:
-			DrawCircleLines(x, y, r, tools->GetColor(col));
+			DrawCircleLines(x, y, r, Tools::GetColor(col));
 			break;
 		default:
-			DrawCircle(x, y, r, tools->GetColor(col));
+			DrawCircle(x, y, r, Tools::GetColor(col));
 			break;
 	}
 
@@ -225,10 +223,10 @@ int MBManager::drawEllipse(struct mb_interpreter_t* s, void** l){
 
 	switch (style){
 		case 0:
-			DrawEllipseLines(x, y, rh, rv, tools->GetColor(col));
+			DrawEllipseLines(x, y, rh, rv, Tools::GetColor(col));
 			break;
 		default:
-			DrawEllipse(x, y, rh, rv, tools->GetColor(col));
+			DrawEllipse(x, y, rh, rv, Tools::GetColor(col));
 			break;
 	}
 
@@ -262,10 +260,10 @@ int MBManager::drawTriangle(struct mb_interpreter_t* s, void** l){
 
 	switch (style){
 		case 0:
-			DrawTriangleLines((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, tools->GetColor(col));
+			DrawTriangleLines((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, Tools::GetColor(col));
 			break;
 		default:
-			DrawTriangle((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, tools->GetColor(col));
+			DrawTriangle((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, Tools::GetColor(col));
 			break;
 	}
 
@@ -296,10 +294,10 @@ int MBManager::drawRect(struct mb_interpreter_t* s, void** l){
 	switch (style)
 	{
 		case 0:
-			DrawRectangleLines(x, y, w, h, tools->GetColor(col));
+			DrawRectangleLines(x, y, w, h, Tools::GetColor(col));
 			break;
 		default:
-			DrawRectangle(x, y, w, h, tools->GetColor(col));
+			DrawRectangle(x, y, w, h, Tools::GetColor(col));
 			break;
 	}
 
@@ -326,7 +324,7 @@ int MBManager::drawText(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    DrawText(arg, x, y, size, tools->GetColor(col));
+    DrawText(arg, x, y, size, Tools::GetColor(col));
 
 	return MB_FUNC_OK;
 }
@@ -500,7 +498,7 @@ int MBManager::mouseX(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    position.value.integer = tools->GetVirtualMouse(true);
+    position.value.integer = Tools::GetVirtualMouse(true);
 
     mb_check(mb_push_value(s, l, position));
 
@@ -516,7 +514,7 @@ int MBManager::mouseY(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    position.value.integer = tools->GetVirtualMouse(false);
+    position.value.integer = Tools::GetVirtualMouse(false);
 
     mb_check(mb_push_value(s, l, position));
 

@@ -1,18 +1,17 @@
 #include "postProcessing.h"
 
-PostProcessing::PostProcessing(Tools* toolsref){
-    tools = toolsref;
+PostProcessing::PostProcessing(){
     setUpShaders();
 }
 PostProcessing::~PostProcessing(){}
 
 void PostProcessing::setUpShaders(){
 
-	mainRender = LoadRenderTexture(tools->GameScreenWidth, tools->GameScreenHeight);
+	mainRender = LoadRenderTexture(GAME_SCREEN_W, GAME_SCREEN_H);
 	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(mainRender.texture,TEXTURE_WRAP_MIRROR_REPEAT);
 
-    bufferTexture = LoadRenderTexture(tools->GameScreenWidth * 8 , tools->GameScreenHeight * 8);
+    bufferTexture = LoadRenderTexture(GAME_SCREEN_W * 8 , GAME_SCREEN_H * 8);
 	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT);
 
@@ -50,7 +49,7 @@ void PostProcessing::setUpShaders(){
 void PostProcessing::RenderMain(){
     BeginTextureMode(bufferTexture);
     ClearBackground(BLACK);
-        DrawTexturePro(mainRender.texture, tools->gameRect, 
+        DrawTexturePro(mainRender.texture, gameRect, 
                         (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height},
                         { 0, 0 }, 0.0f, WHITE); 
     EndTextureMode();
@@ -59,8 +58,8 @@ void PostProcessing::RenderMain(){
 void PostProcessing::RenderBlur(){
 
     BeginShaderMode(blurShader);
-        SetShaderValue(blurShader, resolutionLoc, &tools->resolution, SHADER_UNIFORM_VEC2);
-        for (auto blur : tools->blurPasses){
+        SetShaderValue(blurShader, resolutionLoc, &resolution, SHADER_UNIFORM_VEC2);
+        for (auto blur : blurPasses){
             SetShaderValue(blurShader, pass, &blur.passType, SHADER_UNIFORM_INT);
             SetShaderValue(blurShader, offsetLoc, &blur.offset, SHADER_UNIFORM_FLOAT);
             BeginTextureMode(bufferTexture);
@@ -75,7 +74,7 @@ void PostProcessing::RenderBlur(){
 void PostProcessing::RenderFinal(){
 
     BeginShaderMode(crtShader);
-        SetShaderValue(crtShader, resolutionCRTLoc, &tools->resolution, SHADER_UNIFORM_VEC2);
+        SetShaderValue(crtShader, resolutionCRTLoc, &resolution, SHADER_UNIFORM_VEC2);
         SetShaderValue(crtShader, uTimeLoc, &uTime, SHADER_UNIFORM_FLOAT);
         SetShaderValue(crtShader, testLoc, &uTest, SHADER_UNIFORM_FLOAT);
         SetShaderValue(crtShader, curvatureLoc, &uCurvature, SHADER_UNIFORM_FLOAT);
@@ -85,7 +84,7 @@ void PostProcessing::RenderFinal(){
 
         SetShaderValueTexture(crtShader, grilleLoc, grilleTexture);
         SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
-        DrawTexturePro(mainRender.texture, tools->gameRect, tools->gameScaledRect,
+        DrawTexturePro(mainRender.texture, gameRect, gameScaledRect,
                                 { 0, 0 }, 0.0f, WHITE); 
     EndShaderMode();
 }
@@ -100,4 +99,51 @@ void PostProcessing::ReloadShaders(){
     UnloadShader(crtShader);
 
     setUpShaders();
+}
+bool compare_float(float x, float y, float epsilon = 0.1f){
+   if(fabs(x - y) < epsilon)
+      return true; //they are same
+      return false; //they are not same
+}
+
+void PostProcessing::UpdateGameScreenRects(){
+
+
+	screenScale = min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
+	gameRect = { 0, 0, (float)(GAME_SCREEN_W), -(float)(GAME_SCREEN_H)};
+	gameScaledRect = { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
+	resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
+
+	currentAspectRatio = (float)GetScreenWidth()/GetScreenHeight();
+    bool aspectRatioOk = compare_float(currentAspectRatio , GAME_RATIO);
+
+	if (!aspectRatioOk) {
+		SetWindowSize((currentAspectRatio > GAME_RATIO) ? GAME_SCREEN_W * screenScale : GetScreenWidth(), 
+					  (currentAspectRatio > GAME_RATIO) ? GetScreenHeight() : GAME_SCREEN_H * screenScale);
+        //WaitTime(0.1);
+        UpdateGameScreenRects();
+	}
+}
+
+void PostProcessing::FullScreen(){
+    if (!IsWindowFullscreen())
+	{
+		previusWindowsWidth = GetScreenWidth();
+		previusWindowsHeight = GetScreenHeight();
+
+		for(auto currentR : resolution16_10)
+		{
+			SetWindowSize(currentR.x, currentR.y);
+			float currentRatio =(float)GetScreenWidth()/GetScreenHeight();
+			if (compare_float(currentRatio,GAME_RATIO)) break;
+		}
+		UpdateGameScreenRects();
+		ToggleFullscreen();
+	}
+	else
+	{
+		ToggleFullscreen();
+		SetWindowSize(previusWindowsWidth, previusWindowsHeight);
+		UpdateGameScreenRects();
+	}
 }

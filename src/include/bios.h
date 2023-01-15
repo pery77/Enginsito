@@ -6,6 +6,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "tools.h"
+
 class Bios{
     public:
         Bios();
@@ -15,6 +17,9 @@ class Bios{
 
         void Update();
         void ProcessCommand();
+
+        int backColor = 0;
+        int frontColor = 9;
     private:
         float delta;
         std::string currentLine = "";

@@ -12,35 +12,29 @@
 
 #include "bios.h"
 
-Texture test;
+int main(int argc, char *argv[]){
 
-int main(int argc, char *argv[])
-{
     IniManager* config = new IniManager();
-    Tools* tools = new Tools();
     Bios* bios = new Bios();
 
-    const int windowWidth = tools->GameScreenWidth * config->size;
-    const int windowHeight = tools->GameScreenHeight * config->size;
+    const int windowWidth = GAME_SCREEN_W * config->size;
+    const int windowHeight = GAME_SCREEN_H * config->size;
 
 	//Set Vsync and make the window resizeable
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
 
 	//Create window
 	InitWindow(windowWidth, windowHeight, "peryEngine");
-	SetWindowMinSize(tools->GameScreenWidth, tools->GameScreenHeight);
+	SetWindowMinSize(GAME_SCREEN_W, GAME_SCREEN_H);
 	SetTargetFPS(60);
 
     InitAudioDevice();  
 
-    PostProcessing* postProcessing = new PostProcessing(tools);
-    MBManager* basic = new MBManager(tools);
+    PostProcessing* postProcessing = new PostProcessing();
+    MBManager* basic = new MBManager();
 
-    tools->UpdateGameScreenRects();
     bool running = false;
     bool showFps = false;
-
-    test = LoadTexture("assets/test.png");
 
     // Game Loop
     while (!WindowShouldClose())
@@ -52,16 +46,15 @@ int main(int argc, char *argv[])
         }
 
         if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER))){
-		    tools->FullScreen();
+		    postProcessing->FullScreen();
 	    }
 
         if(IsKeyReleased(KEY_F10)){
 		    postProcessing->ReloadShaders();
 	    }
 
-        if(IsWindowResized()) 
-        {
-            tools->UpdateGameScreenRects();
+        if(IsWindowResized()) {
+            postProcessing->UpdateGameScreenRects();
         }
 
         postProcessing->uTime = GetTime();

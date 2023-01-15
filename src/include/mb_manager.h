@@ -12,7 +12,7 @@ class MBManager{
         struct mb_interpreter_t* bas = NULL;
         void* context = NULL;
 
-        MBManager(Tools* toolsref);
+        MBManager();
         ~MBManager();
 
         void init();
