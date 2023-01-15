@@ -30,7 +30,7 @@ void Bios::Update(){
         }
         if (key == 259 && strlen(currentLine.c_str()) > 0) currentLine.pop_back(); //Backspace
         if (key == 261 && strlen(currentLine.c_str()) > 0) currentLine.clear(); //Delete
-        printf("Key: %i\n",key);
+        //printf("Key: %i\n",key);
     }
     if (ch != 0 && MeasureText(currentLine.c_str(),8) < 310){
         currentLine.push_back(char(ch));
@@ -54,50 +54,53 @@ void Bios::ProcessCommand()
     Tools::Trim((char*)currentLine.c_str());
     char *ptr = strtok((char*)currentLine.c_str(), delim);
     
-    LastCommand.command = "";
+    lastCommand.command = "";
     for (int i = 0; i < 9; i++)	{
-        LastCommand.args[i] = "";
+        lastCommand.args[i] = "";
 	}
 
     int i = 0;
     while(ptr != NULL){
         if (i == 0) 
-            LastCommand.command = toUpper(ptr);
+            lastCommand.command = toUpper(ptr);
         else
-            LastCommand.args[i-1] = toUpper(ptr);
+            lastCommand.args[i-1] = toUpper(ptr);
 
         i++;
 		ptr = strtok(NULL, delim);
         if (i>9) break;
 	}
 /*
-    printf("Command: '%s'\n", LastCommand.command.c_str()); 
+    printf("Command: '%s'\n", lastCommand.command.c_str()); 
     for (int i = 0; i < 9; i++)	{
-        if (LastCommand.args[i] == "") break;
-		printf("Args: '%s', ", LastCommand.args[i].c_str()); 
+        if (lastCommand.args[i] == "") break;
+		printf("Args: '%s', ", lastCommand.args[i].c_str()); 
 	}
 */
     currentLine.clear();
 
 
-    if (LastCommand.command == "CLS"){
+    if (lastCommand.command == "CLS"){
         screenLines.clear();
         return;
     }
-    if (LastCommand.command == "EXIT"){
+    if (lastCommand.command == "EXIT"){
         ShouldClose = true;
         return;
     }
-    if (LastCommand.command == "COLOR"){
-        int bc = atoi(LastCommand.args[0].c_str());
-        int fc = atoi(LastCommand.args[1].c_str());
+    if (lastCommand.command == "COLOR"){
+        int bc = atoi(lastCommand.args[0].c_str());
+        int fc = atoi(lastCommand.args[1].c_str());
         if (bc != fc){
             backColor = bc;
             frontColor = fc;
         }
         return;
     }
-
+    if (lastCommand.command == "RUN"){
+        ShouldRun = true;
+        return;
+    }
 
 
 }

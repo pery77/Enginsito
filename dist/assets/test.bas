@@ -34,7 +34,7 @@ enddef
 def draw()
     time = (time + delta()) mod 1000
     'IF time < 100 THEN
-        cls(3)
+        cls(0)
     'ENDIF
    IF 0 THEN
     for j = 0 to 11

@@ -17,6 +17,7 @@ class Bios{
         void ProcessCommand();
 
         bool ShouldClose = false;
+        bool ShouldRun= false;
 
     private:
         float delta;
@@ -26,6 +27,6 @@ class Bios{
         int backColor = 39;
         int frontColor = 7;
         const char* cursor = "";
-  
-        Command LastCommand = (Command){""};
+
+        Command lastCommand;
 };

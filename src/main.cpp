@@ -43,7 +43,6 @@ int main(int argc, char *argv[]){
     // Game Loop
     while (!(bios->ShouldClose || WindowShouldClose()))
     {
-
         // Engine keys
         if(IsKeyReleased(KEY_F1)){
             showFps = !showFps;
@@ -64,7 +63,8 @@ int main(int argc, char *argv[]){
         postProcessing->uTime = GetTime();
         
         //Interpreter
-        if (IsKeyReleased(KEY_F5)){ 
+        if (IsKeyReleased(KEY_F5) || bios->ShouldRun){ 
+            bios->ShouldRun = false;
             if (currentState == Running){
                 basic->end();
             }
@@ -156,6 +156,7 @@ int main(int argc, char *argv[]){
 
     delete config;
     delete basic;
+    delete postProcessing;
 
     return 0;
 }
