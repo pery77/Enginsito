@@ -30,15 +30,18 @@ int main(int argc, char *argv[]){
 
     InitAudioDevice();
     HideCursor();
+    SetExitKey(KEY_NULL);
 
     PostProcessing* postProcessing = new PostProcessing();
     MBManager* basic = new MBManager();
 
-    bool running = false;
+    GameState currentState = Off;
     bool showFps = false;
+    const char * pauseMessage = "Paused, press ESC again to exit.";
+    int pauseMessageSize = MeasureText("Paused, press ESC again to exit.", 8) * 0.5f;
 
     // Game Loop
-    while (!bios->ShouldClose)
+    while (!(bios->ShouldClose || WindowShouldClose()))
     {
 
         // Engine keys
@@ -62,26 +65,38 @@ int main(int argc, char *argv[]){
         
         //Interpreter
         if (IsKeyReleased(KEY_F5)){ 
-            if (running){
+            if (currentState == Running){
                 basic->end();
             }
             
             basic->OpenBas(); 
             basic->init();
-            running = true;
+            currentState = Running;
         }
-        if (IsKeyReleased(KEY_ESCAPE)){ 
-            if (running){
+        if (IsKeyReleased(KEY_ESCAPE)){
+            switch (currentState){
+            case Running:
+                currentState = Paused;
+                break;
+            case Paused:
                 basic->end();
-                running = false;
+                currentState = Off;
                 basic->CloseBas();
+                break;
+            default:
+                break;
             }
+        }
+
+        if (currentState == Paused){
+            int anyKey = GetKeyPressed();
+            if (anyKey != 0 && anyKey != 256) currentState = Running; // key 256 is Escape key
         }
 
         // Update
         basic->UpdateAudio();
 
-        if (running){
+        if (currentState == Running){
             basic->tick();
         }
 
@@ -90,11 +105,23 @@ int main(int argc, char *argv[]){
 
             //Draw game to texture.
             BeginTextureMode(postProcessing->mainRender);
-                if (!running){
+                switch (currentState)
+                {
+                case Off:
                     bios->Update();
-                }else{
+                    break;
+                case Running:
                     basic->draw();
+                    break;
+                case Paused:
+                    DrawRectangle(0,89,320,12,Tools::GetColor(5));
+                    DrawRectangle(0,90,320,10,Tools::GetColor(0));
+                    DrawText(pauseMessage,160 - pauseMessageSize,90,8,Tools::GetColor(7));
+                    break;    
+                default:
+                    break;
                 }
+
             EndTextureMode();
 
             // Main draw

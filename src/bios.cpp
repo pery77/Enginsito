@@ -30,7 +30,7 @@ void Bios::Update(){
         }
         if (key == 259 && strlen(currentLine.c_str()) > 0) currentLine.pop_back(); //Backspace
         if (key == 261 && strlen(currentLine.c_str()) > 0) currentLine.clear(); //Delete
-        //printf("Key: %i\n",key);
+        printf("Key: %i\n",key);
     }
     if (ch != 0 && MeasureText(currentLine.c_str(),8) < 310){
         currentLine.push_back(char(ch));
@@ -89,8 +89,15 @@ void Bios::ProcessCommand()
         return;
     }
     if (LastCommand.command == "COLOR"){
-        backColor = atoi(LastCommand.args[0].c_str());
-        frontColor = atoi(LastCommand.args[1].c_str());
+        int bc = atoi(LastCommand.args[0].c_str());
+        int fc = atoi(LastCommand.args[1].c_str());
+        if (bc != fc){
+            backColor = bc;
+            frontColor = fc;
+        }
         return;
     }
+
+
+
 }

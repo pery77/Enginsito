@@ -22,6 +22,11 @@ struct Command {
     std::string args[10];
 };
 
+enum GameState{
+    Off,
+    Running,
+    Paused
+};
 
 class Tools{
     public:
