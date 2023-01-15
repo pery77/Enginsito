@@ -38,20 +38,59 @@ void Bios::Update(){
     }
 }
 
-
+char* toUpper(char* s) {
+  for(char *p=s; *p; p++) *p=toupper(*p);
+  return s;
+}
 
 void Bios::ProcessCommand()
 {
-    Tools::Trim((char*)currentLine.c_str());
-    char delim[] = " ";
-    char *ptr = strtok((char*)currentLine.c_str(), delim);
-    while(ptr != NULL)
-	{
-		printf("'%s'\n", ptr);
-		ptr = strtok(NULL, delim);
-	}
-
     currentLine.push_back('\n');
     screenLines += currentLine;
-    currentLine.clear();;
+
+    int init_size = strlen(currentLine.c_str());
+    char delim[] = " ";
+
+    Tools::Trim((char*)currentLine.c_str());
+    char *ptr = strtok((char*)currentLine.c_str(), delim);
+    
+    LastCommand.command = "";
+    for (int i = 0; i < 9; i++)	{
+        LastCommand.args[i] = "";
+	}
+
+    int i = 0;
+    while(ptr != NULL){
+        if (i == 0) 
+            LastCommand.command = toUpper(ptr);
+        else
+            LastCommand.args[i-1] = toUpper(ptr);
+
+        i++;
+		ptr = strtok(NULL, delim);
+        if (i>9) break;
+	}
+/*
+    printf("Command: '%s'\n", LastCommand.command.c_str()); 
+    for (int i = 0; i < 9; i++)	{
+        if (LastCommand.args[i] == "") break;
+		printf("Args: '%s', ", LastCommand.args[i].c_str()); 
+	}
+*/
+    currentLine.clear();
+
+
+    if (LastCommand.command == "CLS"){
+        screenLines.clear();
+        return;
+    }
+    if (LastCommand.command == "EXIT"){
+        ShouldClose = true;
+        return;
+    }
+    if (LastCommand.command == "COLOR"){
+        backColor = atoi(LastCommand.args[0].c_str());
+        frontColor = atoi(LastCommand.args[1].c_str());
+        return;
+    }
 }

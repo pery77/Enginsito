@@ -17,6 +17,11 @@ struct Vector2i {
 	int y;
 };
 
+struct Command {
+    std::string command;
+    std::string args[10];
+};
+
 
 class Tools{
     public:

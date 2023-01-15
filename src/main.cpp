@@ -38,7 +38,7 @@ int main(int argc, char *argv[]){
     bool showFps = false;
 
     // Game Loop
-    while (!WindowShouldClose())
+    while (!bios->ShouldClose)
     {
 
         // Engine keys
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
             basic->init();
             running = true;
         }
-        if (IsKeyReleased(KEY_F6)){ 
+        if (IsKeyReleased(KEY_ESCAPE)){ 
             if (running){
                 basic->end();
                 running = false;

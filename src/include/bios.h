@@ -16,12 +16,16 @@ class Bios{
         void Update();
         void ProcessCommand();
 
-        int backColor = 0;
-        int frontColor = 9;
+        bool ShouldClose = false;
+
     private:
         float delta;
         std::string currentLine = "";
         std::string screenLines = "*****************\n* peryEngine v0.5 *\n*                      *\n* Type HELP       *\n*****************\n\n";
-        const char* cursor = "";
 
+        int backColor = 39;
+        int frontColor = 7;
+        const char* cursor = "";
+  
+        Command LastCommand = (Command){""};
 };

@@ -42,14 +42,14 @@ def draw()
         x=j*32
         y=i*8
            draw.rect(x ,y ,10 ,8, 1,i+(j*25))
-           draw.text(textformat("%03i",i+(j*25)), x+12 ,y-1 , 1, 255)
+           draw.text(textformat("%03i",i+(j*25)), x+12 ,y-1 , 1, 30)
         next
     next
     ENDIF
     x=0
     i = iterator(l)
     while move_next(i)
-        draw.text(textformat("%03i",get(i)), 32, x*8+8, 1, 234)
+        draw.text(textformat("%03i",get(i)), 32, x*8+8, 1, 29)
         x=x+1
     wend
 
@@ -64,13 +64,13 @@ def draw()
     draw.text(textformat("%03i",mouse.wheel()), 0, 40, 1, 34)
 
     for n = 0 to 100
-        draw.pixel(rnd(0,319), rnd(0,199), rnd(0,64))
-        'draw.line(rnd(0,319), rnd(0,199), rnd(0,319), rnd(0,199),rnd(1,3),rnd(0,64))
-        'draw.circle(rnd(0,319), rnd(0,199), rnd(1,20), rnd(0,1), rnd(0,64))
-        'draw.ellipse(rnd(0,319), rnd(0,199), rnd(1,20), rnd(1,20),rnd(0,1), rnd(0,64))
+        draw.pixel(rnd(0,319), rnd(0,199), rnd(0,63))
+        'draw.line(rnd(0,319), rnd(0,199), rnd(0,319), rnd(0,199),rnd(1,3),rnd(0,63))
+        'draw.circle(rnd(0,319), rnd(0,199), rnd(1,20), rnd(0,1), rnd(0,63))
+        'draw.ellipse(rnd(0,319), rnd(0,199), rnd(1,20), rnd(1,20),rnd(0,1), rnd(0,63))
         x = rnd(0,319)
         y = rnd(0,199)
-       ' draw.triangle(x, y, x + rnd(-10,10), y + rnd(-20,20), x + rnd(-20,20), y + rnd(-20,20), rnd(0,1), rnd(0,64))
+       ' draw.triangle(x, y, x + rnd(-10,10), y + rnd(-20,20), x + rnd(-20,20), y + rnd(-20,20), rnd(0,1), rnd(0,63))
 
     next
     
