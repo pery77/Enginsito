@@ -13,8 +13,6 @@ class Bios{
         Bios();
         ~Bios();
 
-        const char* text;
-
         void Update();
         void ProcessCommand();
 
@@ -25,4 +23,5 @@ class Bios{
         std::string currentLine = "";
         std::string screenLines = "*****************\n* peryEngine v0.5 *\n*                      *\n* Type HELP       *\n*****************\n\n";
         const char* cursor = "";
+
 };
