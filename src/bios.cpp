@@ -101,6 +101,21 @@ void Bios::ProcessCommand()
         ShouldRun = true;
         return;
     }
+    if (lastCommand.command == "LIST"){
+        std::stringstream ss = Tools::GetFiles(lastCommand.args[0].c_str());
+        std::string temp;
+        while (std::getline(ss, temp)){
+            temp.push_back('\n');
+            screenLines += temp.c_str();
+        }
+
+        return;
+    }
+    if (lastCommand.command == "PRINT"){
+        lastCommand.args[0].push_back('\n');
+        screenLines += lastCommand.args[0];
+        return;
+    }
 
 
 }

@@ -16,12 +16,12 @@ Color palette[] = {
 {219,63,253,255},{122,9,250,255},{48,3,217,255},{12,2,147,255},
 {3,25,63,255},{59,20,67,255},{98,36,97,255},{147,56,143,255},
 {202,82,201,255},{200,80,134,255},{246,129,135,255},{245,85,93,255},
-{234,50,60,255},{255,0,64,255},{196,36,48,255},{137,30,43,255},{87,28,39,255}
+{234,50,60,255},{196,36,48,255},{137,30,43,255},{87,28,39,255},{255,0,64,255},{0,0,0,0}
 };
 
 Color Tools::GetColor(int id){
-    if (id < 0 ) id = 0;
-    if (id > 63) id = 63;
+    if (id < 0 ) id = 64;
+    if (id > 63) id = 64;
     return palette[id];
 }
 
@@ -48,3 +48,26 @@ void Tools::Trim(char * s) {
 
     memmove(s, p, l + 1);
 } 
+std::stringstream Tools::GetFiles(const char *path) {
+    
+    namespace fs = std::filesystem ;
+    const fs::path current_path = fs::current_path() / "assets" / path;
+    std::stringstream resut;
+    struct dirent *entry;
+
+
+    DIR *dir = opendir(current_path.string().c_str());
+   
+    printf("current %s\n",current_path);
+    if (dir == NULL) {
+        return resut;
+    }
+
+    while ((entry = readdir(dir)) != NULL) {
+        printf("%s\n",entry->d_name);
+        resut << entry->d_name << "\n";
+    }
+
+    closedir(dir);
+    return resut;
+}

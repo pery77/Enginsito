@@ -13,7 +13,8 @@ class PostProcessing{
     PostProcessing();
     ~PostProcessing();
 
-    Vector2i resolution16_10[5] = {
+    Vector2i resolution16_10[6] = {
+    {3840,2400}, 
     {2560,1600},
     {1920,1200},
     {1680,1050},

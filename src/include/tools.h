@@ -5,6 +5,11 @@
 #include "audio_manager.h"
 #include "ini_manager.h"
 
+#include <filesystem>
+#include <iostream>
+#include <dirent.h>
+#include <sys/types.h>
+
 #define max(a, b) ((a)>(b)? (a) : (b))
 #define min(a, b) ((a)<(b)? (a) : (b))
 
@@ -35,4 +40,5 @@ class Tools{
         static bool CompareFloats(float x, float y, float epsilon);
 
         static void Trim(char * s);
+        static std::stringstream GetFiles(const char *path);
 };
