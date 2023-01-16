@@ -15,11 +15,13 @@ void Bios::Update(){
     std::string temp;
     while (std::getline(ss, temp)){
         DrawText(temp.c_str(), 0, lineY, 8, Tools::GetColor(frontColor));
-        lineY += 9;  
+        lineY += 9;
     }
 
     DrawText(TextFormat(">%s%s",currentLine.c_str(), cursor),0,lineY,8,Tools::GetColor(frontColor));
 
+    if (lineY > 180) screenLines.erase(0, screenLines.find("\n") + 1);
+    
     int ch = GetCharPressed();
     int key = GetKeyPressed();
 
@@ -38,10 +40,6 @@ void Bios::Update(){
     }
 }
 
-char* toUpper(char* s) {
-  for(char *p=s; *p; p++) *p=toupper(*p);
-  return s;
-}
 
 void Bios::ProcessCommand()
 {
@@ -62,9 +60,9 @@ void Bios::ProcessCommand()
     int i = 0;
     while(ptr != NULL){
         if (i == 0) 
-            lastCommand.command = toUpper(ptr);
+            lastCommand.command = Tools::ToUpper(ptr);
         else
-            lastCommand.args[i-1] = toUpper(ptr);
+            lastCommand.args[i-1] = Tools::ToUpper(ptr);
 
         i++;
 		ptr = strtok(NULL, delim);

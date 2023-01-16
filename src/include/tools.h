@@ -41,4 +41,5 @@ class Tools{
 
         static void Trim(char * s);
         static std::stringstream GetFiles(const char *path);
+        static char* ToUpper(char* s);
 };

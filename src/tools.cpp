@@ -47,27 +47,51 @@ void Tools::Trim(char * s) {
     while(* p && isspace(* p)) ++p, --l;
 
     memmove(s, p, l + 1);
-} 
+}
+
+char* Tools::ToUpper(char* s) {
+  for(char *p=s; *p; p++) *p=toupper(*p);
+  return s;
+}
+
 std::stringstream Tools::GetFiles(const char *path) {
     
-    namespace fs = std::filesystem ;
+    namespace fs = std::filesystem;
     const fs::path current_path = fs::current_path() / "assets" / path;
-    std::stringstream resut;
+    std::stringstream result;
     struct dirent *entry;
-
 
     DIR *dir = opendir(current_path.string().c_str());
    
-    printf("current %s\n",current_path);
     if (dir == NULL) {
-        return resut;
+        return result;
     }
 
+    for(auto& p : std::filesystem::directory_iterator(current_path)){
+        if (p.is_directory()){
+            std::string folder = p.path().filename().string();
+            result << " [ " << folder << " ]" << "\n";
+        }
+    }
+
+    for(auto& p : std::filesystem::directory_iterator(current_path)){
+        if (p.is_regular_file()){
+            std::string file = p.path().stem().string();
+            std::string ext = p.path().extension().string();
+            ext = ToUpper((char*)ext.c_str());
+            if (ext == ".BAS")
+                result <<  "  > " << file << "\n";
+        }
+    }
+            
+
+/*
     while ((entry = readdir(dir)) != NULL) {
-        printf("%s\n",entry->d_name);
-        resut << entry->d_name << "\n";
+            printf("%s\n",entry->d_name);
+            resut << entry->d_name << "\n";
+        }
     }
-
+*/
     closedir(dir);
-    return resut;
+    return result;
 }
