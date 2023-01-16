@@ -13,17 +13,25 @@ void Bios::Update(){
     std::stringstream ss(screenLines);
     int lineY = 0;
     std::string temp;
+
     while (std::getline(ss, temp)){
         DrawText(temp.c_str(), 0, lineY, 8, Tools::GetColor(frontColor));
         lineY += 9;
+        if (lineY > 180) break;
     }
 
-    DrawText(TextFormat(">%s%s",currentLine.c_str(), cursor),0,lineY,8,Tools::GetColor(frontColor));
+    if (lineY < 180)
+        DrawText(TextFormat(">%s%s",currentLine.c_str(), cursor),0,lineY,8,Tools::GetColor(frontColor));
+    else
+        DrawText("Press Enter.",0,lineY,8,Tools::GetColor(frontColor));
 
-    if (lineY > 180) screenLines.erase(0, screenLines.find("\n") + 1);
-    
     int ch = GetCharPressed();
     int key = GetKeyPressed();
+
+    if (lineY > 180) {
+        if(key == 257)
+            screenLines.erase(0, screenLines.find("\n") + 1);
+    }
 
     if (key != 0){
         if (key == 257) { //Enter
