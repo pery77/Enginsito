@@ -115,7 +115,6 @@ void Bios::ProcessCommand()
         return;
     }
     if (lastCommand.command == "LIST"){
-        //std::stringstream ss = Tools::GetFiles(lastCommand.args[0].c_str());
         std::stringstream ss = Tools::GetFiles(CurrentPath.c_str());
         std::string temp;
         while (std::getline(ss, temp)){
@@ -131,18 +130,36 @@ void Bios::ProcessCommand()
         return;
     }
     if (lastCommand.command == "CD"){
+        
         if (lastCommand.args[0].find('.') != std::string::npos && CurrentPath == ""){
             return;
         }
-        if (Tools::Exist(lastCommand.args[0].c_str()))
+        if (Tools::DirExist(lastCommand.args[0].c_str()))
             CurrentPath = lastCommand.args[0];
         return;
     }
     if (lastCommand.command == "MEM"){
+        if (CurrentProgram != "")
+            screenLines += CurrentProgram + " loaded.\n";
+        else
+            screenLines += "No program loaded.\n";
         return;
     }
     if (lastCommand.command == "LOAD"){
+        if (Tools::FileExist(CurrentPath, lastCommand.args[0])){
+            CurrentProgram = lastCommand.args[0];
+            screenLines += "Loaded " + CurrentProgram + " in memory.\n";
+
+        }
+        else{
+            screenLines += "Fail loading " + CurrentProgram + "\n";
+            CurrentProgram = "";
+        }
+
         return;
     }
+}
 
+std::string Bios::GetFile(){
+    return "assets" + CurrentPath + "/" + CurrentProgram + PROGRAM_EXTENSION;
 }

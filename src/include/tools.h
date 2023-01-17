@@ -15,7 +15,9 @@
 
 #define GAME_SCREEN_W 320
 #define GAME_SCREEN_H 200
-#define GAME_RATIO 1.6
+#define GAME_RATIO    1.6
+#define ASSETS_FOLDER     "assets"
+#define PROGRAM_EXTENSION ".bas"
 
 struct Vector2i {
 	int x;
@@ -41,6 +43,7 @@ class Tools{
 
         static void Trim(char * s);
         static std::stringstream GetFiles(const char *path);
-        static bool Exist(const char *path);
+        static bool DirExist(const char *path);
+        static bool FileExist(std::string path, std::string file);
         static char* ToUpper(char* s);
 };

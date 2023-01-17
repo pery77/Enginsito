@@ -68,10 +68,14 @@ int main(int argc, char *argv[]){
             if (currentState == Running){
                 basic->end();
             }
-            
-            basic->OpenBas("assets/test.bas"); 
-            basic->init();
-            currentState = Running;
+
+            if (basic->OpenBas(bios->GetFile().c_str()) == 0){
+                basic->Run();
+                basic->init();
+                currentState = Running;
+            }else{
+                printf("ERROR: %s\n", bios->GetFile().c_str());
+            }
         }
         if (IsKeyReleased(KEY_ESCAPE)){
             switch (currentState){

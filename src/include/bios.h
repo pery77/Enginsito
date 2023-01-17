@@ -19,8 +19,11 @@ class Bios{
         bool ShouldClose = false;
         bool ShouldRun= false;
 
-        std::string HelpInfo = "CLS -> clear screen.\nEXIT -> close program.\nCOLOR Back Front -> change console colors.\nRUN ->\nLIST ->\nCD ->\n";
+        std::string GetFile();
+
+        std::string HelpInfo = "CLS - clear screen.\nEXIT - close program.\nCOLOR b f - change console colors.\nRUN - run current program.\nLIST - list current directory.\nCD - change directory\n";
         std::string CurrentPath = "";
+        std::string CurrentProgram = "";
 
     private:
         float delta;

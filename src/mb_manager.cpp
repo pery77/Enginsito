@@ -35,13 +35,8 @@ void MBManager::end(){
 }
 
 // Init and close
-void MBManager::OpenBas(const char *file){
-    int pos;
-    unsigned short row;
-    unsigned short col;
-    mb_error_e e;
-    int run;
-
+int MBManager::OpenBas(const char * file){
+	basFile = file;
 	mb_init();
 	mb_open(&bas);
 
@@ -87,15 +82,36 @@ void MBManager::OpenBas(const char *file){
 
 	mb_reg_fun(bas, sprite);
 
-    mb_load_file(bas, file);
-    
-	run = mb_run(bas, true);
-    e = mb_get_last_error(bas, &file, &pos, &row, &col);
+    int loadState = mb_load_file(bas, file);
+	switch (loadState){
+		case 0:
+			printf("Loading %s\n",file);
+			break;
+		case 3:
+			printf("Error loading %s\n",file);
+		default:
+			printf("ERROR %i\n", loadState);
+			break;
+	}
+	return loadState;
+	
+}    
+
+
+void MBManager::Run(){
+	int pos;
+    unsigned short row;
+    unsigned short col;
+    mb_error_e e;
+
+	int run = mb_run(bas, true);
+    e = mb_get_last_error(bas, &basFile, &pos, &row, &col);
 
     if(run > 0){
         printf("Run code: %i, \n",run);
         printf("ERROR Code: %i, pos = %i, row  = %i col = %i \n",e , pos, row, col);
     }
+
 }
 void MBManager::CloseBas(){
 	mb_close(&bas);

@@ -57,9 +57,8 @@ char* Tools::ToUpper(char* s) {
 std::stringstream Tools::GetFiles(const char *path) {
     
     namespace fs = std::filesystem;
-    const fs::path current_path = fs::current_path() / "assets" / path;
+    const fs::path current_path = fs::current_path() / ASSETS_FOLDER / path;
     std::stringstream result;
-    struct dirent *entry;
 
     DIR *dir = opendir(current_path.string().c_str());
    
@@ -84,29 +83,18 @@ std::stringstream Tools::GetFiles(const char *path) {
         }
     }
             
-
-/*
-    while ((entry = readdir(dir)) != NULL) {
-            printf("%s\n",entry->d_name);
-            resut << entry->d_name << "\n";
-        }
-    }
-*/
     closedir(dir);
     return result;
 }
-bool Tools::Exist(const char* path){
-
+bool Tools::DirExist(const char* path){
     namespace fs = std::filesystem;
-    const fs::path current_path = fs::current_path() / "assets" / path;
-    std::stringstream result;
-    struct dirent *entry;
+    const fs::path current_path = fs::current_path() / ASSETS_FOLDER / path;
+    return fs::exists(current_path);
+}
 
-    DIR *dir = opendir(current_path.string().c_str());
-   
-    if (dir == NULL) {
-        return false;
-    }
-
-    return true;
+bool Tools::FileExist(std::string path, std::string file){
+    namespace fs = std::filesystem;
+    file += PROGRAM_EXTENSION;
+    const fs::path current_file = fs::current_path() / ASSETS_FOLDER / path / file;
+    return fs::exists(current_file);
 }

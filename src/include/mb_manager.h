@@ -11,6 +11,7 @@ class MBManager{
     public:
         struct mb_interpreter_t* bas = NULL;
         void* context = NULL;
+        const char* basFile;
 
         MBManager();
         ~MBManager();
@@ -20,7 +21,8 @@ class MBManager{
         void draw();
         void end();
 
-        void OpenBas(const char *file);
+        int OpenBas(const char *file);
+        void Run();
         void CloseBas();
 
         void UpdateAudio();
