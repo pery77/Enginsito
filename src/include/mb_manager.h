@@ -20,7 +20,7 @@ class MBManager{
         void draw();
         void end();
 
-        void OpenBas();
+        void OpenBas(const char *file);
         void CloseBas();
 
         void UpdateAudio();

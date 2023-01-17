@@ -69,7 +69,7 @@ int main(int argc, char *argv[]){
                 basic->end();
             }
             
-            basic->OpenBas(); 
+            basic->OpenBas("assets/test.bas"); 
             basic->init();
             currentState = Running;
         }

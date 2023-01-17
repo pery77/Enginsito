@@ -13,41 +13,45 @@ void Bios::Update(){
     std::stringstream ss(screenLines);
     int lineY = 0;
     std::string temp;
+    bool overLine = false;
 
     while (std::getline(ss, temp)){
         DrawText(temp.c_str(), 0, lineY, 8, Tools::GetColor(frontColor));
         lineY += 9;
-        if (lineY > 180) break;
+        if (lineY > 184){   
+            overLine = true;
+            break;
+        }
     }
-
-    if (lineY < 180)
-        DrawText(TextFormat(">%s%s",currentLine.c_str(), cursor),0,lineY,8,Tools::GetColor(frontColor));
-    else
-        DrawText("Press Enter.",0,lineY,8,Tools::GetColor(frontColor));
 
     int ch = GetCharPressed();
     int key = GetKeyPressed();
 
-    if (lineY > 180) {
-        if(key == 257)
+    if (!overLine){
+        DrawText(TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor),0,lineY,8,Tools::GetColor(frontColor));
+        if (key != 0){
+            if (key == 257) { //Enter
+                ProcessCommand();
+                if (lineY > 171) screenLines.erase(0, screenLines.find("\n") + 1);
+            }
+            if (key == 259 && strlen(currentLine.c_str()) > 0) currentLine.pop_back(); //Backspace
+            if (key == 261 && strlen(currentLine.c_str()) > 0) currentLine.clear(); 
+            if (key == 298) printf(CurrentPath.c_str());//F9 tests
+            //printf("Key: %i\n",key); 
+            
+        }
+        if (ch != 0 && MeasureText(currentLine.c_str(),8) < 310){
+            currentLine.push_back(char(ch));
+            //printf("Char: %i\n",ch);
+        }
+    }
+    else{
+        DrawText("Press Enter to continue.",0,lineY,8,Tools::GetColor(frontColor));
+        if (IsKeyReleased(KEY_ENTER))
             screenLines.erase(0, screenLines.find("\n") + 1);
     }
 
-    if (key != 0){
-        if (key == 257) { //Enter
-            if (lineY > 180) screenLines.erase(0, screenLines.find("\n") + 1);
-            ProcessCommand();
-        }
-        if (key == 259 && strlen(currentLine.c_str()) > 0) currentLine.pop_back(); //Backspace
-        if (key == 261 && strlen(currentLine.c_str()) > 0) currentLine.clear(); //Delete
-        //printf("Key: %i\n",key);
-    }
-    if (ch != 0 && MeasureText(currentLine.c_str(),8) < 310){
-        currentLine.push_back(char(ch));
-        //printf("Char: %i\n",ch);
-    }
 }
-
 
 void Bios::ProcessCommand()
 {
@@ -84,7 +88,10 @@ void Bios::ProcessCommand()
 	}
 */
     currentLine.clear();
-
+    if(lastCommand.command == "HELP"){
+        screenLines += HelpInfo;
+        return;
+    }
 
     if (lastCommand.command == "CLS"){
         screenLines.clear();
@@ -97,7 +104,7 @@ void Bios::ProcessCommand()
     if (lastCommand.command == "COLOR"){
         int bc = atoi(lastCommand.args[0].c_str());
         int fc = atoi(lastCommand.args[1].c_str());
-        if (bc != fc){
+        if (bc != fc && bc < 64 && fc < 64){
             backColor = bc;
             frontColor = fc;
         }
@@ -108,7 +115,8 @@ void Bios::ProcessCommand()
         return;
     }
     if (lastCommand.command == "LIST"){
-        std::stringstream ss = Tools::GetFiles(lastCommand.args[0].c_str());
+        //std::stringstream ss = Tools::GetFiles(lastCommand.args[0].c_str());
+        std::stringstream ss = Tools::GetFiles(CurrentPath.c_str());
         std::string temp;
         while (std::getline(ss, temp)){
             temp.push_back('\n');
@@ -122,6 +130,19 @@ void Bios::ProcessCommand()
         screenLines += lastCommand.args[0];
         return;
     }
-
+    if (lastCommand.command == "CD"){
+        if (lastCommand.args[0].find('.') != std::string::npos && CurrentPath == ""){
+            return;
+        }
+        if (Tools::Exist(lastCommand.args[0].c_str()))
+            CurrentPath = lastCommand.args[0];
+        return;
+    }
+    if (lastCommand.command == "MEM"){
+        return;
+    }
+    if (lastCommand.command == "LOAD"){
+        return;
+    }
 
 }

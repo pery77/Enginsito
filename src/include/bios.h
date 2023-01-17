@@ -19,14 +19,18 @@ class Bios{
         bool ShouldClose = false;
         bool ShouldRun= false;
 
+        std::string HelpInfo = "CLS -> clear screen.\nEXIT -> close program.\nCOLOR Back Front -> change console colors.\nRUN ->\nLIST ->\nCD ->\n";
+        std::string CurrentPath = "";
+
     private:
         float delta;
         std::string currentLine = "";
         std::string screenLines = "*****************\n* peryEngine v0.5 *\n*                      *\n* Type HELP       *\n*****************\n\n";
 
-        int backColor = 39;
+        int backColor = 51;
         int frontColor = 7;
         const char* cursor = "";
+        
 
         Command lastCommand;
 };

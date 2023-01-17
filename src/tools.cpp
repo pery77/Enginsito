@@ -70,7 +70,7 @@ std::stringstream Tools::GetFiles(const char *path) {
     for(auto& p : std::filesystem::directory_iterator(current_path)){
         if (p.is_directory()){
             std::string folder = p.path().filename().string();
-            result << " [ " << folder << " ]" << "\n";
+            result << " < " << folder << " > " << "\n";
         }
     }
 
@@ -80,7 +80,7 @@ std::stringstream Tools::GetFiles(const char *path) {
             std::string ext = p.path().extension().string();
             ext = ToUpper((char*)ext.c_str());
             if (ext == ".BAS")
-                result <<  "  > " << file << "\n";
+                result <<  "  |· " << file << "\n";
         }
     }
             
@@ -94,4 +94,19 @@ std::stringstream Tools::GetFiles(const char *path) {
 */
     closedir(dir);
     return result;
+}
+bool Tools::Exist(const char* path){
+
+    namespace fs = std::filesystem;
+    const fs::path current_path = fs::current_path() / "assets" / path;
+    std::stringstream result;
+    struct dirent *entry;
+
+    DIR *dir = opendir(current_path.string().c_str());
+   
+    if (dir == NULL) {
+        return false;
+    }
+
+    return true;
 }

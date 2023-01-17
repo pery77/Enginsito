@@ -35,8 +35,7 @@ void MBManager::end(){
 }
 
 // Init and close
-void MBManager::OpenBas(){
-    const char *f = "assets/test.bas";
+void MBManager::OpenBas(const char *file){
     int pos;
     unsigned short row;
     unsigned short col;
@@ -88,10 +87,10 @@ void MBManager::OpenBas(){
 
 	mb_reg_fun(bas, sprite);
 
-    mb_load_file(bas, f);
+    mb_load_file(bas, file);
     
 	run = mb_run(bas, true);
-    e = mb_get_last_error(bas, &f, &pos, &row, &col);
+    e = mb_get_last_error(bas, &file, &pos, &row, &col);
 
     if(run > 0){
         printf("Run code: %i, \n",run);
