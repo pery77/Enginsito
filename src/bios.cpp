@@ -200,8 +200,6 @@ void Bios::addSubPath(std::string subPath){
 }
 void Bios::removeSubPath(){
     std::vector<std::string> paths = Tools::Split(CurrentPath, '/');
-    printf("REMOVE Current: %s\n",CurrentPath.c_str());
-    printf("REMOVE size: %i\n",paths.size());
 
     if (paths.empty()) return;
     if (paths.size() == 1){
@@ -209,19 +207,15 @@ void Bios::removeSubPath(){
         return;
     }
     paths.pop_back();
-    printf("REMOVE poped: %i\n",paths.size());
+
     std::string tmp = "";
     
-    for (int i = 0; i < paths.size(); i++){
-        
+    for (int i = 0; i < paths.size(); i++){       
         if (i < paths.size() - 1)
             tmp += paths[i] + '/';
         else
-            tmp += paths[i];
-        
-        printf("%i ) >> : %s\n", i, paths[i].c_str());
+            tmp += paths[i];        
     }
 
-    printf("Remove END: %s\n",tmp.c_str());
     CurrentPath = tmp;
 }
