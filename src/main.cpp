@@ -69,12 +69,12 @@ int main(int argc, char *argv[]){
                 basic->end();
             }
 
-            if (basic->OpenBas(bios->GetFile().c_str()) == 0){
+            if (basic->OpenBas(bios->GetFile().c_str()) == MB_FUNC_OK){
                 basic->Run();
                 basic->init();
                 currentState = Running;
             }else{
-                printf("ERROR: %s\n", bios->GetFile().c_str());
+                printf("%s not found.\n", bios->GetFile().c_str());
             }
         }
         if (IsKeyReleased(KEY_ESCAPE)){

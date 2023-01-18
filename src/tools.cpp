@@ -78,7 +78,7 @@ std::stringstream Tools::GetFiles(const char *path) {
             std::string file = p.path().stem().string();
             std::string ext = p.path().extension().string();
             ext = ToUpper((char*)ext.c_str());
-            if (ext == ".BAS")
+            if (ext == PROGRAM_EXTENSION)
                 result <<  "  |· " << file << "\n";
         }
     }
@@ -86,15 +86,20 @@ std::stringstream Tools::GetFiles(const char *path) {
     closedir(dir);
     return result;
 }
-bool Tools::DirExist(const char* path){
+bool Tools::DirExist(std::string path){
     namespace fs = std::filesystem;
     const fs::path current_path = fs::current_path() / ASSETS_FOLDER / path;
     return fs::exists(current_path);
+    bool result = fs::exists(current_path);
+    printf("[%s] Dir> %s\n",result ? "OK" : "Fail", current_path.string().c_str());
+    return result;
 }
 
 bool Tools::FileExist(std::string path, std::string file){
     namespace fs = std::filesystem;
     file += PROGRAM_EXTENSION;
-    const fs::path current_file = fs::current_path() / ASSETS_FOLDER / path / file;
-    return fs::exists(current_file);
+    const fs::path current_path = fs::current_path() / ASSETS_FOLDER / path / file;
+    bool result = fs::exists(current_path);
+    printf("[%s] File> %s\n",result ? "OK" : "Fail", current_path.string().c_str());
+    return result;
 }

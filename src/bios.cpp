@@ -88,6 +88,7 @@ void Bios::ProcessCommand()
 	}
 */
     currentLine.clear();
+
     if(lastCommand.command == "HELP"){
         screenLines += HelpInfo;
         return;
@@ -97,10 +98,12 @@ void Bios::ProcessCommand()
         screenLines.clear();
         return;
     }
+
     if (lastCommand.command == "EXIT"){
         ShouldClose = true;
         return;
     }
+
     if (lastCommand.command == "COLOR"){
         int bc = atoi(lastCommand.args[0].c_str());
         int fc = atoi(lastCommand.args[1].c_str());
@@ -110,10 +113,12 @@ void Bios::ProcessCommand()
         }
         return;
     }
+
     if (lastCommand.command == "RUN"){
         ShouldRun = true;
         return;
     }
+
     if (lastCommand.command == "LIST"){
         std::stringstream ss = Tools::GetFiles(CurrentPath.c_str());
         std::string temp;
@@ -124,20 +129,27 @@ void Bios::ProcessCommand()
 
         return;
     }
+
     if (lastCommand.command == "PRINT"){
         lastCommand.args[0].push_back('\n');
         screenLines += lastCommand.args[0];
         return;
     }
+
     if (lastCommand.command == "CD"){
-        
-        if (lastCommand.args[0].find('.') != std::string::npos && CurrentPath == ""){
+        if (lastCommand.args[0].find('/') != std::string::npos) return;
+        if (lastCommand.args[0].find('.') != std::string::npos){
+            CurrentPath = "";
             return;
         }
-        if (Tools::DirExist(lastCommand.args[0].c_str()))
+        if (Tools::DirExist(CurrentPath + lastCommand.args[0]))
+        if (CurrentPath == "")
             CurrentPath = lastCommand.args[0];
+        else 
+            CurrentPath += "/" + lastCommand.args[0];
         return;
     }
+
     if (lastCommand.command == "MEM"){
         if (CurrentProgram != "")
             screenLines += CurrentProgram + " loaded.\n";
@@ -145,11 +157,11 @@ void Bios::ProcessCommand()
             screenLines += "No program loaded.\n";
         return;
     }
+
     if (lastCommand.command == "LOAD"){
         if (Tools::FileExist(CurrentPath, lastCommand.args[0])){
             CurrentProgram = lastCommand.args[0];
             screenLines += "Loaded " + CurrentProgram + " in memory.\n";
-
         }
         else{
             screenLines += "Fail loading " + CurrentProgram + "\n";
@@ -161,5 +173,11 @@ void Bios::ProcessCommand()
 }
 
 std::string Bios::GetFile(){
-    return "assets" + CurrentPath + "/" + CurrentProgram + PROGRAM_EXTENSION;
+    namespace fs = std::filesystem;
+    fs::path dir (ASSETS_FOLDER);
+    fs::path file (CurrentProgram + PROGRAM_EXTENSION);
+    fs::path full_path = dir / CurrentPath / file;
+
+    printf("Get file> %s\n",full_path.string().c_str());
+    return full_path.string();
 }
