@@ -138,6 +138,7 @@ void Bios::ProcessCommand()
 
     if (lastCommand.command == "CD"){
         if (lastCommand.args[0].find('/') != std::string::npos) return;
+        if (lastCommand.args[0] == "" ) return;
         if (CurrentPath == ""){
             if (lastCommand.args[0].find('.') != std::string::npos) return;
             addSubPath(lastCommand.args[0]);
@@ -150,23 +151,6 @@ void Bios::ProcessCommand()
                     addSubPath(lastCommand.args[0]);
                 }
         }
-
-/*
-        if (lastCommand.args[0].find('/') != std::string::npos) return;
-        if (lastCommand.args[0].find('.') != std::string::npos){
-            CurrentPath = "";
-            return;
-        }
-        if (Tools::DirExist(CurrentPath + lastCommand.args[0]))
-        if (CurrentPath == "")
-            CurrentPath = lastCommand.args[0];
-        else 
-            CurrentPath += "/" + lastCommand.args[0];
-*/
-
-
-
-
         return;
     }
 
@@ -216,13 +200,28 @@ void Bios::addSubPath(std::string subPath){
 }
 void Bios::removeSubPath(){
     std::vector<std::string> paths = Tools::Split(CurrentPath, '/');
-    if (paths.empty()) return;
-    
-    paths.pop_back();
-    std::string tmp = "";
-    for (auto it = paths.begin(); it != std::prev(paths.end()); ++it)
-        tmp += '/' + *it;
+    printf("REMOVE Current: %s\n",CurrentPath.c_str());
+    printf("REMOVE size: %i\n",paths.size());
 
-    printf("PP: %s\n",tmp.c_str());
+    if (paths.empty()) return;
+    if (paths.size() == 1){
+        CurrentPath = "";
+        return;
+    }
+    paths.pop_back();
+    printf("REMOVE poped: %i\n",paths.size());
+    std::string tmp = "";
+    
+    for (int i = 0; i < paths.size(); i++){
+        
+        if (i < paths.size() - 1)
+            tmp += paths[i] + '/';
+        else
+            tmp += paths[i];
+        
+        printf("%i ) >> : %s\n", i, paths[i].c_str());
+    }
+
+    printf("Remove END: %s\n",tmp.c_str());
     CurrentPath = tmp;
 }
