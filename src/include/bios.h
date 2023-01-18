@@ -34,6 +34,8 @@ class Bios{
         int frontColor = 7;
         const char* cursor = "";
         
-
         Command lastCommand;
+        void addSubPath(std::string current);
+        void removeSubPath();
+
 };

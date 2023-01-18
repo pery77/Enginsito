@@ -138,6 +138,21 @@ void Bios::ProcessCommand()
 
     if (lastCommand.command == "CD"){
         if (lastCommand.args[0].find('/') != std::string::npos) return;
+        if (CurrentPath == ""){
+            if (lastCommand.args[0].find('.') != std::string::npos) return;
+            addSubPath(lastCommand.args[0]);
+        }
+        else{
+            if (lastCommand.args[0].find('.') != std::string::npos) {
+                    removeSubPath();
+                }
+                else {
+                    addSubPath(lastCommand.args[0]);
+                }
+        }
+
+/*
+        if (lastCommand.args[0].find('/') != std::string::npos) return;
         if (lastCommand.args[0].find('.') != std::string::npos){
             CurrentPath = "";
             return;
@@ -147,6 +162,11 @@ void Bios::ProcessCommand()
             CurrentPath = lastCommand.args[0];
         else 
             CurrentPath += "/" + lastCommand.args[0];
+*/
+
+
+
+
         return;
     }
 
@@ -180,4 +200,29 @@ std::string Bios::GetFile(){
 
     printf("Get file> %s\n",full_path.string().c_str());
     return full_path.string();
+}
+
+void Bios::addSubPath(std::string subPath){
+    std::string prePath = (CurrentPath == "") ? "" : CurrentPath + "/";
+     if (Tools::DirExist(prePath + subPath)) {
+        if(CurrentPath == ""){
+            CurrentPath = subPath;
+            return;
+        }
+        else{
+            CurrentPath += "/" + subPath;
+        }
+     }
+}
+void Bios::removeSubPath(){
+    std::vector<std::string> paths = Tools::Split(CurrentPath, '/');
+    if (paths.empty()) return;
+    
+    paths.pop_back();
+    std::string tmp = "";
+    for (auto it = paths.begin(); it != std::prev(paths.end()); ++it)
+        tmp += '/' + *it;
+
+    printf("PP: %s\n",tmp.c_str());
+    CurrentPath = tmp;
 }

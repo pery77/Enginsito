@@ -53,7 +53,18 @@ char* Tools::ToUpper(char* s) {
   for(char *p=s; *p; p++) *p=toupper(*p);
   return s;
 }
-
+std::vector<std::string> Tools::Split(const std::string& str, const char sep)
+{
+    std::string token; 
+    std::stringstream ss(str);
+    std::vector<std::string> tokens;
+    
+    while (std::getline(ss, token, sep)) {
+        tokens.push_back(token);
+    }
+    
+    return tokens;
+}
 std::stringstream Tools::GetFiles(const char *path) {
     
     namespace fs = std::filesystem;
@@ -89,7 +100,6 @@ std::stringstream Tools::GetFiles(const char *path) {
 bool Tools::DirExist(std::string path){
     namespace fs = std::filesystem;
     const fs::path current_path = fs::current_path() / ASSETS_FOLDER / path;
-    return fs::exists(current_path);
     bool result = fs::exists(current_path);
     printf("[%s] Dir> %s\n",result ? "OK" : "Fail", current_path.string().c_str());
     return result;

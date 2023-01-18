@@ -42,8 +42,9 @@ class Tools{
         static bool CompareFloats(float x, float y, float epsilon);
 
         static void Trim(char * s);
+        static char* ToUpper(char* s);
+        static std::vector<std::string> Split(const std::string& str, const char sep);
         static std::stringstream GetFiles(const char *path);
         static bool DirExist(std::string path);
         static bool FileExist(std::string path, std::string file);
-        static char* ToUpper(char* s);
 };
