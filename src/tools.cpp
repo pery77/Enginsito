@@ -1,6 +1,6 @@
 #include "tools.h"
 
-Color palette[] = {
+Color palette[16]{
 {32,32,38,255},
 {58,54,61,255},
 {105,60,54,255},
@@ -18,12 +18,30 @@ Color palette[] = {
 {245,214,120,255},
 {249,255,242,255}
 };
+Color userPalette[16]{};
 
-Color Tools::GetColor(int id){
-    if (id < 0 ) id = 0;
-    if (id > 15) id = 15;
-    return palette[id];
+int Tools::IntClamp(int value, int min, int max){
+    if (value < min) return min;
+    if (value > max) return max;
 }
+Color Tools::GetColor(int color){
+    return userPalette[IntClamp(color, 0, 15)];
+}
+Color Tools::GetFixedColor(int color){
+    return palette[IntClamp(color, 0, 15)];
+}
+Color Tools::SetColor(int color, int r, int g, int b){
+    r = IntClamp(r, 0, 255);
+    g = IntClamp(g, 0, 255);
+    b = IntClamp(b, 0, 255);
+    userPalette[IntClamp(color, 0, 15)] = {(unsigned char)r,(unsigned char)g,(unsigned char)b,255};
+}
+void Tools::CopyPalette(){
+    for (int i = 0; i < 15; ++i){
+        userPalette[i] = palette[i];
+    } 
+}
+
 
 int Tools::GetVirtualMouse(bool isXAxis){   
 	float screenScale = min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);

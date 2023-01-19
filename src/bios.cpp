@@ -4,7 +4,7 @@ Bios::Bios(){}
 Bios::~Bios(){}
 
 void Bios::Update(){
-    ClearBackground(Tools::GetColor(backColor));
+    ClearBackground(Tools::GetFixedColor(backColor));
 
     delta += GetFrameTime();
     cursor = (delta > 0.5) == 0 ? "_" : "";
@@ -16,7 +16,7 @@ void Bios::Update(){
     bool overLine = false;
 
     while (std::getline(ss, temp)){
-        DrawText(temp.c_str(), 0, lineY, 8, Tools::GetColor(frontColor));
+        DrawText(temp.c_str(), 0, lineY, 8, Tools::GetFixedColor(frontColor));
         lineY += 9;
         if (lineY > 184){   
             overLine = true;
@@ -28,7 +28,7 @@ void Bios::Update(){
     int key = GetKeyPressed();
 
     if (!overLine){
-        DrawText(TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor),0,lineY,8,Tools::GetColor(frontColor));
+        DrawText(TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor),0,lineY,8,Tools::GetFixedColor(frontColor));
         if (key != 0){
             if (key == 257) { //Enter
                 ProcessCommand();
@@ -46,7 +46,7 @@ void Bios::Update(){
         }
     }
     else{
-        DrawText("Press Enter to continue.",0,lineY,8,Tools::GetColor(frontColor));
+        DrawText("Press Enter to continue.",0,lineY,8,Tools::GetFixedColor(frontColor));
         if (IsKeyReleased(KEY_ENTER))
             screenLines.erase(0, screenLines.find("\n") + 1);
     }

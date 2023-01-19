@@ -53,6 +53,8 @@ class MBManager{
         //Tools
         static int textFormat(struct mb_interpreter_t* s, void** l);
         static int delta(struct mb_interpreter_t* s, void** l);
+        static int setColor(struct mb_interpreter_t* s, void** l);
+        static int restorePalette(struct mb_interpreter_t* s, void** l);
 
         //Input
         static int keyPressed(struct mb_interpreter_t* s, void** l);

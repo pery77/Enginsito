@@ -37,9 +37,14 @@ enum GameState{
 
 class Tools{
     public:
-        static Color GetColor(int col);
+        static Color GetColor(int color);
+        static Color GetFixedColor(int color);
+        static Color SetColor(int color, int r, int g, int b);
+        static void CopyPalette();
+
         static int GetVirtualMouse(bool isXAxis);
         static bool CompareFloats(float x, float y, float epsilon);
+        static int IntClamp(int value, int min, int max);
 
         static void Trim(char * s);
         static char* ToUpper(char* s);
@@ -47,4 +52,8 @@ class Tools{
         static std::stringstream GetFiles(const char *path);
         static bool DirExist(std::string path);
         static bool FileExist(std::string path, std::string file);
+
+        //static Color palette[16];
+        //static Color userPalette[16];
+
 };

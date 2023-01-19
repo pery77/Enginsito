@@ -81,6 +81,8 @@ int MBManager::OpenBas(const char * file){
 	mb_end_module(bas);
 
 	mb_reg_fun(bas, sprite);
+	mb_reg_fun(bas, setColor);
+	mb_reg_fun(bas, restorePalette);
 
     int loadState = mb_load_file(bas, file);
 	switch (loadState){
@@ -396,7 +398,38 @@ int MBManager::delta(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;
 }
+int MBManager::setColor(struct mb_interpreter_t* s, void** l){
 
+	mb_assert(s && l);
+
+    int color = 0;
+    int r = 0;
+    int g = 0;
+    int b = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &color));
+		mb_check(mb_pop_int(s, l, &r));
+		mb_check(mb_pop_int(s, l, &g));
+		mb_check(mb_pop_int(s, l, &b));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	Tools::SetColor(color,r,g,b);
+
+	return MB_FUNC_OK;
+}
+int MBManager::restorePalette(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	Tools::CopyPalette();
+	return MB_FUNC_OK;
+}
 // Input
 int MBManager::keyPressed(struct mb_interpreter_t* s, void** l){
 	
