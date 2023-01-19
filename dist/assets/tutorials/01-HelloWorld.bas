@@ -6,7 +6,7 @@ def draw()
     cls(0) 
     'Whit that we draw a text ("Hello World") in the position X = 95, and y = 40
     '25 is the size (the minimun is 8) and 9 is the color (white), colors go from 0 to 63
-    draw.text("Hello World!",95,40,20,9) 
+    draw.text("Hello World!",95,40,20,15) 
     'Another fancy text with usefull information.
-    draw.text("Press ESCAPE key to close.",85,63,8,32)
+    draw.text("Press ESCAPE key to close.",85,63,8,3)
 enddef
