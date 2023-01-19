@@ -44,7 +44,7 @@ void Tools::CopyPalette(){
 
 
 int Tools::GetVirtualMouse(bool isXAxis){   
-	float screenScale = min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
+	float screenScale = Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
 	float mouse = isXAxis ? GetMousePosition().x : GetMousePosition().y;
     float screen = isXAxis ? GetScreenWidth() : GetScreenHeight();
     float gamescreen = isXAxis ? GAME_SCREEN_W : GAME_SCREEN_H;
@@ -130,4 +130,8 @@ bool Tools::FileExist(std::string path, std::string file){
     bool result = fs::exists(current_path);
     printf("[%s] File> %s\n",result ? "OK" : "Fail", current_path.string().c_str());
     return result;
+}
+
+float Tools::Min(float a, float b){
+    return a<b ? a : b;
 }

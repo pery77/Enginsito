@@ -10,8 +10,8 @@
 #include <dirent.h>
 #include <sys/types.h>
 
-#define max(a, b) ((a)>(b)? (a) : (b))
-#define min(a, b) ((a)<(b)? (a) : (b))
+//#define max(a, b) ((a)>(b)? (a) : (b))
+//#define min(a, b) ((a)<(b)? (a) : (b))
 
 #define GAME_SCREEN_W 320
 #define GAME_SCREEN_H 200
@@ -53,6 +53,7 @@ class Tools{
         static bool DirExist(std::string path);
         static bool FileExist(std::string path, std::string file);
 
+        static float Min(float a, float b);
         //static Color palette[16];
         //static Color userPalette[16];
 

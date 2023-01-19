@@ -104,7 +104,7 @@ void PostProcessing::ReloadShaders(){
 
 void PostProcessing::UpdateGameScreenRects(){
 
-	screenScale = min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
+	screenScale = Tools::Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
 	gameRect = { 0, 0, (float)(GAME_SCREEN_W), -(float)(GAME_SCREEN_H)};
 	gameScaledRect = { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
 	resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
