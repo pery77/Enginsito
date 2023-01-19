@@ -37,7 +37,7 @@ Color Tools::SetColor(int color, int r, int g, int b){
     userPalette[IntClamp(color, 0, 15)] = {(unsigned char)r,(unsigned char)g,(unsigned char)b,255};
 }
 void Tools::CopyPalette(){
-    for (int i = 0; i < 15; ++i){
+    for (int i = 0; i < 16; ++i){
         userPalette[i] = palette[i];
     } 
 }

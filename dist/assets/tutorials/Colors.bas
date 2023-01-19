@@ -1,6 +1,6 @@
+'import "C:/_Git/Enginsito/dist/assets/tools/pico-palette.bas"
+import "assets/tools/pico-palette.bas"
 
-setcolor(15,80,30,50)
-setcolor(0,80,30,500)
 def draw()
     cls(0)
     draw.TRIANGLE(mouse.x(), 32,mouse.x()-4, 24,mouse.x()+4, 24, 0, 15)
