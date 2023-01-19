@@ -396,6 +396,7 @@ int MBManager::delta(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;
 }
+
 // Input
 int MBManager::keyPressed(struct mb_interpreter_t* s, void** l){
 	

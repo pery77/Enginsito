@@ -31,7 +31,7 @@ class PostProcessing{
     float uTest;
     float uCurvature;
 
-    float uBlurPower = 1.0;
+    float uBlurPower = 0.85;
     float uBlurFactor = 1.2;
 
     void ReloadShaders();
