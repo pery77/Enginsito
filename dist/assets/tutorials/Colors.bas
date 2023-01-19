@@ -1,5 +1,5 @@
-'import "C:/_Git/Enginsito/dist/assets/tools/pico-palette.bas"
-import "assets/tools/pico-palette.bas"
+'Uncomment next line to load another palette.
+'import "assets/tools/pico-palette.bas"
 
 def draw()
     cls(0)

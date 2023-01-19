@@ -16,13 +16,13 @@ AudioManager::AudioManager(){
         // Reset generation parameters
         // NOTE: Random seed for generation is set
         ResetWaveParams(&params[i]);
-        params[i] = GenRandomize();
+        //params[i] = GenRandomize();
 
         // Default wave values
         wave[i].sampleRate = RFXGEN_GEN_SAMPLE_RATE;
         wave[i].sampleSize = RFXGEN_GEN_SAMPLE_SIZE;
         wave[i].channels = RFXGEN_GEN_CHANNELS;
-        wave[i].frameCount = 10*wave[i].sampleRate;    // Max frame count for 10 seconds
+        wave[i].frameCount = 5*wave[i].sampleRate;    // Max frame count for 10 seconds
         //wave[i].data = (float *)RL_CALLOC(wave[i].frameCount, sizeof(float));
         wave[i].data = GenerateWave(params[i], &wave[i].frameCount);
         sound[i] = LoadSoundFromWave(wave[i]);
@@ -80,4 +80,15 @@ void AudioManager::PlayNote(int note, int voice, int volume){
 void AudioManager::Stop(){
     sequence = "";
     audioTick = 0;
+}
+
+
+void AudioManager::SFXSet(int id, int waveType){
+        printf("SFX set: [%i] wave:%i\n");
+        params[id].waveTypeValue = waveType;
+        wave[id].data = GenerateWave(params[id], &wave[id].frameCount);
+        sound[id] = LoadSoundFromWave(wave[id]);
+}
+void AudioManager::SFXPlay(int id){
+        PlaySound(sound[id]);
 }

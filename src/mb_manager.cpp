@@ -80,6 +80,11 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "NOTE", playNote);
 	mb_end_module(bas);
 
+	mb_begin_module(bas, "SFX");
+		mb_register_func(bas, "SET", sfxSet); 
+		mb_register_func(bas, "PLAY", sfxPlay);
+	mb_end_module(bas);
+
 	mb_reg_fun(bas, sprite);
 	mb_reg_fun(bas, setColor);
 	mb_reg_fun(bas, restorePalette);
@@ -696,6 +701,41 @@ int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     audioR->PlayNote(key, voice, velocity);
+
+	return MB_FUNC_OK;
+}
+int MBManager::sfxSet(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+    int id;
+	int wave;
+
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &id));
+		mb_check(mb_pop_int(s, l, &wave));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SFXSet(id, wave);
+
+	return MB_FUNC_OK;
+}
+int MBManager::sfxPlay(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+    int id;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &id));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SFXPlay(id);
 
 	return MB_FUNC_OK;
 }

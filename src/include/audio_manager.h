@@ -9,7 +9,7 @@
 #define CHANNELS                  2
 #define MAX_SAMPLES               512
 #define MAX_SAMPLES_PER_UPDATE    4096
-#define MAX_WAVE_SLOTS            32
+#define MAX_WAVE_SLOTS            16
 #define WAIT_TICKS                30
 
 class AudioManager {
@@ -34,6 +34,9 @@ class AudioManager {
     void PlayNote(int note, int voice, int volume);
     void Stop();
     void GetPresets();
+
+    void SFXSet(int id, int waveType);
+    void SFXPlay(int id);
 
     private:
     const char* sequence = "";
