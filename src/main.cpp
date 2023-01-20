@@ -47,8 +47,6 @@ int main(int argc, char *argv[]){
     });
     */
 
-
-
     const int windowWidth = GAME_SCREEN_W * config->size;
     const int windowHeight = GAME_SCREEN_H * config->size;
 
