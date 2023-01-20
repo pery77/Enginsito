@@ -36,7 +36,7 @@ class AudioManager {
     void GetPresets();
 
     void SFXSet(int id, int waveType);
-    void SFXPlay(int id);
+    void SFXPlay(int id, int fq);
 
     private:
     const char* sequence = "";

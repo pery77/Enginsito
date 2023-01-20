@@ -89,6 +89,7 @@ void AudioManager::SFXSet(int id, int waveType){
         wave[id].data = GenerateWave(params[id], &wave[id].frameCount);
         sound[id] = LoadSoundFromWave(wave[id]);
 }
-void AudioManager::SFXPlay(int id){
+void AudioManager::SFXPlay(int id, int fq){
+        SetSoundPitch(sound[id],(fq / 1000.0));
         PlaySound(sound[id]);
 }
