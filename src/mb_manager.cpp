@@ -88,6 +88,7 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, sprite);
 	mb_reg_fun(bas, setColor);
 	mb_reg_fun(bas, restorePalette);
+	mb_reg_fun(bas, measureText);
 
     int loadState = mb_load_file(bas, file);
 	switch (loadState){
@@ -350,7 +351,26 @@ int MBManager::drawText(struct mb_interpreter_t* s, void** l){
 
 	return MB_FUNC_OK;
 }
+int MBManager::measureText(struct mb_interpreter_t* s, void** l){
 
+	mb_assert(s && l);
+
+    char* arg = 0;
+	int size = 0;
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_string(s, l, &arg));
+		mb_check(mb_pop_int(s, l, &size));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = MeasureText(arg, size);
+
+    mb_check(mb_push_value(s, l, ret));
+	return MB_FUNC_OK;
+}
 //Tools
 int MBManager::textFormat(struct mb_interpreter_t* s, void** l){
 

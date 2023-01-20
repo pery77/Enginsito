@@ -49,6 +49,7 @@ class MBManager{
 
         //Text
         static int drawText(struct mb_interpreter_t* s, void** l);
+        static int measureText(struct mb_interpreter_t* s, void** l);
 
         //Tools
         static int textFormat(struct mb_interpreter_t* s, void** l);
