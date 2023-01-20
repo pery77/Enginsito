@@ -82,9 +82,8 @@ def slider(v,x,y,w,max)
     IF mouse.down(0) AND hover THEN
         v = v + (mouse.x() - mx - 4);
     ENDIF
-
-    IF v < 0 THEN v = 0 ENDIF
-    IF v > w THEN v = w ENDIF
+    
+    v = clamp(v,0,w)
     
     draw.rect(x,y,w + 10,buttonH,1,0)
     draw.rect(x,y,w + 10,buttonH,0,cb)
@@ -95,13 +94,12 @@ def slider(v,x,y,w,max)
     return v
 enddef
 
-def toogle(v,x,y)
-
+def toogle(v,x,y,r)
     cb = colorButtonText
     col = colorButton
     colOn = 3
 
-    hover = isHover(x-3,y-3,6,6)
+    hover = isHover(x-r,y-r,r*2,r*2)
     IF hover THEN
         cb = colorButtonTextHover
     ENDIF
@@ -111,8 +109,8 @@ def toogle(v,x,y)
     IF v THEN
         col = ColOn
     ENDIF
-    draw.circle(x,y,3,1,col)
-    draw.circle(x,y,3,0,cb)
+    draw.circle(x,y,r,1,col)
+    draw.circle(x,y,r,0,cb)
     
     return v
 enddef
@@ -121,13 +119,18 @@ def knob(v,x,y)
     r=5
     cb = colorButtonText
     col = colorButton
-
+mx = x+v
     hover = isHover(x-r,y-r,r*2,r*2)
 
     IF hover THEN
         cb = colorButtonTextHover
         v=v+mouse.wheel();
     ENDIF
+
+    IF mouse.down(0) AND hover THEN
+        v = v + (mouse.x() - mx);
+    ENDIF
+
     v = clamp(v,-49,49)
 
     draw.circle(x,y,r,1,col)
