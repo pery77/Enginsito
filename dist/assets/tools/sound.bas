@@ -3,7 +3,7 @@ import "assets/tools/ui.bas"
 def tick()
     IF key.pressed(32) THEN sfx.play(0, 1000) ENDIF  
 enddef
-p = 0
+
 DEF sKey(x,t)
 
     y = 120
@@ -31,7 +31,7 @@ DEF sKey(x,t)
     ENDIF
 
     IF hover AND mouse.pressed(0) THEN
-        sfx.play(0,(code * p * mmax) + 1000)
+        sfx.play(0,(code * p) + 1000)
     ENDIF
 
 enddef
@@ -53,14 +53,55 @@ def synthKeys()
 
 enddef
 
-mmax = 1000
+buttonSelected = 0
+DEF soundButton(id,x,y,size)
+
+    borderCol = 1
+    keyBCol = 5
+    selColor = 0
+
+    hover = isHover(x,y,20,size)
+    IF hover THEN
+        borderCol = 14
+    ENDIF
+    DRAW.rect(x,y,20,size,1,12)
+    DRAW.rect(x,y,20,size,0,0)
+    DRAW.rect(x+1,y+1,20-2,size-2,0,borderCol)
+    DRAW.text(textformat("%02i", x/20),x+4,y + size+1,8,12)
+
+    IF id = buttonSelected THEN
+        selColor = 3
+    ENDIF
+
+    DRAW.circle(x+10,y-4,3,1,selColor)
+    DRAW.circle(x+10,y-4,3,0,12)
+
+
+    IF hover AND mouse.released(0) THEN
+        buttonSelected = id
+    ENDIF
+
+
+ENDDEF
+
+DEF drawSoundButtons(x)
+    y = 160
+    size = 20
+
+    DRAW.rect(0,y+size+1,320,10,1,0)
+    FOR i = 0 TO 15
+        x = i*20
+        soundButton(i,x,y,size)
+    NEXT
+ENDDEF
+
 def draw()
     cls(1)
     time = time + delta()
     draw.rect(0,0,320,9,1,0)
     draw.text(textformat("T: %06i",time), 0, 0, 1, 15)
     draw.text(textformat("D: %04i", delta()), 54, 0, 1, 15)
-    draw.text(textformat(">: %01i", p + mmax), 160, 0, 1, 15)
+    draw.text(textformat(">: %01i", p ), 160, 0, 1, 15)
 
     IF button (2,16,"play") THEN print sfx.play(0,1000) ENDIF
 
@@ -69,7 +110,7 @@ def draw()
     IF button (2,48,"sine") THEN print sfx.set(0,2) ENDIF
     IF button (2,58,"noise") THEN print sfx.set(0,3) ENDIF
 
-    p = slider(p,100,16,80,mmax)
+    p = slider(p,80,16,128,255)
     q = slider(q,129,86,8,3)
     l = slider(l,150,40,41,15)
 
@@ -77,9 +118,11 @@ def draw()
 
     k = knob(k,200,100)
 
-    synthKeys()
+    'synthKeys()
+    drawSoundButtons()
 
     IF mouse.down(1) THEN  drawPalette(180) ENDIF
-    drawmouse()
+    IF NOT mouseWorking THEN  drawmouse() ENDIF
+    
 
 enddef

@@ -5,6 +5,8 @@ colorButtonTextHover = 15
 buttonW = 50
 buttonH = 10
 
+mouseWorking = false
+
 def drawPalette(y)
     for i = 0 to 15
         x = i*20
@@ -22,7 +24,8 @@ enddef
 
 'tools
 def isHover(x,y,w,h)
-    return mouse.x() > x AND mouse.y() > y AND mouse.x() < x + w AND mouse.y() < y + h
+
+    return mouse.x() > x AND mouse.y() > y AND mouse.x() < x + w AND mouse.y() < y + h AND NOT mouseWorking
 enddef
 angle = 3.141592*5
 def polar2cartX(r,a)
@@ -64,6 +67,7 @@ enddef
 
 def slider(v,x,y,w,max)
 
+    v = ROUND(w * v/max)
     cb = colorButtonText
     colN = 8
     colNH = 13
@@ -76,19 +80,25 @@ def slider(v,x,y,w,max)
     IF hover THEN
         col = colNH
         cb = colorButtonTextHover
-        v=v+mouse.wheel();
+        
+        vMul = 1
+        IF w/max > 1 THEN
+            vMul = w/max
+        ENDIF
+        v = v + (mouse.wheel() * vMul);
     ENDIF
 
     IF mouse.down(0) AND hover THEN
         v = v + (mouse.x() - mx - 4);
     ENDIF
     
-    v = clamp(v,0,w)
+    v = ROUND(v/w * max)
+    v = clamp(v,0, max)
     
     draw.rect(x,y,w + 10,buttonH,1,0)
     draw.rect(x,y,w + 10,buttonH,0,cb)
     draw.rect(mx,my,8,8,1,col)
-    textPos = textformat("%02i",ROUND(v/w * max))
+    textPos = textformat("%02i",v)
     draw.text(textPos, x - measureText(textPos ,8)-2, y,8, cb)
 
     return v
@@ -119,16 +129,21 @@ def knob(v,x,y)
     r=5
     cb = colorButtonText
     col = colorButton
-mx = x+v
+    mx = x+v
     hover = isHover(x-r,y-r,r*2,r*2)
 
-    IF hover THEN
+    IF hover OR mouseWorking THEN
         cb = colorButtonTextHover
         v=v+mouse.wheel();
     ENDIF
 
     IF mouse.down(0) AND hover THEN
+        mouseWorking = true
         v = v + (mouse.x() - mx);
+    ENDIF
+
+    IF mouseWorking AND mouse.released(0) THEN
+        mouseWorking = false
     ENDIF
 
     v = clamp(v,-49,49)
