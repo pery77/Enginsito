@@ -1,4 +1,4 @@
-import "assets/tools/ui.bas"
+import "assets/lib/ui.bas"
 
 def tick()
     IF key.pressed(32) THEN sfx.play(0, 1000) ENDIF  
@@ -71,14 +71,17 @@ DEF soundButton(id,x,y,size)
     IF hover THEN
         borderCol = 14
     ENDIF
-    DRAW.rect(x,y,20,size,1,12)
-    DRAW.rect(x,y,20,size,0,0)
-    DRAW.rect(x+1,y+1,20-2,size-2,0,borderCol)
-    DRAW.text(textformat("%02i", x/20),x+4,y + size+1,8,12)
-
+    
     IF id = buttonSelected THEN
         selColor = 3
     ENDIF
+
+    DRAW.rect(x,y,20,size,1,12)
+    DRAW.rect(x,y,20,size,0,selColor)
+    DRAW.rect(x+1,y+1,20-2,size-2,0,borderCol)
+    DRAW.text(textformat("%02i", x/20),x+4,y + size+1,8,12)
+
+
 
     DRAW.circle(x+10,y-4,3,1,selColor)
     DRAW.circle(x+10,y-4,3,0,12)
@@ -102,6 +105,25 @@ DEF drawSoundButtons(x)
     NEXT
 ENDDEF
 
+wave = 0
+DEF drawWave(x,y)
+    wave = slider(wave,x,y,8,3)
+
+    FOR i = 0 TO 3
+        onColor = 0
+        IF i = wave THEN
+            onColor = 3
+        ENDIF
+        DRAW.circle(x-10,15+y+i*10,3,1,onColor)
+        DRAW.circle(x-10,15+y+i*10,3,0,12)
+    NEXT
+
+    Draw.rect(x-17,y-7,60,60,0,0)
+    Draw.rect( x-4, y-12,30,10,1,1)
+    Draw.text("Wave", x-2, y-12,8,0)
+
+ENDDEF
+
 def draw()
     cls(1)
     time = time + delta()
@@ -110,24 +132,27 @@ def draw()
     draw.text(textformat("D: %04i", delta()), 54, 0, 1, 15)
     draw.text(textformat(">: %01i", p ), 160, 0, 1, 15)
 
-    IF button (2,16,"play") THEN print sfx.play(0,1000) ENDIF
+    'IF button (2,16,"play") THEN print sfx.play(0,1000) ENDIF
+'
+    'IF button (2,28,"square") THEN print sfx.set(0,0) ENDIF
+    'IF button (2,38,"sawtooth") THEN print sfx.set(0,1) ENDIF
+    'IF button (2,48,"sine") THEN print sfx.set(0,2) ENDIF
+    'IF button (2,58,"noise") THEN print sfx.set(0,3) ENDIF
 
-    IF button (2,28,"square") THEN print sfx.set(0,0) ENDIF
-    IF button (2,38,"sawtooth") THEN print sfx.set(0,1) ENDIF
-    IF button (2,48,"sine") THEN print sfx.set(0,2) ENDIF
-    IF button (2,58,"noise") THEN print sfx.set(0,3) ENDIF
+    'p = slider(p,80,16,128,255)
 
-    p = slider(p,80,16,128,255)
-    q = slider(q,129,86,8,3)
-   instrument = slider(instrument,150,40,41,16)
+    'instrument = slider(instrument,150,40,41,16)
 
-    c = toogle(c,100,100,3)
+    drawWave(20,30)
 
-    k = knob(k,200,100)
+    'k = knob(k,200,100)
 
+    c = toogle(c,5,110,3)
+IF c THEN
     synthKeys()
-    'drawSoundButtons()
-
+    ELSE
+    drawSoundButtons()
+ENDIF
     IF mouse.down(1) THEN  drawPalette(180) ENDIF
     IF NOT mouseWorking THEN  drawmouse() ENDIF
     

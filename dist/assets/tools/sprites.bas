@@ -1,0 +1,55 @@
+import "assets/lib/ui.bas"
+
+pixelSize = 8
+
+DEF paletteButton(x,y,color)
+    size = 11
+    x=x+size*color
+    border = 1
+    hover = isHover(x,y,size,8)
+    IF hover THEN
+        border = 15
+    ENDIF
+    draw.rect(x,y,size,8,1,color)
+    draw.rect(x,y,size,8,0,border)
+ENDDEF
+
+DEF drawPal(x,y)
+    draw.rect(x-2,y-2,179,12,1,0)
+    FOR i = 0 to 15
+        paletteButton(x,y,i)
+    NEXT
+
+ENDDEF
+
+DEF pixelCanvas(x,y)
+    color = 0
+    hover = isHover(x,y,pixelSize,pixelSize)
+    IF hover THEN
+        color = 12
+    ENDIF
+    draw.rect(x,y,pixelSize,pixelSize,0,color)
+ENDDEF
+
+DEF drawCanvas(x,y)
+    FOR i = 0 to 15
+        FOR j = 0 to 15
+            pixelCanvas(x+j*pixelSize,y+i*pixelSize)
+        NEXT
+    NEXT
+ENDDEF
+
+DEF draw()
+
+    cls(1)
+
+    drawCanvas(4,4)
+    drawPal(140,4)
+    draw.text(textformat("%i",mouse.x()),4,180,8,11)
+    draw.text(textformat("%i",mouse.y()),4,190,8,11)
+
+    draw.rect(140,20,128,128,0,0)
+
+    drawmouse()
+
+ENDDEF

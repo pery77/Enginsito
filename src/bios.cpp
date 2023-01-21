@@ -168,7 +168,7 @@ void Bios::ProcessCommand()
             screenLines += "Loaded " + CurrentProgram + " in memory.\n";
         }
         else{
-            screenLines += "Fail loading " + CurrentProgram + "\n";
+            screenLines += "Fail loading " + lastCommand.args[0] + "\n";
             CurrentProgram = "";
         }
 
