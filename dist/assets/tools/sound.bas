@@ -4,6 +4,8 @@ def tick()
     IF key.pressed(32) THEN sfx.play(0, 1000) ENDIF  
 enddef
 
+soundOn = false
+instrument = 0
 DEF sKey(x,t)
 
     y = 120
@@ -11,7 +13,7 @@ DEF sKey(x,t)
 
     borderCol = 0
     keyBCol = 5
-    code = (x / 20) - 4
+    code = (x / 20) + 56
     IF t = 0 THEN
         hover = isHover(x,y + size / 2,20,size)
         IF hover THEN
@@ -27,11 +29,19 @@ DEF sKey(x,t)
             keyBCol = 14
         ENDIF
         DRAW.rect(x+12,y+1,14,size * 0.65,1,0)
-        DRAW.rect(x+12,y+1,14,size * 0.65,0,keyBCol)
+        DRAW.rect(x+12,y+1,14,size * 0.65,0,keyBCol) 
     ENDIF
-
+'IF key.pressed(72) THEN sound.note(80,0,100) ENDIF
     IF hover AND mouse.pressed(0) THEN
-        sfx.play(0,(code * p) + 1000)
+        sound.note(code,instrument,100)
+        print("play");
+        soundOn = true;
+    ENDIF
+    IF mouse.released(0) and soundOn THEN
+        sound.stop(code,instrument)
+        soundOn = false;
+        print("stop");
+
     ENDIF
 
 enddef
@@ -112,14 +122,14 @@ def draw()
 
     p = slider(p,80,16,128,255)
     q = slider(q,129,86,8,3)
-    l = slider(l,150,40,41,15)
+   instrument = slider(instrument,150,40,41,16)
 
     c = toogle(c,100,100,3)
 
     k = knob(k,200,100)
 
-    'synthKeys()
-    drawSoundButtons()
+    synthKeys()
+    'drawSoundButtons()
 
     IF mouse.down(1) THEN  drawPalette(180) ENDIF
     IF NOT mouseWorking THEN  drawmouse() ENDIF

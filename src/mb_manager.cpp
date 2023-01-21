@@ -78,6 +78,7 @@ int MBManager::OpenBas(const char * file){
 	mb_begin_module(bas, "SOUND");
 		mb_register_func(bas, "MUSIC", setSequence); 
 		mb_register_func(bas, "NOTE", playNote);
+		mb_register_func(bas, "STOP", stopNote);
 	mb_end_module(bas);
 
 	mb_begin_module(bas, "SFX");
@@ -721,6 +722,24 @@ int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     audioR->PlayNote(key, voice, velocity);
+
+	return MB_FUNC_OK;
+}
+int MBManager::stopNote(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+    int key;
+	int voice;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &key));
+		mb_check(mb_pop_int(s, l, &voice));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->StopNote(key, voice);
 
 	return MB_FUNC_OK;
 }

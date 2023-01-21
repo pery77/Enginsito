@@ -32,6 +32,7 @@ class AudioManager {
     const char* GetSequence();
 
     void PlayNote(int note, int voice, int volume);
+    void StopNote(int note, int voice);
     void Stop();
     void GetPresets();
 

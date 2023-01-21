@@ -24,9 +24,9 @@ enddef
 
 'tools
 def isHover(x,y,w,h)
-
     return mouse.x() > x AND mouse.y() > y AND mouse.x() < x + w AND mouse.y() < y + h AND NOT mouseWorking
 enddef
+
 angle = 3.141592*5
 def polar2cartX(r,a)
     x = r * cos(a/angle)

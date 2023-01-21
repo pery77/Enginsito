@@ -27,7 +27,8 @@ AudioManager::AudioManager(){
         wave[i].data = GenerateWave(params[i], &wave[i].frameCount);
         sound[i] = LoadSoundFromWave(wave[i]);
     }
-    ptsf = tsf_load_filename("assets/keygen.sf2");
+    //ptsf = tsf_load_filename("assets/keygen.sf2");
+    ptsf = tsf_load_filename("assets/ins.sf2");
     
     SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
     AudioStream stream = LoadAudioStream(SAMPLERATE, SAMPLESIZE, CHANNELS);
@@ -45,7 +46,7 @@ AudioManager::AudioManager(){
 AudioManager::~AudioManager(){}
 
 void AudioManager::Update(){
-
+/*
     tsf_play_async(ptsf, voice, sequence, 1.0f);
 
     if (sequence && *sequence && audioTick == WAIT_TICKS) {
@@ -53,6 +54,7 @@ void AudioManager::Update(){
         audioTick = 0;
     }
     audioTick++;
+*/
 }
 void AudioManager::GetPresets()
 {
@@ -76,12 +78,15 @@ void AudioManager::PlayNote(int note, int voice, int volume){
     if (volume>100) volume = 100;
     tsf_note_on(ptsf, voice, note, volume*0.01);
 }
+void AudioManager::StopNote(int note, int voice){
+    //tsf_note_off(ptsf, voice, note);
+    tsf_note_off_all(ptsf);
+}
 
 void AudioManager::Stop(){
     sequence = "";
     audioTick = 0;
 }
-
 
 void AudioManager::SFXSet(int id, int waveType){
         printf("SFX set: [%i] wave:%i\n");

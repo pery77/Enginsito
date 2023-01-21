@@ -5,12 +5,12 @@ def init()
 enddef
 
 
-DEF tick()
+DEF ticks()
 
     k = key.get()
     IF k <> 0 THEN 
         push(l,k)
-        'IF k <> 32 then sound.note(k,26,100) endifh
+        'IF k <> 32 then sound.note(k,26,100) endif
         IF len(l)>5 THEN remove(l,0) ENDIF
     ENDIF
     m = mouse.wheel()
@@ -36,16 +36,12 @@ def draw()
     'IF time < 100 THEN
         cls(0)
     'ENDIF
-   IF 0 THEN
-    for j = 0 to 11
-        for i = 0 to 25
-        x=j*32
-        y=i*8
-           draw.rect(x ,y ,10 ,8, 1,i+(j*25))
-           draw.text(textformat("%03i",i+(j*25)), x+12 ,y-1 , 1, 30)
-        next
+
+    for i = 0 to 15
+       draw.rect(2 ,i*8 ,10 ,8, 1,i)
+       draw.text(textformat("%02i",i), 12 ,i*8 , 1, 30)
     next
-    ENDIF
+
     x=0
     i = iterator(l)
     while move_next(i)
@@ -56,33 +52,32 @@ def draw()
     draw.rect(0,0,319,9,1,6)
     
     mb = 2
-    draw.text(textformat("%06i",time), 0, 0, 1, 2)
-    draw.text(textformat("%03i",mouse.up(mb)), 0, 8, 1, 34)
-    draw.text(textformat("%03i",mouse.down(mb)), 0, 16, 1, 34)
-    draw.text(textformat("%03i",mouse.pressed(mb)), 0, 24, 1, 34)
-    draw.text(textformat("%03i",mouse.released(mb)), 0, 32, 1, 34)
-    draw.text(textformat("%03i",mouse.wheel()), 0, 40, 1, 34)
+    draw.text(textformat("%06i",time), 50, 0, 1, 2)
+    draw.text(textformat("%03i",mouse.up(mb)), 50, 8, 1, 11)
+    draw.text(textformat("%03i",mouse.down(mb)), 50, 16, 1, 11)
+    draw.text(textformat("%03i",mouse.pressed(mb)), 50, 24, 1, 11)
+    draw.text(textformat("%03i",mouse.released(mb)), 50, 32, 1, 11)
+    draw.text(textformat("%03i",mouse.wheel()), 50, 40, 1, 11)
 
-    for n = 0 to 100
-        draw.pixel(rnd(0,319), rnd(0,199), rnd(0,63))
-        'draw.line(rnd(0,319), rnd(0,199), rnd(0,319), rnd(0,199),rnd(1,3),rnd(0,63))
-        'draw.circle(rnd(0,319), rnd(0,199), rnd(1,20), rnd(0,1), rnd(0,63))
-        'draw.ellipse(rnd(0,319), rnd(0,199), rnd(1,20), rnd(1,20),rnd(0,1), rnd(0,63))
+    for n = 0 to 10
+        draw.pixel(rnd(0,319), rnd(0,199), rnd(0,15))
+        draw.line(rnd(0,319), rnd(0,199), rnd(0,319), rnd(0,199),rnd(1,3),rnd(0,15))
+        draw.circle(rnd(0,319), rnd(0,199), rnd(1,20), rnd(0,1), rnd(0,15))
+        draw.ellipse(rnd(0,319), rnd(0,199), rnd(1,20), rnd(1,20),rnd(0,1), rnd(0,15))
         x = rnd(0,319)
         y = rnd(0,199)
-       ' draw.triangle(x, y, x + rnd(-10,10), y + rnd(-20,20), x + rnd(-20,20), y + rnd(-20,20), rnd(0,1), rnd(0,63))
-
+        draw.triangle(x, y, x + rnd(-10,10), y + rnd(-20,20), x + rnd(-20,20), y + rnd(-20,20), rnd(0,1), rnd(0,15))
     next
     
     draw.circle(mouse.x(), mouse.y(),mouse.x()*0.1,1, 5+mouse.down(0)*20)
     for i = 0 to 3
-drawpalette(i*16)
+
 next
 
-    'draw.text(textformat("mouse: %03i x ",mouse.x()) + textformat("%03i",mouse.y()), 0 , 0 , 1, 2)
-    'draw.rect(mouse.x(), mouse.y(),319,199,8,0)
-    'draw.rect(0,0,mouse.x(), mouse.y(),6,0)
-    'draw.text(textformat("%04f",7/22), 0 , 16 , 1, 26)
+    draw.text(textformat("mouse: %03i x ",mouse.x()) + textformat("%03i",mouse.y()), 0 , 0 , 1, 11)
+    draw.rect(mouse.x(), mouse.y(),319,199,0,3)
+    draw.rect(0,0,mouse.x(), mouse.y(),0,9)
+    draw.text(textformat("%04f",mosue.x()/mouse.y()), 100 , 16 , 1, 7)
     'draw.rect(0,0,320,200,2,0)
     for i = 0 to 20
     sprite(mouse.x(),i*32,200-32,32);
