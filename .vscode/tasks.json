@@ -45,7 +45,7 @@
             "args": [
                 "-std=c++17",
                 "-m64",
-                "-O3",
+                "-O0",
                 "-mwindows",
                 "${workspaceFolder}/src/*.cpp",
                 "${workspaceFolder}/src/*.c",

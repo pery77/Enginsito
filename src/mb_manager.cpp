@@ -32,6 +32,7 @@ void MBManager::draw(){
 }
 void MBManager::end(){
 	doRoutine("END", MBManager::endRoutine);
+	CloseBas();
 }
 
 // Init and close

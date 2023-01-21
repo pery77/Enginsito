@@ -34,14 +34,11 @@ DEF sKey(x,t)
 'IF key.pressed(72) THEN sound.note(80,0,100) ENDIF
     IF hover AND mouse.pressed(0) THEN
         sound.note(code,instrument,100)
-        print("play");
         soundOn = true;
     ENDIF
     IF mouse.released(0) and soundOn THEN
         sound.stop(code,instrument)
         soundOn = false;
-        print("stop");
-
     ENDIF
 
 enddef
