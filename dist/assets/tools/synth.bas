@@ -19,8 +19,8 @@ DEF sKey(x,t)
         IF hover THEN
             borderCol = 14
         ENDIF
-        DRAW.rect(x,y,20,size,1,12)
-        DRAW.rect(x,y,20,size,0,borderCol)
+        DRAW.rect(x,y,20,size,0,12)
+        DRAW.rect(x,y,20,size,1,borderCol)
         DRAW.text(textformat("%i", code),x,y + size,8,12)
     ENDIF
     IF t = 1 THEN 
@@ -28,8 +28,8 @@ DEF sKey(x,t)
         IF hover THEN
             keyBCol = 14
         ENDIF
-        DRAW.rect(x+12,y+1,14,size * 0.65,1,0)
-        DRAW.rect(x+12,y+1,14,size * 0.65,0,keyBCol) 
+        DRAW.rect(x+12,y+1,14,size * 0.65,0,0)
+        DRAW.rect(x+12,y+1,14,size * 0.65,2,keyBCol) 
     ENDIF
 'IF key.pressed(72) THEN sound.note(80,0,100) ENDIF
     IF hover AND mouse.pressed(0) THEN
@@ -76,15 +76,13 @@ DEF soundButton(id,x,y,size)
         selColor = 3
     ENDIF
 
-    DRAW.rect(x,y,20,size,1,12)
-    DRAW.rect(x,y,20,size,0,selColor)
-    DRAW.rect(x+1,y+1,20-2,size-2,0,borderCol)
-    DRAW.text(textformat("%02i", x/20),x+4,y + size+1,8,12)
+    DRAW.rect(x,y,20,size,0,12)
+    DRAW.rect(x,y,20,size,3,selColor)
+    DRAW.rect(x+1,y+1,20-2,size-2,2,borderCol)
+    DRAW.text(textformat("%02i", x/20),x+4,y + size+1,8,14)
 
-
-
-    DRAW.circle(x+10,y-4,3,1,selColor)
-    DRAW.circle(x+10,y-4,3,0,12)
+    DRAW.circle(x+10,y+5,3,1,selColor)
+    DRAW.circle(x+10,y+5,3,0,14)
 
 
     IF hover AND mouse.released(0) THEN
@@ -98,7 +96,7 @@ DEF drawSoundButtons(x)
     y = 160
     size = 20
 
-    DRAW.rect(0,y+size+1,320,10,1,0)
+    DRAW.rect(0,y+size+1,320,10,0,0)
     FOR i = 0 TO 15
         x = i*20
         soundButton(i,x,y,size)
@@ -118,8 +116,8 @@ DEF drawWave(x,y)
         DRAW.circle(x-10,15+y+i*10,3,0,12)
     NEXT
 
-    Draw.rect(x-17,y-7,60,60,0,0)
-    Draw.rect( x-4, y-12,30,10,1,1)
+    Draw.rect(x-17,y-7,60,60,2,0)
+    Draw.rect( x-4, y-12,30,10,0,1)
     Draw.text("Wave", x-2, y-12,8,0)
 
 ENDDEF
@@ -127,7 +125,7 @@ ENDDEF
 def draw()
     cls(1)
     time = time + delta()
-    draw.rect(0,0,320,9,1,0)
+    draw.rect(0,0,320,9,0,0)
     draw.text(textformat("T: %06i",time), 0, 0, 1, 15)
     draw.text(textformat("D: %04i", delta()), 54, 0, 1, 15)
     draw.text(textformat(">: %01i", p ), 160, 0, 1, 15)

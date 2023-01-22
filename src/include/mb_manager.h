@@ -43,9 +43,11 @@ class MBManager{
         static int drawPixel(struct mb_interpreter_t* s, void** l);
         static int drawLine(struct mb_interpreter_t* s, void** l);
         static int drawCircle(struct mb_interpreter_t* s, void** l);
+        static int drawRing(struct mb_interpreter_t* s, void** l);
         static int drawEllipse(struct mb_interpreter_t* s, void** l);
         static int drawTriangle(struct mb_interpreter_t* s, void** l);
         static int drawRect(struct mb_interpreter_t* s, void** l);
+        static int drawPoly(struct mb_interpreter_t* s, void** l);
 
         //Text
         static int drawText(struct mb_interpreter_t* s, void** l);

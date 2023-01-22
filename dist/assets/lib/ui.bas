@@ -10,8 +10,8 @@ mouseWorking = false
 def drawPalette(y)
     for i = 0 to 15
         x = i*20
-        draw.rect(x,y,20,10,true,i)
-        draw.rect(x,y,20,10,false,0)
+        draw.rect(x,y,20,10,0,i)
+        draw.rect(x,y,20,10,1,0)
         draw.text(textformat("%02i",i), x+6, y+9, 8, 0)
         draw.text(textformat("%02i",i), x+4, y+9, 8, 15)
     next
@@ -57,8 +57,8 @@ def button(x,y,txt)
         ENDIF
     ENDIF
 
-    draw.rect(x,y,buttonW,buttonH,1,cb)
-    draw.rect(x,y,buttonW,buttonH,0,ct)
+    draw.rect(x,y,buttonW,buttonH,0,cb)
+    draw.rect(x,y,buttonW,buttonH,1,ct)
     xc = (buttonW * 0.5) - (measureText(txt,8) * 0.5)
     draw.text(txt,x + xc,y,8,ct)
 
@@ -95,9 +95,9 @@ def slider(v,x,y,w,max)
     v = ROUND(v/w * max)
     v = clamp(v,0, max)
     
-    draw.rect(x,y,w + 10,buttonH,1,0)
-    draw.rect(x,y,w + 10,buttonH,0,cb)
-    draw.rect(mx,my,8,8,1,col)
+    draw.rect(x,y,w + 10,buttonH,0,0)
+    draw.rect(x,y,w + 10,buttonH,1,cb)
+    draw.rect(mx,my,8,8,0,col)
     textPos = textformat("%02i",v)
     draw.text(textPos, x - measureText(textPos ,8)-2, y,8, cb)
 

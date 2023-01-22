@@ -21,7 +21,7 @@ DEF drawPal(x,y)
     NEXT
 
 ENDDEF
-
+ 
 DEF pixelCanvas(x,y)
     color = 0
     hover = isHover(x,y,pixelSize,pixelSize)
