@@ -84,11 +84,9 @@ DEF soundButton(id,x,y,size)
     DRAW.circle(x+10,y+5,3,1,selColor)
     DRAW.circle(x+10,y+5,3,0,14)
 
-
     IF hover AND mouse.released(0) THEN
         buttonSelected = id
     ENDIF
-
 
 ENDDEF
 
@@ -143,7 +141,7 @@ def draw()
 
     drawWave(20,30)
 
-    'k = knob(k,200,100)
+    k = knob(k,200,100)
 
     c = toogle(c,5,110,3)
 IF c THEN
@@ -152,7 +150,7 @@ IF c THEN
     drawSoundButtons()
 ENDIF
     IF mouse.down(1) THEN  drawPalette(180) ENDIF
-    IF NOT mouseWorking THEN  drawmouse() ENDIF
+    drawmouse()
     
 
 enddef
