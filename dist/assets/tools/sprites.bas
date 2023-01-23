@@ -1,6 +1,6 @@
 import "assets/lib/ui.bas"
 
-pixelSize = 8
+pixelSize = 8   
 
 DEF paletteButton(x,y,color)
     size = 11
@@ -10,12 +10,12 @@ DEF paletteButton(x,y,color)
     IF hover THEN
         border = 15
     ENDIF
-    draw.rect(x,y,size,8,1,color)
-    draw.rect(x,y,size,8,0,border)
+    draw.rect(x,y,size,8,0,color)
+    draw.rect(x,y,size,8,1,border)
 ENDDEF
 
 DEF drawPal(x,y)
-    draw.rect(x-2,y-2,179,12,1,0)
+    draw.rect(x-2,y-2,179,12,2,0)
     FOR i = 0 to 15
         paletteButton(x,y,i)
     NEXT

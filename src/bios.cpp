@@ -185,6 +185,16 @@ std::string Bios::GetFile(){
     printf("Get file> %s\n",full_path.string().c_str());
     return full_path.string();
 }
+void Bios::SetFile(std::string filePath){
+    namespace fs = std::filesystem;
+    fs::path file = filePath;
+
+    CurrentProgram = file.stem().string();
+    CurrentPath = file.parent_path().string();
+    CurrentPath = CurrentPath.erase(0, 9); //Delete > ./assets/ bye the dirty way. :(
+
+    printf("Set file> %s\n",file.string().c_str());
+}
 
 void Bios::addSubPath(std::string subPath){
     std::string prePath = (CurrentPath == "") ? "" : CurrentPath + "/";

@@ -20,32 +20,7 @@ int main(int argc, char *argv[]){
     IniManager* config = new IniManager();
     Bios* bios = new Bios();
 
-    /* FILEWACHTER WORK, TODO: No loop and wacht only for modified current program.
-    FileWatcher fw{"./", std::chrono::milliseconds(5000)};
-
-    // Start monitoring a folder for changes and (in case of changes)
-    // run a user provided lambda function
-    fw.start([] (std::string path_to_watch, FileStatus status) -> void {
-        // Process only regular files, all other file types are ignored
-        if(!std::filesystem::is_regular_file(std::filesystem::path(path_to_watch)) && status != FileStatus::erased) {
-            return;
-        }
-
-        switch(status) {
-            case FileStatus::created:
-                std::cout << "File created: " << path_to_watch << '\n';
-                break;
-            case FileStatus::modified:
-                std::cout << "File modified: " << path_to_watch << '\n';
-                break;
-            case FileStatus::erased:
-                std::cout << "File erased: " << path_to_watch << '\n';
-                break;
-            default:
-                std::cout << "Error! Unknown file status.\n";
-        }
-    });
-    */
+    FileWatcher* fw = new FileWatcher{"./assets/", 3.0f};   
 
     const int windowWidth = GAME_SCREEN_W * config->size;
     const int windowHeight = GAME_SCREEN_H * config->size;
@@ -73,6 +48,29 @@ int main(int argc, char *argv[]){
     // Game Loop
     while (!(bios->ShouldClose || WindowShouldClose()))
     {
+        fw->update([bios] (std::string path_to_watch, FileStatus status) -> void {
+                if(!std::filesystem::is_regular_file(std::filesystem::path(path_to_watch)) && status != FileStatus::erased) {
+            std::cout << "NO REGULAR: " << path_to_watch << '\n';
+            return;
+        }
+
+        switch(status) {
+            case FileStatus::created:
+                std::cout << "File created: " << path_to_watch << '\n';
+                break;
+            case FileStatus::modified:
+                std::cout << "File modified: " << path_to_watch << '\n';
+                bios->SetFile(path_to_watch);
+                bios->ShouldRun = true;
+                break;
+            case FileStatus::erased:
+                std::cout << "File erased: " << path_to_watch << '\n';
+                break;
+            default:
+                std::cout << "Error! Unknown file status.\n";
+        }
+        });
+
         // Engine keys
         if(IsKeyReleased(KEY_F1)){
             showFps = !showFps;
