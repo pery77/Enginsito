@@ -6,8 +6,8 @@ DEF setPicoPalette()
     setcolor(3,0,135,81)	    'dark-green
     setcolor(4,171,82,54)	    'brown
     setcolor(5,95,87,79)	    'dark-grey
-    setcolor(6,194,195,199)	    'light-grey
-    setcolor(7,255,241,232)	    'white
+    setcolor(6,170,171,178)	    'light-grey
+    setcolor(7,194,195,199)		'white
     setcolor(8,255,0,77)	    'red
     setcolor(9,255,163,0)	    'orange
     setcolor(10,255,236,39)	    'yellow

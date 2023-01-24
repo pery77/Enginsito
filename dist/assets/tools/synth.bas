@@ -21,7 +21,7 @@ DEF sKey(x,t)
         ENDIF
         DRAW.rect(x,y,20,size,0,12)
         DRAW.rect(x,y,20,size,1,borderCol)
-        DRAW.text(textformat("%i", code),x,y + size,8,12)
+        DRAW.text(intToText("%i", code),x,y + size,8,12)
     ENDIF
     IF t = 1 THEN 
         hover = isHover(x+12,y+1,14,size * 0.65)
@@ -79,7 +79,7 @@ DEF soundButton(id,x,y,size)
     DRAW.rect(x,y,20,size,0,12)
     DRAW.rect(x,y,20,size,3,selColor)
     DRAW.rect(x+1,y+1,20-2,size-2,2,borderCol)
-    DRAW.text(textformat("%02i", x/20),x+4,y + size+1,8,14)
+    DRAW.text(intToText("%02i", x/20),x+4,y + size+1,8,14)
 
     DRAW.circle(x+10,y+5,3,1,selColor)
     DRAW.circle(x+10,y+5,3,0,14)
@@ -97,7 +97,7 @@ DEF drawSoundButtons(x)
     DRAW.rect(0,y+size+1,320,10,0,0)
     FOR i = 0 TO 15
         x = i*20
-        soundButton(i,x,y,size)
+        soundButton(i,x,y,size)S
     NEXT
 ENDDEF
 
@@ -124,9 +124,9 @@ def draw()
     cls(1)
     time = time + delta()
     draw.rect(0,0,320,9,0,0)
-    draw.text(textformat("T: %06i",time), 0, 0, 1, 15)
-    draw.text(textformat("D: %04i", delta()), 54, 0, 1, 15)
-    draw.text(textformat(">: %01i", p ), 160, 0, 1, 15)
+    draw.text(intToText("T: %06i",time), 0, 0, 1, 15)
+    draw.text(intToText("D: %04i", delta()), 54, 0, 1, 15)
+    draw.text(intToText(">: %03i", envD ), 160, 0, 1, 15)
 
     'IF button (2,16,"play") THEN print sfx.play(0,1000) ENDIF
 '
@@ -137,20 +137,23 @@ def draw()
 
     'p = slider(p,80,16,128,255)
 
-    'instrument = slider(instrument,150,40,41,16)
+    instrument = slider(instrument,17,85,41,16)
 
     drawWave(20,30)
 
-    k = knob(k,200,100)
+    envA = knob(envA,80,36)
+    envD = knob(envD,112,36)
+    envS = knob(envS,144,36)
+    envR = knob(envR,176,36)
 
     c = toogle(c,5,110,3)
+    e = toogle(e,20,110,3)
 IF c THEN
     synthKeys()
     ELSE
     drawSoundButtons()
 ENDIF
     IF mouse.down(1) THEN  drawPalette(180) ENDIF
-    drawmouse()
-    
+    IF NOT mouseWorking THEN  drawmouse() ENDIF
 
 enddef

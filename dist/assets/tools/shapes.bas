@@ -42,8 +42,7 @@ DEF draw()
 
     cls(1)
 
-    draw.text(textformat("%i",mouse.x()),4,180,8,11)
-    draw.text(textformat("%i",mouse.y()),4,190,8,11)
+    draw.text(intToText("%i,%i",mouse.x(),mouse.y()),4,190,8,11)
 
     'drawRing()
     drawpoly()

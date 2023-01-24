@@ -12,9 +12,12 @@ def drawPalette(y)
         x = i*20
         draw.rect(x,y,20,10,0,i)
         draw.rect(x,y,20,10,1,0)
-        draw.text(textformat("%02i",i), x+6, y+9, 8, 0)
-        draw.text(textformat("%02i",i), x+4, y+9, 8, 15)
+        draw.text(intToText("%02i",i), x+6, y+9, 8, 0)
+        draw.text(intToText("%02i",i), x+4, y+9, 8, 15)
     next
+    draw.rect(0,0,40,11,0,0)
+    draw.rect(0,0,40,11,1,11)
+    draw.text(intToText("%03i,%03i",mouse.x(),mouse.y()), 1, 1, 8, 11)
 enddef
 
 def drawmouse()
@@ -24,9 +27,8 @@ enddef
 
 'tools
 def isHover(x,y,w,h)
-    return mouse.x() > x AND mouse.y() > y AND mouse.x() < x + w AND mouse.y() < y + h AND NOT mouseWorking
+    return mouse.x() > x AND mouse.y() > y AND mouse.x() < x + w AND mouse.y() < y + h
 enddef
-
 angle = 3.141592*5
 def polar2cartX(r,a)
     x = r * cos(a/angle)
@@ -98,7 +100,7 @@ def slider(v,x,y,w,max)
     draw.rect(x,y,w + 10,buttonH,0,0)
     draw.rect(x,y,w + 10,buttonH,1,cb)
     draw.rect(mx,my,8,8,0,col)
-    textPos = textformat("%02i",v)
+    textPos = intToText("%02i",v)
     draw.text(textPos, x - measureText(textPos ,8)-2, y,8, cb)
 
     return v
@@ -125,58 +127,50 @@ def toogle(v,x,y,r)
     return v
 enddef
 
-lastMousePos = 0
+lastMousePosY = 0
+lastMousePosX = 0
+
 def knob(v,x,y)
+
     r=7
     cb = colorButtonText
     col = colorButton
-    mx = x+v
+    id= x * 320 + y
     hover = isHover(x-r,y-r,r*2,r*2)
 
-    IF hover OR mouseWorking THEN
+    IF hover THEN
         cb = colorButtonTextHover
         v=v+mouse.wheel();
     ENDIF
 
+    IF mouse.down(0) AND hover AND NOT mouseWorking THEN
+        lastMousePosX = mouse.x()
+        lastMousePosY = mouse.y()
 
-
-    IF mouse.down(0) AND hover THEN
-        IF NOT mouseWorking THEN
-            
-            lastMousePos = mouse.y() + v
-            mouseWorking = true
-            print(lastMousePos);
-        ENDIF
-
+        mouseWorking = true
+        selected = id
     ENDIF
 
-    IF mouseWorking AND mouse.down(0) THEN
-        v = lastMousePos - mouse.y();
-        v =v*8
-        v = clamp(v,0,360)
-        'print(v);
+    IF mouseWorking AND mouse.down(0) AND id = selected THEN
+        v = v+mouse.x() - lastMousePosX;
+        v = v+lastMousePosY - mouse.y();
+        mouse.setpos(lastMousePosX, lastMousePosY)
     ENDIF
 
     IF mouseWorking AND mouse.released(0) THEN
         mouseWorking = false
+        selected = 0
     ENDIF
 
     v = clamp(v,0,360)
-
-    'draw.circle(x,y,r,1,col)
-    'draw.circle(x,y,r,0,cb)
-    'draw.circle(x,y,r+5,0,0)
-    'x1= polar2cartX(r+1,v)
-    'y1= polar2cartY(r+1,v)
-    'draw.line(x,y,x+x1,y+y1,1,cb)
     
     x1= polar2cartX(r+5,-v)
     y1= polar2cartY(r+5,-v)
 
-    'draw.circle(x + x1,y + y1,2,1,8)
-    text = textformat("%02i", v)
+
+    text = intToText("%03i", v)
     textPos = measureText(text, 8) / 2
-    draw.text(text,  x - textPos, y-r-16,8, cb)
+    draw.text(text,  x - textPos, y-r-17,8, cb)
     
     draw.ring(x,y,r+3,r+8,0,360,10,1,0)
     draw.poly(x,y,8,r,-v,0,0)
