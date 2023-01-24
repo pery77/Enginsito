@@ -54,7 +54,8 @@ class MBManager{
         static int measureText(struct mb_interpreter_t* s, void** l);
 
         //Tools
-        static int textFormat(struct mb_interpreter_t* s, void** l);
+        static int intToText(struct mb_interpreter_t* s, void** l);
+        static int floatToText(struct mb_interpreter_t* s, void** l);
         static int delta(struct mb_interpreter_t* s, void** l);
         static int setColor(struct mb_interpreter_t* s, void** l);
         static int restorePalette(struct mb_interpreter_t* s, void** l);
@@ -71,6 +72,7 @@ class MBManager{
         static int mouseX(struct mb_interpreter_t* s, void** l);
         static int mouseY(struct mb_interpreter_t* s, void** l);
         static int mouseWheel(struct mb_interpreter_t* s, void** l);  
+        static int setMousePosition(struct mb_interpreter_t* s, void** l);
 
         static int mousePressed(struct mb_interpreter_t* s, void** l);
         static int mouseDown(struct mb_interpreter_t* s, void** l);

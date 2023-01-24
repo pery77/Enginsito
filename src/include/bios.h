@@ -38,5 +38,6 @@ class Bios{
         Command lastCommand;
         void addSubPath(std::string current);
         void removeSubPath();
+        bool checkCommand(std::string command, std::string value);
 
 };

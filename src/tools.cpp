@@ -51,7 +51,14 @@ int Tools::GetVirtualMouse(bool isXAxis){
     float value = (mouse - (screen - (gamescreen * screenScale)) * 0.5f) / screenScale;
     return (int)Clamp(value, 0,(float)gamescreen);
 }
-
+void Tools::SetVirtualMouse(int x,int y){   
+	float screenScale = Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
+	//float mouse = isXAxis ? GetMousePosition().x : GetMousePosition().y;
+    //float screen = isXAxis ? GetScreenWidth() : GetScreenHeight();
+    //float gamescreen = isXAxis ? GAME_SCREEN_W : GAME_SCREEN_H;
+    //float value = (mouse - (screen - (gamescreen * screenScale)) * 0.5f) / screenScale;
+    SetMousePosition(x * screenScale,y * screenScale);
+}
 bool Tools::CompareFloats(float x, float y, float epsilon){
    if(fabs(x - y) < epsilon) return true;
       return false;

@@ -52,6 +52,13 @@ void Bios::Update(){
     }
 
 }
+bool Bios::checkCommand(std::string command, std::string value){
+        return std::equal(command.begin(), command.end(),
+                      value.begin(), value.end(),
+                      [](char command, char value) {
+                          return tolower(command) == tolower(value);
+                      });
+}
 
 void Bios::ProcessCommand()
 {
@@ -72,14 +79,15 @@ void Bios::ProcessCommand()
     int i = 0;
     while(ptr != NULL){
         if (i == 0) 
-            lastCommand.command = Tools::ToUpper(ptr);
+            lastCommand.command = ptr;//Tools::ToUpper(ptr);
         else
-            lastCommand.args[i-1] = Tools::ToUpper(ptr);
+            lastCommand.args[i-1] = ptr;//Tools::ToUpper(ptr);
 
         i++;
 		ptr = strtok(NULL, delim);
         if (i>9) break;
 	}
+
 /*
     printf("Command: '%s'\n", lastCommand.command.c_str()); 
     for (int i = 0; i < 9; i++)	{
@@ -89,22 +97,22 @@ void Bios::ProcessCommand()
 */
     currentLine.clear();
 
-    if(lastCommand.command == "HELP"){
+    if(checkCommand(lastCommand.command,"HELP")){
         screenLines += HelpInfo;
         return;
     }
 
-    if (lastCommand.command == "CLS"){
+    if (checkCommand(lastCommand.command,"CLS")){
         screenLines.clear();
         return;
     }
 
-    if (lastCommand.command == "EXIT"){
+    if (checkCommand(lastCommand.command,"EXIT")){
         ShouldClose = true;
         return;
     }
 
-    if (lastCommand.command == "COLOR"){
+    if (checkCommand(lastCommand.command,"COLOR")){
         int bc = atoi(lastCommand.args[0].c_str());
         int fc = atoi(lastCommand.args[1].c_str());
         if (bc != fc && bc < 64 && fc < 64){
@@ -114,12 +122,12 @@ void Bios::ProcessCommand()
         return;
     }
 
-    if (lastCommand.command == "RUN"){
+    if (checkCommand(lastCommand.command,"RUN")){
         ShouldRun = true;
         return;
     }
 
-    if (lastCommand.command == "LIST"){
+    if (checkCommand(lastCommand.command,"LIST")){
         std::stringstream ss = Tools::GetFiles(CurrentPath.c_str());
         std::string temp;
         while (std::getline(ss, temp)){
@@ -130,13 +138,21 @@ void Bios::ProcessCommand()
         return;
     }
 
-    if (lastCommand.command == "PRINT"){
+    if (checkCommand(lastCommand.command,"PRINT")){
         lastCommand.args[0].push_back('\n');
         screenLines += lastCommand.args[0];
         return;
     }
 
-    if (lastCommand.command == "CD"){
+    if (checkCommand(lastCommand.command,"CD.")){
+        removeSubPath();
+        
+    }
+    if (checkCommand(lastCommand.command,"CD..")){
+        CurrentPath = "";
+    }
+
+    if (checkCommand(lastCommand.command,"CD")){
         if (lastCommand.args[0].find('/') != std::string::npos) return;
         if (lastCommand.args[0] == "" ) return;
         if (CurrentPath == ""){
@@ -154,7 +170,7 @@ void Bios::ProcessCommand()
         return;
     }
 
-    if (lastCommand.command == "MEM"){
+    if (checkCommand(lastCommand.command,"MEM")){
         if (CurrentProgram != "")
             screenLines += CurrentProgram + " loaded.\n";
         else
@@ -162,7 +178,7 @@ void Bios::ProcessCommand()
         return;
     }
 
-    if (lastCommand.command == "LOAD"){
+    if (checkCommand(lastCommand.command,"LOAD")){
         if (Tools::FileExist(CurrentPath, lastCommand.args[0])){
             CurrentProgram = lastCommand.args[0];
             screenLines += "Loaded " + CurrentProgram + " in memory.\n";
@@ -192,7 +208,7 @@ void Bios::SetFile(std::string filePath){
     CurrentProgram = file.stem().string();
     CurrentPath = file.parent_path().string();
     CurrentPath = CurrentPath.erase(0, 9); //Delete > ./assets/ bye the dirty way. :(
-
+    std::replace(CurrentPath.begin(), CurrentPath.end(), '\\', '/');
     printf("Set file> %s\n",file.string().c_str());
 }
 

@@ -43,6 +43,7 @@ class Tools{
         static void CopyPalette();
 
         static int GetVirtualMouse(bool isXAxis);
+        static void SetVirtualMouse(int x,int y);
         static bool CompareFloats(float x, float y, float epsilon);
         static int IntClamp(int value, int min, int max);
 

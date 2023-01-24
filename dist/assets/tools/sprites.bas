@@ -45,10 +45,15 @@ DEF draw()
 
     drawCanvas(4,4)
     drawPal(140,4)
-    draw.text(textformat("%i",mouse.x()),4,180,8,11)
-    draw.text(textformat("%i",mouse.y()),4,190,8,11)
+
+    draw.text(floatToText("%f",mouse.x()/8.0),4,180,8,10)
+    draw.text(intToText("%i",mouse.y()),4,190,8,11)
+    draw.text(intToText("%03ix%03i",mouse.x(),mouse.y()),40,170,8,11)
+    'draw.text(textformat("%03.02f x %03.02f",mouse.x(),mouse.y()),40,190,8,11)
+    'draw.text(textformat("%.f : %.f : %.f :%i ",55.0,1,1,66),180,190,8,11)
 
     draw.rect(140,20,128,128,0,0)
+    if (mouse.down(0)) then mouse.setpos(160, 100) endif
 
     drawmouse()
 

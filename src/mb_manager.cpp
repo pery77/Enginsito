@@ -56,7 +56,8 @@ int MBManager::OpenBas(const char * file){
 		
 	mb_end_module(bas);
 
-	mb_reg_fun(bas, textFormat);
+	mb_reg_fun(bas, intToText);
+	mb_reg_fun(bas, floatToText);
 	mb_reg_fun(bas, delta);
 
 	mb_begin_module(bas, "KEY");
@@ -76,6 +77,7 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "DOWN", mouseDown); 
 		mb_register_func(bas, "RELEASED", mouseReleased); 
 		mb_register_func(bas, "UP", mouseUp); 
+		mb_register_func(bas, "SETPOS", setMousePosition); 
 	mb_end_module(bas);
 
 	mb_begin_module(bas, "SOUND");
@@ -453,40 +455,95 @@ int MBManager::measureText(struct mb_interpreter_t* s, void** l){
 	return MB_FUNC_OK;
 }
 //Tools
-int MBManager::textFormat(struct mb_interpreter_t* s, void** l){
+int MBManager::intToText(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
 
 	char* arg = 0;
-	mb_value_t value;
+	mb_value_t val[4];
 
     mb_value_t ret;
     mb_make_string(ret, 0);
 
+	int i = 0;
 	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
 		mb_check(mb_pop_string(s, l, &arg));
-		mb_check(mb_pop_value(s, l, &value));
-	}
+		while(mb_has_arg(s, l)) {
+			mb_check(mb_pop_value(s, l, &val[i]));
+			if(val[i].type == MB_DT_REAL)
+				val[i].value.integer = (int)val[i].value.float_point;
+			i++;
+			if (i == 4) break;
+		}
 	mb_check(mb_attempt_close_bracket(s, l));
+	
+	switch (i)
+	{	
+		case 1:
+			ret.value.string = (char *)TextFormat(arg, val[0].value.integer);
+		break;
+		case 2:
+			ret.value.string = (char *)TextFormat(arg, val[0].value.integer, val[1].value.integer);
+		break;
+		case 3:
+			ret.value.string = (char *)TextFormat(arg, val[0].value.integer, val[1].value.integer, val[2].value.integer);
+		break;
+		case 4:
+			ret.value.string = (char *)TextFormat(arg, val[0].value.integer, val[1].value.integer, val[2].value.integer, val[3].value.integer);
+		break;
 
-	if (value.type == MB_DT_INT){
-    	ret.value.string = (char *)TextFormat(arg, value.value.integer);
-	}else{
-    	ret.value.string = (char *)TextFormat(arg, value.value.float_point);
+		default:
+		break;
 	}
 
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
 
-	/*
-	TODO: MULTIPLE ARGS, darle una pensadita
-	while(mb_has_arg(s, l)) {
-	mb_check(mb_pop_real(s, l, &tmp));
-	if(tmp < ret)
-		ret = tmp;
+	return MB_FUNC_OK;
+}
+int MBManager::floatToText(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+
+	char* arg = 0;
+	mb_value_t val[4];
+
+    mb_value_t ret;
+    mb_make_string(ret, 0);
+
+	int i = 0;
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_string(s, l, &arg));
+		while(mb_has_arg(s, l)) {
+			mb_check(mb_pop_value(s, l, &val[i]));
+			if(val[i].type == MB_DT_INT)
+				val[i].value.float_point = (float)val[i].value.integer;
+			i++;
+			if (i == 4) break;
+		}
+	mb_check(mb_attempt_close_bracket(s, l));
+	
+	switch (i)
+	{	
+		case 1:
+			ret.value.string = (char *)TextFormat(arg, val[0].value.float_point);
+		break;
+		case 2:
+			ret.value.string = (char *)TextFormat(arg, val[0].value.float_point, val[1].value.float_point);
+		break;
+		case 3:
+			ret.value.string = (char *)TextFormat(arg, val[0].value.float_point, val[1].value.float_point, val[2].value.float_point);
+		break;
+		case 4:
+			ret.value.string = (char *)TextFormat(arg, val[0].value.float_point, val[1].value.float_point, val[2].value.float_point, val[3].value.float_point);
+		break;
+
+		default:
+		break;
 	}
-	*/
+
+    mb_check(mb_push_value(s, l, ret));
+
+	return MB_FUNC_OK;
 }
 int MBManager::delta(struct mb_interpreter_t* s, void** l){
 
@@ -768,6 +825,25 @@ int MBManager::mouseUp(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;
 }
+int MBManager::setMousePosition(struct mb_interpreter_t* s, void** l){
+	
+	mb_assert(s && l);
+
+	int x = 0;
+	int y = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &x));
+		mb_check(mb_pop_int(s, l, &y));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    Tools::SetVirtualMouse(x,y);
+	return MB_FUNC_OK;
+}
+
+//Sound
 int MBManager::setSequence(struct mb_interpreter_t* s, void** l){
 
 	mb_assert(s && l);
