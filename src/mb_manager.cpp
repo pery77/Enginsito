@@ -455,7 +455,7 @@ int MBManager::drawFont(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    DrawTextEx(Tools::GetFont(),arg, (Vector2){x, y}, size, 1,Tools::GetColor(col));
+    DrawTextEx(Tools::GetFont(),arg, (Vector2){x, y}, size, 0, Tools::GetColor(col));
 
 	return MB_FUNC_OK;
 }

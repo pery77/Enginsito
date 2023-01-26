@@ -130,6 +130,11 @@ int main(int argc, char *argv[]){
 
         if (currentState == Running){
             basic->tick();
+            if(GetFrameTime()>10.0f) {
+                currentState = Off;
+                basic->CloseBas();
+                printf("Bad framerate!\n");
+            }
         }
 
         // Draw
@@ -141,6 +146,8 @@ int main(int argc, char *argv[]){
                 {
                 case Off:
                     bios->Update();
+                    DrawRectangle(50,50,128,128,DARKGREEN);
+                    DrawTexture(Tools::GetFont().texture,50,50,WHITE);
                     break;
                 case Running:
                     basic->draw();

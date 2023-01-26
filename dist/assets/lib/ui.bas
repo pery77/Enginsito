@@ -15,9 +15,9 @@ def drawPalette(y)
         draw.text(intToText("%02i",i), x+6, y+9, 8, 0)
         draw.text(intToText("%02i",i), x+4, y+9, 8, 15)
     next
-    draw.rect(0,0,40,11,0,0)
-    draw.rect(0,0,40,11,1,11)
-    draw.text(intToText("%03i,%03i",mouse.x(),mouse.y()), 1, 1, 8, 11)
+    draw.rect(0,y-8,45,11,0,0)
+    draw.rect(0,y-8,45,11,1,11)
+    draw.text(intToText("%03i,%03i",mouse.x(),mouse.y()), 0, y-8, 8, 11)
 enddef
 
 def drawmouse()
