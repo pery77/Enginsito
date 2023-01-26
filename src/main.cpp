@@ -19,7 +19,6 @@ int main(int argc, char *argv[]){
 
     IniManager* config = new IniManager();
     Bios* bios = new Bios();
-
     FileWatcher* fw = new FileWatcher{"./assets/", 3.0f};   
 
     const int windowWidth = GAME_SCREEN_W * config->size;
@@ -36,6 +35,9 @@ int main(int argc, char *argv[]){
     InitAudioDevice();
     HideCursor();
     SetExitKey(KEY_NULL);
+
+    Font font = LoadFont("assets/jupiter_crash.png");  
+printf("%i\n",font.baseSize);
 
     PostProcessing* postProcessing = new PostProcessing();
     MBManager* basic = new MBManager();
@@ -142,6 +144,8 @@ int main(int argc, char *argv[]){
                 {
                 case Off:
                     bios->Update();
+                     DrawTextEx(font, "jUPITER_CRASH FONT designed by Brian Kent (AEnigma)", 
+                     (Vector2){0,110}, 20, 0, Tools::GetFixedColor(11));
                     break;
                 case Running:
                     basic->draw();
