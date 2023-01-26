@@ -53,6 +53,7 @@ class MBManager{
         static int drawText(struct mb_interpreter_t* s, void** l);
         static int drawFont(struct mb_interpreter_t* s, void** l);
         static int measureText(struct mb_interpreter_t* s, void** l);
+        static int getChar(struct mb_interpreter_t* s, void** l);
 
         //Tools
         static int intToText(struct mb_interpreter_t* s, void** l);

@@ -60,6 +60,7 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, intToText);
 	mb_reg_fun(bas, floatToText);
 	mb_reg_fun(bas, delta);
+	mb_reg_fun(bas, getChar);
 
 	mb_begin_module(bas, "KEY");
 		mb_register_func(bas, "PRESSED", keyPressed);
@@ -582,6 +583,25 @@ int MBManager::delta(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = (int)(GetFrameTime()*1000);
 
+
+    mb_check(mb_push_value(s, l, ret));
+	return MB_FUNC_OK;
+}
+int MBManager::getChar(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+	int charValue = 33;
+
+    mb_value_t ret;
+    mb_make_string(ret, 0);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &charValue));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.string = (char *)TextFormat("%c",charValue);
 
     mb_check(mb_push_value(s, l, ret));
 	return MB_FUNC_OK;

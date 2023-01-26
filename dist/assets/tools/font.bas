@@ -69,8 +69,8 @@ DEF drawCanvas(x,y)
 ENDDEF
 
 def testFont(x,y)
-    draw.font("!#$%&'()*+,-./ \ /0123456789:;<=>?@ABCDEFGHI",x,y,8,15)
-    draw.font("!!! ! !   !",x,y+8,8,15)
+    draw.font("!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI",x,y,8,15)
+    draw.font("!"+ getChar(mouse.x())+ " !",x,y+8,8,14)
     'draw.font("JKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~",0,8,8,7)
     'draw.font("0 1 2 3 4 5 6 7 8 9",0,16,8,3)
 enddef
