@@ -1,6 +1,8 @@
 #include "bios.h"
 
-Bios::Bios(){}
+Bios::Bios(){
+    Tools::SetFont();
+}
 Bios::~Bios(){}
 
 void Bios::Update(){

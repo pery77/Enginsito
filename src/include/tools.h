@@ -42,6 +42,9 @@ class Tools{
         static Color SetColor(int color, int r, int g, int b);
         static void CopyPalette();
 
+        static void SetFont();
+        static Font GetFont();
+
         static int GetVirtualMouse(bool isXAxis);
         static void SetVirtualMouse(int x,int y);
         static bool CompareFloats(float x, float y, float epsilon);

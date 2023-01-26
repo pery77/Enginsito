@@ -18,6 +18,8 @@ Color palette[16]{
 {245,214,120,255},
 {249,255,242,255}
 };
+
+Font font = {0};
 Color userPalette[16]{};
 
 int Tools::IntClamp(int value, int min, int max){
@@ -42,6 +44,95 @@ void Tools::CopyPalette(){
     } 
 }
 
+void Tools::SetFont(){
+
+    #define BIT_CHECK(a,b) ((a) & (1 << (b)))
+
+    font.glyphCount = 224;   // Number of chars included in our default font
+    font.glyphPadding = 0;   // Characters padding
+    int charsHeight = 8;
+    int charsWidth = 8;
+    
+    Image imFont = {
+        .data = calloc(128*128, 2),  // 2 bytes per pixel (gray + alpha)
+        .width = 128,
+        .height = 128,
+        .mipmaps = 1,
+        .format = PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA
+    };
+
+        // Fill image.data with defaultFontData (convert from bit to pixel!)
+    for (int i = 0, counter = 0; i < imFont.width*imFont.height; i += 8)
+    {
+        for (int j = 7; j >= 0; j--)
+        {
+            //if (BIT_CHECK(defaultFontData[counter], j))
+            if (BIT_CHECK(counter, j))
+            //if(GetRandomValue(0,4) == 0)
+            {
+                // NOTE: We are unreferencing data as short, so,
+                // we must consider data as little-endian order (alpha + gray)
+                ((unsigned short *)imFont.data)[i + j] = 0xffff;
+            }
+            else ((unsigned short *)imFont.data)[i + j] = 0x00ff;
+        
+        }
+
+        counter++;
+    }
+
+    font.texture = LoadTextureFromImage(imFont);
+        // Reconstruct charSet using charsWidth[], charsHeight, charsDivisor, glyphCount
+    //------------------------------------------------------------------------------
+
+    // Allocate space for our characters info data
+    // NOTE: This memory must be freed at end! --> Done by CloseWindow()
+    font.glyphs = (GlyphInfo *)RL_MALLOC(font.glyphCount*sizeof(GlyphInfo));
+    font.recs = (Rectangle *)RL_MALLOC(font.glyphCount*sizeof(Rectangle));
+
+    int currentLine = 0;
+    int currentPosX = 0;
+    int testPosX = 0;
+
+    for (int i = 0; i < font.glyphCount; i++)
+    {
+        font.glyphs[i].value = 32 + i;  // First char is 32
+
+        font.recs[i].x = (float)currentPosX;
+        font.recs[i].y = (float)(currentLine*charsHeight );
+        font.recs[i].width = (float)charsWidth;
+        font.recs[i].height = (float)charsHeight;
+
+        testPosX += (int)(font.recs[i].width);
+
+        if (testPosX >= font.texture.width)
+        {
+            currentLine++;
+            currentPosX = charsWidth;
+            testPosX = currentPosX;
+
+            font.recs[i].x = 0;
+            font.recs[i].y = (float)(currentLine*charsHeight);
+        }
+        else currentPosX = testPosX;
+
+        // NOTE: On default font character offsets and xAdvance are not required
+        font.glyphs[i].offsetX = 0;
+        font.glyphs[i].offsetY = 0;
+        font.glyphs[i].advanceX = 0;
+
+        // Fill character image data from fontClear data
+        font.glyphs[i].image = ImageFromImage(imFont, font.recs[i]);
+    }
+
+    UnloadImage(imFont);
+
+    font.baseSize = (int)font.recs[0].height;
+
+}
+Font Tools::GetFont(){
+    return font;
+}
 
 int Tools::GetVirtualMouse(bool isXAxis){   
 	float screenScale = Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
@@ -53,11 +144,7 @@ int Tools::GetVirtualMouse(bool isXAxis){
 }
 void Tools::SetVirtualMouse(int x,int y){   
 	float screenScale = Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
-	//float mouse = isXAxis ? GetMousePosition().x : GetMousePosition().y;
-    //float screen = isXAxis ? GetScreenWidth() : GetScreenHeight();
-    //float gamescreen = isXAxis ? GAME_SCREEN_W : GAME_SCREEN_H;
-    //float value = (mouse - (screen - (gamescreen * screenScale)) * 0.5f) / screenScale;
-    SetMousePosition(x * screenScale,y * screenScale);
+    SetMousePosition(x * screenScale, y * screenScale);
 }
 bool Tools::CompareFloats(float x, float y, float epsilon){
    if(fabs(x - y) < epsilon) return true;
