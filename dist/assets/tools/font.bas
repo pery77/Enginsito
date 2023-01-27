@@ -69,18 +69,31 @@ DEF drawCanvas(x,y)
 ENDDEF
 
 def testFont(x,y)
-    draw.font("!#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI",x,y,8,15)
-    draw.font("!"+ getChar(mouse.x())+ " !",x,y+8,8,14)
+    'quote = getChar(34)
+    'draw.font("!"+quote+"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI",x,y,8,15)
+    'draw.font("!"+ getChar(mouse.x())+ "Ññª!",x,y+8,8,14)
     'draw.font("JKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~",0,8,8,7)
-    'draw.font("0 1 2 3 4 5 6 7 8 9",0,16,8,3)
+    draw.font("0 1 2 3 4 5 6 7 8 9 ñ Ñ",0,160,8,3)
+    for d = 0 to 14
+        for c = 0 to 14
+        draw.font(getChar(c+33+(15*d)),c*8+x,y+d*8,8,13)
+
+        NEXT
+    next
+
 enddef
 def draw()
     cls(0)
     
-    testFont(180,4)
+    testFont(172,8)
     drawCanvas(4,4)
+
+    if button(4,172,"Set Font") THEN 
+    setFontChar(0,getBinary(0),getBinary(1),getBinary(2),getBinary(3),getBinary(4),getBinary(5),getBinary(6),getBinary(7))
+    ENDIF
 
     IF mouse.down(1) THEN  drawPalette(180) ENDIF
     drawmouse()
+
 
 enddef

@@ -35,6 +35,10 @@ enum GameState{
     Paused
 };
 
+typedef struct FontDataBytes{
+    unsigned char bytes[8];
+}FontDataBytes;
+
 class Tools{
     public:
         static Color GetColor(int color);
@@ -42,8 +46,13 @@ class Tools{
         static Color SetColor(int color, int r, int g, int b);
         static void CopyPalette();
 
+        static void SetFontChar(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
+                                unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
+                                unsigned char b7);
         static void SetFont();
         static Font GetFont();
+        static void SaveFont();
+     
 
         static int GetVirtualMouse(bool isXAxis);
         static void SetVirtualMouse(int x,int y);

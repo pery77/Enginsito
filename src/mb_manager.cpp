@@ -61,6 +61,7 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, floatToText);
 	mb_reg_fun(bas, delta);
 	mb_reg_fun(bas, getChar);
+	mb_reg_fun(bas, setFontChar);
 
 	mb_begin_module(bas, "KEY");
 		mb_register_func(bas, "PRESSED", keyPressed);
@@ -604,6 +605,31 @@ int MBManager::getChar(struct mb_interpreter_t* s, void** l){
     ret.value.string = (char *)TextFormat("%c",charValue);
 
     mb_check(mb_push_value(s, l, ret));
+	return MB_FUNC_OK;
+}
+int MBManager::setFontChar(struct mb_interpreter_t* s, void** l){
+
+	mb_assert(s && l);
+	int id = 0;
+	int b0,b1,b2,b3,b4,b5,b6,b7 = 0;
+
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &id));
+			mb_check(mb_pop_int(s, l, &b0));
+			mb_check(mb_pop_int(s, l, &b1));
+			mb_check(mb_pop_int(s, l, &b2));
+			mb_check(mb_pop_int(s, l, &b3));
+			mb_check(mb_pop_int(s, l, &b4));
+			mb_check(mb_pop_int(s, l, &b5));
+			mb_check(mb_pop_int(s, l, &b6));
+			mb_check(mb_pop_int(s, l, &b7));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	Tools::SetFontChar(id,b0,b1,b2,b3,b4,b5,b6,b7);
+
 	return MB_FUNC_OK;
 }
 int MBManager::setColor(struct mb_interpreter_t* s, void** l){

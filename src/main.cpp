@@ -146,8 +146,8 @@ int main(int argc, char *argv[]){
                 {
                 case Off:
                     bios->Update();
-                    DrawRectangle(50,50,128,128,DARKGREEN);
-                    DrawTexture(Tools::GetFont().texture,50,50,WHITE);
+                    DrawRectangle(150,10,128,128,(Color){32,32,32,255});
+                    DrawTexture(Tools::GetFont().texture,150,10,(Color){200,230,231,255});
                     break;
                 case Running:
                     basic->draw();
