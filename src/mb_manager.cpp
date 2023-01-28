@@ -36,7 +36,7 @@ void MBManager::end(){
 }
 
 // Init and close
-int MBManager::OpenBas(const char * file){
+int MBManager::OpenBas(const char * file){ 
 	basFile = file;
 	mb_init();
 	mb_open(&bas);
@@ -62,6 +62,7 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, delta);
 	mb_reg_fun(bas, getChar);
 	mb_reg_fun(bas, setFontChar);
+	mb_reg_fun(bas, getFontByte);
 
 	mb_begin_module(bas, "KEY");
 		mb_register_func(bas, "PRESSED", keyPressed);
@@ -138,7 +139,7 @@ void MBManager::CloseBas(){
 // Raylib funcions
 // Draw
 int MBManager::cls(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 	
 	int col;
@@ -151,11 +152,11 @@ int MBManager::cls(struct mb_interpreter_t* s, void** l){
 
     ClearBackground(Tools::GetColor(col));
 
-	return MB_FUNC_OK;
+	return result;
 }
 
 int MBManager::drawPixel(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	int x = 0;
@@ -172,10 +173,10 @@ int MBManager::drawPixel(struct mb_interpreter_t* s, void** l){
 
 	DrawPixel(x, y, Tools::GetColor(col));
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::drawLine(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	int x1 = 0;
@@ -198,10 +199,10 @@ int MBManager::drawLine(struct mb_interpreter_t* s, void** l){
 
 	DrawLineEx((Vector2){x1,y1}, (Vector2){x2,y2}, thick, Tools::GetColor(col));
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::drawCircle(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	int x = 0;
@@ -229,10 +230,10 @@ int MBManager::drawCircle(struct mb_interpreter_t* s, void** l){
 			break;
 	}
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::drawRing(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	int x = 0;
@@ -268,10 +269,10 @@ int MBManager::drawRing(struct mb_interpreter_t* s, void** l){
 			break;
 	}
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::drawEllipse(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	int x = 0;
@@ -301,10 +302,10 @@ int MBManager::drawEllipse(struct mb_interpreter_t* s, void** l){
 			break;
 	}
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::drawTriangle(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	int x1 = 0;
@@ -338,10 +339,10 @@ int MBManager::drawTriangle(struct mb_interpreter_t* s, void** l){
 			break;
 	}
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::drawRect(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	int x = 0;
@@ -372,10 +373,10 @@ int MBManager::drawRect(struct mb_interpreter_t* s, void** l){
 			break;
 	}
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::drawPoly(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	int x = 0;
@@ -410,11 +411,11 @@ int MBManager::drawPoly(struct mb_interpreter_t* s, void** l){
 			break;
 	}
 
-	return MB_FUNC_OK;
+	return result;
 }
 //Text
 int MBManager::drawText(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
     char* arg = 0;
@@ -435,10 +436,10 @@ int MBManager::drawText(struct mb_interpreter_t* s, void** l){
 
     DrawText(arg, x, y, size, Tools::GetColor(col));
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::drawFont(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
     char* arg = 0;
@@ -459,10 +460,10 @@ int MBManager::drawFont(struct mb_interpreter_t* s, void** l){
 
     DrawTextEx(Tools::GetFont(),arg, (Vector2){x, y}, size, 0, Tools::GetColor(col));
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::measureText(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
     char* arg = 0;
@@ -479,11 +480,11 @@ int MBManager::measureText(struct mb_interpreter_t* s, void** l){
     ret.value.integer = MeasureText(arg, size);
 
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 //Tools
 int MBManager::intToText(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	char* arg = 0;
@@ -525,10 +526,10 @@ int MBManager::intToText(struct mb_interpreter_t* s, void** l){
 
     mb_check(mb_push_value(s, l, ret));
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::floatToText(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	char* arg = 0;
@@ -570,10 +571,10 @@ int MBManager::floatToText(struct mb_interpreter_t* s, void** l){
 
     mb_check(mb_push_value(s, l, ret));
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::delta(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
     mb_value_t ret;
@@ -586,10 +587,10 @@ int MBManager::delta(struct mb_interpreter_t* s, void** l){
 
 
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::getChar(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 	int charValue = 33;
 
@@ -605,10 +606,10 @@ int MBManager::getChar(struct mb_interpreter_t* s, void** l){
     ret.value.string = (char *)TextFormat("%c",charValue);
 
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::setFontChar(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 	int id = 0;
 	int b0,b1,b2,b3,b4,b5,b6,b7 = 0;
@@ -630,10 +631,29 @@ int MBManager::setFontChar(struct mb_interpreter_t* s, void** l){
 
    	Tools::SetFontChar(id,b0,b1,b2,b3,b4,b5,b6,b7);
 
-	return MB_FUNC_OK;
+	return result;
+}
+int MBManager::getFontByte(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int id = 0;
+	int byte = 0;
+	int ret = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &id));
+			mb_check(mb_pop_int(s, l, &byte));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	ret = Tools::GetFontByte(id, byte);
+	mb_check(mb_push_int(s, l, ret));
+	return result;
 }
 int MBManager::setColor(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
     int color = 0;
@@ -652,21 +672,21 @@ int MBManager::setColor(struct mb_interpreter_t* s, void** l){
 
 	Tools::SetColor(color,r,g,b);
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::restorePalette(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 
 	Tools::CopyPalette();
-	return MB_FUNC_OK;
+	return result;
 }
 // Input
 int MBManager::keyPressed(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
     mb_value_t ret;
@@ -682,10 +702,10 @@ int MBManager::keyPressed(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = IsKeyPressed(keyCode);
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::keyDown(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
     mb_value_t ret;
@@ -701,10 +721,10 @@ int MBManager::keyDown(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = IsKeyDown(keyCode);
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::keyReleased(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
     mb_value_t ret;
@@ -720,10 +740,10 @@ int MBManager::keyReleased(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = IsKeyReleased(keyCode);
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::keyUp(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
     mb_value_t ret;
@@ -739,11 +759,11 @@ int MBManager::keyUp(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = IsKeyUp(keyCode);
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 
 int MBManager::getKey(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
     mb_value_t ret;
@@ -754,10 +774,10 @@ int MBManager::getKey(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = GetKeyPressed();
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::getKeyChar(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
     mb_value_t ret;
@@ -768,11 +788,11 @@ int MBManager::getKeyChar(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = GetCharPressed();
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 
 int MBManager::mouseX(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
     mb_value_t position;
@@ -785,10 +805,10 @@ int MBManager::mouseX(struct mb_interpreter_t* s, void** l){
 
     mb_check(mb_push_value(s, l, position));
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::mouseY(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 	
     mb_value_t position;
@@ -801,10 +821,10 @@ int MBManager::mouseY(struct mb_interpreter_t* s, void** l){
 
     mb_check(mb_push_value(s, l, position));
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::mouseWheel(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 	
     mb_value_t position;
@@ -817,11 +837,11 @@ int MBManager::mouseWheel(struct mb_interpreter_t* s, void** l){
 
     mb_check(mb_push_value(s, l, position));
 
-	return MB_FUNC_OK;
+	return result;
 }
 
 int MBManager::mousePressed(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
     mb_value_t ret;
@@ -837,10 +857,10 @@ int MBManager::mousePressed(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = IsMouseButtonPressed(keyCode);
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::mouseDown(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
     mb_value_t ret;
@@ -856,10 +876,10 @@ int MBManager::mouseDown(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = IsMouseButtonDown(keyCode);
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::mouseReleased(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
     mb_value_t ret;
@@ -875,10 +895,10 @@ int MBManager::mouseReleased(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = IsMouseButtonReleased(keyCode);
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::mouseUp(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
     mb_value_t ret;
@@ -894,10 +914,10 @@ int MBManager::mouseUp(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = IsMouseButtonUp(keyCode);
     mb_check(mb_push_value(s, l, ret));
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::setMousePosition(struct mb_interpreter_t* s, void** l){
-	
+	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
 
 	int x = 0;
@@ -911,12 +931,12 @@ int MBManager::setMousePosition(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     Tools::SetVirtualMouse(x,y);
-	return MB_FUNC_OK;
+	return result;
 }
 
 //Sound
 int MBManager::setSequence(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
     char* arg = 0;
@@ -930,10 +950,10 @@ int MBManager::setSequence(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     audioR->SetSequence(arg, voice);
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::playNote(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
     int key;
@@ -950,10 +970,10 @@ int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 
     audioR->PlayNote(key, voice, velocity);
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::stopNote(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
     int key;
@@ -968,10 +988,10 @@ int MBManager::stopNote(struct mb_interpreter_t* s, void** l){
 
     audioR->StopNote(key, voice);
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::sfxSet(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
     int id;
@@ -987,10 +1007,10 @@ int MBManager::sfxSet(struct mb_interpreter_t* s, void** l){
 
     audioR->SFXSet(id, wave);
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::sfxPlay(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
     int id;
@@ -1005,10 +1025,10 @@ int MBManager::sfxPlay(struct mb_interpreter_t* s, void** l){
 
     audioR->SFXPlay(id,fq);
 
-	return MB_FUNC_OK;
+	return result;
 }
 int MBManager::sprite(struct mb_interpreter_t* s, void** l){
-
+	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	int id = 0;
@@ -1027,5 +1047,5 @@ int MBManager::sprite(struct mb_interpreter_t* s, void** l){
 
     DrawTexturePro(texture, (Rectangle){id*size,0,size,size}, (Rectangle){x,y,size,size}, {0,0}, 0.0, WHITE);
 
-	return MB_FUNC_OK;
+	return result;
 }

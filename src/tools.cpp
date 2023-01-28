@@ -390,7 +390,9 @@ void Tools::SetFontChar(unsigned int id, unsigned char b0, unsigned char b1, uns
 
     SetFont();
 }
-
+unsigned char Tools::GetFontByte(unsigned int id, unsigned char byte){
+    return fontData[id].bytes[byte];
+}
 int Tools::GetVirtualMouse(bool isXAxis){   
 	float screenScale = Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
 	float mouse = isXAxis ? GetMousePosition().x : GetMousePosition().y;

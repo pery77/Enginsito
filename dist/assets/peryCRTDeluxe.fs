@@ -96,11 +96,11 @@ void main(){
 	float scanline = scan(uv,-1.0) + scan(uv,0.0) + scan(uv,1.0);
     vec3 blur = gamma(blurColor * uBlurPower, uBlurFactor);
 
-	texelColor += grille * grilleForce;
     texelColor += blur;
     texelColor *= scanline;
     texelColor *= noiseF;
     texelColor *= fliker;
+	texelColor += grille * grilleForce;
     texelColor *= vignette(uv, blur);
 
     finalColor = vec4(texelColor, 1);

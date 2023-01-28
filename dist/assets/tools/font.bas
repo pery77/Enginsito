@@ -84,10 +84,12 @@ def testFont(x,y)
 enddef
 def draw()
     cls(0)
-    
     testFont(172,8)
     drawCanvas(4,4)
-
+for b = 0 to 7
+    g = getFontByte(0,b)
+    draw.text(intToText("%i",g),4+b*10,150,8,15)
+next
     if button(4,172,"Set Font") THEN 
     setFontChar(0,getBinary(0),getBinary(1),getBinary(2),getBinary(3),getBinary(4),getBinary(5),getBinary(6),getBinary(7))
     ENDIF
