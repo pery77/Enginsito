@@ -32,21 +32,21 @@ Color palette[16]{
 FontDataBytes fontData[223]{
     {48,120,120,48,48,0,48,0},          // 33 !
     {108,108,108,0,0,0,0,0},            // 34 "
-    {108,108,254,108,254,108,108,0},    // 35 # 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {255,129,129,129,129,129,129,255},  // 
-    {48,112,48,48,48,48,252,0},         // 1 49
+    {108,108,254,108,254,108,108,0},    // 35 #
+    {48,124,192,120,12,248,48,0},       // 36 $
+    {0,198,204,24,48,102,198,0},        // 37 %
+    {56,108,56,118,220,204,118,0},      // 38 &
+    {96,96,192,0,0,0,0,0},              // 39 '
+    {24,48,96,96,96,48,24,0},           // 40 (
+    {96,48,24,24,24,48,96,0},           // 41 )
+    {0,102,60,255,60,102,0,0},          // 42 *
+    {0,48,48,252,48,48,0,0},            // 43 +
+    {0,0,0,0,0,112,48,96},              // 44 ,
+    {0,0,0,252,0,0,0,0},                // 45 -
+    {0,0,0,0,0,48,48,0},                // 46 .
+    {120,204,220,252,236,204,120,0},    // 47 /
+    {255,129,129,129,129,129,255,255},  // 48 0
+    {48,112,48,48,48,48,252,0},         // 49 1
     {255,129,129,129,129,129,129,255},  // 
     {255,129,129,129,129,129,129,255},  // 
     {255,129,129,129,129,129,129,255},  // 
@@ -330,7 +330,7 @@ void Tools::SetFont(){
 
     for (int i = 0; i < font.glyphCount; i++)
     {
-        font.glyphs[i].value = 33+i;  // First char is 32
+        font.glyphs[i].value = i + 33;
 
         font.recs[i].x = (float)currentPosX;
         font.recs[i].y = (float)(currentLine*charsHeight );
@@ -369,16 +369,19 @@ Font Tools::GetFont(){
 }
 void Tools::SaveFont(){
     for (int i = 0; i<223; i++){
-        printf("%i{",i+33);
+        printf("{");
         for (int b = 0; b<=7; b++){
             printf("%i%s",fontData[i].bytes[b],b == 7 ? "":",");
         }
-        printf("},\n");
+        printf("}, // %i %c\n", i+33, (char)(i+33));
     }
 }
 void Tools::SetFontChar(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
                                 unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
                                 unsigned char b7){
+    id -= 33;
+    if (id<0) id = 0;
+    if (id>223) id = 223; 
     fontData[id].bytes[0] = b0;
     fontData[id].bytes[1] = b1;
     fontData[id].bytes[2] = b2;
@@ -391,6 +394,9 @@ void Tools::SetFontChar(unsigned int id, unsigned char b0, unsigned char b1, uns
     SetFont();
 }
 unsigned char Tools::GetFontByte(unsigned int id, unsigned char byte){
+    id -= 33;
+    if (id<0) id = 0;
+    if (id>223) id = 223; 
     return fontData[id].bytes[byte];
 }
 int Tools::GetVirtualMouse(bool isXAxis){   
