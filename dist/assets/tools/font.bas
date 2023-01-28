@@ -81,12 +81,13 @@ ENDDEF
 
 lastFontChar = 33
 fontList(lastFontChar) = 1
-def fontChar(x,y,offSetX,offSetY)
+def fontChar(x,y,ch)
     color = 8
-    char = offSetX+(16*offSetY)+33
+    char = ch
+    c0 = ch-33
 
-    x = x + offSetX*8;
-    y = y + offSetY*8
+    x = x + floor(c0 MOD 16) * 8;
+    y = y + floor(c0 / 16) * 8
 
     hover = isHover(x, y, 8, 8)
     if hover then
@@ -104,7 +105,7 @@ def fontChar(x,y,offSetX,offSetY)
         color = 15
     endif
 
-    draw.font(getChar(char), c*8+x, y+d*8, 8, color)
+    draw.font(getChar(char), x, y, 8, color)
 
     if mouse.down(2) and hover then
         draw.rect(172,132,22,11,0,1)
@@ -114,15 +115,14 @@ def fontChar(x,y,offSetX,offSetY)
 enddef
 
 def fontCanvas(x,y)
-    'quote = getChar(34)
-    'draw.font("!"+quote+"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI",x,y,8,15)
+    quote = getChar(34)
+    '
+    draw.font("!"+quote+"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI",0,170,8,15)
     'draw.font("!"+ getChar(mouse.x())+ "Ññª!",x,y+8,8,14)
     'draw.font("JKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~",0,8,8,7)
-    draw.font("0 1 2 3 4 5 6 7 8 9 ñ Ñ",0,160,8,3)
-    for d = 0 to 5
-        for c = 0 to 15
-            fontChar(x,y,c,d)
-        next
+    draw.font("0123456789 ñ Ñ",0,160,8,3)
+    for ch = 33 to 254
+        fontChar(x,y,ch)
     next
 
 enddef
@@ -146,11 +146,13 @@ next
     buttonW = 50
     IF mouse.down(1) THEN  drawPalette(180) ENDIF
 
-    ccc = slider(ccc,172,160,100,100)
+    ccc = slider(ccc,20,180,200,200)
     draw.rect(172,132,22,11,0,1)
     draw.rect(172,132,22,11,1,11)
     draw.text(inttotext("%03i",lastFontChar),174,133,8,18)
     draw.font(getchar(ccc),210,133,8,18)
+    draw.text(getchar(ccc),210,140,8,18)
+    'print(getchar(ccc));
     drawmouse()
 
 

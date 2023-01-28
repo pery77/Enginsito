@@ -592,7 +592,7 @@ int MBManager::delta(struct mb_interpreter_t* s, void** l){
 int MBManager::getChar(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
-	int charValue = 33;
+	int charValue = 0;
 
     mb_value_t ret;
     mb_make_string(ret, 0);
@@ -603,7 +603,8 @@ int MBManager::getChar(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ret.value.string = (char *)TextFormat("%c",charValue);
+	char c = static_cast<char>(charValue);
+    ret.value.string = (char*)TextFormat("%c",c);
 
     mb_check(mb_push_value(s, l, ret));
 	return result;
