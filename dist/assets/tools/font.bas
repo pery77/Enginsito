@@ -23,16 +23,24 @@ def getBinary(row)
     next
     return result
 enddef
-def setBinary(lastFontChar)
-    for b = 0 to 7
-        g = getFontByte(lastFontChar,b)
-    while g > 1
-        if g MOD 2 <> 0 then print 1 else print 0 endif
-        g = g / 2
-    wend
-    print;
+
+def setBinary(lastFontChar)    
+    for l = 0 to 7
+        g = getFontByte(lastFontChar,l)
+        while g > 0
+            pixelList((7 - counter) + l*8) = 0
+            color = 0
+            if (g MOD 2) <> 0 then color = 15 endif
+            pixelList((7 - counter) + l*8) = color
+            g = floor(g / 2)
+            counter = counter + 1
+        wend
+        while counter < 8
+             pixelList((7 - counter) + l*8) = 0
+            counter = counter + 1
+        wend
+        counter = 0
     next
-        print(intToText("%i,",lastFontChar));
 enddef
 DEF pixelCanvas(x, y, offSetX, offsetY)
     color = 1
