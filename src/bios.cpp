@@ -3,6 +3,7 @@
 Bios::Bios(){
     Tools::SetFont();
 }
+
 Bios::~Bios(){}
 
 void Bios::Update(){
@@ -39,12 +40,14 @@ void Bios::Update(){
             if (key == 259 && strlen(currentLine.c_str()) > 0) currentLine.pop_back(); //Backspace
             if (key == 261 && strlen(currentLine.c_str()) > 0) currentLine.clear(); 
             if (key == 298) printf(CurrentPath.c_str());//F9 tests
-            //printf("Key: %i\n",key); 
+            //https://www.barcodefaq.com/ascii-chart-char-set/
+            printf("Key: %i\n",key); 
+            printf("Char int: %i\n",ch); 
+            printf("Char c: %c\n",(char)ch); 
             
         }
         if (ch != 0 && MeasureText(currentLine.c_str(),8) < 310){
-            currentLine.push_back(char(ch));
-            //printf("Char: %i\n",ch);
+            currentLine.push_back((char)ch);
         }
     }
     else{

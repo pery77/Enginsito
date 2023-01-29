@@ -126,9 +126,9 @@ def fontCanvas(x,y)
     quote = getChar(34)
     '
     draw.font("!"+quote+"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI",0,170,8,15)
-    'draw.font("!"+ getChar(mouse.x())+ "Ññª!",x,y+8,8,14)
+    draw.font("!"+ getChar(241)+ "Ññª!",0,178,8,14)
     'draw.font("JKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~",0,8,8,7)
-    draw.font("0123456789 ñ Ñ",0,160,8,3)
+    draw.font("0123456789 COñO ·áà ©",0,160,8,3)
     for ch = 33 to 254
         fontChar(x,y,ch)
     next
@@ -154,7 +154,7 @@ next
     buttonW = 50
     IF mouse.down(1) THEN  drawPalette(180) ENDIF
 
-    ccc = slider(ccc,20,180,200,200)
+    ccc = slider(ccc,20,188,256,256)
     draw.rect(172,132,22,11,0,1)
     draw.rect(172,132,22,11,1,11)
     draw.text(inttotext("%03i",lastFontChar),174,133,8,18)
