@@ -19,7 +19,7 @@ void Bios::Update(){
     bool overLine = false;
 
     while (std::getline(ss, temp)){
-        DrawText(temp.c_str(), 0, lineY, 8, Tools::GetFixedColor(frontColor));
+        DrawTextEx(Tools::GetFont(), temp.c_str(), (Vector2){0, lineY}, 8, 0, Tools::GetFixedColor(frontColor));
         lineY += 9;
         if (lineY > 184){   
             overLine = true;
@@ -31,7 +31,7 @@ void Bios::Update(){
     int key = GetKeyPressed();
 
     if (!overLine){
-        DrawText(TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor),0,lineY,8,Tools::GetFixedColor(frontColor));
+        DrawTextEx(Tools::GetFont(),TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor), (Vector2){0, lineY}, 8, 0,Tools::GetFixedColor(frontColor));
         if (key != 0){
             if (key == 257) { //Enter
                 ProcessCommand();
