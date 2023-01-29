@@ -128,7 +128,8 @@ def fontCanvas(x,y)
     draw.font("!"+quote+"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI",0,170,8,15)
     'draw.font("!"+ getChar(241)+ "Ññª!",0,178,8,14)
     draw.font("JKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~",0,178,8,14)
-    draw.font("ñÑ©",0,186,8,12)
+    draw.font("ñÑ©óò",0,186,8,12)
+    draw.font(getChar(mouse.x()),120,186,8,12)
     for ch = 33 to 254
         fontChar(x,y,ch)
     next

@@ -29,7 +29,7 @@ class Bios{
     private:
         float delta;
         std::string currentLine = "";
-        std::string screenLines = "*****************\n* peryEngine v0.5 *\n*                      *\n* Type HELP       *\n*****************\n\n";
+        std::string screenLines = "*******************\n* peryEngine v0.5 *\n*                 *\n* Type HELP       *\n*******************\n\n";
 
         int backColor = 0;
         int frontColor = 15;

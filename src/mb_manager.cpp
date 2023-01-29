@@ -605,7 +605,7 @@ int MBManager::getChar(struct mb_interpreter_t* s, void** l){
 
 	char c = static_cast<char>(charValue);
     ret.value.string = (char*)TextFormat("%c",c);
-
+	
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
