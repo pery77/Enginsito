@@ -603,9 +603,7 @@ int MBManager::getChar(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	char c = static_cast<char>(charValue);
-    ret.value.string = (char*)TextFormat("%c",c);
-	
+    ret.value.string = (char*)TextFormat("%s",Tools::GetCharFromCodepoint(charValue).c_str());
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }

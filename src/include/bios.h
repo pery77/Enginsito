@@ -22,7 +22,7 @@ class Bios{
         std::string GetFile();
         void SetFile(std::string file);
 
-        std::string HelpInfo = "CLS - clear screen.\nEXIT - close program.\nCOLOR b f - change console colors.\nRUN - run current program.\nLIST - list current directory.\nCD - change directory\n";
+        std::string HelpInfo = "CLS - clear screen.\nEXIT - close program.\nCOLOR b f - change console colors.\nRUN - run current program.\nDIR - list current directory.\nCD - change directory\n";
         std::string CurrentPath = "";
         std::string CurrentProgram = "";
 

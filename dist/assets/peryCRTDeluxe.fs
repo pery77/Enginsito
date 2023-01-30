@@ -21,7 +21,7 @@ uniform float vignetteIntensity = 0.20;
 uniform float hardScan = -6.0;
 uniform float chromatic = 0.3;
 
-uniform float grilleForce = 0.15;
+uniform float grilleForce = 0.07;
 uniform float grilleLevel = 0.08;
 
 const vec2 textureSize = vec2(320,200);

@@ -412,6 +412,28 @@ char* Tools::ToUpper(char* s) {
   for(char *p=s; *p; p++) *p=toupper(*p);
   return s;
 }
+
+std::string Tools::GetCharFromCodepoint(int codepoint) {
+  
+    static char utf8[] = { 0 };
+    if (codepoint >= 32 && codepoint <= 127){
+        utf8[0] = (char)codepoint;
+        utf8[1] = '\0';
+        char ch = (char)codepoint;
+        std::string str = "";
+        return str + ch;
+    }
+    else if  (codepoint >= 128 && codepoint <= 256)
+    {
+        utf8[0] = (char)(((codepoint >> 6) & 0x1f) | 0xc0);
+        utf8[1] = (char)((codepoint & 0x3f) | 0x80);  
+        utf8[2] = '\0';
+        std::string str(utf8);
+        return str;
+    }
+
+    return "<?>";
+}
 std::vector<std::string> Tools::Split(const std::string& str, const char sep)
 {
     std::string token; 
@@ -439,7 +461,7 @@ std::stringstream Tools::GetFiles(const char *path) {
     for(auto& p : std::filesystem::directory_iterator(current_path)){
         if (p.is_directory()){
             std::string folder = p.path().filename().string();
-            result << " < " << folder << " > " << "\n";
+            result << " [" << folder << "] " << "\n";
         }
     }
 

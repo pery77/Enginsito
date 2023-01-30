@@ -42,7 +42,7 @@ int main(int argc, char *argv[]){
     GameState currentState = Off;
     bool showFps = false;
     const char * pauseMessage = "Paused, press ESC again to exit.";
-    int pauseMessageSize = MeasureText("Paused, press ESC again to exit.", 8) * 0.5f;
+    int pauseMessageSize = MeasureTextEx(Tools::GetFont(),"Paused, press ESC again to exit.", 8,0).x * 0.5f;
 
     // Game Loop
     while (!(bios->ShouldClose || WindowShouldClose()))
@@ -147,15 +147,15 @@ int main(int argc, char *argv[]){
                 {
                 case Off:
                     bios->Update();
-                    DrawTexture(Tools::GetFont().texture,180,5,(Color){200,230,231,255});
+                    //DrawTexture(Tools::GetFont().texture,180,5,(Color){200,230,231,255});
                     break;
                 case Running:
                     basic->draw();
                     break;
                 case Paused:
-                    DrawRectangle(0,89,320,12,Tools::GetFixedColor(15));
-                    DrawRectangle(0,90,320,10,Tools::GetFixedColor(1));
-                    DrawText(pauseMessage,160 - pauseMessageSize,90,8,Tools::GetFixedColor(15));
+                    DrawRectangle(0,88,320,12,Tools::GetFixedColor(15));
+                    DrawRectangle(0,89,320,10,Tools::GetFixedColor(1));
+                    DrawTextEx(Tools::GetFont(), pauseMessage,(Vector2){160 - pauseMessageSize, 90},8,0,Tools::GetFixedColor(15));
                     break;    
                 default:
                     break;
@@ -176,14 +176,14 @@ int main(int argc, char *argv[]){
             // Engine over draw
             if(showFps){
                 DrawFPS(0, 0);
-                postProcessing->uBlurPower = 
-                    GuiSlider((Rectangle){0,50,300,20},"", TextFormat("%f",postProcessing->uBlurPower),postProcessing->uBlurPower ,0,20);
-                postProcessing->uBlurFactor = 
-                    GuiSlider((Rectangle){0,70,300,20},"", TextFormat("%f",postProcessing->uBlurFactor),postProcessing->uBlurFactor ,0.2,2);
-                postProcessing->uTest = 
-                    GuiSlider((Rectangle){0,90,300,20},"", TextFormat("%f",postProcessing->uTest),postProcessing->uTest ,-10,10);
-                postProcessing->uCurvature = 
-                    GuiSlider((Rectangle){0,110,300,20},"", TextFormat("%f",postProcessing->uCurvature),postProcessing->uCurvature ,0,1000);
+                //postProcessing->uBlurPower = 
+                //    GuiSlider((Rectangle){0,50,300,20},"", TextFormat("%f",postProcessing->uBlurPower),postProcessing->uBlurPower ,0,20);
+                //postProcessing->uBlurFactor = 
+                //    GuiSlider((Rectangle){0,70,300,20},"", TextFormat("%f",postProcessing->uBlurFactor),postProcessing->uBlurFactor ,0.2,2);
+                //postProcessing->uTest = 
+                //    GuiSlider((Rectangle){0,90,300,20},"", TextFormat("%f",postProcessing->uTest),postProcessing->uTest ,-10,10);
+                //postProcessing->uCurvature = 
+                //    GuiSlider((Rectangle){0,110,300,20},"", TextFormat("%f",postProcessing->uCurvature),postProcessing->uCurvature ,0,1000);
             }
     
         EndDrawing();

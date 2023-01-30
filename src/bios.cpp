@@ -6,62 +6,6 @@ Bios::Bios(){
 
 Bios::~Bios(){}
 
-
-
-std::string ISO88959ToUTF8(const char *str)
-{
-    std::string utf8("");
-    utf8.reserve(2*strlen(str) + 1);
-
-    for (; *str; ++str)
-    {
-        if (!(*str & 0x80))
-        {
-            utf8.push_back(*str);
-        } else
-        {
-            utf8.push_back(0xc2 | ((unsigned char)(*str) >> 6));
-            utf8.push_back(0xbf & *str);
-        }
-    }
-    return utf8;
-}
-std::string UTF8toISO8859_1(const char * in)
-{
-    std::string out;
-    if (in == NULL)
-        return out;
-
-    unsigned int codepoint;
-    while (*in != 0)
-    {
-        unsigned char ch = static_cast<unsigned char>(*in);
-        if (ch <= 0x7f)
-            codepoint = ch;
-        else if (ch <= 0xbf)
-            codepoint = (codepoint << 6) | (ch & 0x3f);
-        else if (ch <= 0xdf)
-            codepoint = ch & 0x1f;
-        else if (ch <= 0xef)
-            codepoint = ch & 0x0f;
-        else
-            codepoint = ch & 0x07;
-        ++in;
-        if (((*in & 0xc0) != 0x80) && (codepoint <= 0x10ffff))
-        {
-            if (codepoint <= 255)
-            {
-                out.append(1, static_cast<char>(codepoint));
-            }
-            else
-            {
-                // do whatever you want for out-of-bounds characters
-            }
-        }
-    }
-    return out;
-}
-
 void Bios::Update(){
     ClearBackground(Tools::GetFixedColor(backColor));
 
@@ -98,17 +42,13 @@ void Bios::Update(){
             if (key == 298) printf(CurrentPath.c_str());//F9 tests
             //https://www.barcodefaq.com/ascii-chart-char-set/
 
-            printf("\nKey: %i\n",key); 
-            printf("Char int: %i\n",ch); 
-            printf("Char c: %c\n",(char)ch); 
-
         }
-        if (ch != 0 && MeasureText(currentLine.c_str(),8) < 310){
-            currentLine += (char)ch;
+        if (ch != 0 && MeasureTextEx(Tools::GetFont(), currentLine.c_str(),8,0).x < 312){
+            currentLine += Tools::GetCharFromCodepoint(ch);
         }
     }
     else{
-        DrawText("Press Enter to continue.",0,lineY,8,Tools::GetFixedColor(frontColor));
+        DrawTextEx(Tools::GetFont(),"Press Enter to continue.",(Vector2){0,lineY},8,0,Tools::GetFixedColor(frontColor));
         if (IsKeyReleased(KEY_ENTER))
             screenLines.erase(0, screenLines.find("\n") + 1);
     }
@@ -189,14 +129,13 @@ void Bios::ProcessCommand()
         return;
     }
 
-    if (checkCommand(lastCommand.command,"LIST")){
+    if (checkCommand(lastCommand.command,"DIR")){
         std::stringstream ss = Tools::GetFiles(CurrentPath.c_str());
         std::string temp;
         while (std::getline(ss, temp)){
             temp.push_back('\n');
             screenLines += temp.c_str();
         }
-
         return;
     }
 

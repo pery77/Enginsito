@@ -62,6 +62,7 @@ class Tools{
 
         static void Trim(char * s);
         static char* ToUpper(char* s);
+        static std::string GetCharFromCodepoint(int ch);
         static std::vector<std::string> Split(const std::string& str, const char sep);
         static std::stringstream GetFiles(const char *path);
         static bool DirExist(std::string path);
