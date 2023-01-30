@@ -24,12 +24,12 @@ int main(int argc, char *argv[]){
     const int windowHeight = GAME_SCREEN_H * config->size;
 
 	//Set Vsync and make the window resizeable
-	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
+	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 
 	//Create window
 	InitWindow(windowWidth, windowHeight, "peryEngine");
 	SetWindowMinSize(GAME_SCREEN_W, GAME_SCREEN_H);
-	SetTargetFPS(60);
+	SetTargetFPS(GAME_FPS);
 
     InitAudioDevice();
     HideCursor();
