@@ -1,23 +1,28 @@
-colorbutton = 0
-colorbuttonHover = 5
-colorButtonText = 12
-colorButtonTextHover = 15
-buttonW = 50
-buttonH = 10
+class ui
 
-mouseWorking = false
+    colorBase = 0
+    colorBaseHover = 5
+    colorHi = 12
+    colorHiHover = 15
+    buttonW = 50
+    buttonH = 11
 
-def drawPalette(y)
+    mouseWorking = false
+
+def drawPalette()
+    y=200
     for i = 0 to 15
         x = i*20
-        draw.rect(x,y,20,10,0,i)
-        draw.rect(x,y,20,10,1,0)
-        draw.text(intToText("%02i",i), x+6, y+9, 8, 0)
-        draw.text(intToText("%02i",i), x+4, y+9, 8, 15)
+        draw.rect(x,y-10,20,10,0,i)
+        draw.font(intToText("%02i",i), x+3, y-8, 8, 0)
+        draw.font(intToText("%02i",i), x+5, y-8, 8, 0)
+        draw.font(intToText("%02i",i), x+4, y-7, 8, 0)
+        draw.font(intToText("%02i",i), x+4, y-9, 8, 0)
+        draw.font(intToText("%02i",i), x+4, y-8, 8, 15)
     next
-    draw.rect(0,y-8,45,11,0,0)
-    draw.rect(0,y-8,45,11,1,11)
-    draw.text(intToText("%03i,%03i",mouse.x(),mouse.y()), 0, y-8, 8, 11)
+    draw.rect(0,y-21,59,11,0,0)
+    draw.rect(0,y-21,59,11,1,11)
+    draw.font(intToText("%03i,%03i",mouse.x(),mouse.y()), 2, y-19, 8, 11)
 enddef
 
 def drawmouse()
@@ -45,24 +50,24 @@ def clamp(v,min,max)
 enddef
 
 def button(x,y,txt)
-    cb = colorbutton
-    ct = colorButtonText
+    cb = colorBase
+    ct = colorHi
     hover = isHover(x,y,buttonW, buttonH)
 
     IF hover THEN 
-        cb = colorbuttonHover
-        ct = colorButtonTextHover 
+        cb = colorBaseHover
+        ct = colorHiHover 
         IF mouse.down() THEN 
             t = ct
             ct = cb
-            cb = colorbutton
+            cb = colorBase
         ENDIF
     ENDIF
 
     draw.rect(x,y,buttonW,buttonH,0,cb)
     draw.rect(x,y,buttonW,buttonH,1,ct)
     xc = (buttonW * 0.5) - (measureText(txt,8) * 0.5)
-    draw.text(txt,x + xc,y,8,ct)
+    draw.font(txt,x + xc,y+2,8,ct)
 
     return (mouse.released(0) AND hover)
 enddef
@@ -70,7 +75,7 @@ enddef
 def slider(v,x,y,w,max)
 
     v = ROUND(w * v/max)
-    cb = colorButtonText
+    cb = colorHiHover
     colN = 8
     colNH = 13
     col = colN
@@ -81,7 +86,7 @@ def slider(v,x,y,w,max)
     hover = isHover(x,y,w+10,buttonH)
     IF hover THEN
         col = colNH
-        cb = colorButtonTextHover
+        cb = colorHiHover
         
         vMul = 1
         IF w/max > 1 THEN
@@ -107,13 +112,13 @@ def slider(v,x,y,w,max)
 enddef
 
 def toogle(v,x,y,r)
-    cb = colorButtonText
-    col = colorButton
+    cb = colorHiHover
+    col = colorBase
     colOn = 3
 
     hover = isHover(x-r,y-r,r*2,r*2)
     IF hover THEN
-        cb = colorButtonTextHover
+        cb = colorHiHover
     ENDIF
     IF hover AND mouse.released() THEN
         v = NOT v
@@ -133,13 +138,13 @@ lastMousePosX = 0
 def knob(v,x,y)
 
     r=7
-    cb = colorButtonText
-    col = colorButton
+    cb = colorHiHover
+    col = colorBase
     id= x * 320 + y
     hover = isHover(x-r,y-r,r*2,r*2)
 
     IF hover THEN
-        cb = colorButtonTextHover
+        cb = colorHiHover
         v=v+mouse.wheel();
     ENDIF
 
@@ -181,3 +186,4 @@ def knob(v,x,y)
     return v
 enddef
 
+endclass
