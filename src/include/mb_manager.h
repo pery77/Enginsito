@@ -63,6 +63,7 @@ class MBManager{
         static int floatToText(struct mb_interpreter_t* s, void** l);
         static int delta(struct mb_interpreter_t* s, void** l);
         static int setColor(struct mb_interpreter_t* s, void** l);
+        static int getColor(struct mb_interpreter_t* s, void** l);
         static int restorePalette(struct mb_interpreter_t* s, void** l);
 
         //Input

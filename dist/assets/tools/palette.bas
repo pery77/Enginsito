@@ -9,12 +9,19 @@ ui.buttonW = 80
 
 selectedColor = 0
 
+redK = 0
+greenK = 0
+blueK = 0
+
 def colorBox(id)
     x=id*20
     y = 24
     hover = ui.isHover(x,y,19,16)
     IF hover AND mouse.pressed(0) THEN
         selectedColor = id
+        redK = getColor(id,0)
+        greenK = getColor(id,1)
+        blueK = getColor(id,2)
     ENDIF
     
     draw.rect(x,y,19,16,0,id)
@@ -41,6 +48,7 @@ def colorBoxSelector(y)
         colorBox(id)
     next
 enddef
+    redK = 18
 
 def draw()
     cls(0)
@@ -49,9 +57,13 @@ def draw()
     IF ui.button (168,3,"Restore") THEN restorePalette() ENDIF
     IF ui.button (4,62,"PicoPal") THEN setPicoPalette() ENDIF
 
-    redK = ui.knob(redK,130,88)
-    greenK = ui.knob(greenK,175,88)
-    blueK = ui.knob(blueK,220,88)
+    redK = ui.knob(redK,130,88, 0,255)
+    greenK = ui.knob(greenK,175,88, 0,255)
+    blueK = ui.knob(blueK,220,88,0,255)
+
+    IF mouse.down(0) AND ui.mouseWorking THEN
+        setColor(selectedColor, redK, greenK,blueK)
+    ENDIF
     
     IF mouse.down(2) THEN ui.drawPalette() ENDIF
     ui.drawmouse()

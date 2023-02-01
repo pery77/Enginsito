@@ -97,6 +97,7 @@ int MBManager::OpenBas(const char * file){
 
 	mb_reg_fun(bas, sprite);
 	mb_reg_fun(bas, setColor);
+	mb_reg_fun(bas, getColor);
 	mb_reg_fun(bas, restorePalette);
 	mb_reg_fun(bas, measureText);
 	mb_reg_fun(bas, measureFont);
@@ -691,6 +692,39 @@ int MBManager::setColor(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
 	Tools::SetColor(color,r,g,b);
+
+	return result;
+}
+int MBManager::getColor(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    int color = 0;
+    int channel = 0;
+	int ret = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &color));
+		mb_check(mb_pop_int(s, l, &channel));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	Color retColor = Tools::GetColor(color);
+	
+	switch (channel){
+		case 1:
+			ret = retColor.g;
+			break;
+		case 2:
+			ret = retColor.b;
+			break;
+		default:
+			ret = retColor.r;
+			break;
+	} 
+	
+	mb_check(mb_push_int(s, l, ret));
 
 	return result;
 }

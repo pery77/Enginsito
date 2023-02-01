@@ -40,19 +40,15 @@ enddef
 def isHover(x,y,w,h)
     return mouse.x() > x AND mouse.y() > y AND mouse.x() < x + w AND mouse.y() < y + h
 enddef
-angle = 3.141592*5
-def polar2cartX(r,a)
-    x = r * cos(a/angle)
-    return x
-enddef
-def polar2cartY(r,a)
-    y = r * sin(a/angle)
-    return y
-enddef
+
 def clamp(v,min,max)
     IF v < min THEN return min ENDIF
     IF v > max THEN return max ENDIF
     return v
+enddef
+
+def remap(value, low1, low2, high1, high2)
+return low2 + (value - low1) * (high2 - low2) / (high1 - low1)
 enddef
 
 'Ui elements
@@ -141,7 +137,7 @@ enddef
 lastMousePosY = 0
 lastMousePosX = 0
 
-def knob(v,x,y)
+def knob(v,x,y,min,max)
 
     radius = 7
     colH = colorHi
@@ -149,6 +145,8 @@ def knob(v,x,y)
     colRing = colorSlider
 
     id= x + (y * 200)
+
+    v = remap(v,min,0,max,360)
 
     hover = isHover(x-radius,y-radius,radius*2,radius*2) AND NOT mouseWorking
     IF hover OR ( mouseWorking AND selected = id )THEN
@@ -179,18 +177,15 @@ def knob(v,x,y)
 
     v = clamp(v,0,360)
     
-    x1= polar2cartX(r+5,-v)
-    y1= polar2cartY(r+5,-v)
-
-    text = intToText("%03i", v)
-    textPos = measureFont(text, 8) / 2
-    draw.font(text,  x - textPos, y-radius-17,8, colH)
-    
     draw.ring(x,y,radius+3,radius+8,0,360,10,1,colorBase)
     draw.poly(x,y,8,radius,-v,0,colB)
     draw.poly(x,y,8,radius,-v,2,colH)
     draw.ring(x,y,radius+4,radius+7,0,v,10,1,colRing)
 
+    v = remap(v,0,min,360,max)
+    text = intToText("%03i", v)
+    textPos = measureFont(text, 8) / 2
+    draw.font(text,  x - textPos, y-radius-17,8, colH)
 
     return v
 enddef
