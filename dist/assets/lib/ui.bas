@@ -7,6 +7,12 @@ class ui
     buttonW = 50
     buttonH = 11
 
+    mouseColorBorder = 0
+    mouseColor = 15
+
+    colorSlider = 8
+    colorSliderHover = 13
+
     mouseWorking = false
 
 def drawPalette()
@@ -25,9 +31,9 @@ def drawPalette()
     draw.font(intToText("%03i,%03i",mouse.x(),mouse.y()), 2, y-19, 8, 11)
 enddef
 
-def drawmouse()
-    draw.triangle(mouse.x(), mouse.y(), mouse.x(), mouse.y()+9, mouse.x()+7, mouse.y()+7, 0, 0)
-    draw.triangle(mouse.x(), mouse.y(), mouse.x(), mouse.y()+9, mouse.x()+7, mouse.y()+7, 1, 15)
+def drawMouse()
+    draw.triangle(mouse.x(), mouse.y(), mouse.x(), mouse.y()+10, mouse.x()+7, mouse.y()+7, 0, mouseColorBorder)
+    draw.triangle(mouse.x(), mouse.y(), mouse.x(), mouse.y()+9, mouse.x()+7, mouse.y()+7, 1, mouseColor)
 enddef
 
 'tools
@@ -49,25 +55,25 @@ def clamp(v,min,max)
     return v
 enddef
 
+'Ui elements
 def button(x,y,txt)
-    cb = colorBase
-    ct = colorHi
+    colB = colorBase
+    colH = colorHi
     hover = isHover(x,y,buttonW, buttonH)
 
     IF hover THEN 
-        cb = colorBaseHover
-        ct = colorHiHover 
+        colB = colorBaseHover
+        colH = colorHiHover 
         IF mouse.down() THEN 
-            t = ct
-            ct = cb
-            cb = colorBase
+            colH = colB
+            colB = colorBase
         ENDIF
     ENDIF
 
-    draw.rect(x,y,buttonW,buttonH,0,cb)
-    draw.rect(x,y,buttonW,buttonH,1,ct)
-    xc = (buttonW * 0.5) - (measureText(txt,8) * 0.5)
-    draw.font(txt,x + xc,y+2,8,ct)
+    draw.rect(x,y,buttonW,buttonH,0,colB)
+    draw.rect(x,y,buttonW,buttonH,1,colH)
+    xc = (buttonW * 0.5) - (measureFont(txt,8) * 0.5)
+    draw.font(txt,x + xc,y+2,8,colH)
 
     return (mouse.released(0) AND hover)
 enddef
@@ -137,14 +143,18 @@ lastMousePosX = 0
 
 def knob(v,x,y)
 
-    r=7
-    cb = colorHiHover
-    col = colorBase
-    id= x * 320 + y
-    hover = isHover(x-r,y-r,r*2,r*2)
+    radius = 7
+    colH = colorHi
+    colB = colorBase
+    colRing = colorSlider
 
-    IF hover THEN
-        cb = colorHiHover
+    id= x + (y * 200)
+
+    hover = isHover(x-radius,y-radius,radius*2,radius*2) AND NOT mouseWorking
+    IF hover OR ( mouseWorking AND selected = id )THEN
+        colH = colorHiHover
+        colB = colorBaseHover
+        colRing = colorSliderHover
         v=v+mouse.wheel();
     ENDIF
 
@@ -172,16 +182,15 @@ def knob(v,x,y)
     x1= polar2cartX(r+5,-v)
     y1= polar2cartY(r+5,-v)
 
-
     text = intToText("%03i", v)
-    textPos = measureText(text, 8) / 2
-    draw.text(text,  x - textPos, y-r-17,8, cb)
+    textPos = measureFont(text, 8) / 2
+    draw.font(text,  x - textPos, y-radius-17,8, colH)
     
-    draw.ring(x,y,r+3,r+8,0,360,10,1,0)
-    draw.poly(x,y,8,r,-v,0,0)
-    draw.poly(x,y,8,r,-v,2,cb)
-    draw.ring(x,y,r+4,r+7,0,v,10,1,13)
-    draw.ring(x,y,r+4,r+7,0,v,10,0,8)
+    draw.ring(x,y,radius+3,radius+8,0,360,10,1,colorBase)
+    draw.poly(x,y,8,radius,-v,0,colB)
+    draw.poly(x,y,8,radius,-v,2,colH)
+    draw.ring(x,y,radius+4,radius+7,0,v,10,1,colRing)
+
 
     return v
 enddef
