@@ -386,7 +386,7 @@ int Tools::GetVirtualMouse(bool isXAxis){
 	float mouse = isXAxis ? GetMousePosition().x : GetMousePosition().y;
     float screen = isXAxis ? GetScreenWidth() : GetScreenHeight();
     float gamescreen = isXAxis ? GAME_SCREEN_W : GAME_SCREEN_H;
-    float value = (mouse - (screen - (gamescreen * screenScale)) * 0.5f) / screenScale;
+    float value = std::ceil((mouse - (screen - (gamescreen * screenScale)) * 0.5f) / screenScale);
     return (int)Clamp(value, 0,(float)gamescreen);
 }
 void Tools::SetVirtualMouse(int x,int y){   
