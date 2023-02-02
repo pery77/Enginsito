@@ -102,6 +102,7 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, measureText);
 	mb_reg_fun(bas, measureFont);
 	mb_reg_fun(bas, getFiles);
+	mb_reg_fun(bas, getFolders);
 
     int loadState = mb_load_file(bas, file);
 	switch (loadState){
@@ -740,7 +741,6 @@ int MBManager::restorePalette(struct mb_interpreter_t* s, void** l){
 	return result;
 }
 
-
 int MBManager::getFiles(struct mb_interpreter_t* s, void** l) {
 	int result = MB_FUNC_OK;
 	char* arg = 0;
@@ -764,21 +764,64 @@ int MBManager::getFiles(struct mb_interpreter_t* s, void** l) {
 	while (std::getline(ss, temp)){
 		lines++;
     }
-	ss = Tools::GetFiles(arg);
-	d[0] = 5;
-	mb_init_array(s, l, MB_DT_STRING, d, 1, &arr);
+	if (lines > 0){
+		ss = Tools::GetFiles(arg);
+		d[0] = lines;
+		mb_init_array(s, l, MB_DT_STRING, d, 1, &arr);
 
-    while (std::getline(ss, temp)){
-        //temp.push_back('\n');
-		val.type = MB_DT_STRING;
-		val.value.string = (char *)temp.c_str();
-		d[0] = i++;
-		mb_set_array_elem(s, l, arr, d, 1, val);
+		while (std::getline(ss, temp)){
+			//temp.push_back('\n');
+			val.type = MB_DT_STRING;
+			val.value.string = (char *)temp.c_str();
+			d[0] = i++;
+			mb_set_array_elem(s, l, arr, d, 1, val);
+		}
+		val.type = MB_DT_ARRAY;
+		val.value.array = arr;
+		mb_check(mb_push_value(s, l, val));
+	}
+
+	return result;
+}
+int MBManager::getFolders(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	char* arg = 0;
+	
+	void* arr = 0;
+	int d[1] = { 0 };
+	int i = 0;
+
+	mb_value_t val;
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_string(s, l, &arg));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	std::stringstream ss = Tools::GetFolders(arg);
+    std::string temp;
+
+	int lines = 0;
+	while (std::getline(ss, temp)){
+		lines++;
     }
+	if (lines > 0){
+		ss = Tools::GetFolders(arg);
+		d[0] = lines;
+		mb_init_array(s, l, MB_DT_STRING, d, 1, &arr);
 
-	val.type = MB_DT_ARRAY;
-	val.value.array = arr;
-	mb_check(mb_push_value(s, l, val));
+		while (std::getline(ss, temp)){
+			//temp.push_back('\n');
+			val.type = MB_DT_STRING;
+			val.value.string = (char *)temp.c_str();
+			d[0] = i++;
+			mb_set_array_elem(s, l, arr, d, 1, val);
+		}
+		val.type = MB_DT_ARRAY;
+		val.value.array = arr;
+		mb_check(mb_push_value(s, l, val));
+	}
 
 	return result;
 }

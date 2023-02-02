@@ -66,6 +66,7 @@ class MBManager{
         static int getColor(struct mb_interpreter_t* s, void** l);
         static int restorePalette(struct mb_interpreter_t* s, void** l);
         static int getFiles(struct mb_interpreter_t* s, void** l);
+        static int getFolders(struct mb_interpreter_t* s, void** l);
 
         //Input
         static int keyPressed(struct mb_interpreter_t* s, void** l);

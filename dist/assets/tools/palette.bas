@@ -49,12 +49,22 @@ def colorBoxSelector(y)
     next
 enddef
 
-f = getFiles("")
+path$ = "tests"
+fo = getFolders(path$)
+f = getFiles(path$)
+if (fo) then
+    print("Folders");
+    for i = 0 to len(fo)-1
+        print fo(i);
+    Next
+endif
 
-for i = 0 to len(f)-1
-    print f(i);
-Next
-
+if (f) then
+    print("Files");
+    for i = 0 to len(f)-1
+        print f(i);
+    Next
+endif
 def draw()
     cls(0)
     colorBoxSelector(4)

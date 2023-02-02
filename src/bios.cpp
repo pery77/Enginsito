@@ -6,14 +6,11 @@ Bios::Bios(){
 
 Bios::~Bios(){}
 
-void Bios::LoadBoot()
-{
+void Bios::LoadBoot(){
     std::string line;
     std::ifstream myfile (BOOT_FILE);
-    if (myfile.is_open())
-    {
-        while ( getline (myfile, line) )
-        {
+    if (myfile.is_open()){
+        while ( getline (myfile, line) ){
             currentLine =  line;
             ProcessCommand();
         }
@@ -150,11 +147,14 @@ void Bios::ProcessCommand()
     }
 
     if (checkCommand(lastCommand.command,"DIR")){
-        std::stringstream ss = Tools::GetFiles(CurrentPath.c_str());
+        std::stringstream ss = Tools::GetFolders(CurrentPath.c_str());
         std::string temp;
         while (std::getline(ss, temp)){
-            temp.push_back('\n');
-            screenLines += temp.c_str();
+            screenLines += "[" + temp + "]\n";
+        }
+        ss = Tools::GetFiles(CurrentPath.c_str());
+        while (std::getline(ss, temp)){
+            screenLines += "> " + temp + "\n";
         }
         return;
     }
