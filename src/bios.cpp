@@ -6,6 +6,23 @@ Bios::Bios(){
 
 Bios::~Bios(){}
 
+void Bios::LoadBoot()
+{
+    std::string line;
+    std::ifstream myfile (BOOT_FILE);
+    if (myfile.is_open())
+    {
+        while ( getline (myfile, line) )
+        {
+            currentLine =  line;
+            ProcessCommand();
+        }
+        myfile.close();
+    }else{
+        printf("No boot file found.\n");
+    }
+}
+
 void Bios::Update(){
     ClearBackground(Tools::GetFixedColor(backColor));
 

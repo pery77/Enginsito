@@ -48,7 +48,12 @@ def colorBoxSelector(y)
         colorBox(id)
     next
 enddef
-    redK = 18
+
+f = getFiles("")
+
+for i = 0 to len(f)-1
+    print f(i);
+Next
 
 def draw()
     cls(0)

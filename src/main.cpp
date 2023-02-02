@@ -44,6 +44,7 @@ int main(int argc, char *argv[]){
     const char * pauseMessage = "Paused, press ESC again to exit.";
     int pauseMessageSize = MeasureTextEx(Tools::GetFont(),"Paused, press ESC again to exit.", 8,0).x * 0.5f;
 
+    bios->LoadBoot();
     // Game Loop
     while (!(bios->ShouldClose || WindowShouldClose()))
     {
