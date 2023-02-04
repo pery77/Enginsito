@@ -2,5 +2,4 @@ cls
 color 1 13
 cd tools
 load palette
-Run
-OLE MIS WEBOS
+run

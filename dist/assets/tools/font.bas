@@ -49,7 +49,7 @@ DEF pixelCanvas(x, y, offSetX, offsetY)
     x = x + offSetX*pixelSize;
     y = y + offSetY*pixelSize
 
-    hover = isHover(x, y, pixelSize, pixelSize)
+    hover = ui.isHover(x, y, pixelSize, pixelSize)
     IF hover THEN
         color = 11
     ENDIF
@@ -67,7 +67,7 @@ DEF pixelCanvas(x, y, offSetX, offsetY)
     draw.rect(x,y,pixelSize,pixelSize,1,color)
 
     IF mouse.down(2) THEN
-        draw.text(intToText("%i",id),x+2,y+2,8,7)
+        draw.font(intToText("%i",id),x+2,y+2,8,7)
     ENDIF
 
 
@@ -82,7 +82,7 @@ DEF drawCanvas(x,y)
     NEXT
 
     FOR j = 0 to 7
-        draw.text(intToText("%03i",getBinary(j)),x+132,4 + y + j * 16,8,11)
+        draw.font(intToText("%03i",getBinary(j)),x+132,4 + y + j * 16,8,11)
     NEXT
 
 ENDDEF
@@ -97,7 +97,7 @@ def fontChar(x,y,ch)
     x = x + floor(c0 MOD 16) * 8;
     y = y + floor(c0 / 16) * 8
 
-    hover = isHover(x, y, 8, 8)
+    hover = ui.isHover(x, y, 8, 8)
     if hover then
         draw.rect(x,y,8,8,0,1)
         color = 13
@@ -118,7 +118,7 @@ def fontChar(x,y,ch)
     if mouse.down(2) and hover then
         draw.rect(172,132,22,11,0,1)
         draw.rect(172,132,22,11,1,11)
-        draw.text(inttotext("%03i",char),174,133,8,18)
+        draw.font(inttotext("%03i",char),174,133,8,18)
     endif
 enddef
 
@@ -141,19 +141,19 @@ def draw()
     drawCanvas(4,4)
 for b = 0 to 7
     g = getFontByte(lastFontChar,b)
-    draw.text(intToText("%i",g),4+b*20,150,8,15)
+    draw.font(intToText("%i",g),4+b*20,150,8,15)
 next
 
-    buttonW = 20
-    if button(160,32, "<<<") then
+    ui.buttonW = 20
+    if ui.button(160,32, "<") then
         setBinary(lastFontChar)
     endif
-    if button(160,48, ">>>") then
+    if ui.button(160,48, ">") then
         setFontChar(lastFontChar, getBinary(0),getBinary(1),getBinary(2),getBinary(3),getBinary(4),getBinary(5),getBinary(6),getBinary(7))
     endif
 
-    buttonW = 50
-    IF mouse.down(1) THEN  drawPalette(180) ENDIF
+    ui.buttonW = 50
+    IF mouse.down(1) THEN  ui.drawPalette() ENDIF
 
     'ccc = slider(ccc,20,188,256,256)
     'draw.rect(172,132,22,11,0,1)
@@ -162,7 +162,7 @@ next
     'draw.font(getchar(ccc),210,133,8,18)
     'draw.text(getchar(ccc),210,140,8,18)
     'print(getchar(ccc));
-    drawmouse()
+    ui.drawmouse()
 
 
 enddef

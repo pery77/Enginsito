@@ -15,7 +15,7 @@ DEF sKey(x,t)
     keyBCol = 5
     code = (x / 20) + 56
     IF t = 0 THEN
-        hover = isHover(x,y + size / 2,20,size)
+        hover = ui.isHover(x,y + size / 2,20,size)
         IF hover THEN
             borderCol = 14
         ENDIF
@@ -24,7 +24,7 @@ DEF sKey(x,t)
         DRAW.text(intToText("%i", code),x,y + size,8,12)
     ENDIF
     IF t = 1 THEN 
-        hover = isHover(x+12,y+1,14,size * 0.65)
+        hover = ui.isHover(x+12,y+1,14,size * 0.65)
         IF hover THEN
             keyBCol = 14
         ENDIF
@@ -67,7 +67,7 @@ DEF soundButton(id,x,y,size)
     keyBCol = 5
     selColor = 0
 
-    hover = isHover(x,y,20,size)
+    hover = ui.isHover(x,y,20,size)
     IF hover THEN
         borderCol = 14
     ENDIF
@@ -103,7 +103,7 @@ ENDDEF
 
 wave = 0
 DEF drawWave(x,y)
-    wave = slider(wave,x,y,8,3)
+    wave = ui.slider(wave,x,y,8,3)
 
     FOR i = 0 TO 3
         onColor = 0
@@ -137,23 +137,23 @@ def draw()
 
     'p = slider(p,80,16,128,255)
 
-    instrument = slider(instrument,17,85,41,16)
+    instrument = ui.slider(instrument,17,85,41,16)
 
     drawWave(20,30)
 
-    envA = knob(envA,80,36)
-    envD = knob(envD,112,36)
-    envS = knob(envS,144,36)
-    envR = knob(envR,176,36)
+    envA = ui.knob(envA,80,36,0,100)
+    envD = ui.knob(envD,112,36,0,100)
+    envS = ui.knob(envS,144,36,0,100)
+    envR = ui.knob(envR,176,36,0,100)
 
-    c = toogle(c,5,110,3)
-    e = toogle(e,20,110,3)
+    c = ui.toogle(c,5,110,3)
+    e = ui.toogle(e,20,110,3)
 IF c THEN
     synthKeys()
     ELSE
     drawSoundButtons()
 ENDIF
-    IF mouse.down(1) THEN  drawPalette(180) ENDIF
-    IF NOT mouseWorking THEN  drawmouse() ENDIF
+    IF mouse.down(1) THEN  ui.drawPalette() ENDIF
+    IF NOT ui.mouseWorking THEN  ui.drawmouse() ENDIF
 
 enddef

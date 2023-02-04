@@ -68,6 +68,7 @@ class MBManager{
         static int getFiles(struct mb_interpreter_t* s, void** l);
         static int getFolders(struct mb_interpreter_t* s, void** l);
 
+        static int saveFile(struct mb_interpreter_t* s, void** l);
         //Input
         static int keyPressed(struct mb_interpreter_t* s, void** l);
         static int keyDown(struct mb_interpreter_t* s, void** l);

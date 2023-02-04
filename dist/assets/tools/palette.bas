@@ -69,6 +69,7 @@ def files(x,y)
         for i = 0 to len(f)-1
             IF ui.button (x,y+i*10,f(i)) THEN
                 load(f(i))
+                saveFile("assets/lib/palettes/"+f(i)+".bas")
             ENDIF
         Next
     endif

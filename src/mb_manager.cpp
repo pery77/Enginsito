@@ -103,6 +103,7 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, measureFont);
 	mb_reg_fun(bas, getFiles);
 	mb_reg_fun(bas, getFolders);
+	mb_reg_fun(bas, saveFile);
 
     int loadState = mb_load_file(bas, file);
 	switch (loadState){
@@ -118,7 +119,6 @@ int MBManager::OpenBas(const char * file){
 	return loadState;
 	
 }    
-
 
 void MBManager::Run(){
 	int pos;
@@ -825,6 +825,21 @@ int MBManager::getFolders(struct mb_interpreter_t* s, void** l) {
 
 	return result;
 }
+int MBManager::saveFile(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	char* arg = 0;
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_string(s, l, &arg));
+	mb_check(mb_attempt_close_bracket(s, l));
+	
+	printf("must save file: %s\n", arg);
+	
+	return result;
+}
+
 // Input
 int MBManager::keyPressed(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
