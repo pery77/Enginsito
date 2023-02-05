@@ -29,7 +29,7 @@ Color palette[16]{
 
 
 
-FontDataBytes fontData[223]{
+DataBytes fontData[223]{
     {48,120,120,48,48,0,48,0},          // 33 !
     {108,108,108,0,0,0,0,0},            // 34 "
     {108,108,254,108,254,108,108,0},    // 35 #
@@ -255,8 +255,12 @@ FontDataBytes fontData[223]{
     {255,129,129,129,129,129,129,255}   // 
 };
 
+DataBytes spriteData [255] {};
+
 Font font = {0};
 Color userPalette[16]{};
+
+Texture spriteTexture;
 
 int Tools::IntClamp(int value, int min, int max){
     if (value < min) return min;
@@ -280,7 +284,9 @@ void Tools::CopyPalette(){
     } 
 }
 
-void Tools::SetFont(){
+void Tools::RenderFont(){
+
+    UnloadFont(font);
 
     #define BIT_CHECK(a,b) ((a) & (1 << (b)))
 
@@ -344,7 +350,6 @@ void Tools::SetFont(){
     UnloadImage(imFont);
 
     font.baseSize = (int)font.recs[0].height;
-SaveFont();
 }
 Font Tools::GetFont(){
     return font;
@@ -373,13 +378,67 @@ void Tools::SetFontChar(unsigned int id, unsigned char b0, unsigned char b1, uns
     fontData[id].bytes[6] = b6;
     fontData[id].bytes[7] = b7;
 
-    SetFont();
 }
 unsigned char Tools::GetFontByte(unsigned int id, unsigned char byte){
     id -= 33;
     if (id<0) id = 0;
     if (id>223) id = 223; 
     return fontData[id].bytes[byte];
+}
+
+void Tools::RenderSprites(){
+
+    #define BIT_CHECK(a,b) ((a) & (1 << (b)))
+    UnloadTexture(spriteTexture);
+    Image imgSprite = {
+        .data = calloc(128*128, 2),  // 2 bytes per pixel (gray + alpha)
+        .width = 128,
+        .height = 128,
+        .mipmaps = 1,
+        .format = PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA
+    };
+
+    unsigned char id = 0;
+    for (int y = 0; y < 16; y++){
+        for (int x = 0; x < 16; x++){
+            for(int l = 0; l < 8; l++){
+                
+                int pos = ((128*y+x)*8) + l * 128;
+                for (int b = 7; b >= 0; b--){
+
+                if (BIT_CHECK(spriteData[id].bytes[l], b))
+                    ((unsigned short *)imgSprite.data)[pos+7-b] = 0xffff;
+                else 
+                    ((unsigned short *)imgSprite.data)[pos+7-b] = 0x00ff;
+                }
+            }           
+            id++;
+        }
+    }
+
+    spriteTexture = LoadTextureFromImage(imgSprite);
+
+    UnloadImage(imgSprite);
+}
+
+void Tools::SetSprite(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
+                                unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
+                                unsigned char b7){
+    if (id<0) id = 0;
+    if (id>255) id = 255; 
+    spriteData[id].bytes[0] = b0;
+    spriteData[id].bytes[1] = b1;
+    spriteData[id].bytes[2] = b2;
+    spriteData[id].bytes[3] = b3;
+    spriteData[id].bytes[4] = b4;
+    spriteData[id].bytes[5] = b5;
+    spriteData[id].bytes[6] = b6;
+    spriteData[id].bytes[7] = b7;
+
+}
+
+Texture Tools::GetSpriteTexture(){
+    return spriteTexture;
 }
 int Tools::GetVirtualMouse(bool isXAxis){   
 	float screenScale = Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);

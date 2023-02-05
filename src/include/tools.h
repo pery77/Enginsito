@@ -37,9 +37,9 @@ enum GameState{
     Paused
 };
 
-typedef struct FontDataBytes{
+typedef struct DataBytes{
     unsigned char bytes[8];
-}FontDataBytes;
+}DataBytes;
 
 class Tools{
     public:
@@ -52,10 +52,16 @@ class Tools{
                                 unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
                                 unsigned char b7);
         static unsigned char GetFontByte(unsigned int id, unsigned char byte);
-        static void SetFont();
+        static void RenderFont();
         static Font GetFont();
         static void SaveFont();
-     
+
+        static void SetSprite(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
+                                unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
+                                unsigned char b7);
+
+        static void RenderSprites();
+        static Texture GetSpriteTexture();
 
         static int GetVirtualMouse(bool isXAxis);
         static void SetVirtualMouse(int x,int y);

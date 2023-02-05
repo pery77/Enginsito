@@ -150,6 +150,7 @@ next
     endif
     if ui.button(160,48, ">") then
         setFontChar(lastFontChar, getBinary(0),getBinary(1),getBinary(2),getBinary(3),getBinary(4),getBinary(5),getBinary(6),getBinary(7))
+        renderFont()
     endif
 
     ui.buttonW = 50

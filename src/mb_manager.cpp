@@ -2,12 +2,11 @@
 #include <assert.h>
 
 AudioManager* audioR;
-Texture2D texture;
+
 
 MBManager::MBManager(){
 	nullArg[0].type = MB_DT_NIL;
 	audioR = new AudioManager();
-	texture = LoadTexture("assets/texture.png");
 }
 
 MBManager::~MBManager(){
@@ -63,6 +62,11 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, getChar);
 	mb_reg_fun(bas, setFontChar);
 	mb_reg_fun(bas, getFontByte);
+	mb_reg_fun(bas, renderFont);
+
+	mb_reg_fun(bas, setSprite);
+	mb_reg_fun(bas, renderSprites);
+
 
 	mb_begin_module(bas, "KEY");
 		mb_register_func(bas, "PRESSED", keyPressed);
@@ -675,6 +679,53 @@ int MBManager::getFontByte(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_push_int(s, l, ret));
 	return result;
 }
+int MBManager::renderFont(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+	
+	Tools::RenderFont();
+
+	return result;
+}
+int MBManager::setSprite(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+	int id = 0;
+	int b0,b1,b2,b3,b4,b5,b6,b7 = 0;
+
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &id));
+			mb_check(mb_pop_int(s, l, &b0));
+			mb_check(mb_pop_int(s, l, &b1));
+			mb_check(mb_pop_int(s, l, &b2));
+			mb_check(mb_pop_int(s, l, &b3));
+			mb_check(mb_pop_int(s, l, &b4));
+			mb_check(mb_pop_int(s, l, &b5));
+			mb_check(mb_pop_int(s, l, &b6));
+			mb_check(mb_pop_int(s, l, &b7));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	Tools::SetSprite(id,b0,b1,b2,b3,b4,b5,b6,b7);
+
+	return result;
+}
+int MBManager::renderSprites(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+	
+	Tools::RenderSprites();
+
+	return result;
+}
 int MBManager::setColor(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1190,18 +1241,18 @@ int MBManager::sprite(struct mb_interpreter_t* s, void** l){
 	int id = 0;
 	int x = 0;
 	int y = 0;
-	int size = 0;
+	int col = 0;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
 		mb_check(mb_pop_int(s, l, &id));
 		mb_check(mb_pop_int(s, l, &x));
 		mb_check(mb_pop_int(s, l, &y));
-		mb_check(mb_pop_int(s, l, &size));
+		mb_check(mb_pop_int(s, l, &col));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    DrawTexturePro(texture, (Rectangle){id*size,0,size,size}, (Rectangle){x,y,size,size}, {0,0}, 0.0, WHITE);
+    DrawTexturePro(Tools::GetSpriteTexture(), (Rectangle){(id%16)*8,(id/16)*8,8,8}, (Rectangle){x,y,8,8}, {0,0}, 0.0, Tools::GetColor(col));
 
 	return result;
 }

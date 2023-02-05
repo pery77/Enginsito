@@ -57,6 +57,7 @@ class MBManager{
         static int getChar(struct mb_interpreter_t* s, void** l);
         static int setFontChar(struct mb_interpreter_t* s, void** l);
         static int getFontByte(struct mb_interpreter_t* s, void** l);
+        static int renderFont(struct mb_interpreter_t* s, void** l);
 
         //Tools
         static int intToText(struct mb_interpreter_t* s, void** l);
@@ -97,4 +98,6 @@ class MBManager{
 
         //Sprites
         static int sprite(struct mb_interpreter_t* s, void** l);
+        static int setSprite(struct mb_interpreter_t* s, void** l);
+        static int renderSprites(struct mb_interpreter_t* s, void** l);
 };
