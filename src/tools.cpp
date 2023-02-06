@@ -448,13 +448,18 @@ unsigned char Tools::GetSpriteByte(unsigned int id, unsigned char byte){
     return spriteData[id].bytes[byte];
 }
 
-void Tools::AddMetaSprite(unsigned int id,unsigned int postition, unsigned int sprite_id, unsigned char offset_x, unsigned char offset_y, 
+void Tools::AddMetaSprite(unsigned char id,unsigned char postition, unsigned char sprite_id, unsigned char offset_x, unsigned char offset_y, 
                                             unsigned char color, unsigned char flags){
-    metaSprites[id].sprites[postition] = (MetaSprite){sprite_id, offset_x, offset_y, color, flags};;
+    metaSprites[id].sprites[postition] = (SpriteData){sprite_id, offset_x, offset_y, color, flags};
 }
 
-void Tools::DrawSprite(int id, int x, int y, int col, int flag)
-{
+void Tools::ClearMetaSprite(unsigned char id){
+    for ( unsigned char i=0; i<8 ; i++){
+        metaSprites[id].sprites[i] = (SpriteData){0, 0, 0, 0, 0};
+    }   
+}
+
+void Tools::DrawSprite(int id, int x, int y, int col, int flag){
     float rot = 0;
 	Vector2 pivot {0,0};
 
@@ -485,12 +490,14 @@ void Tools::DrawSprite(int id, int x, int y, int col, int flag)
 	(Rectangle){x,y,8,8}, pivot, rot, GetColor(col));
 }
 
-void Tools::DrawMetaSprite(int id, int x, int y)
-{
-    for ( int i = 0 ; i<8 ;i++)
-    {
-        MetaSprite mp = metaSprites[id].sprites[i];
-        DrawSprite(mp.bytes[0], mp.bytes[1]+x,mp.bytes[2]+y,mp.bytes[3], mp.bytes[4]);
+void Tools::DrawMetaSprite(int id, int x, int y){
+    for ( unsigned char i=0; i<7 ; i++){
+        SpriteData mp = metaSprites[id].sprites[i];
+        int stop = mp.bytes[0] + mp.bytes[1] + mp.bytes[2] + mp.bytes[3] + mp.bytes[4];
+        if (stop == 0) break;
+        
+        //DrawSprite((int)mp.bytes[0], (int)mp.bytes[1] + x, (int)mp.bytes[2] + y, (int)mp.bytes[3], (int)mp.bytes[4]);
+        DrawSprite(mp.bytes[0], mp.bytes[1] + x, mp.bytes[2] + y, mp.bytes[3], mp.bytes[4]);
     }
 }
 int Tools::GetVirtualMouse(bool isXAxis){   

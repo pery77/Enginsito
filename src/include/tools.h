@@ -38,12 +38,12 @@ typedef struct DataBytes{
     unsigned char bytes[8];
 }DataBytes;
 
-typedef struct MetaSprite{
+typedef struct SpriteData{
     unsigned char bytes[5];// id, offset_X, offset_y, color, flags
-}MetaSprite;
+}SpriteData;
 
 typedef struct MetaSprites{
-    MetaSprite sprites[8];
+    SpriteData sprites[8];
 }MetaSprites;
 
 class Tools{
@@ -70,8 +70,9 @@ class Tools{
         static Texture GetSpriteTexture();
         static unsigned char GetSpriteByte(unsigned int id, unsigned char byte);
 
-        static void AddMetaSprite(unsigned int id, unsigned int postition, unsigned int sprite_id, unsigned char offset_x, unsigned char offset_y, 
+        static void AddMetaSprite(unsigned char id, unsigned char postition, unsigned char sprite_id, unsigned char offset_x, unsigned char offset_y, 
                                     unsigned char color, unsigned char flags);
+        static void ClearMetaSprite(unsigned char id);
 
         static int GetVirtualMouse(bool isXAxis);
         static void SetVirtualMouse(int x,int y);

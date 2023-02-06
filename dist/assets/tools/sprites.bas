@@ -131,8 +131,24 @@ DEF drawCanvas(x,y)
 
 ENDDEF
 
+setSprite(0,255,128,191,176,160,160,160,160)
+renderSprites()
+
+'id, postition, sprite_id, offset_x,  offset_y,  color, flags
+addmetasprite(0,0,0,0,0,4,0)
+addmetasprite(0,1,0,8,0,11,1)
+addmetasprite(0,2,0,8,8,7,2)
+addmetasprite(0,3,0,0,8,6,3)
+
+addmetasprite(1,0,2,0,0,9,0)
+addmetasprite(1,1,1,0,0,15,0)
+
+
+
+
+
 DEF draw()
-    cls(0)
+    cls(2)
     drawSheet(4,4)
     drawCanvas(164,4)
 
@@ -148,8 +164,16 @@ DEF draw()
     h = ui.toogle(h,18,170,5)
     v = ui.toogle(v,30,170,5)
     rotation = ui.slider(rotation,18,140,32,32)
+draw.rect(82,150,8,8,0,1)
 
-    metasprite(0,180,30)
+    metasprite(0,82,150)
+    for x = 0 to 40
+        for y = 10 to 20
+            metasprite(1,x*8,y*8)
+        next
+    next
+    
+
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
     ui.drawmouse()
 
