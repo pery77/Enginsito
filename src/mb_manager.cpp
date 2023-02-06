@@ -66,6 +66,7 @@ int MBManager::OpenBas(const char * file){
 
 	mb_reg_fun(bas, setSprite);
 	mb_reg_fun(bas, renderSprites);
+	mb_reg_fun(bas, getSpriteByte);
 
 
 	mb_begin_module(bas, "KEY");
@@ -726,6 +727,25 @@ int MBManager::renderSprites(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+int MBManager::getSpriteByte(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int id = 0;
+	int byte = 0;
+	int ret = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &id));
+			mb_check(mb_pop_int(s, l, &byte));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	ret = Tools::GetSpriteByte(id, byte);
+	mb_check(mb_push_int(s, l, ret));
+	return result;
+}
 int MBManager::setColor(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1242,17 +1262,48 @@ int MBManager::sprite(struct mb_interpreter_t* s, void** l){
 	int x = 0;
 	int y = 0;
 	int col = 0;
+	int flag = 0;
 
 	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_int(s, l, &id));
-		mb_check(mb_pop_int(s, l, &x));
-		mb_check(mb_pop_int(s, l, &y));
-		mb_check(mb_pop_int(s, l, &col));
-	}
+		if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &id));
+			mb_check(mb_pop_int(s, l, &x));
+			mb_check(mb_pop_int(s, l, &y));
+			mb_check(mb_pop_int(s, l, &col));
+		}
+		if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &flag));
+		}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    DrawTexturePro(Tools::GetSpriteTexture(), (Rectangle){(id%16)*8,(id/16)*8,8,8}, (Rectangle){x,y,8,8}, {0,0}, 0.0, Tools::GetColor(col));
+	float rot = 0;
+	Vector2 pivot {0,0};
+
+	switch ((flag & 0b11))
+	{
+		case 1:
+			rot = 90;
+			pivot = (Vector2){0,8};
+			break;
+		case 2:
+			rot = 180;
+			pivot = (Vector2){8,8};
+			break;
+		case 3:
+			rot = -90;
+			pivot = (Vector2){8,0};
+			break;
+	default:
+		break;
+	}
+
+	int h = 8;
+	int v = 8;
+	if(flag & (1 << 3)) h = -8;
+	if(flag & (1 << 4)) v = -8;
+
+    DrawTexturePro(Tools::GetSpriteTexture(), (Rectangle){(id%16)*8,(id/16)*8,h,v}, 
+	(Rectangle){x,y,8,8}, pivot, rot, Tools::GetColor(col));
 
 	return result;
 }

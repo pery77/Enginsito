@@ -440,6 +440,12 @@ void Tools::SetSprite(unsigned int id, unsigned char b0, unsigned char b1, unsig
 Texture Tools::GetSpriteTexture(){
     return spriteTexture;
 }
+unsigned char Tools::GetSpriteByte(unsigned int id, unsigned char byte){
+    if (id<0) id = 0;
+    if (id>255) id = 225; 
+    return spriteData[id].bytes[byte];
+}
+
 int Tools::GetVirtualMouse(bool isXAxis){   
 	float screenScale = Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
 	float mouse = isXAxis ? GetMousePosition().x : GetMousePosition().y;

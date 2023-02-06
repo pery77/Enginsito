@@ -100,4 +100,5 @@ class MBManager{
         static int sprite(struct mb_interpreter_t* s, void** l);
         static int setSprite(struct mb_interpreter_t* s, void** l);
         static int renderSprites(struct mb_interpreter_t* s, void** l);
+        static int getSpriteByte(struct mb_interpreter_t* s, void** l);
 };

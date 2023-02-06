@@ -62,7 +62,8 @@ class Tools{
 
         static void RenderSprites();
         static Texture GetSpriteTexture();
-
+        static unsigned char GetSpriteByte(unsigned int id, unsigned char byte);
+        
         static int GetVirtualMouse(bool isXAxis);
         static void SetVirtualMouse(int x,int y);
         static bool CompareFloats(float x, float y, float epsilon);
