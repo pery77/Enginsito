@@ -149,7 +149,9 @@ DEF draw()
     v = ui.toogle(v,30,170,5)
     rotation = ui.slider(rotation,18,140,32,32)
 
+    metasprite(0,180,30)
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
     ui.drawmouse()
+
 
 ENDDEF

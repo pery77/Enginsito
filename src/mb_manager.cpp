@@ -101,6 +101,7 @@ int MBManager::OpenBas(const char * file){
 	mb_end_module(bas);
 
 	mb_reg_fun(bas, sprite);
+	mb_reg_fun(bas, metaSprite);
 	mb_reg_fun(bas, setColor);
 	mb_reg_fun(bas, getColor);
 	mb_reg_fun(bas, restorePalette);
@@ -1276,34 +1277,28 @@ int MBManager::sprite(struct mb_interpreter_t* s, void** l){
 		}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	float rot = 0;
-	Vector2 pivot {0,0};
+	Tools::DrawSprite(id, x, y, col, flag);
 
-	switch ((flag & 0b11))
-	{
-		case 1:
-			rot = 90;
-			pivot = (Vector2){0,8};
-			break;
-		case 2:
-			rot = 180;
-			pivot = (Vector2){8,8};
-			break;
-		case 3:
-			rot = -90;
-			pivot = (Vector2){8,0};
-			break;
-	default:
-		break;
-	}
+	return result;
+}
 
-	int h = 8;
-	int v = 8;
-	if(flag & (1 << 3)) h = -8;
-	if(flag & (1 << 4)) v = -8;
+int MBManager::metaSprite(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
 
-    DrawTexturePro(Tools::GetSpriteTexture(), (Rectangle){(id%16)*8,(id/16)*8,h,v}, 
-	(Rectangle){x,y,8,8}, pivot, rot, Tools::GetColor(col));
+	int id = 0;
+	int x = 0;
+	int y = 0;
 
+	mb_check(mb_attempt_open_bracket(s, l));
+		if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &id));
+			mb_check(mb_pop_int(s, l, &x));
+			mb_check(mb_pop_int(s, l, &y));
+		}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	Tools::DrawMetaSprite(id, x, y);
+	
 	return result;
 }

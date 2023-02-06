@@ -10,16 +10,13 @@
 #include <dirent.h>
 #include <sys/types.h>
 
-//#define max(a, b) ((a)>(b)? (a) : (b))
-//#define min(a, b) ((a)<(b)? (a) : (b))
-
-#define GAME_SCREEN_W 320
-#define GAME_SCREEN_H 200
-#define GAME_FPS      60
-#define GAME_RATIO    1.6
-#define ASSETS_FOLDER     "assets"
-#define PROGRAM_EXTENSION ".BAS"
-#define BOOT_FILE         "assets/boot.txt"
+#define GAME_SCREEN_W       320
+#define GAME_SCREEN_H       200
+#define GAME_FPS            60
+#define GAME_RATIO          1.6
+#define ASSETS_FOLDER       "assets"
+#define PROGRAM_EXTENSION   ".BAS"
+#define BOOT_FILE           "assets/boot.txt"
 
 struct Vector2i {
 	int x;
@@ -41,6 +38,14 @@ typedef struct DataBytes{
     unsigned char bytes[8];
 }DataBytes;
 
+typedef struct MetaSprite{
+    unsigned char bytes[5];// id, offset_X, offset_y, color, flags
+}MetaSprite;
+
+typedef struct MetaSprites{
+    MetaSprite sprites[8];
+}MetaSprites;
+
 class Tools{
     public:
         static Color GetColor(int color);
@@ -59,11 +64,15 @@ class Tools{
         static void SetSprite(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
                                 unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
                                 unsigned char b7);
-
+        static void DrawSprite(int id, int x, int y, int col, int flag);
+        static void DrawMetaSprite(int id, int x, int y);
         static void RenderSprites();
         static Texture GetSpriteTexture();
         static unsigned char GetSpriteByte(unsigned int id, unsigned char byte);
-        
+
+        static void AddMetaSprite(unsigned int id, unsigned int postition, unsigned int sprite_id, unsigned char offset_x, unsigned char offset_y, 
+                                    unsigned char color, unsigned char flags);
+
         static int GetVirtualMouse(bool isXAxis);
         static void SetVirtualMouse(int x,int y);
         static bool CompareFloats(float x, float y, float epsilon);

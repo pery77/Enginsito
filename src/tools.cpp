@@ -256,8 +256,10 @@ DataBytes fontData[223]{
 };
 
 DataBytes spriteData [255] {};
+MetaSprites metaSprites[255] {};
 
 Font font = {0};
+
 Color userPalette[16]{};
 
 Texture spriteTexture;
@@ -446,6 +448,51 @@ unsigned char Tools::GetSpriteByte(unsigned int id, unsigned char byte){
     return spriteData[id].bytes[byte];
 }
 
+void Tools::AddMetaSprite(unsigned int id,unsigned int postition, unsigned int sprite_id, unsigned char offset_x, unsigned char offset_y, 
+                                            unsigned char color, unsigned char flags){
+    metaSprites[id].sprites[postition] = (MetaSprite){sprite_id, offset_x, offset_y, color, flags};;
+}
+
+void Tools::DrawSprite(int id, int x, int y, int col, int flag)
+{
+    float rot = 0;
+	Vector2 pivot {0,0};
+
+	switch ((flag & 0b11))
+	{
+		case 1:
+			rot = 90;
+			pivot = (Vector2){0,8};
+			break;
+		case 2:
+			rot = 180;
+			pivot = (Vector2){8,8};
+			break;
+		case 3:
+			rot = -90;
+			pivot = (Vector2){8,0};
+			break;
+	default:
+		break;
+	}
+
+	int h = 8;
+	int v = 8;
+	if(flag & (1 << 3)) h = -8;
+	if(flag & (1 << 4)) v = -8;
+
+    DrawTexturePro(GetSpriteTexture(), (Rectangle){(id%16)*8,(id/16)*8,h,v}, 
+	(Rectangle){x,y,8,8}, pivot, rot, GetColor(col));
+}
+
+void Tools::DrawMetaSprite(int id, int x, int y)
+{
+    for ( int i = 0 ; i<8 ;i++)
+    {
+        MetaSprite mp = metaSprites[id].sprites[i];
+        DrawSprite(mp.bytes[0], mp.bytes[1]+x,mp.bytes[2]+y,mp.bytes[3], mp.bytes[4]);
+    }
+}
 int Tools::GetVirtualMouse(bool isXAxis){   
 	float screenScale = Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
 	float mouse = isXAxis ? GetMousePosition().x : GetMousePosition().y;
