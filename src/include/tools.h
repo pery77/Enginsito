@@ -90,4 +90,7 @@ class Tools{
         static bool FileExist(std::string path, std::string file);
 
         static float Min(float a, float b);
+
+        static void SetFontSpacing(int spacing);
+        static float GetFontSpacing();
 };

@@ -156,7 +156,8 @@ next
     ui.buttonW = 50
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
 
-    'ccc = slider(ccc,20,188,256,256)
+    fontspace = ui.slider(fontspace,20,188,20,20)
+    setfontspacing(fontspace -5)
     'draw.rect(172,132,22,11,0,1)
     'draw.rect(172,132,22,11,1,11)
     'draw.text(inttotext("%03i",lastFontChar),174,133,8,18)

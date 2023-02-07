@@ -61,6 +61,7 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, delta);
 	mb_reg_fun(bas, getChar);
 	mb_reg_fun(bas, setFontChar);
+	mb_reg_fun(bas, setFontSpacing);
 	mb_reg_fun(bas, getFontByte);
 	mb_reg_fun(bas, renderFont);
 
@@ -469,7 +470,7 @@ int MBManager::drawFont(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    DrawTextEx(Tools::GetFont(),arg, (Vector2){x, y}, size, 0, Tools::GetColor(col));
+    DrawTextEx(Tools::GetFont(),arg, (Vector2){x, y}, size, Tools::GetFontSpacing(), Tools::GetColor(col));
 
 	return result;
 }
@@ -660,6 +661,22 @@ int MBManager::setFontChar(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
    	Tools::SetFontChar(id,b0,b1,b2,b3,b4,b5,b6,b7);
+
+	return result;
+}
+int MBManager::setFontSpacing(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+	int spacing = 0;
+
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &spacing));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	Tools::SetFontSpacing(spacing);
 
 	return result;
 }

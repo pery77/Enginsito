@@ -6,30 +6,37 @@ enddef
 
 soundOn = false
 instrument = 0
-DEF sKey(x,t)
+DEF sKey(id)
 
+    x = id * 10
     y = 120
-    size = 70
+    size = 50
+    t = 0
+    IF id MOD 2 <> 0 THEN 
+        t = 1
+    ENDIF
 
     borderCol = 0
     keyBCol = 5
-    code = (x / 20) + 56
+    code = id + 56
     IF t = 0 THEN
-        hover = ui.isHover(x,y + size / 2,20,size)
+    y1 = y+20
+        hover = ui.isHover(x,y1 + size / 2,20,size)
         IF hover THEN
             borderCol = 14
         ENDIF
-        DRAW.rect(x,y,20,size,0,12)
-        DRAW.rect(x,y,20,size,1,borderCol)
-        DRAW.text(intToText("%i", code),x,y + size,8,12)
+        DRAW.rect(x,y1,20,size,0,12)
+        DRAW.rect(x,y1,20,size,1,borderCol)
+        DRAW.font(intToText("%i", code),x,y + size,8,12)
     ENDIF
-    IF t = 1 THEN 
-        hover = ui.isHover(x+12,y+1,14,size * 0.65)
+    IF t = 1 THEN
+        
+        hover = ui.isHover(x,y+1,14,size * 0.65)
         IF hover THEN
             keyBCol = 14
         ENDIF
-        DRAW.rect(x+12,y+1,14,size * 0.65,0,0)
-        DRAW.rect(x+12,y+1,14,size * 0.65,2,keyBCol) 
+        DRAW.rect(x,y+1,14,size * 0.65,0,0)
+        DRAW.rect(x,y+1,14,size * 0.65,2,keyBCol) 
     ENDIF
 'IF key.pressed(72) THEN sound.note(80,0,100) ENDIF
     IF hover AND mouse.pressed(0) THEN
@@ -45,18 +52,10 @@ enddef
 
 def synthKeys()
 
-    FOR i = 0 TO 15
-        x = i*20
-        sKey(x,0)
+    FOR id = 0 TO 30
+        sKey(id)
     NEXT
 
-    FOR i = 0 to 15
-        paint = (i <> 3) AND  (i <> 6) AND (i <> 10 ) AND (i <> 13)
-        IF paint THEN
-            x = i*20
-            sKey(x,1)
-        ENDIF
-    NEXT
 
 enddef
 
@@ -121,7 +120,7 @@ DEF drawWave(x,y)
 ENDDEF
 
 def draw()
-    cls(1)
+    cls(2)
     time = time + delta()
     draw.rect(0,0,320,9,0,0)
     draw.text(intToText("T: %06i",time), 0, 0, 1, 15)
@@ -145,6 +144,18 @@ def draw()
     envD = ui.knob(envD,112,36,0,100)
     envS = ui.knob(envS,144,36,0,100)
     envR = ui.knob(envR,176,36,0,100)
+
+    lx = 77
+    ly = 88
+    h = 20
+    lx1 = lx+envA
+    ly1 = ly-h
+    lx2 = lx1 + envD
+    ly2 = h + ly1 - envS
+    draw.line(lx,ly,lx1,ly1,2,14)
+    draw.line(lx1,ly1,lx2,ly2,2,14)
+    draw.line(lx2,ly2,lx2+20,ly2,2,14)
+
 
     c = ui.toogle(c,5,110,3)
     e = ui.toogle(e,20,110,3)

@@ -56,6 +56,7 @@ class MBManager{
         static int measureFont(struct mb_interpreter_t* s, void** l);
         static int getChar(struct mb_interpreter_t* s, void** l);
         static int setFontChar(struct mb_interpreter_t* s, void** l);
+        static int setFontSpacing(struct mb_interpreter_t* s, void** l);
         static int getFontByte(struct mb_interpreter_t* s, void** l);
         static int renderFont(struct mb_interpreter_t* s, void** l);
 

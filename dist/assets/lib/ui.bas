@@ -104,9 +104,9 @@ def slider(v,x,y,w,max)
     v = ROUND(v/w * max)
     v = clamp(v,0, max)
     
-    draw.rect(x,y,w + 10,buttonH,0,0)
-    draw.rect(x,y,w + 10,buttonH,1,cb)
-    draw.rect(mx,my,8,8,0,col)
+    draw.rect(x,y,w + 10,buttonH-2,0,0)
+    draw.rect(x,y,w + 10,buttonH-1,1,cb)
+    draw.rect(mx,my,8,buttonH-3,0,col)
     textPos = intToText("%02i",v)
     draw.text(textPos, x - measureText(textPos ,8)-2, y,8, cb)
 

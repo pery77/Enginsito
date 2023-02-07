@@ -263,6 +263,15 @@ Font font = {0};
 Color userPalette[16]{};
 
 Texture spriteTexture;
+float fontSpacing = 0;
+
+void Tools::SetFontSpacing(int spacing){
+    fontSpacing = spacing;
+}
+
+float Tools::GetFontSpacing(){
+    return fontSpacing;
+}
 
 int Tools::IntClamp(int value, int min, int max){
     if (value < min) return min;
