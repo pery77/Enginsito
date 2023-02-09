@@ -1,7 +1,19 @@
 import "assets/lib/ui.bas"
+    envA = 0
+    envD = 30
+    envS = 0
+    envR = 40
+    wave= 0
 
 def tick()
+
+ k = key.get()
+    IF k <> 0 THEN 
+        sfx.set(0,wave,k-30,envA,envD,envS,envR)
+        sfx.play(0, 1000)
+    ENDIF
     IF key.pressed(32) THEN sfx.play(0, 1000) ENDIF  
+    IF key.pressed(65) THEN sfx.play(1, 1000) ENDIF  
 enddef
 
 soundOn = false
@@ -148,13 +160,17 @@ def draw()
     lx = 77
     ly = 88
     h = 20
-    lx1 = lx+envA
+    w = 20
+    s = 20
+    lx1 = lx+envA * (w / 100)
     ly1 = ly-h
-    lx2 = lx1 + envD
-    ly2 = h + ly1 - envS
+    lx2 = lx1 + envD  * (w / 100)
+    ly2 = h + ly1 - envS * (h / 100)
+    lx3 = lx2 + envR * (w / 100) + s
     draw.line(lx,ly,lx1,ly1,2,14)
     draw.line(lx1,ly1,lx2,ly2,2,14)
-    draw.line(lx2,ly2,lx2+20,ly2,2,14)
+    draw.line(lx2,ly2,lx2+s,ly2,2,14)
+    draw.line(lx2+s,ly2,lx3,ly,2,14)
 
 
     c = ui.toogle(c,5,110,3)

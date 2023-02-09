@@ -35,8 +35,8 @@ class AudioManager {
     void StopNote(int note, int voice);
     void Stop();
     void GetPresets();
-
-    void SFXSet(int id, int waveType);
+    
+    void SFXSet(int id, int waveType,int freq,int att, int susT, int susP, int dec);
     void SFXPlay(int id, int fq);
 
     private:

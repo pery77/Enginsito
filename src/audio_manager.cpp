@@ -24,6 +24,11 @@ AudioManager::AudioManager(){
         wave[i].channels = RFXGEN_GEN_CHANNELS;
         wave[i].frameCount = 5*wave[i].sampleRate;    // Max frame count for 10 seconds
         //wave[i].data = (float *)RL_CALLOC(wave[i].frameCount, sizeof(float));
+
+        //params[0].startFrequencyValue = 10; // C - 4
+        //params[0].startFrequencyValue = 261.626; // C - 4
+        //params[1].startFrequencyValue = 523.251; // C - 4
+
         wave[i].data = GenerateWave(params[i], &wave[i].frameCount);
         sound[i] = LoadSoundFromWave(wave[i]);
     }
@@ -88,9 +93,16 @@ void AudioManager::Stop(){
     audioTick = 0;
 }
 
-void AudioManager::SFXSet(int id, int waveType){
+void AudioManager::SFXSet(int id, int waveType, int freq, int att, int susT, int susP, int dec){
         printf("SFX set: [%i] wave:%i\n");
         params[id].waveTypeValue = waveType;
+        params[id].startFrequencyValue = (float) (freq * 0.01f);
+
+        params[id].attackTimeValue = (float) (att * 0.01f);
+        params[id].sustainTimeValue = (float) (susT * 0.01f);
+        params[id].sustainPunchValue = (float) (susP * 0.01f);
+        params[id].decayTimeValue = (float) (dec * 0.01f);
+
         wave[id].data = GenerateWave(params[id], &wave[id].frameCount);
         sound[id] = LoadSoundFromWave(wave[id]);
 }

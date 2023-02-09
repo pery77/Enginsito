@@ -918,14 +918,19 @@ int MBManager::getFolders(struct mb_interpreter_t* s, void** l) {
 int MBManager::saveFile(struct mb_interpreter_t* s, void** l) {
 	int result = MB_FUNC_OK;
 	char* arg = 0;
+	char* txt = 0;
 
 	mb_assert(s && l);
 
 	mb_check(mb_attempt_open_bracket(s, l));
 		mb_check(mb_pop_string(s, l, &arg));
+		mb_check(mb_pop_string(s, l, &txt));
 	mb_check(mb_attempt_close_bracket(s, l));
 	
-	printf("must save file: %s\n", arg);
+	bool saved = SaveFileText(arg, txt);
+	
+	if (saved) printf("Saved OK: %s\n", arg);
+	else printf("ERROR saving: %s\n", arg);
 	
 	return result;
 }
@@ -1242,16 +1247,22 @@ int MBManager::sfxSet(struct mb_interpreter_t* s, void** l){
 
     int id;
 	int wave;
-
+	int freq;
+	int att, susT, susP, dec;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
 		mb_check(mb_pop_int(s, l, &id));
 		mb_check(mb_pop_int(s, l, &wave));
+		mb_check(mb_pop_int(s, l, &freq));
+		mb_check(mb_pop_int(s, l, &att));
+		mb_check(mb_pop_int(s, l, &susT));
+		mb_check(mb_pop_int(s, l, &susP));
+		mb_check(mb_pop_int(s, l, &dec));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXSet(id, wave);
+    audioR->SFXSet(id, wave, freq, att, susP, susT, dec);
 
 	return result;
 }

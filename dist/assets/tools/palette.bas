@@ -91,6 +91,19 @@ def draw()
     IF mouse.down(0) AND ui.mouseWorking THEN
         setColor(selectedColor, redK, greenK,blueK)
     ENDIF
+
+
+     IF ui.button (200,180,"Save") THEN
+        t$ = ""
+        for col = 0 to 15
+            redK = getColor(col,0)
+            greenK = getColor(col,1)
+            blueK = getColor(col,2)
+            t$ = t$ + intToText("setcolor(%i,%i,%i,%i)", col,redK,greenK,blueK) + Chr(13)
+        next
+        saveFile("assets/lib/palettes/test.bas", t$)
+    ENDIF
+  
     
     IF mouse.down(2) THEN ui.drawPalette() ENDIF
     ui.drawmouse()

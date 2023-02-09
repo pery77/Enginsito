@@ -16,6 +16,24 @@
 #include <iostream>
 #include "FileWatcher.h"
 
+FilePathList droppedFiles = { 0 };
+
+void dropFile(){
+
+    if (IsFileDropped())        {
+        // Is some files have been previously loaded, unload them
+        if (droppedFiles.count > 0) UnloadDroppedFiles(droppedFiles);
+        
+        // Load new dropped files
+        droppedFiles = LoadDroppedFiles();
+    }
+    if (droppedFiles.count > 0)
+    {
+        printf("file: %s\n", *droppedFiles.paths[0]);
+        UnloadDroppedFiles(droppedFiles);
+    }
+}
+
 int main(int argc, char *argv[]){
 
     IniManager* config = new IniManager();
@@ -140,6 +158,8 @@ int main(int argc, char *argv[]){
                 printf("Bad framerate!\n");
             }
         }
+        
+        dropFile();
 
         // Draw
         BeginDrawing();
