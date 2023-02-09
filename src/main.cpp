@@ -80,9 +80,14 @@ int main(int argc, char *argv[]){
                 break;
             case FileStatus::modified:
                 std::cout << "File modified: " << path_to_watch << '\n';
-                bios->SetFile(path_to_watch);
-                bios->ShouldRun = true;
-                postProcessing->ReloadShaders();
+                if (IsFileExtension(path_to_watch.c_str(),".bas")) {
+                    bios->SetFile(path_to_watch);
+                    bios->ShouldRun = true;
+                    postProcessing->ReloadShaders();
+                }
+                else{
+                    printf("Is not a .bas\n");
+                }
                 break;
             case FileStatus::erased:
                 std::cout << "File erased: " << path_to_watch << '\n';

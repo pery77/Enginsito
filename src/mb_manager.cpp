@@ -469,8 +469,9 @@ int MBManager::drawFont(struct mb_interpreter_t* s, void** l){
 		mb_check(mb_pop_int(s, l, &col));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
-
-    DrawTextEx(Tools::GetFont(),arg, (Vector2){x, y}, size, Tools::GetFontSpacing(), Tools::GetColor(col));
+	if (size < 1) size = 1;
+	if (size > 4) size = 4;
+    DrawTextEx(Tools::GetFont(),arg, (Vector2){x, y}, size * 8, Tools::GetFontSpacing(), Tools::GetColor(col));
 
 	return result;
 }
@@ -509,7 +510,10 @@ int MBManager::measureFont(struct mb_interpreter_t* s, void** l){
 		mb_check(mb_pop_int(s, l, &size));
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ret.value.integer = MeasureTextEx(Tools::GetFont(), arg, (float)size, 0.0).x;
+	if (size < 1) size = 1;
+	if (size > 4) size = 4;
+
+    ret.value.integer = MeasureTextEx(Tools::GetFont(), arg, (float)size * 8, 0.0).x;
 
     mb_check(mb_push_value(s, l, ret));
 	return result;
