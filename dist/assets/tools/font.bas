@@ -26,7 +26,7 @@ enddef
 
 def setBinary(lastFontChar)    
     for l = 0 to 7
-        g = getFontByte(lastFontChar,l)
+        g = getSpriteByte(lastFontChar,l)
         while g > 0
             pixelList((7 - counter) + l*8) = 0
             color = 0
@@ -123,12 +123,12 @@ def fontChar(x,y,ch)
 enddef
 
 def fontCanvas(x,y)
-    quote = getChar(34)
+    quote = chr(34)
     '
     draw.text("!"+quote+"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI",0,170,1,15)
     'draw.text("!"+ getChar(241)+ "Ññª!",0,178,1,14)
     draw.text("JKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~",0,178,1,14)
-    draw.text("ñÑ©óò",0,186,1,12)
+    draw.text("ñÑ©óòýü",0,186,1,12)
     draw.text(getChar(mouse.x()),120,186,1,12)
     for ch = 33 to 254
         fontChar(x,y,ch)

@@ -53,7 +53,6 @@ class Tools{
         static Color SetColor(int color, int r, int g, int b);
         static void CopyPalette();
 
-        static unsigned char GetFontByte(unsigned int id, unsigned char byte);
         static void UpdateFont();
         static Font GetFont();
         static void PrintMemoryData();

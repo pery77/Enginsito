@@ -3,7 +3,6 @@
 
 AudioManager* audioR;
 
-
 MBManager::MBManager(){
 	nullArg[0].type = MB_DT_NIL;
 	audioR = new AudioManager();
@@ -49,9 +48,13 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "ELLIPSE", drawEllipse);
 		mb_register_func(bas, "TRIANGLE", drawTriangle);
 		mb_register_func(bas, "RECT", drawRect);
+		mb_register_func(bas, "RECTROUND", drawRectRound);
 		mb_register_func(bas, "POLY", drawPoly);
 
 		mb_register_func(bas, "TEXT", drawText);
+
+		mb_register_func(bas, "SPRITE", drawSprite);
+		mb_register_func(bas, "META", drawMetaSprite);
 		
 	mb_end_module(bas);
 
@@ -60,7 +63,6 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, delta);
 	mb_reg_fun(bas, getChar);
 	mb_reg_fun(bas, setFontSpacing);
-	mb_reg_fun(bas, getFontByte);
 	mb_reg_fun(bas, updateFont);
 
 	mb_reg_fun(bas, setSprite);
@@ -99,8 +101,7 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "PLAY", sfxPlay);
 	mb_end_module(bas);
 
-	mb_reg_fun(bas, sprite);
-	mb_reg_fun(bas, metaSprite);
+
 	mb_reg_fun(bas, addMetaSprite);
 	mb_reg_fun(bas, setColor);
 	mb_reg_fun(bas, getColor);
@@ -384,6 +385,44 @@ int MBManager::drawRect(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+int MBManager::drawRectRound(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+	int lineThick = 0;
+	int roundness = 0;
+	int segments = 0;
+	int col = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &x));
+		mb_check(mb_pop_int(s, l, &y));
+		mb_check(mb_pop_int(s, l, &w));
+		mb_check(mb_pop_int(s, l, &h));
+		mb_check(mb_pop_int(s, l, &lineThick));
+		mb_check(mb_pop_int(s, l, &roundness));
+		mb_check(mb_pop_int(s, l, &segments));
+		mb_check(mb_pop_int(s, l, &col));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	switch (lineThick)
+	{
+		case 0:
+			DrawRectangleRounded((Rectangle){x, y, w, h}, roundness, segments, Tools::GetColor(col));
+			break;
+		default:
+			DrawRectangleRoundedLines((Rectangle){x, y, w, h}, lineThick, roundness, segments, Tools::GetColor(col));
+			break;
+	}
+
+	return result;
+}
 int MBManager::drawPoly(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -611,25 +650,6 @@ int MBManager::setFontSpacing(struct mb_interpreter_t* s, void** l){
 
    	Tools::SetFontSpacing(spacing);
 
-	return result;
-}
-int MBManager::getFontByte(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int id = 0;
-	int byte = 0;
-	int ret = 0;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &id));
-			mb_check(mb_pop_int(s, l, &byte));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	ret = Tools::GetFontByte(id, byte);
-	mb_check(mb_push_int(s, l, ret));
 	return result;
 }
 int MBManager::updateFont(struct mb_interpreter_t* s, void** l){
@@ -1217,7 +1237,7 @@ int MBManager::sfxPlay(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
-int MBManager::sprite(struct mb_interpreter_t* s, void** l){
+int MBManager::drawSprite(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
@@ -1244,7 +1264,7 @@ int MBManager::sprite(struct mb_interpreter_t* s, void** l){
 	return result;
 }
 
-int MBManager::metaSprite(struct mb_interpreter_t* s, void** l){
+int MBManager::drawMetaSprite(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 

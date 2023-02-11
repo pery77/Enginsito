@@ -72,7 +72,7 @@ def drawSprite(id,x,y)
         draw.rect(x,y,8,8,0,0)
     endif
 
-    sprite(id, x , y, col, rotation + (h*8) + (v*16))
+    draw.sprite(id, x , y, col, rotation + (h*8) + (v*16))
 
 enddef
 
@@ -166,10 +166,10 @@ DEF draw()
     rotation = ui.slider(rotation,18,140,32,32)
 draw.rect(82,150,8,8,0,1)
 
-    metasprite(0,82,150)
+    draw.meta(0,82,150)
     for x = 0 to 40
         for y = 10 to 20
-            metasprite(1,x*8,y*8)
+            draw.meta(1,x*8,y*8)
         next
     next
     

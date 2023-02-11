@@ -47,6 +47,7 @@ class MBManager{
         static int drawEllipse(struct mb_interpreter_t* s, void** l);
         static int drawTriangle(struct mb_interpreter_t* s, void** l);
         static int drawRect(struct mb_interpreter_t* s, void** l);
+        static int drawRectRound(struct mb_interpreter_t* s, void** l);
         static int drawPoly(struct mb_interpreter_t* s, void** l);
 
         //Text
@@ -54,7 +55,6 @@ class MBManager{
         static int measureText(struct mb_interpreter_t* s, void** l);
         static int getChar(struct mb_interpreter_t* s, void** l);
         static int setFontSpacing(struct mb_interpreter_t* s, void** l);
-        static int getFontByte(struct mb_interpreter_t* s, void** l);
         static int updateFont(struct mb_interpreter_t* s, void** l);
 
         //Tools
@@ -95,8 +95,8 @@ class MBManager{
         static int sfxPlay(struct mb_interpreter_t* s, void** l);
 
         //Sprites
-        static int sprite(struct mb_interpreter_t* s, void** l);
-        static int metaSprite(struct mb_interpreter_t* s, void** l);
+        static int drawSprite(struct mb_interpreter_t* s, void** l);
+        static int drawMetaSprite(struct mb_interpreter_t* s, void** l);
         static int addMetaSprite(struct mb_interpreter_t* s, void** l);
         static int setSprite(struct mb_interpreter_t* s, void** l);
         static int renderSprites(struct mb_interpreter_t* s, void** l);

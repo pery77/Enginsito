@@ -108,7 +108,7 @@ def slider(v,x,y,w,max)
     draw.rect(x,y,w + 10,buttonH-1,1,cb)
     draw.rect(mx,my,8,buttonH-3,0,col)
     textPos = intToText("%02i",v)
-    draw.text(textPos, x - measureText(textPos ,8)-2, y,8, cb)
+    draw.text(textPos, x - measureText(textPos, 1)-2, y, 1, cb)
 
     return v
 enddef

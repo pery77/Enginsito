@@ -323,7 +323,7 @@ void Tools::UpdateFont(){
     UnloadFont(font);
     RenderSprites();
 
-    font.glyphCount = 223;   // Number of chars included in our default font
+    font.glyphCount = 255;   // Number of chars included in our default font
     font.glyphPadding = 0;   // Characters padding
     int charsHeight = 8;
     int charsWidth = 8;
@@ -369,16 +369,9 @@ void Tools::PrintMemoryData(){
     }
 }
 
-unsigned char Tools::GetFontByte(unsigned int id, unsigned char byte){
-    id = IntClamp(id, 0 , 255);
-    return memoryData[id].bytes[byte];
-}
-
 void Tools::RenderSprites(){
 
     #define BIT_CHECK(a,b) ((a) & (1 << (b)))
-    //UnloadTexture(spriteTexture);
-    //UnloadImage(imgSprite);
     if (imgSprite.data == 0x0){
         imgSprite = {
             .data = calloc(128*128, 2),  // 2 bytes per pixel (gray + alpha)
