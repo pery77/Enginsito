@@ -404,20 +404,22 @@ int MBManager::drawRectRound(struct mb_interpreter_t* s, void** l){
 		mb_check(mb_pop_int(s, l, &y));
 		mb_check(mb_pop_int(s, l, &w));
 		mb_check(mb_pop_int(s, l, &h));
-		mb_check(mb_pop_int(s, l, &lineThick));
 		mb_check(mb_pop_int(s, l, &roundness));
 		mb_check(mb_pop_int(s, l, &segments));
+		mb_check(mb_pop_int(s, l, &lineThick));
 		mb_check(mb_pop_int(s, l, &col));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
-
+ 
+	float fRound = (float)(roundness) * 0.1f;
+	if (segments < 1) segments = 1;
 	switch (lineThick)
 	{
 		case 0:
-			DrawRectangleRounded((Rectangle){x, y, w, h}, roundness, segments, Tools::GetColor(col));
+			DrawRectangleRounded((Rectangle){x, y, w, h}, fRound, segments, Tools::GetColor(col));
 			break;
 		default:
-			DrawRectangleRoundedLines((Rectangle){x, y, w, h}, lineThick, roundness, segments, Tools::GetColor(col));
+			DrawRectangleRoundedLines((Rectangle){x, y, w, h}, fRound, segments, lineThick, Tools::GetColor(col));
 			break;
 	}
 
