@@ -52,7 +52,6 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "POLY", drawPoly);
 
 		mb_register_func(bas, "TEXT", drawText);
-		mb_register_func(bas, "FONT", drawFont);
 		
 	mb_end_module(bas);
 
@@ -60,10 +59,9 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, floatToText);
 	mb_reg_fun(bas, delta);
 	mb_reg_fun(bas, getChar);
-	mb_reg_fun(bas, setFontChar);
 	mb_reg_fun(bas, setFontSpacing);
 	mb_reg_fun(bas, getFontByte);
-	mb_reg_fun(bas, renderFont);
+	mb_reg_fun(bas, updateFont);
 
 	mb_reg_fun(bas, setSprite);
 	mb_reg_fun(bas, renderSprites);
@@ -108,7 +106,6 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, getColor);
 	mb_reg_fun(bas, restorePalette);
 	mb_reg_fun(bas, measureText);
-	mb_reg_fun(bas, measureFont);
 	mb_reg_fun(bas, getFiles);
 	mb_reg_fun(bas, getFolders);
 	mb_reg_fun(bas, saveFile);
@@ -445,30 +442,6 @@ int MBManager::drawText(struct mb_interpreter_t* s, void** l){
 		mb_check(mb_pop_int(s, l, &col));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
-
-    DrawText(arg, x, y, size, Tools::GetColor(col));
-
-	return result;
-}
-int MBManager::drawFont(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-    char* arg = 0;
-	int x = 0;
-	int y = 0;
-	int size = 0;
-	int col = 0;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_string(s, l, &arg));
-		mb_check(mb_pop_int(s, l, &x));
-		mb_check(mb_pop_int(s, l, &y));
-		mb_check(mb_pop_int(s, l, &size));
-		mb_check(mb_pop_int(s, l, &col));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
 	if (size < 1) size = 1;
 	if (size > 4) size = 4;
     DrawTextEx(Tools::GetFont(),arg, (Vector2){x, y}, size * 8, Tools::GetFontSpacing(), Tools::GetColor(col));
@@ -476,26 +449,6 @@ int MBManager::drawFont(struct mb_interpreter_t* s, void** l){
 	return result;
 }
 int MBManager::measureText(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-    char* arg = 0;
-	int size = 0;
-
-    mb_value_t ret;
-    mb_make_int(ret, 0);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		mb_check(mb_pop_string(s, l, &arg));
-		mb_check(mb_pop_int(s, l, &size));
-	mb_check(mb_attempt_close_bracket(s, l));
-
-    ret.value.integer = MeasureText(arg, size);
-
-    mb_check(mb_push_value(s, l, ret));
-	return result;
-}
-int MBManager::measureFont(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
@@ -643,31 +596,7 @@ int MBManager::getChar(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
-int MBManager::setFontChar(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-	int id = 0;
-	int b0,b1,b2,b3,b4,b5,b6,b7 = 0;
 
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &id));
-			mb_check(mb_pop_int(s, l, &b0));
-			mb_check(mb_pop_int(s, l, &b1));
-			mb_check(mb_pop_int(s, l, &b2));
-			mb_check(mb_pop_int(s, l, &b3));
-			mb_check(mb_pop_int(s, l, &b4));
-			mb_check(mb_pop_int(s, l, &b5));
-			mb_check(mb_pop_int(s, l, &b6));
-			mb_check(mb_pop_int(s, l, &b7));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	Tools::SetFontChar(id,b0,b1,b2,b3,b4,b5,b6,b7);
-
-	return result;
-}
 int MBManager::setFontSpacing(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -703,14 +632,14 @@ int MBManager::getFontByte(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_push_int(s, l, ret));
 	return result;
 }
-int MBManager::renderFont(struct mb_interpreter_t* s, void** l){
+int MBManager::updateFont(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 	
-	Tools::RenderFont();
+	Tools::UpdateFont();
 
 	return result;
 }

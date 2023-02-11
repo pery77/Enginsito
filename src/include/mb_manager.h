@@ -51,14 +51,11 @@ class MBManager{
 
         //Text
         static int drawText(struct mb_interpreter_t* s, void** l);
-        static int drawFont(struct mb_interpreter_t* s, void** l);
         static int measureText(struct mb_interpreter_t* s, void** l);
-        static int measureFont(struct mb_interpreter_t* s, void** l);
         static int getChar(struct mb_interpreter_t* s, void** l);
-        static int setFontChar(struct mb_interpreter_t* s, void** l);
         static int setFontSpacing(struct mb_interpreter_t* s, void** l);
         static int getFontByte(struct mb_interpreter_t* s, void** l);
-        static int renderFont(struct mb_interpreter_t* s, void** l);
+        static int updateFont(struct mb_interpreter_t* s, void** l);
 
         //Tools
         static int intToText(struct mb_interpreter_t* s, void** l);

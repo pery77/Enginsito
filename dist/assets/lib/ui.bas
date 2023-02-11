@@ -20,15 +20,15 @@ def drawPalette()
     for i = 0 to 15
         x = i*20
         draw.rect(x,y-10,20,10,0,i)
-        draw.font(intToText("%02i",i), x+3, y-8, 1, 0)
-        draw.font(intToText("%02i",i), x+5, y-8, 1, 0)
-        draw.font(intToText("%02i",i), x+4, y-7, 1, 0)
-        draw.font(intToText("%02i",i), x+4, y-9, 1, 0)
-        draw.font(intToText("%02i",i), x+4, y-8, 1, 15)
+        draw.text(intToText("%02i",i), x+3, y-8, 1, 0)
+        draw.text(intToText("%02i",i), x+5, y-8, 1, 0)
+        draw.text(intToText("%02i",i), x+4, y-7, 1, 0)
+        draw.text(intToText("%02i",i), x+4, y-9, 1, 0)
+        draw.text(intToText("%02i",i), x+4, y-8, 1, 15)
     next
     draw.rect(0,y-21,59,11,0,0)
     draw.rect(0,y-21,59,11,1,11)
-    draw.font(intToText("%03i,%03i",mouse.x(),mouse.y()), 2, y-19, 8, 11)
+    draw.text(intToText("%03i,%03i",mouse.x(),mouse.y()), 2, y-19, 8, 11)
 enddef
 
 def drawMouse()
@@ -68,8 +68,8 @@ def button(x,y,txt)
 
     draw.rect(x,y,buttonW,buttonH,0,colB)
     draw.rect(x,y,buttonW,buttonH,1,colH)
-    xc = (buttonW * 0.5) - (measureFont(txt,1) * 0.5)
-    draw.font(txt,x + xc,y+2,1,colH)
+    xc = (buttonW * 0.5) - (measureText(txt,1) * 0.5)
+    draw.text(txt,x + xc,y+2,1,colH)
 
     return (mouse.released(0) AND hover)
 enddef
@@ -184,8 +184,8 @@ def knob(v,x,y,min,max)
 
     v = remap(v,0,min,360,max)
     text = intToText("%03i", v)
-    textPos = measureFont(text, 1) / 2
-    draw.font(text,  x - textPos, y-radius-17, 1, colH)
+    textPos = measureText(text, 1) / 2
+    draw.text(text,  x - textPos, y-radius-17, 1, colH)
 
     return v
 enddef

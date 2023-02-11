@@ -53,13 +53,10 @@ class Tools{
         static Color SetColor(int color, int r, int g, int b);
         static void CopyPalette();
 
-        static void SetFontChar(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
-                                unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
-                                unsigned char b7);
         static unsigned char GetFontByte(unsigned int id, unsigned char byte);
-        static void RenderFont();
+        static void UpdateFont();
         static Font GetFont();
-        static void SaveFont();
+        static void PrintMemoryData();
 
         static void SetSprite(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
                                 unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,

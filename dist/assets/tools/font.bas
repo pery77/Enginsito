@@ -67,7 +67,7 @@ DEF pixelCanvas(x, y, offSetX, offsetY)
     draw.rect(x,y,pixelSize,pixelSize,1,color)
 
     IF mouse.down(2) THEN
-        draw.font(intToText("%i",id),x+2,y+2,8,7)
+        draw.text(intToText("%i",id),x+2,y+2,1,7)
     ENDIF
 
 
@@ -82,7 +82,7 @@ DEF drawCanvas(x,y)
     NEXT
 
     FOR j = 0 to 7
-        draw.font(intToText("%03i",getBinary(j)),x+132,4 + y + j * 16,8,11)
+        draw.text(intToText("%03i",getBinary(j)),x+132,4 + y + j * 16,1,11)
     NEXT
 
 ENDDEF
@@ -113,23 +113,23 @@ def fontChar(x,y,ch)
         color = 15
     endif
 
-    draw.font(getChar(char), x, y, 8, color)
+    draw.text(getChar(char), x, y, 1, color)
 
     if mouse.down(2) and hover then
         draw.rect(172,132,22,11,0,1)
         draw.rect(172,132,22,11,1,11)
-        draw.font(inttotext("%03i",char),174,133,8,18)
+        draw.text(inttotext("%03i",char),174,133,1,18)
     endif
 enddef
 
 def fontCanvas(x,y)
     quote = getChar(34)
     '
-    draw.font("!"+quote+"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI",0,170,8,15)
-    'draw.font("!"+ getChar(241)+ "Ññª!",0,178,8,14)
-    draw.font("JKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~",0,178,8,14)
-    draw.font("ñÑ©óò",0,186,8,12)
-    draw.font(getChar(mouse.x()),120,186,8,12)
+    draw.text("!"+quote+"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHI",0,170,1,15)
+    'draw.text("!"+ getChar(241)+ "Ññª!",0,178,1,14)
+    draw.text("JKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~",0,178,1,14)
+    draw.text("ñÑ©óò",0,186,1,12)
+    draw.text(getChar(mouse.x()),120,186,1,12)
     for ch = 33 to 254
         fontChar(x,y,ch)
     next
@@ -139,30 +139,29 @@ def draw()
     cls(0)
     fontCanvas(184,8)
     drawCanvas(4,4)
-for b = 0 to 7
-    g = getFontByte(lastFontChar,b)
-    draw.font(intToText("%i",g),4+b*20,150,8,15)
-next
+
+    draw.text(intToText("%i",lastFontChar),55,150,1,15)
+
 
     ui.buttonW = 20
     if ui.button(160,32, "<") then
         setBinary(lastFontChar)
     endif
     if ui.button(160,48, ">") then
-        setFontChar(lastFontChar, getBinary(0),getBinary(1),getBinary(2),getBinary(3),getBinary(4),getBinary(5),getBinary(6),getBinary(7))
-        renderFont()
+        setSprite(lastFontChar, getBinary(0),getBinary(1),getBinary(2),getBinary(3),getBinary(4),getBinary(5),getBinary(6),getBinary(7))
+        updatefont()
     endif
 
     ui.buttonW = 50
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
 
     fontspace = ui.slider(fontspace,20,188,20,20)
-    setfontspacing(fontspace -5)
+    setfontspacing(fontspace)
     'draw.rect(172,132,22,11,0,1)
     'draw.rect(172,132,22,11,1,11)
-    'draw.text(inttotext("%03i",lastFontChar),174,133,8,18)
-    'draw.font(getchar(ccc),210,133,8,18)
-    'draw.text(getchar(ccc),210,140,8,18)
+    'draw.text(inttotext("%03i",lastFontChar),174,133,1,18)
+    'draw.text(getchar(ccc),210,133,1,18)
+    'draw.text(getchar(ccc),210,140,1,18)
     'print(getchar(ccc));
     ui.drawmouse()
 

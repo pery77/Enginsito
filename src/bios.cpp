@@ -1,8 +1,7 @@
 #include "bios.h"
 
 Bios::Bios(){
-    Tools::RenderFont();
-    Tools::RenderSprites();
+    Tools::UpdateFont();
 }
 
 Bios::~Bios(){}

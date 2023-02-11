@@ -19,17 +19,41 @@ Color palette[16]{
 {249,255,242,255}
 };
 
-
-
-
-
-
-
-
-
-
-
-DataBytes fontData[223]{
+MetaSprites metaSprites[255] {}; 
+DataBytes memoryData[256]{ 
+    {0,0,0,0,0,0,0,0}, // 0
+    {0,0,0,0,0,0,0,0}, // 1
+    {0,0,0,0,0,0,0,0}, // 2
+    {0,0,0,0,0,0,0,0}, // 3
+    {0,0,0,0,0,0,0,0}, // 4
+    {0,0,0,0,0,0,0,0}, // 5
+    {0,0,0,0,0,0,0,0}, // 6
+    {0,0,0,0,0,0,0,0}, // 7
+    {0,0,0,0,0,0,0,0}, // 8
+    {0,0,0,0,0,0,0,0}, // 9
+    {0,0,0,0,0,0,0,0}, // 10
+    {0,0,0,0,0,0,0,0}, // 11
+    {0,0,0,0,0,0,0,0}, // 12
+    {0,0,0,0,0,0,0,0}, // 13
+    {0,0,0,0,0,0,0,0}, // 14
+    {0,0,0,0,0,0,0,0}, // 15
+    {0,0,0,0,0,0,0,0}, // 16
+    {0,0,0,0,0,0,0,0}, // 17
+    {0,0,0,0,0,0,0,0}, // 18
+    {0,0,0,0,0,0,0,0}, // 19
+    {0,0,0,0,0,0,0,0}, // 20
+    {0,0,0,0,0,0,0,0}, // 21
+    {0,0,0,0,0,0,0,0}, // 22
+    {0,0,0,0,0,0,0,0}, // 23
+    {0,0,0,0,0,0,0,0}, // 24
+    {0,0,0,0,0,0,0,0}, // 25
+    {0,0,0,0,0,0,0,0}, // 26
+    {0,0,0,0,0,0,0,0}, // 27
+    {0,0,0,0,0,0,0,0}, // 28
+    {0,0,0,0,0,0,0,0}, // 29
+    {0,0,0,0,0,0,0,0}, // 30
+    {0,0,0,0,0,0,0,0}, // 31
+    {0,0,0,0,0,0,0,0}, // 32
     {48,120,120,48,48,0,48,0},          // 33 !
     {108,108,108,0,0,0,0,0},            // 34 "
     {108,108,254,108,254,108,108,0},    // 35 #
@@ -251,18 +275,17 @@ DataBytes fontData[223]{
     {255,129,129,129,129,129,129,255},  // 
     {255,129,129,129,129,129,129,255},  // 
     {255,129,129,129,129,129,129,255},  // 
-    {0,126,126,126,126,126,126,0},      // 254 ■
-    {255,129,129,129,129,129,129,255}   // 
+    {255,129,129,129,129,129,129,255},   // 
+    {0,126,126,126,126,126,126,0}      // 255 ■
 };
-
-DataBytes spriteData [255] {};
-MetaSprites metaSprites[255] {};
 
 Font font = {0};
 
 Color userPalette[16]{};
 
 Texture spriteTexture;
+Image imgSprite;
+
 float fontSpacing = 0;
 
 void Tools::SetFontSpacing(int spacing){
@@ -295,44 +318,17 @@ void Tools::CopyPalette(){
     } 
 }
 
-void Tools::RenderFont(){
+void Tools::UpdateFont(){
 
     UnloadFont(font);
-
-    #define BIT_CHECK(a,b) ((a) & (1 << (b)))
+    RenderSprites();
 
     font.glyphCount = 223;   // Number of chars included in our default font
     font.glyphPadding = 0;   // Characters padding
     int charsHeight = 8;
     int charsWidth = 8;
-    
-    Image imFont = {
-        .data = calloc(128*128, 2),  // 2 bytes per pixel (gray + alpha)
-        .width = 128,
-        .height = 128,
-        .mipmaps = 1,
-        .format = PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA
-    };
 
-    unsigned char id = 0;
-    for (int y = 0; y < 16; y++){
-        for (int x = 0; x < 16; x++){
-            for(int l = 0; l < 8; l++){
-                
-                int pos = ((128*y+x)*8) + l * 128;
-                for (int b = 7; b >= 0; b--){
-
-                if (BIT_CHECK(fontData[id].bytes[l], b))
-                    ((unsigned short *)imFont.data)[pos+7-b] = 0xffff;
-                else 
-                    ((unsigned short *)imFont.data)[pos+7-b] = 0x00ff;
-                }
-            }           
-            id++;
-        }
-    }
-
-    font.texture = LoadTextureFromImage(imFont);
+    font.texture = spriteTexture;
     // Reconstruct charSet using charsWidth[], charsHeight, charsDivisor, glyphCount
     //------------------------------------------------------------------------------
 
@@ -343,7 +339,7 @@ void Tools::RenderFont(){
 
     for (int i = 0; i < font.glyphCount; i++)
     {
-        font.glyphs[i].value = i + 33;
+        font.glyphs[i].value = i;
 
         font.recs[i].x = (float)(i % 16 * charsWidth);
         font.recs[i].y = (float)(i / 16 * charsHeight);
@@ -355,59 +351,43 @@ void Tools::RenderFont(){
         font.glyphs[i].offsetY = 0;
         font.glyphs[i].advanceX = 0;
         // Fill character image data from fontClear data
-        font.glyphs[i].image = ImageFromImage(imFont, font.recs[i]);
+        font.glyphs[i].image = ImageFromImage(imgSprite, font.recs[i]);
     }
-
-    UnloadImage(imFont);
 
     font.baseSize = (int)font.recs[0].height;
 }
 Font Tools::GetFont(){
     return font;
 }
-void Tools::SaveFont(){
-    for (int i = 0; i<223; i++){
+void Tools::PrintMemoryData(){
+    for (int i = 0; i<256; i++){
         printf("{");
         for (int b = 0; b<=7; b++){
-            printf("%i%s",fontData[i].bytes[b],b == 7 ? "":",");
+            printf("%i%s",memoryData[i].bytes[b],b == 7 ? "":",");
         }
-        printf("}, // %i %c\n", i+33, (char)(i+33));
+        printf("}, // %i %c\n", i, (char)(i));
     }
 }
-void Tools::SetFontChar(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
-                                unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
-                                unsigned char b7){
-    id -= 33;
-    if (id<0) id = 0;
-    if (id>223) id = 223; 
-    fontData[id].bytes[0] = b0;
-    fontData[id].bytes[1] = b1;
-    fontData[id].bytes[2] = b2;
-    fontData[id].bytes[3] = b3;
-    fontData[id].bytes[4] = b4;
-    fontData[id].bytes[5] = b5;
-    fontData[id].bytes[6] = b6;
-    fontData[id].bytes[7] = b7;
 
-}
 unsigned char Tools::GetFontByte(unsigned int id, unsigned char byte){
-    id -= 33;
-    if (id<0) id = 0;
-    if (id>223) id = 223; 
-    return fontData[id].bytes[byte];
+    id = IntClamp(id, 0 , 255);
+    return memoryData[id].bytes[byte];
 }
 
 void Tools::RenderSprites(){
 
     #define BIT_CHECK(a,b) ((a) & (1 << (b)))
-    UnloadTexture(spriteTexture);
-    Image imgSprite = {
-        .data = calloc(128*128, 2),  // 2 bytes per pixel (gray + alpha)
-        .width = 128,
-        .height = 128,
-        .mipmaps = 1,
-        .format = PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA
-    };
+    //UnloadTexture(spriteTexture);
+    //UnloadImage(imgSprite);
+    if (imgSprite.data == 0x0){
+        imgSprite = {
+            .data = calloc(128*128, 2),  // 2 bytes per pixel (gray + alpha)
+            .width = 128,
+            .height = 128,
+            .mipmaps = 1,
+            .format = PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA
+        };
+    }
 
     unsigned char id = 0;
     for (int y = 0; y < 16; y++){
@@ -417,7 +397,7 @@ void Tools::RenderSprites(){
                 int pos = ((128*y+x)*8) + l * 128;
                 for (int b = 7; b >= 0; b--){
 
-                if (BIT_CHECK(spriteData[id].bytes[l], b))
+                if (BIT_CHECK(memoryData[id].bytes[l], b))
                     ((unsigned short *)imgSprite.data)[pos+7-b] = 0xffff;
                 else 
                     ((unsigned short *)imgSprite.data)[pos+7-b] = 0x00ff;
@@ -428,23 +408,21 @@ void Tools::RenderSprites(){
     }
 
     spriteTexture = LoadTextureFromImage(imgSprite);
-
-    UnloadImage(imgSprite);
 }
 
 void Tools::SetSprite(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
                                 unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
                                 unsigned char b7){
-    if (id<0) id = 0;
-    if (id>255) id = 255; 
-    spriteData[id].bytes[0] = b0;
-    spriteData[id].bytes[1] = b1;
-    spriteData[id].bytes[2] = b2;
-    spriteData[id].bytes[3] = b3;
-    spriteData[id].bytes[4] = b4;
-    spriteData[id].bytes[5] = b5;
-    spriteData[id].bytes[6] = b6;
-    spriteData[id].bytes[7] = b7;
+    id = IntClamp(id, 0, 255);
+
+    memoryData[id].bytes[0] = b0;
+    memoryData[id].bytes[1] = b1;
+    memoryData[id].bytes[2] = b2;
+    memoryData[id].bytes[3] = b3;
+    memoryData[id].bytes[4] = b4;
+    memoryData[id].bytes[5] = b5;
+    memoryData[id].bytes[6] = b6;
+    memoryData[id].bytes[7] = b7;
 
 }
 
@@ -452,9 +430,8 @@ Texture Tools::GetSpriteTexture(){
     return spriteTexture;
 }
 unsigned char Tools::GetSpriteByte(unsigned int id, unsigned char byte){
-    if (id<0) id = 0;
-    if (id>255) id = 225; 
-    return spriteData[id].bytes[byte];
+    id = IntClamp(id, 0, 255);
+    return memoryData[id].bytes[byte];
 }
 
 void Tools::AddMetaSprite(unsigned char id,unsigned char postition, unsigned char sprite_id, unsigned char offset_x, unsigned char offset_y, 

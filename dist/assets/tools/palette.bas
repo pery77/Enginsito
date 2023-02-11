@@ -48,11 +48,11 @@ def colorBox(id)
         draw.rect(x,y,19,16,1,15)
     ENDIF
 
-    draw.font(intToText("%02i",id), x+4, y+20, 1, 15)
+    draw.text(intToText("%02i",id), x+4, y+20, 1, 15)
 enddef
 
 def colorBoxSelector(y)
-    draw.font(intToText("Color: %02i",selectedColor), 2, y+1, 1, 15)
+    draw.text(intToText("Color: %02i",selectedColor), 2, y+1, 1, 15)
     draw.rect(78,y,80,10,1, 15)
     draw.rect(79,y+1,78,8,0, selectedColor)
     
@@ -85,9 +85,9 @@ def drawKnobs(x,y)
     redK = ui.knob(redK,x,y, 0,255)
     greenK = ui.knob(greenK,x+sp,y, 0,255)
     blueK = ui.knob(blueK,x+sp+sp,y,0,255)
-    draw.font("RED",x-12,y+18,1,15)
-    draw.font("GREEN",x-20+sp,y+18,1,15)
-    draw.font("BLUE",x-14+sp+sp,y+18,1,15)
+    draw.text("RED",x-12,y+18,1,15)
+    draw.text("GREEN",x-20+sp,y+18,1,15)
+    draw.text("BLUE",x-14+sp+sp,y+18,1,15)
 enddef
 
 def draw()

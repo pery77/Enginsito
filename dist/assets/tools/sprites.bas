@@ -82,7 +82,7 @@ def drawSheet(x,y)
         drawsprite(sp,x,y)
     next
 
-    draw.font(intToText("%03i" ,selectedSprite),136,4,8,11)
+    draw.text(intToText("%03i" ,selectedSprite),136,4,1,11)
 
 enddef
 
@@ -111,7 +111,7 @@ DEF pixelCanvas(x, y, offSetX, offsetY)
     draw.rect(x,y,pixelSize,pixelSize,1,color)
 
     IF mouse.down(2) THEN
-        draw.font(intToText("%i",id),x+2,y+2,8,7)
+        draw.text(intToText("%i",id),x+2,y+2,1,7)
     ENDIF
 
 
@@ -126,7 +126,7 @@ DEF drawCanvas(x,y)
     NEXT
 
     FOR j = 0 to 7
-        draw.font(intToText("%03i",getBinary(j)),x+132,4 + y + j * 16,8,11)
+        draw.text(intToText("%03i",getBinary(j)),x+132,4 + y + j * 16,1,11)
     NEXT
 
 ENDDEF
