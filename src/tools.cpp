@@ -558,10 +558,8 @@ std::stringstream Tools::GetFiles(const char *path) {
 
     for(auto& p : std::filesystem::directory_iterator(current_path)){
         if (p.is_regular_file()){
-            std::string file = p.path().stem().string();
-            std::string ext = p.path().extension().string();
-            ext = ToUpper((char*)ext.c_str());
-            if (ext == PROGRAM_EXTENSION)
+            std::string file = p.path().stem().string();   
+            if (IsFileExtension(p.path().filename().string().c_str(), PROGRAM_EXTENSION))
                 result  << file << "\n";
         }
     }

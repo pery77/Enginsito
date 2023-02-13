@@ -37,7 +37,9 @@ void dropFile(){
 int main(int argc, char *argv[]){
 
     IniManager* config = new IniManager();
-    FileWatcher* fw = new FileWatcher{"./assets/", 3.0f};
+    std::stringstream ss;
+    ss << "./" << ASSETS_FOLDER << "/";
+    FileWatcher* fw = new FileWatcher{ss.str(), 3.0f};
 
     const int windowWidth = GAME_SCREEN_W * config->size;
     const int windowHeight = GAME_SCREEN_H * config->size;

@@ -49,9 +49,8 @@ enddef
 'renderSprites()
 
 selectedSprite = 0
-rotation = 0
-h=0
-v=0
+selectedMeta = 0
+
 def drawSprite(id,x,y)
     col = 8
 
@@ -69,15 +68,15 @@ def drawSprite(id,x,y)
     
     if id = selectedSprite then
         col = 13
-        draw.rect(x,y,8,8,0,0)
+        draw.rect(x,y,8,8,0,1)
     endif
 
-    draw.sprite(id, x , y, col, rotation + (h*8) + (v*16))
+    draw.sprite(id, x , y, col)
 
 enddef
 
 def drawSheet(x,y)
-    draw.rect(x,y,128,128,0,1)
+    draw.rect(x,y,128,128,0,0)
     for sp = 0 to 255
         drawsprite(sp,x,y)
     next
@@ -87,7 +86,7 @@ def drawSheet(x,y)
 enddef
 
 DEF pixelCanvas(x, y, offSetX, offsetY)
-    color = 1
+    color = 2
     id=offSetX+(offSetY*8)
 
     x = x + offSetX*pixelSize;
@@ -131,6 +130,11 @@ DEF drawCanvas(x,y)
 
 ENDDEF
 
+DEF drawMeta(x,y)
+    draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 0, 0)
+    draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 2, 4)
+ENDDEF
+
 setSprite(0,255,128,191,176,160,160,160,160)
 renderSprites()
 
@@ -144,32 +148,35 @@ addmetasprite(1,0,2,0,0,9,0)
 addmetasprite(1,1,1,0,0,15,0)
 
 
-
-
-
+ui.buttonW = 20
 DEF draw()
-    cls(2)
+    cls(1)
     drawSheet(4,4)
-    drawCanvas(164,4)
+    IF meta THEN
+        drawMeta(164,4)
+        selectedMeta = ui.slider(selectedMeta,30,140,255,255)
+        
+    ELSE 
+        drawCanvas(164,4)
+        if ui.button(138,36, "<") then
+            setSprite(selectedSprite, getBinary(0),getBinary(1),getBinary(2),getBinary(3),getBinary(4),getBinary(5),getBinary(6),getBinary(7))
+            renderSprites()
+        endif
+    ENDIF
 
-    ui.buttonW = 20
-    if ui.button(138,16, "<") then
-        setSprite(selectedSprite, getBinary(0),getBinary(1),getBinary(2),getBinary(3),getBinary(4),getBinary(5),getBinary(6),getBinary(7))
-        renderSprites()
-    endif
-    if ui.button(138,48, ">") then
+    if ui.button(138,16, ">") then
         setBinary(selectedSprite)
     endif
 
-    h = ui.toogle(h,18,170,5)
-    v = ui.toogle(v,30,170,5)
-    rotation = ui.slider(rotation,18,140,32,32)
-draw.rect(82,150,8,8,0,1)
 
-    draw.meta(0,82,150)
-    for x = 0 to 40
-        for y = 10 to 20
-            draw.meta(1,x*8,y*8)
+    meta = ui.toogle(meta,140,56,4)
+
+    draw.meta(selectedMeta,30,176)
+    xstep = ui.slider(xstep,30,152,8,4)
+    ystep = ui.slider(ystep,30,164,8,4)
+    for x = 0 to 15
+        for y = 0 to 3
+            draw.meta(selectedMeta,x*xstep*8 + 72 ,y*ystep*8 + 156)
         next
     next
     

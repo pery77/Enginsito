@@ -15,7 +15,7 @@
 #define GAME_FPS            60
 #define GAME_RATIO          1.6
 #define ASSETS_FOLDER       "assets"
-#define PROGRAM_EXTENSION   ".BAS"
+#define PROGRAM_EXTENSION   ".bas"
 #define BOOT_FILE           "assets/boot.txt"
 
 struct Vector2i {
