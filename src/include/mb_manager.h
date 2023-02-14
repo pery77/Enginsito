@@ -98,6 +98,7 @@ class MBManager{
         static int drawSprite(struct mb_interpreter_t* s, void** l);
         static int drawMetaSprite(struct mb_interpreter_t* s, void** l);
         static int addMetaSprite(struct mb_interpreter_t* s, void** l);
+        static int getMetaSprite(struct mb_interpreter_t* s, void** l);
         static int setSprite(struct mb_interpreter_t* s, void** l);
         static int renderSprites(struct mb_interpreter_t* s, void** l);
         static int getSpriteByte(struct mb_interpreter_t* s, void** l);

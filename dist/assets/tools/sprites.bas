@@ -133,11 +133,18 @@ ENDDEF
 DEF drawMeta(x,y)
     draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 0, 0)
     draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 2, 4)
-
+    print "Meta " 
+    print selectedMeta;
     fo = getMetaSprite(selectedMeta)
     if (fo) then
-        for i = 0 to len(fo)-1
-            print fo(i);
+        for i = 0 to 7
+            print "sp " 
+            print i;
+            for s = 0 to 4
+                print fo((i*5)+s)
+                print ","
+            next
+         print "-";
         Next
     endif
 
@@ -151,9 +158,10 @@ addmetasprite(0,0,0,0,0,4,0)
 addmetasprite(0,1,0,8,0,11,1)
 addmetasprite(0,2,0,8,8,7,2)
 addmetasprite(0,3,0,0,8,6,3)
+addmetasprite(0,7,200,201,202,16,3)
 
-addmetasprite(1,0,2,0,0,9,0)
-addmetasprite(1,1,1,0,0,15,0)
+addmetasprite(1,0,2,0,0,9,9)
+addmetasprite(1,1,1,0,0,15,9)
 
 
 ui.buttonW = 20
@@ -161,7 +169,7 @@ DEF draw()
     cls(1)
     drawSheet(4,4)
     IF meta THEN
-        drawMeta(164,4)
+        'drawMeta(164,4)
         selectedMeta = ui.slider(selectedMeta,30,140,255,255)
         
     ELSE 
@@ -175,6 +183,7 @@ DEF draw()
 
     if ui.button(138,16, ">") then
         setBinary(selectedSprite)
+        drawMeta(164,4)
     endif
 
 
@@ -189,7 +198,6 @@ DEF draw()
         next
     next
     
-
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
     ui.drawmouse()
 

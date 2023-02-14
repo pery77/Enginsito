@@ -438,6 +438,19 @@ void Tools::ClearMetaSprite(unsigned char id){
     }   
 }
 
+std::array<int,40> Tools::GetMetaSprite(unsigned char id){
+    std::array<int,40> r;
+    int c = 0;
+    for (unsigned char i=0; i<8 ; i++){
+        for (unsigned char b=0; b<5 ; b++){
+            r[c++] = (int) metaSprites[id].sprites[i].bytes[b];
+        }
+    }
+
+    return r;
+}
+
+
 void Tools::DrawSprite(int id, int x, int y, int col, int flag){
     float rot = 0;
 	Vector2 pivot {0,0};

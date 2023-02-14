@@ -103,6 +103,7 @@ int MBManager::OpenBas(const char * file){
 
 
 	mb_reg_fun(bas, addMetaSprite);
+	mb_reg_fun(bas, getMetaSprite);
 	mb_reg_fun(bas, setColor);
 	mb_reg_fun(bas, getColor);
 	mb_reg_fun(bas, restorePalette);
@@ -1307,6 +1308,40 @@ int MBManager::addMetaSprite(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
    	Tools::AddMetaSprite(id,pos,spriteId,x,y,col,flag);
+
+	return result;
+}
+int MBManager::getMetaSprite(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	int id = 0;
+	
+	void* arr = 0;
+	int d[1] = { 0 };
+	int i = 0;
+
+	mb_value_t val;
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_int(s, l, &id));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	d[0] = 40;
+	mb_init_array(s, l, MB_DT_REAL, d, 1, &arr);
+
+	std::array<int,40> r = Tools::GetMetaSprite(id);
+    for(int i=0;i<40;i++)
+    {
+		val.type = MB_DT_INT;
+		val.value.integer = r[i];
+		d[0] = i;
+		mb_set_array_elem(s, l, arr, d, 1, val);
+    }
+	
+	val.type = MB_DT_ARRAY;
+	val.value.array = arr;
+	mb_check(mb_push_value(s, l, val));
 
 	return result;
 }
