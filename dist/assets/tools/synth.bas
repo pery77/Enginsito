@@ -39,7 +39,7 @@ DEF sKey(id)
         ENDIF
         DRAW.rect(x,y1,20,size,0,12)
         DRAW.rect(x,y1,20,size,1,borderCol)
-        DRAW.font(intToText("%i", code),x,y + size,8,12)
+        DRAW.text(intToText("%i", code),x,y + size,1,12)
     ENDIF
     IF t = 1 THEN
         
@@ -90,7 +90,7 @@ DEF soundButton(id,x,y,size)
     DRAW.rect(x,y,20,size,0,12)
     DRAW.rect(x,y,20,size,3,selColor)
     DRAW.rect(x+1,y+1,20-2,size-2,2,borderCol)
-    DRAW.text(intToText("%02i", x/20),x+4,y + size+1,8,14)
+    DRAW.text(intToText("%02i", x/20),x+4,y + size+1,1,14)
 
     DRAW.circle(x+10,y+5,3,1,selColor)
     DRAW.circle(x+10,y+5,3,0,14)
@@ -126,8 +126,8 @@ DEF drawWave(x,y)
     NEXT
 
     Draw.rect(x-17,y-7,60,60,2,0)
-    Draw.rect( x-4, y-12,30,10,0,1)
-    Draw.text("Wave", x-2, y-12,8,0)
+    Draw.rect( x-4, y-12,30,10,0,2)
+    Draw.text("Wave", x-2, y-12,1,0)
 
 ENDDEF
 

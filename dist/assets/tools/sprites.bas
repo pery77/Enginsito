@@ -131,23 +131,16 @@ DEF drawCanvas(x,y)
 ENDDEF
 
 DEF drawMeta(x,y)
-    draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 0, 0)
+    'draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 0, 0)
     draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 2, 4)
-    print "Meta " 
-    print selectedMeta;
+
     fo = getMetaSprite(selectedMeta)
     if (fo) then
         for i = 0 to 7
-            print "sp " 
-            print i;
-            for s = 0 to 4
-                print fo((i*5)+s)
-                print ","
-            next
-         print "-";
+            s = i*5
+            draw.sprite(fo(s), fo(s+1) + x, fo(s+2) + y, fo(s+3), fo(s+4))
         Next
     endif
-
 ENDDEF
 
 setSprite(0,255,128,191,176,160,160,160,160)
@@ -160,8 +153,8 @@ addmetasprite(0,2,0,8,8,7,2)
 addmetasprite(0,3,0,0,8,6,3)
 addmetasprite(0,7,200,201,202,16,3)
 
-addmetasprite(1,0,2,0,0,9,9)
-addmetasprite(1,1,1,0,0,15,9)
+addmetasprite(1,0,1,0,0,9,0)
+addmetasprite(1,1,2,0,0,15,0)
 
 
 ui.buttonW = 20
@@ -183,8 +176,8 @@ DEF draw()
 
     if ui.button(138,16, ">") then
         setBinary(selectedSprite)
-        drawMeta(164,4)
     endif
+        drawMeta(164,4)
 
 
     meta = ui.toogle(meta,140,56,4)
