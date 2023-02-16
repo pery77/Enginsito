@@ -329,11 +329,6 @@ void Tools::UpdateFont(){
     int charsWidth = 8;
 
     font.texture = spriteTexture;
-    // Reconstruct charSet using charsWidth[], charsHeight, charsDivisor, glyphCount
-    //------------------------------------------------------------------------------
-
-    // Allocate space for our characters info data
-    // NOTE: This memory must be freed at end! --> Done by CloseWindow()
     font.glyphs = (GlyphInfo *)RL_MALLOC(font.glyphCount*sizeof(GlyphInfo));
     font.recs = (Rectangle *)RL_MALLOC(font.glyphCount*sizeof(Rectangle));
 
@@ -346,11 +341,9 @@ void Tools::UpdateFont(){
         font.recs[i].width = (float)charsWidth;
         font.recs[i].height = (float)charsHeight;
 
-        // NOTE: On default font character offsets and xAdvance are not required
         font.glyphs[i].offsetX = 0;
         font.glyphs[i].offsetY = 0;
         font.glyphs[i].advanceX = 0;
-        // Fill character image data from fontClear data
         font.glyphs[i].image = ImageFromImage(imgSprite, font.recs[i]);
     }
 
@@ -434,7 +427,7 @@ void Tools::AddMetaSprite(unsigned char id,unsigned char postition, unsigned cha
 
 void Tools::ClearMetaSprite(unsigned char id){
     for ( unsigned char i=0; i<8 ; i++){
-        metaSprites[id].sprites[i] = (SpriteData){0, 0, 0, 0, 0};
+        metaSprites[id].sprites[i] = (SpriteData){0, 0, 0, 0, 255};
     }   
 }
 
@@ -452,6 +445,7 @@ std::array<int,40> Tools::GetMetaSprite(unsigned char id){
 
 
 void Tools::DrawSprite(int id, int x, int y, int col, int flag){
+    if (flag == 255) return;
     float rot = 0;
 	Vector2 pivot {0,0};
 
@@ -485,10 +479,8 @@ void Tools::DrawSprite(int id, int x, int y, int col, int flag){
 void Tools::DrawMetaSprite(int id, int x, int y){
     for ( unsigned char i=0; i<7 ; i++){
         SpriteData mp = metaSprites[id].sprites[i];
-        int stop = mp.bytes[0] + mp.bytes[1] + mp.bytes[2] + mp.bytes[3] + mp.bytes[4];
-        if (stop == 0) break;
-        
-        //DrawSprite((int)mp.bytes[0], (int)mp.bytes[1] + x, (int)mp.bytes[2] + y, (int)mp.bytes[3], (int)mp.bytes[4]);
+    
+        if (mp.bytes[4] == 255) break;
         DrawSprite(mp.bytes[0], mp.bytes[1] + x, mp.bytes[2] + y, mp.bytes[3], mp.bytes[4]);
     }
 }

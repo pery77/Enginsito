@@ -130,15 +130,28 @@ DEF drawCanvas(x,y)
 
 ENDDEF
 
+DEF metaSprite(id,s x, y,col,flag)
+    draw.sprite(s, x, y, col, flag)
+    draw.text(intToText("%i",id),x+12,y,1,15)
+    if(ui.button(x+20,y,"C")) then
+        addmetasprite(selectedMeta,id,selectedSprite,0,0,rnd(0,15),0)
+    endif
+ENDDEF
+
 DEF drawMeta(x,y)
-    'draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 0, 0)
+    draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 0, 0)
     draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 2, 4)
 
     fo = getMetaSprite(selectedMeta)
     if (fo) then
         for i = 0 to 7
-            s = i*5
-            draw.sprite(fo(s), fo(s+1) + x, fo(s+2) + y, fo(s+3), fo(s+4))
+            xx = 4 + x
+            yy = 4 + y + i*10
+            sp = i * 5
+            s = fo(sp)
+            col = fo(sp+3)
+            flag = fo(sp+4)
+            metaSprite(i,s,xx,yy,col,flag)
         Next
     endif
 ENDDEF
@@ -162,7 +175,7 @@ DEF draw()
     cls(1)
     drawSheet(4,4)
     IF meta THEN
-        'drawMeta(164,4)
+        drawMeta(164,4)
         selectedMeta = ui.slider(selectedMeta,30,140,255,255)
         
     ELSE 
@@ -177,7 +190,6 @@ DEF draw()
     if ui.button(138,16, ">") then
         setBinary(selectedSprite)
     endif
-        drawMeta(164,4)
 
 
     meta = ui.toogle(meta,140,56,4)

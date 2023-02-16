@@ -2,6 +2,9 @@
 
 Bios::Bios(){
     Tools::UpdateFont();
+    for(int i = 0; i<255; i++){
+        Tools::ClearMetaSprite(i);
+    }
 }
 
 Bios::~Bios(){}
