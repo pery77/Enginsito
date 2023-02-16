@@ -190,4 +190,35 @@ def knob(v,x,y,min,max)
     return v
 enddef
 
+def colorPiker(x,y,currentColor)
+    border = 12
+    id= x + (y * 200)
+    
+    modePick = 0
+
+    hover = isHover(x,y,8,8)
+    if hover and modePick = 0 then
+        border = 15
+        if (mouse.down(0)) then
+            modePick = 1
+        endif
+    endif
+
+    if modePick = 1 then
+        drawColorPickerBox(x,y)
+    else
+        draw.rect(x,y,8,8,0,currentColor)
+        draw.rect(x,y,8,8,1,border)
+    endif
+    return currentColor
+
+enddef
+
+def drawColorPickerBox(x,y)
+    for c = 0 to 15
+        draw.rect(x + (c mod 4)*8,y + floor(c / 4) * 8,7,7,0,c)
+    next
+enddef
+
+
 endclass

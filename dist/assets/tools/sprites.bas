@@ -31,7 +31,7 @@ def setBinary(selectedSprite)
             counter = counter + 1
         wend
         while counter < 8
-             pixelList((7 - counter) + l*8) = 0
+            pixelList((7 - counter) + l*8) = 0
             counter = counter + 1
         wend
         counter = 0
@@ -133,6 +133,10 @@ ENDDEF
 DEF metaSprite(id,s x, y,col,flag)
     draw.sprite(s, x, y, col, flag)
     draw.text(intToText("%i",id),x+12,y,1,15)
+    col2 = ui.colorPiker(x+42,y+1, col)
+    if col2 <> col then
+    addmetasprite(selectedMeta,id,selectedSprite,0,0,col2,flag)
+    endif
     if(ui.button(x+20,y,"C")) then
         addmetasprite(selectedMeta,id,selectedSprite,0,0,rnd(0,15),0)
     endif
@@ -156,8 +160,8 @@ DEF drawMeta(x,y)
     endif
 ENDDEF
 
-setSprite(0,255,128,191,176,160,160,160,160)
-renderSprites()
+'setSprite(0,255,128,191,176,160,160,160,160)
+'renderSprites()
 
 'id, postition, sprite_id, offset_x,  offset_y,  color, flags
 addmetasprite(0,0,0,0,0,4,0)
@@ -165,9 +169,6 @@ addmetasprite(0,1,0,8,0,11,1)
 addmetasprite(0,2,0,8,8,7,2)
 addmetasprite(0,3,0,0,8,6,3)
 addmetasprite(0,7,200,201,202,16,3)
-
-addmetasprite(1,0,1,0,0,9,0)
-addmetasprite(1,1,2,0,0,15,0)
 
 
 ui.buttonW = 20
@@ -190,8 +191,7 @@ DEF draw()
     if ui.button(138,16, ">") then
         setBinary(selectedSprite)
     endif
-
-
+    
     meta = ui.toogle(meta,140,56,4)
 
     draw.meta(selectedMeta,30,176)

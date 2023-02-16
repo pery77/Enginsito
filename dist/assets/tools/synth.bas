@@ -1,7 +1,7 @@
 import "assets/lib/ui.bas"
     envA = 0
-    envD = 30
-    envS = 0
+    envD = 0
+    envS = 30
     envR = 40
     wave= 0
 
@@ -9,11 +9,17 @@ def tick()
 
  k = key.get()
     IF k <> 0 THEN 
-        sfx.set(0,wave,k-30,envA,envD,envS,envR)
-        sfx.play(0, 1000)
+        'sfx.set(0,wave,35,envA,envD,envS,envR)
+        'sfx.play(0, 1000)
     ENDIF
-    IF key.pressed(32) THEN sfx.play(0, 1000) ENDIF  
-    IF key.pressed(65) THEN sfx.play(1, 1000) ENDIF  
+    IF key.pressed(32) THEN 
+        sfx.play(0, 1000) 
+    ENDIF  
+    IF key.pressed(65) THEN 
+        sfx.set(0,wave,35,envA,envD,envS,envR)
+        sfx.play(0, 1000) 
+    ENDIF  
+
 enddef
 
 soundOn = false
@@ -130,14 +136,24 @@ DEF drawWave(x,y)
     Draw.text("Wave", x-2, y-12,1,0)
 
 ENDDEF
-
+frame = 0
 def draw()
     cls(2)
+    frame = frame +1
     time = time + delta()
+    if frame > 30 then
+        print cc;
+        'sfx.set(0,wave,35+cc,envA,envD,envS,envR)
+        sfx.play(0, 1000 + (cc*83.33333333))
+        cc=cc+1
+        if cc > 12 then cc = 0 endif
+        frame = 0
+    endif
+
     draw.rect(0,0,320,9,0,0)
     draw.text(intToText("T: %06i",time), 0, 0, 1, 15)
-    draw.text(intToText("D: %04i", delta()), 54, 0, 1, 15)
-    draw.text(intToText(">: %03i", envD ), 160, 0, 1, 15)
+    'draw.text(intToText("D: %04i", delta()), 54, 0, 1, 15)
+    'draw.text(intToText(">: %03i", envD ), 160, 0, 1, 15)
 
     'IF button (2,16,"play") THEN print sfx.play(0,1000) ENDIF
 '
