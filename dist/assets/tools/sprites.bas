@@ -135,7 +135,7 @@ DEF metaSprite(id,s x, y,col,flag)
     draw.text(intToText("%i",id),x+12,y,1,15)
     col2 = ui.colorPiker(x+42,y+1, col)
     if col2 <> col then
-    addmetasprite(selectedMeta,id,selectedSprite,0,0,col2,flag)
+    addmetasprite(selectedMeta,id,s,0,0,col2,flag)
     endif
     if(ui.button(x+20,y,"C")) then
         addmetasprite(selectedMeta,id,selectedSprite,0,0,rnd(0,15),0)

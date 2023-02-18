@@ -15,6 +15,12 @@ class ui
 
     mouseWorking = false
 
+    mustDrawColorPiker = false
+    colorPickSelected = -1
+    idPickSelected = -1
+    colorPikerX = 0
+    colorPikerY = 0
+
 def drawPalette()
     y=200
     for i = 0 to 15
@@ -32,6 +38,7 @@ def drawPalette()
 enddef
 
 def drawMouse()
+    if (mustDrawColorPiker) then drawColorPickerBox() endif
     draw.triangle(mouse.x(), mouse.y(), mouse.x(), mouse.y()+10, mouse.x()+7, mouse.y()+7, 0, mouseColorBorder)
     draw.triangle(mouse.x(), mouse.y(), mouse.x(), mouse.y()+9, mouse.x()+7, mouse.y()+7, 1, mouseColor)
 enddef
@@ -190,33 +197,64 @@ def knob(v,x,y,min,max)
     return v
 enddef
 
+'Color Picker
+
 def colorPiker(x,y,currentColor)
     border = 12
     id= x + (y * 200)
     
-    modePick = 0
-
     hover = isHover(x,y,8,8)
-    if hover and modePick = 0 then
+    if hover then
         border = 15
-        if (mouse.down(0)) then
-            modePick = 1
+        if (mouse.released(0)) and mustDrawColorPiker = false then
+            mustDrawColorPiker = true
+            colorPikerX = x
+            colorPikerY = y
+            colorPickSelected = currentColor;
+            idPickSelected = id
         endif
     endif
 
-    if modePick = 1 then
-        drawColorPickerBox(x,y)
-    else
-        draw.rect(x,y,8,8,0,currentColor)
-        draw.rect(x,y,8,8,1,border)
-    endif
+    if (currentColor <> colorPickSelected and idPickSelected = id) then
+        currentColor = colorPickSelected
+        colorPickSelected = -1
+        idPickSelected = -1
+    endif 
+
+    draw.rect(x,y,8,8,0,currentColor)
+    draw.rect(x,y,8,8,1,border)
+   
     return currentColor
 
 enddef
 
-def drawColorPickerBox(x,y)
+def colorButton(x,y,c)
+    border = 1
+    hover = isHover(x ,y, 6, 6)
+
+    if hover THEN
+        border = 15
+        if mouse.pressed(0) then
+            colorPickSelected = c
+            mustDrawColorPiker = false
+        endif
+    endif
+
+    draw.rect(x ,y,6,6,0,c)
+    draw.rect(x-1 ,y-1,8,8,1,border)
+enddef
+
+def drawColorPickerBox()
+    x = colorPikerX
+    y = colorPikerY
+    hover = isHover(x,y,32,32)
+    if not hover then
+        mustDrawColorPiker = false
+    endif
+    draw.rect(x-1,y-1,34,34,1,15)
+    draw.rect(x,y,32,32,0,0)
     for c = 0 to 15
-        draw.rect(x + (c mod 4)*8,y + floor(c / 4) * 8,7,7,0,c)
+        colorButton(x + (c mod 4)*8+1, y + floor(c / 4) * 8+1, c)
     next
 enddef
 
