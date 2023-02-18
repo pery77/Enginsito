@@ -4,7 +4,7 @@ import "assets/lib/ui.bas"
     envS = 30
     envR = 40
     wave= 0
-
+freq = 35
 def tick()
 
  k = key.get()
@@ -15,8 +15,8 @@ def tick()
     IF key.pressed(32) THEN 
         sfx.play(0, 1000) 
     ENDIF  
-    IF key.pressed(65) THEN 
-        sfx.set(0,wave,35,envA,envD,envS,envR)
+    IF key.pressed(65) THEN
+        sfx.set(0,wave,freq,envA,envD,envS,envR)
         sfx.play(0, 1000) 
     ENDIF  
 
@@ -142,9 +142,9 @@ def draw()
     frame = frame +1
     time = time + delta()
     if frame > 30 then
-        print cc;
+        'print cc;
         'sfx.set(0,wave,35+cc,envA,envD,envS,envR)
-        sfx.play(0, 1000 + (cc*83.33333333))
+        'sfx.play(0, 1000 + (cc*83.33333333))
         cc=cc+1
         if cc > 12 then cc = 0 endif
         frame = 0
@@ -172,6 +172,9 @@ def draw()
     envD = ui.knob(envD,112,36,0,100)
     envS = ui.knob(envS,144,36,0,100)
     envR = ui.knob(envR,176,36,0,100)
+    freq = ui.knob(freq,220,36,0,255)
+
+
 
     lx = 77
     ly = 88

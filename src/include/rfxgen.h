@@ -66,7 +66,7 @@
 // Defines and Macros
 //----------------------------------------------------------------------------------
 #if !defined(RFXGEN_GEN_SAMPLE_RATE)
-    #define RFXGEN_GEN_SAMPLE_RATE 44100    // Default sample rate
+    #define RFXGEN_GEN_SAMPLE_RATE 22050    // Default sample rate
 #endif
 
 #define RFXGEN_GEN_SAMPLE_SIZE 32           // The sample size of generated waves (32 bit -> float)

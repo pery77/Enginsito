@@ -4,7 +4,7 @@
 #include "rfxgen.h"
 #include "tsf.h"
 
-#define SAMPLERATE               44100
+#define SAMPLERATE               22050
 #define SAMPLESIZE               16
 #define CHANNELS                  2
 #define MAX_SAMPLES               512
