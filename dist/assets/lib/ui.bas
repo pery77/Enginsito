@@ -258,5 +258,57 @@ def drawColorPickerBox()
     next
 enddef
 
+'input number
+inputNumberEditID = -1
+def inputNumber(n,x,y)
+    col = 12
+    colb = 0 
+    id= x + (y * 200)
+
+    hover = isHover(x,y,26,11) 
+    if hover then
+        col=15
+        colb=1
+        if mouse.released(0) then
+            inputNumberEditID = id
+        endif
+    endif
+
+    if not hover and inputNumberEditID = id then
+        inputNumberEditID = -1
+    endif
+
+    draw.rect(x,y,26,11,0,colb)
+    draw.rect(x,y,26,11,1,col)
+
+    if inputNumberEditID <> id then
+        draw.text(intToText("%03i",n),x+2,y+2,1,col)
+    else
+        n = inputMode(n)
+    endif
+    return n
+enddef
+
+inputCharPos = 0
+inputValue = 0
+def inputMode(n)
+    c = key.char()
+    k = key.get()
+    IF c >= 48 and c <= 57 THEN 
+        if inputCharPos > 0 then
+            inputValue = inputValue * 10
+        endif
+        inputValue = c-48 + inputValue
+        inputCharPos = inputCharPos + 1
+
+        print inputValue;
+    ENDIF
+    if k = 257 or k = 335  then
+        n = inputValue;
+        inputCharPos = 1
+        inputValue = 0
+    endif    
+    return n
+enddef
 
 endclass

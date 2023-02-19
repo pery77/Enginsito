@@ -130,32 +130,39 @@ DEF drawCanvas(x,y)
 
 ENDDEF
 
-DEF metaSprite(id, s, x, y,col,flag)
-    draw.sprite(s, x, y, col, flag)
-    draw.text(intToText("%i",id),x+12,y,1,15)
-    col2 = ui.colorPiker(x+42,y+1, col)
+DEF metaSprite(id, x, y, ms, sp)
+    sId = ms(sp)
+    sx = ms(sp+1)
+    sy = ms(sp+2)
+    col = ms(sp+3)
+    flag = ms(sp+4)
+
+    draw.sprite(sId, x-1, y+1, col, flag)
+    if(ui.button(x+9,y,intToText(">%i",id))) then
+        addmetasprite(selectedMeta, id, selectedSprite, sx, sy, 15, 0)
+    endif
+    col2 = ui.colorPiker(x+31,y+2, col)
     if col2 <> col then
-        addmetasprite(selectedMeta,id,s,0,0,col2,flag)
+        addmetasprite(selectedMeta,id,sId,sx,sy,col2,flag)
     endif
-    if(ui.button(x+20,y,intToText(">%i",id))) then
-        addmetasprite(selectedMeta,id,selectedSprite,0,0,rnd(0,15),0)
+    sx2 = ui.inputNumber(sx,x+41,y)
+    if sx2 <> sx then
+        addmetasprite(selectedMeta,id,sId,sx2,sy,col2,flag)
     endif
+    ui.inputNumber(sy,x+68,y)
+    ui.inputNumber(flag,x+95,y)
 ENDDEF
 
 DEF drawMeta(x,y)
     draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 0, 0)
     draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 2, 4)
-
     fo = getMetaSprite(selectedMeta)
     if (fo) then
         for i = 0 to 7
             xx = 4 + x
             yy = 4 + y + i*10
             sp = i * 5
-            s = fo(sp)
-            col = fo(sp+3)
-            flag = fo(sp+4)
-            metaSprite(i,s,xx,yy,col,flag)
+            metaSprite(i,xx,yy,fo,sp)
         Next
     endif
 ENDDEF
