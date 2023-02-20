@@ -160,8 +160,8 @@ int main(int argc, char *argv[]){
         if (currentState == Running){
             basic->tick();
             if(GetFrameTime()>10.0f) {
-                currentState = Off;
-                basic->CloseBas();
+                //currentState = Off;
+                //basic->CloseBas();
                 printf("Bad framerate!\n");
             }
         }

@@ -392,7 +392,7 @@ void Tools::RenderSprites(){
             id++;
         }
     }
-
+    UnloadTexture(spriteTexture);
     spriteTexture = LoadTextureFromImage(imgSprite);
 }
 

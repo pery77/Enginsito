@@ -149,8 +149,14 @@ DEF metaSprite(id, x, y, ms, sp)
     if sx2 <> sx then
         addmetasprite(selectedMeta,id,sId,sx2,sy,col2,flag)
     endif
-    ui.inputNumber(sy,x+68,y)
-    ui.inputNumber(flag,x+95,y)
+    sy2 = ui.inputNumber(sy,x+68,y)
+    if sy2 <> sy then
+        addmetasprite(selectedMeta,id,sId,sx,sy2,col2,flag)
+    endif
+    flag2 = ui.inputNumber(flag,x+95,y)
+    if flag2 <> flag then
+        addmetasprite(selectedMeta,id,sId,sx,sy,col2,flag2)
+    endif
 ENDDEF
 
 DEF drawMeta(x,y)
@@ -212,6 +218,5 @@ DEF draw()
     
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
     ui.drawmouse()
-
 
 ENDDEF

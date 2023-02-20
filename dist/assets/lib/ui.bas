@@ -260,6 +260,7 @@ enddef
 
 'input number
 inputNumberEditID = -1
+inputFrame = 0
 def inputNumber(n,x,y)
     col = 12
     colb = 0 
@@ -285,6 +286,10 @@ def inputNumber(n,x,y)
         draw.text(intToText("%03i",n),x+2,y+2,1,col)
     else
         n = inputMode(n)
+        inputFrame = inputFrame + 1
+        if inputFrame > 30 then col = 0 else col = 14 endif
+        if inputFrame > 60 then inputFrame = 0 endif
+        draw.text(intToText("%03i",n),x+2,y+2,1, col)
     endif
     return n
 enddef
@@ -300,14 +305,18 @@ def inputMode(n)
         endif
         inputValue = c-48 + inputValue
         inputCharPos = inputCharPos + 1
-
-        print inputValue;
-    ENDIF
-    if k = 257 or k = 335  then
+        
         n = inputValue;
-        inputCharPos = 1
+    ENDIF
+    if k = 257 or k = 335 or inputCharPos > 3 then
+        n = inputValue;
+        inputCharPos = 0
         inputValue = 0
+        inputNumberEditID = -1
     endif    
+    if n>255 then 
+        n = 255
+    endif
     return n
 enddef
 
