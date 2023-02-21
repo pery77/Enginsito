@@ -1,6 +1,7 @@
 #include "bios.h"
 
 Bios::Bios(){
+    Tools::LoadMemory("bios.bin");
     Tools::UpdateFont();
     for(int i = 0; i<255; i++){
         Tools::ClearMetaSprite(i);
@@ -24,7 +25,7 @@ void Bios::LoadBoot(){
 }
 
 void Bios::Update(){
-    ClearBackground(Tools::GetFixedColor(backColor));
+    ClearBackground(Tools::GetColor(backColor));
 
     delta += GetFrameTime();
     cursor = (delta > 0.5) == 0 ? "_" : "";
@@ -36,8 +37,8 @@ void Bios::Update(){
     bool overLine = false;
 
     while (std::getline(ss, temp)){
-        DrawTextEx(Tools::GetFont(), temp.c_str(), (Vector2){0, lineY}, 8, 0, Tools::GetFixedColor(frontColor));
-        //DrawText(temp.c_str(), 0, lineY, 8, Tools::GetFixedColor(frontColor));
+        DrawTextEx(Tools::GetFont(), temp.c_str(), (Vector2){0, lineY}, 8, 0, Tools::GetColor(frontColor));
+        //DrawText(temp.c_str(), 0, lineY, 8, Tools::GetBiosColor(frontColor));
         lineY += 9;
         if (lineY > 184){   
             overLine = true;
@@ -49,8 +50,8 @@ void Bios::Update(){
     int key = GetKeyPressed();
 
     if (!overLine){
-        DrawTextEx(Tools::GetFont(),TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor), (Vector2){0, lineY}, 8, 0,Tools::GetFixedColor(frontColor));
-        //DrawText(TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor), 0, lineY, 8,Tools::GetFixedColor(frontColor));
+        DrawTextEx(Tools::GetFont(),TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor), (Vector2){0, lineY}, 8, 0,Tools::GetColor(frontColor));
+        //DrawText(TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor), 0, lineY, 8,Tools::GetBiosColor(frontColor));
         
         if (key != 0){
             if (key == 257) { //Enter
@@ -68,7 +69,7 @@ void Bios::Update(){
         }
     }
     else{
-        DrawTextEx(Tools::GetFont(),"Press Enter to continue.",(Vector2){0,lineY},8,0,Tools::GetFixedColor(frontColor));
+        DrawTextEx(Tools::GetFont(),"Press Enter to continue.",(Vector2){0,lineY},8,0,Tools::GetBiosColor(frontColor));
         if (IsKeyReleased(KEY_ENTER))
             screenLines.erase(0, screenLines.find("\n") + 1);
     }

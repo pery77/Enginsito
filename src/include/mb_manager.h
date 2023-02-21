@@ -64,9 +64,12 @@ class MBManager{
         static int delta(struct mb_interpreter_t* s, void** l);
         static int setColor(struct mb_interpreter_t* s, void** l);
         static int getColor(struct mb_interpreter_t* s, void** l);
-        static int restorePalette(struct mb_interpreter_t* s, void** l);
         static int getFiles(struct mb_interpreter_t* s, void** l);
         static int getFolders(struct mb_interpreter_t* s, void** l);
+        static int peek(struct mb_interpreter_t* s, void** l);
+        static int poke(struct mb_interpreter_t* s, void** l);
+        static int dumpMemory(struct mb_interpreter_t* s, void** l);
+        static int loadMemory(struct mb_interpreter_t* s, void** l);
 
         static int saveFile(struct mb_interpreter_t* s, void** l);
         //Input

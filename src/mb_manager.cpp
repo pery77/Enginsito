@@ -74,6 +74,10 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, setSprite);
 	mb_reg_fun(bas, renderSprites);
 	mb_reg_fun(bas, getSpriteByte);
+	mb_reg_fun(bas, peek);
+	mb_reg_fun(bas, poke);
+	mb_reg_fun(bas, dumpMemory);
+	mb_reg_fun(bas, loadMemory);
 
 
 	mb_begin_module(bas, "KEY");
@@ -112,7 +116,6 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, getMetaSprite);
 	mb_reg_fun(bas, setColor);
 	mb_reg_fun(bas, getColor);
-	mb_reg_fun(bas, restorePalette);
 	mb_reg_fun(bas, measureText);
 	mb_reg_fun(bas, getFiles);
 	mb_reg_fun(bas, getFolders);
@@ -782,16 +785,6 @@ int MBManager::getColor(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
-int MBManager::restorePalette(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	mb_check(mb_attempt_close_bracket(s, l));
-
-	Tools::CopyPalette();
-	return result;
-}
 
 int MBManager::getFiles(struct mb_interpreter_t* s, void** l) {
 	int result = MB_FUNC_OK;
@@ -1349,6 +1342,68 @@ int MBManager::getMetaSprite(struct mb_interpreter_t* s, void** l){
 	val.value.array = arr;
 	mb_check(mb_push_value(s, l, val));
 
+	return result;
+}
+int MBManager::peek(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int dir;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &dir));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	mb_check(mb_push_int(s, l, Tools::Peek(dir)));
+
+	return result;
+}
+int MBManager::poke(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int dir,value;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &dir));
+			mb_check(mb_pop_int(s, l, &value));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	Tools::Poke(dir,value);
+
+	return result;
+}
+
+int MBManager::dumpMemory(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	char* path = 0;
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_string(s, l, &path));
+	mb_check(mb_attempt_close_bracket(s, l));
+	
+	Tools::DumpMemory(path);
+	
+	return result;
+}
+int MBManager::loadMemory(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	char* path = 0;
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_string(s, l, &path));
+	mb_check(mb_attempt_close_bracket(s, l));
+	
+	Tools::LoadMemory(path);
+	
 	return result;
 }
 

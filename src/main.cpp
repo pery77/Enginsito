@@ -121,7 +121,7 @@ int main(int argc, char *argv[]){
         //Interpreter
         if (IsKeyReleased(KEY_F5) || bios->ShouldRun){ 
             bios->ShouldRun = false;
-            Tools::CopyPalette();
+
             if (currentState == Running){
                 basic->end();
             }
@@ -183,9 +183,9 @@ int main(int argc, char *argv[]){
                     basic->draw();
                     break;
                 case Paused:
-                    DrawRectangle(0,88,320,12,Tools::GetFixedColor(15));
-                    DrawRectangle(0,89,320,10,Tools::GetFixedColor(1));
-                    DrawTextEx(Tools::GetFont(), pauseMessage,(Vector2){160 - pauseMessageSize, 90},8,0,Tools::GetFixedColor(15));
+                    DrawRectangle(0,88,320,12,Tools::GetBiosColor(15));
+                    DrawRectangle(0,89,320,10,Tools::GetBiosColor(1));
+                    DrawTextEx(Tools::GetFont(), pauseMessage,(Vector2){160 - pauseMessageSize, 90},8,0,Tools::GetBiosColor(15));
                     break;    
                 default:
                     break;

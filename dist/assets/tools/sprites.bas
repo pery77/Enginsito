@@ -1,5 +1,7 @@
 import "assets/lib/ui.bas"
 
+'loadMemory("Test.hex")
+'dumpMemory("bios.bin")
 pixelSize = 16
 pixelList = list(0 to 63)
 for i = 0 to 63
@@ -22,6 +24,7 @@ enddef
 def setBinary(selectedSprite)    
     for l = 0 to 7
         g = getSpriteByte(selectedSprite,l)
+        'g= peek((selectedSprite * 8) + 48 + l)
         while g > 0
             pixelList((7 - counter) + l*8) = 0
             color = 0
@@ -186,7 +189,7 @@ ENDDEF
 
 ui.buttonW = 20
 DEF draw()
-    cls(1)
+    cls(0)
     drawSheet(4,4)
     IF meta THEN
         drawMeta(164,4)

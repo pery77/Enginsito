@@ -50,7 +50,7 @@ typedef struct MetaSprites{
 class Tools{
     public:
         static Color GetColor(int color);
-        static Color GetFixedColor(int color);
+        static Color GetBiosColor(int color);
         static Color SetColor(int color, int r, int g, int b);
         static void CopyPalette();
 
@@ -91,4 +91,9 @@ class Tools{
 
         static void SetFontSpacing(int spacing);
         static float GetFontSpacing();
+
+        static void DumpMemory(const char *path);
+        static void LoadMemory(const char *path);
+        static unsigned char Peek(unsigned int dir);
+        static void Poke(unsigned int dir,unsigned char value);
 };

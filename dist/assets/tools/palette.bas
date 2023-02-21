@@ -11,7 +11,7 @@ def load(file)
 
 enddef
 
-
+import "assets/lib/palettes/gray.bas"
 
 import "assets/lib/ui.bas"
 
