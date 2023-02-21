@@ -1,4 +1,5 @@
 #include "tools.h"
+unsigned char MainMemory[4096]{};
 
 Color palette[16]{
 {32,32,38,255},

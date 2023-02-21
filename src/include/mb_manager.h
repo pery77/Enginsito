@@ -5,6 +5,7 @@
 #include <sstream>
 #include <assert.h>
 #include "tools.h"
+#include "postProcessing.h"
 
 class MBManager{
 
@@ -13,7 +14,7 @@ class MBManager{
         void* context = NULL;
         const char* basFile;
 
-        MBManager();
+        MBManager(PostProcessing* postProcessing);
         ~MBManager();
 
         void init();
@@ -102,4 +103,7 @@ class MBManager{
         static int setSprite(struct mb_interpreter_t* s, void** l);
         static int renderSprites(struct mb_interpreter_t* s, void** l);
         static int getSpriteByte(struct mb_interpreter_t* s, void** l);
+
+        //CRT
+        static int crtEnabled(struct mb_interpreter_t* s, void** l);
 };

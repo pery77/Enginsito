@@ -2,10 +2,12 @@
 #include <assert.h>
 
 AudioManager* audioR;
+PostProcessing* postProcessingR;
 
-MBManager::MBManager(){
+MBManager::MBManager(PostProcessing* postProcessing){
 	nullArg[0].type = MB_DT_NIL;
 	audioR = new AudioManager();
+	postProcessingR = postProcessing;
 }
 
 MBManager::~MBManager(){
@@ -56,6 +58,10 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "SPRITE", drawSprite);
 		mb_register_func(bas, "META", drawMetaSprite);
 		
+	mb_end_module(bas);
+
+	mb_begin_module(bas, "CRT");
+		mb_register_func(bas, "ENABLED", crtEnabled);
 	mb_end_module(bas);
 
 	mb_reg_fun(bas, intToText);
@@ -1343,5 +1349,21 @@ int MBManager::getMetaSprite(struct mb_interpreter_t* s, void** l){
 	val.value.array = arr;
 	mb_check(mb_push_value(s, l, val));
 
+	return result;
+}
+
+int MBManager::crtEnabled(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int value;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &value));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	postProcessingR->SetState(value == 0 ? false : true);
 	return result;
 }

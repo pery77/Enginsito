@@ -26,6 +26,8 @@ class PostProcessing{
     void RenderBlur();
     void RenderFinal();
 
+    bool enabled = true;
+
     RenderTexture2D mainRender;
     float uTime;
     float uTest;
@@ -38,6 +40,8 @@ class PostProcessing{
 
     void UpdateGameScreenRects();
     void FullScreen();
+
+    void SetState(bool newState);
 
 	float screenScale;
 	float previusWindowsWidth;

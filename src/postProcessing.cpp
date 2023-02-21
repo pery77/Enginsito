@@ -47,46 +47,54 @@ void PostProcessing::setUpShaders(){
 }
 
 void PostProcessing::RenderMain(){
-    BeginTextureMode(bufferTexture);
+    if (enabled)
+        BeginTextureMode(bufferTexture);
+    
     ClearBackground(BLACK);
         DrawTexturePro(mainRender.texture, gameRect, 
                         (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height},
                         { 0, 0 }, 0.0f, WHITE); 
-    EndTextureMode();
+    if (enabled)
+        EndTextureMode();
 }
 
 void PostProcessing::RenderBlur(){
 
-    BeginShaderMode(blurShader);
-        SetShaderValue(blurShader, resolutionLoc, &resolution, SHADER_UNIFORM_VEC2);
-        for (auto blur : blurPasses){
-            SetShaderValue(blurShader, pass, &blur.passType, SHADER_UNIFORM_INT);
-            SetShaderValue(blurShader, offsetLoc, &blur.offset, SHADER_UNIFORM_FLOAT);
-            BeginTextureMode(bufferTexture);
-                DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
-                                            (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height}, 
-                                            { 0, 0 }, 0.0f, WHITE);   
-            EndTextureMode();
-        }
-    EndShaderMode();
+    if (enabled){
+        BeginShaderMode(blurShader);
+            SetShaderValue(blurShader, resolutionLoc, &resolution, SHADER_UNIFORM_VEC2);
+            for (auto blur : blurPasses){
+                SetShaderValue(blurShader, pass, &blur.passType, SHADER_UNIFORM_INT);
+                SetShaderValue(blurShader, offsetLoc, &blur.offset, SHADER_UNIFORM_FLOAT);
+                BeginTextureMode(bufferTexture);
+                    DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
+                                                (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height}, 
+                                                { 0, 0 }, 0.0f, WHITE);   
+                EndTextureMode();
+            }
+        EndShaderMode();
+    }
 }
 
 void PostProcessing::RenderFinal(){
+    if (enabled){
 
-    BeginShaderMode(crtShader);
-        SetShaderValue(crtShader, resolutionCRTLoc, &resolution, SHADER_UNIFORM_VEC2);
-        SetShaderValue(crtShader, uTimeLoc, &uTime, SHADER_UNIFORM_FLOAT);
-        SetShaderValue(crtShader, testLoc, &uTest, SHADER_UNIFORM_FLOAT);
-        SetShaderValue(crtShader, curvatureLoc, &uCurvature, SHADER_UNIFORM_FLOAT);
-        
-        SetShaderValue(crtShader, blurPowerLoc, &uBlurPower, SHADER_UNIFORM_FLOAT);
-        SetShaderValue(crtShader, blurFactorLoc, &uBlurFactor, SHADER_UNIFORM_FLOAT);
+        BeginShaderMode(crtShader);
+            SetShaderValue(crtShader, resolutionCRTLoc, &resolution, SHADER_UNIFORM_VEC2);
+            SetShaderValue(crtShader, uTimeLoc, &uTime, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(crtShader, testLoc, &uTest, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(crtShader, curvatureLoc, &uCurvature, SHADER_UNIFORM_FLOAT);
+            
+            SetShaderValue(crtShader, blurPowerLoc, &uBlurPower, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(crtShader, blurFactorLoc, &uBlurFactor, SHADER_UNIFORM_FLOAT);
 
-        SetShaderValueTexture(crtShader, grilleLoc, grilleTexture);
-        SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
+            SetShaderValueTexture(crtShader, grilleLoc, grilleTexture);
+            SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
+    }
         DrawTexturePro(mainRender.texture, gameRect, gameScaledRect,
                                 { 0, 0 }, 0.0f, WHITE); 
-    EndShaderMode();
+    if(enabled)
+        EndShaderMode();
 }
 
 void PostProcessing::ReloadShaders(){
@@ -140,4 +148,9 @@ void PostProcessing::FullScreen(){
 		SetWindowSize(previusWindowsWidth, previusWindowsHeight);
 		UpdateGameScreenRects();
 	}
+}
+
+void PostProcessing::SetState(bool newState){
+    enabled = newState;
+    SetTextureFilter(mainRender.texture, enabled ? TEXTURE_FILTER_BILINEAR : TEXTURE_FILTER_POINT);
 }

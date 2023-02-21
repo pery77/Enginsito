@@ -204,7 +204,12 @@ DEF draw()
     if ui.button(138,16, ">") then
         setBinary(selectedSprite)
     endif
-    
+    if ui.button(138,60, "ON") then
+        crt.enabled(1)
+    endif
+        if ui.button(138,70, "OFF") then
+        crt.enabled(0)
+    endif
     meta = ui.toogle(meta,140,56,4)
 
     draw.meta(selectedMeta,30,176)
