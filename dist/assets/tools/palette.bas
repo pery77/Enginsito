@@ -15,10 +15,10 @@ import "assets/lib/palettes/gray.bas"
 
 import "assets/lib/ui.bas"
 
-ui.colorbase = 1
-ui.colorBaseHover = 5
-ui.colorHi = 15
-ui.colorHiHover = 14
+'ui.colorbase = 10
+'ui.colorBaseHover = 5
+'ui.colorHi = 15
+'ui.colorHiHover = 14
 ui.buttonW = 80
 
 selectedColor = 0
@@ -45,15 +45,15 @@ def colorBox(id)
     ENDIF
     
     IF selectedColor = id THEN
-        draw.rect(x,y,19,16,1,15)
+        draw.rect(x,y,19,16,1,3)
     ENDIF
 
-    draw.text(intToText("%02i",id), x+4, y+20, 1, 15)
+    draw.text(intToText("%02i",id), x+4, y+20, 1, 3)
 enddef
 
 def colorBoxSelector(y)
-    draw.text(intToText("Color: %02i",selectedColor), 2, y+1, 1, 15)
-    draw.rect(78,y,80,10,1, 15)
+    draw.text(intToText("Color: %02i",selectedColor), 2, y+1, 1, 3)
+    draw.rect(78,y,80,10,1, 3)
     draw.rect(79,y+1,78,8,0, selectedColor)
     
     for id = 0 to 15
@@ -85,9 +85,9 @@ def drawKnobs(x,y)
     redK = ui.knob(redK,x,y, 0,255)
     greenK = ui.knob(greenK,x+sp,y, 0,255)
     blueK = ui.knob(blueK,x+sp+sp,y,0,255)
-    draw.text("RED",x-12,y+18,1,15)
-    draw.text("GREEN",x-20+sp,y+18,1,15)
-    draw.text("BLUE",x-14+sp+sp,y+18,1,15)
+    draw.text("RED",x-12,y+18,1,2)
+    draw.text("GREEN",x-20+sp,y+18,1,2)
+    draw.text("BLUE",x-14+sp+sp,y+18,1,2)
 enddef
 
 def draw()

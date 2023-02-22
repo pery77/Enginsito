@@ -1,17 +1,17 @@
 class ui
 
     colorBase = 0
-    colorBaseHover = 5
-    colorHi = 12
-    colorHiHover = 15
+    colorBaseHover = 1
+    colorHi = 3
+    colorHiHover = 3
     buttonW = 50
     buttonH = 11
 
     mouseColorBorder = 0
-    mouseColor = 15
+    mouseColor = 3
 
-    colorSlider = 8
-    colorSliderHover = 13
+    colorSlider = 2
+    colorSliderHover = 3
 
     mouseWorking = false
 
@@ -30,11 +30,11 @@ def drawPalette()
         draw.text(intToText("%02i",i), x+5, y-8, 1, 0)
         draw.text(intToText("%02i",i), x+4, y-7, 1, 0)
         draw.text(intToText("%02i",i), x+4, y-9, 1, 0)
-        draw.text(intToText("%02i",i), x+4, y-8, 1, 15)
+        draw.text(intToText("%02i",i), x+4, y-8, 1, 3)
     next
     draw.rect(0,y-21,59,11,0,0)
-    draw.rect(0,y-21,59,11,1,11)
-    draw.text(intToText("%03i,%03i",mouse.x(),mouse.y()), 2, y-19, 1, 11)
+    draw.rect(0,y-21,59,11,1,2)
+    draw.text(intToText("%03i,%03i",mouse.x(),mouse.y()), 2, y-19, 1, 13)
 enddef
 
 def drawMouse()

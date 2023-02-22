@@ -33,7 +33,7 @@ class Bios{
         std::string screenLines = "*******************\n* peryEngine v0.5 *\n*                 *\n* Type HELP       *\n*******************\n\n";
 
         int backColor = 0;
-        int frontColor = 15;
+        int frontColor = 3;
         const char* cursor = "";
         
         Command lastCommand;

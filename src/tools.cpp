@@ -1,12 +1,7 @@
 #include "tools.h"
 unsigned char MainMemory[4096]{};
 
-MetaSprites metaSprites[255] {}; 
-
 Font font = {0};
-
-Color userPalette[16]{};
-
 Texture spriteTexture;
 Image imgSprite;
 
@@ -40,7 +35,7 @@ Color Tools::SetColor(int color, int r, int g, int b){
     Poke(color * 3 + 2, b);
 }
 
-void Tools::UpdateFont(){
+void Tools::InitFont(){
 
     UnloadFont(font);
     RenderSprites();
@@ -113,16 +108,16 @@ void Tools::SetSprite(unsigned int id, unsigned char b0, unsigned char b1, unsig
                                 unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
                                 unsigned char b7){
     id = IntClamp(id, 0, 255);
-    id = id * 8 + 48;
+    unsigned int dir = (id * 8) + 48;
 
-    Poke(id,     b0);
-    Poke(id + 1, b1);
-    Poke(id + 2, b2);
-    Poke(id + 3, b3);
-    Poke(id + 4, b4);
-    Poke(id + 5, b5);
-    Poke(id + 6, b6);
-    Poke(id + 7, b7);
+    Poke(dir,     b0);
+    Poke(dir + 1, b1);
+    Poke(dir + 2, b2);
+    Poke(dir + 3, b3);
+    Poke(dir + 4, b4);
+    Poke(dir + 5, b5);
+    Poke(dir + 6, b6);
+    Poke(dir + 7, b7);
 
 }
 
@@ -137,29 +132,41 @@ unsigned char Tools::GetSpriteByte(unsigned int id, unsigned char byte){
 
 void Tools::AddMetaSprite(unsigned char id,unsigned char postition, unsigned char sprite_id, unsigned char offset_x, unsigned char offset_y, 
                                             unsigned char color, unsigned char flags){
-    metaSprites[id].sprites[postition] = (SpriteData){sprite_id, offset_x, offset_y, color, flags};
+    id = IntClamp(id, 0, 63);
+    postition = IntClamp(postition, 0, 3);
+
+    unsigned int dir = 2096 + ((id * 20) + (postition * 5));
+    Poke(dir , sprite_id);
+    Poke(dir + 1, offset_x);
+    Poke(dir + 2, offset_y);
+    Poke(dir + 3, color);
+    Poke(dir + 4, flags);
 }
 
-void Tools::ClearMetaSprite(unsigned char id){
-    for ( unsigned char i=0; i<8 ; i++){
-        metaSprites[id].sprites[i] = (SpriteData){0, 0, 0, 0, 255};
+void Tools::ClearMetaSprite(unsigned char id) {
+    id = IntClamp(id, 0, 63);
+    unsigned int dir = (id * 20) + 2096;
+    for ( unsigned char i=0; i<4 ; i++) {
+        Poke(dir     + (i * 5), 0);
+        Poke(dir + 1 + (i * 5), 0);
+        Poke(dir + 2 + (i * 5), 0);
+        Poke(dir + 3 + (i * 5), 0);
+        Poke(dir + 4 + (i * 5), 255);
     }   
 }
 
-std::array<int,40> Tools::GetMetaSprite(unsigned char id){
-    std::array<int,40> r;
+std::array<int,20> Tools::GetMetaSprite(unsigned char id) {
+    id = IntClamp(id, 0, 63);
+    unsigned int dir = 2096 + (id * 20);
+    std::array<int,20> r;
     int c = 0;
-    for (unsigned char i=0; i<8 ; i++){
-        for (unsigned char b=0; b<5 ; b++){
-            r[c++] = (int) metaSprites[id].sprites[i].bytes[b];
-        }
+    for (unsigned char i=0; i<20; i++) {
+        r[c++] = (int) Peek(dir + i);
     }
-
     return r;
 }
 
-
-void Tools::DrawSprite(int id, int x, int y, int col, int flag){
+void Tools::DrawSprite(int id, int x, int y, int col, int flag) {
     if (flag == 255) return;
     float rot = 0;
 	Vector2 pivot {0,0};
@@ -191,15 +198,17 @@ void Tools::DrawSprite(int id, int x, int y, int col, int flag){
 	(Rectangle){x,y,8,8}, pivot, rot, GetColor(col));
 }
 
-void Tools::DrawMetaSprite(int id, int x, int y){
-    for ( unsigned char i=0; i<7 ; i++){
-        SpriteData mp = metaSprites[id].sprites[i];
-    
-        if (mp.bytes[4] == 255) break;
-        DrawSprite(mp.bytes[0], mp.bytes[1] + x, mp.bytes[2] + y, mp.bytes[3], mp.bytes[4]);
+void Tools::DrawMetaSprite(int id, int x, int y) {
+    id = IntClamp(id, 0, 63);
+    unsigned int dir = (id * 20) + 2096;
+
+    for ( unsigned char i=0; i<=3; i++) {
+        dir += i * 5;
+        if (Peek(dir + 4) == 255) continue;;
+        DrawSprite(Peek(dir), Peek(dir + 1) + x, Peek(dir + 2) + y, Peek(dir + 3), Peek(dir + 4));
     }
 }
-int Tools::GetVirtualMouse(bool isXAxis){   
+int Tools::GetVirtualMouse(bool isXAxis) {   
 	float screenScale = Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
 	float mouse = isXAxis ? GetMousePosition().x : GetMousePosition().y;
     float screen = isXAxis ? GetScreenWidth() : GetScreenHeight();
@@ -207,11 +216,11 @@ int Tools::GetVirtualMouse(bool isXAxis){
     float value = std::ceil((mouse - (screen - (gamescreen * screenScale)) * 0.5f) / screenScale);
     return (int)Clamp(value, 0,(float)gamescreen);
 }
-void Tools::SetVirtualMouse(int x,int y){   
+void Tools::SetVirtualMouse(int x,int y) {   
 	float screenScale = Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
     SetMousePosition(x * screenScale, y * screenScale);
 }
-bool Tools::CompareFloats(float x, float y, float epsilon){
+bool Tools::CompareFloats(float x, float y, float epsilon) {
    if(fabs(x - y) < epsilon) return true;
       return false;
 }
@@ -252,8 +261,7 @@ std::string Tools::GetCharFromCodepoint(int codepoint) {
 
     return "<?>";
 }
-std::vector<std::string> Tools::Split(const std::string& str, const char sep)
-{
+std::vector<std::string> Tools::Split(const std::string& str, const char sep) {
     std::string token; 
     std::stringstream ss(str);
     std::vector<std::string> tokens;
@@ -299,7 +307,7 @@ std::stringstream Tools::GetFolders(const char *path) {
         return result;
     }
 
-    for(auto& p : std::filesystem::directory_iterator(current_path)){
+    for(auto& p : std::filesystem::directory_iterator(current_path)) {
         if (p.is_directory()){
             std::string folder = p.path().filename().string();
             result << folder << "\n";
@@ -318,7 +326,7 @@ std::stringstream Tools::GetDir(const char *path) {
     return result;
 }
 
-bool Tools::DirExist(std::string path){
+bool Tools::DirExist(std::string path) {
     namespace fs = std::filesystem;
     const fs::path current_path = fs::current_path() / ASSETS_FOLDER / path;
     bool result = fs::exists(current_path);
@@ -326,7 +334,7 @@ bool Tools::DirExist(std::string path){
     return result;
 }
 
-bool Tools::FileExist(std::string path, std::string file){
+bool Tools::FileExist(std::string path, std::string file) {
     namespace fs = std::filesystem;
     file += PROGRAM_EXTENSION;
     const fs::path current_path = fs::current_path() / ASSETS_FOLDER / path / file;
@@ -335,17 +343,11 @@ bool Tools::FileExist(std::string path, std::string file){
     return result;
 }
 
-float Tools::Min(float a, float b){
+float Tools::Min(float a, float b) {
     return a<b ? a : b;
 }
 
-void Tools::DumpMemory(const char *path){
-//for (int i = 0; i < 256;i++){
-//    for ( int j = 0; j<8;j++){
-//
-//        MainMemory[(i * 8) + 48 + j] = memoryData[i].bytes[j];
-//    }
-//}
+void Tools::DumpMemory(const char *path) {
 
     FILE *f = fopen(path, "wb");
     if (f) {
@@ -355,7 +357,7 @@ void Tools::DumpMemory(const char *path){
     }
 }
 
-void Tools::LoadMemory(const char *path){
+void Tools::LoadMemory(const char *path) {
     FILE *f = fopen(path, "rb");
     if (f) {
         size_t r = fread(MainMemory, sizeof(MainMemory), 1, f);
@@ -364,11 +366,13 @@ void Tools::LoadMemory(const char *path){
     }
 }
 
-unsigned char Tools::Peek(unsigned int dir){
+unsigned char Tools::Peek(unsigned int dir) {
+    dir = IntClamp(dir, 0, 4096);
     return (MainMemory)[dir];
 }
 
-void Tools::Poke(unsigned int dir, unsigned char value){
+void Tools::Poke(unsigned int dir, unsigned char value) {
+    dir = IntClamp(dir, 0, 4096);
     value = IntClamp(value, 0, 255);
     MainMemory[dir] = value;
 }

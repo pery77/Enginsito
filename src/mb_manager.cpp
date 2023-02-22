@@ -671,7 +671,7 @@ int MBManager::updateFont(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 	
-	Tools::UpdateFont();
+	Tools::InitFont();
 
 	return result;
 }
@@ -1326,11 +1326,11 @@ int MBManager::getMetaSprite(struct mb_interpreter_t* s, void** l){
 		mb_check(mb_pop_int(s, l, &id));
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	d[0] = 40;
+	d[0] = 20;
 	mb_init_array(s, l, MB_DT_REAL, d, 1, &arr);
 
-	std::array<int,40> r = Tools::GetMetaSprite(id);
-    for(int i=0;i<40;i++)
+	std::array<int,20> r = Tools::GetMetaSprite(id);
+    for(int i=0;i<20;i++)
     {
 		val.type = MB_DT_INT;
 		val.value.integer = r[i];

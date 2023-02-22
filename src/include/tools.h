@@ -54,7 +54,7 @@ class Tools{
         static Color SetColor(int color, int r, int g, int b);
         static void CopyPalette();
 
-        static void UpdateFont();
+        static void InitFont();
         static Font GetFont();
         static void PrintMemoryData();
 
@@ -70,7 +70,7 @@ class Tools{
         static void AddMetaSprite(unsigned char id, unsigned char postition, unsigned char sprite_id, unsigned char offset_x, unsigned char offset_y, 
                                     unsigned char color, unsigned char flags);
         static void ClearMetaSprite(unsigned char id);
-        static std::array<int,40> GetMetaSprite(unsigned char id);
+        static std::array<int,20> GetMetaSprite(unsigned char id);
 
         static int GetVirtualMouse(bool isXAxis);
         static void SetVirtualMouse(int x,int y);

@@ -167,7 +167,7 @@ DEF drawMeta(x,y)
     draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 2, 4)
     fo = getMetaSprite(selectedMeta)
     if (fo) then
-        for i = 0 to 7
+        for i = 0 to 3
             xx = 4 + x
             yy = 4 + y + i*10
             sp = i * 5
@@ -189,7 +189,7 @@ ENDDEF
 
 ui.buttonW = 20
 DEF draw()
-    cls(0)
+    cls(1)
     drawSheet(4,4)
     IF meta THEN
         drawMeta(164,4)
@@ -200,7 +200,7 @@ DEF draw()
         if ui.button(138,36, "<") then
             setSprite(selectedSprite, getBinary(0),getBinary(1),getBinary(2),getBinary(3),getBinary(4),getBinary(5),getBinary(6),getBinary(7))
             renderSprites()
-            updatefont()
+            'updatefont()
         endif
     ENDIF
 
