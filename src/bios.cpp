@@ -3,9 +3,9 @@
 Bios::Bios(){
     Tools::LoadMemory("bios.bin");
     Tools::InitFont();
-    for(int i = 0; i<64; i++){
-        Tools::ClearMetaSprite(i);
-    }
+    //for(int i = 0; i<64; i++){
+    //    Tools::ClearMetaSprite(i);
+    //}
 }
 
 Bios::~Bios(){}

@@ -28,7 +28,7 @@ def setBinary(selectedSprite)
         while g > 0
             pixelList((7 - counter) + l*8) = 0
             color = 0
-            if (g MOD 2) <> 0 then color = 15 endif
+            if (g MOD 2) <> 0 then color = 3 endif
             pixelList((7 - counter) + l*8) = color
             g = floor(g / 2)
             counter = counter + 1
@@ -55,7 +55,7 @@ selectedSprite = 0
 selectedMeta = 0
 
 def drawSprite(id,x,y)
-    col = 8
+    col = 9
 
     x = floor(id MOD 16) * 8 + x
     y = floor(id / 16) * 8 + y
@@ -63,7 +63,7 @@ def drawSprite(id,x,y)
     hover = ui.isHover(x,y,9,9)
     if hover then
         col = 13
-        draw.rect(x,y,8,8,0,5)
+        draw.rect(x,y,8,8,0,1)
         if mouse.pressed(0) then
             selectedSprite = id
         endif
@@ -71,7 +71,7 @@ def drawSprite(id,x,y)
     
     if id = selectedSprite then
         col = 13
-        draw.rect(x,y,8,8,0,1)
+        draw.rect(x,y,8,8,0,15)
     endif
 
     draw.sprite(id, x , y, col)
@@ -84,12 +84,12 @@ def drawSheet(x,y)
         drawsprite(sp,x,y)
     next
 
-    draw.text(intToText("%03i" ,selectedSprite),136,4,1,11)
+    draw.text(intToText("%03i" ,selectedSprite),136,4,1,4)
 
 enddef
 
 DEF pixelCanvas(x, y, offSetX, offsetY)
-    color = 2
+    color = 1
     id=offSetX+(offSetY*8)
 
     x = x + offSetX*pixelSize;
@@ -102,7 +102,7 @@ DEF pixelCanvas(x, y, offSetX, offsetY)
 
     IF mouse.down(0) and hover THEN
         draw.rect(x,y,pixelSize,pixelSize,0,selectedColor)
-        pixelList(id) = 15
+        pixelList(id) = 2
     ENDIF
     IF mouse.down(1) and hover THEN
         draw.rect(x,y,pixelSize,pixelSize,0,selectedColor)
@@ -113,7 +113,7 @@ DEF pixelCanvas(x, y, offSetX, offsetY)
     draw.rect(x,y,pixelSize,pixelSize,1,color)
 
     IF mouse.down(2) THEN
-        draw.text(intToText("%i",id),x+2,y+2,1,7)
+        draw.text(intToText("%i",id),x+1,y+2,1,1)
     ENDIF
 
 
@@ -128,7 +128,7 @@ DEF drawCanvas(x,y)
     NEXT
 
     FOR j = 0 to 7
-        draw.text(intToText("%03i",getBinary(j)),x+132,4 + y + j * 16,1,11)
+        draw.text(intToText("%03i",getBinary(j)),x+132,4 + y + j * 16,1,4)
     NEXT
 
 ENDDEF
@@ -142,7 +142,7 @@ DEF metaSprite(id, x, y, ms, sp)
 
     draw.sprite(sId, x-1, y+1, col, flag)
     if(ui.button(x+9,y,intToText(">%i",id))) then
-        addmetasprite(selectedMeta, id, selectedSprite, sx, sy, 15, 0)
+        addmetasprite(selectedMeta, id, selectedSprite, sx, sy, 3, 0)
     endif
     col2 = ui.colorPiker(x+31,y+2, col)
     if col2 <> col then
@@ -164,7 +164,7 @@ ENDDEF
 
 DEF drawMeta(x,y)
     draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 0, 0)
-    draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 2, 4)
+    draw.rect(x-2, y-2, pixelSize * 8+4, pixelSize*8+4, 2, 2)
     fo = getMetaSprite(selectedMeta)
     if (fo) then
         for i = 0 to 3
@@ -181,15 +181,13 @@ ENDDEF
 
 'id, postition, sprite_id, offset_x,  offset_y,  color, flags
 'addmetasprite(0,0,0,0,0,4,0)
-'addmetasprite(0,1,0,8,0,11,1)
-'addmetasprite(0,2,0,8,8,7,2)
-'addmetasprite(0,3,0,0,8,6,3)
-'addmetasprite(0,7,200,201,202,16,3)
 
 
 ui.buttonW = 20
 DEF draw()
+'setcolor(1,0,0,0)
     cls(1)
+    'setcolor(1,20,20,20)
     drawSheet(4,4)
     IF meta THEN
         drawMeta(164,4)
