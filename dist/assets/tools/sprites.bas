@@ -28,7 +28,7 @@ def setBinary(selectedSprite)
         while g > 0
             pixelList((7 - counter) + l*8) = 0
             color = 0
-            if (g MOD 2) <> 0 then color = 3 endif
+            if (g MOD 2) <> 0 then color = 2 endif
             pixelList((7 - counter) + l*8) = color
             g = floor(g / 2)
             counter = counter + 1
@@ -191,7 +191,7 @@ DEF draw()
     drawSheet(4,4)
     IF meta THEN
         drawMeta(164,4)
-        selectedMeta = ui.slider(selectedMeta,30,140,255,255)
+        selectedMeta = ui.slider(selectedMeta,30,140,63,63)
         
     ELSE 
         drawCanvas(164,4)
