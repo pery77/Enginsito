@@ -82,24 +82,23 @@ void Tools::RenderSprites(){
             .format = PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA
         };
     }
-    //TODO: 1D FOR LOOP
-    unsigned char id = 0;
-    for (int y = 0; y < 16; y++){
-        for (int x = 0; x < 16; x++){
-            for(int l = 0; l < 8; l++){
-                
-                int pos = ((128*y+x)*8) + l * 128;
-                for (int b = 7; b >= 0; b--){
 
-                if (BIT_CHECK(Peek((id * 8) + 48 + l), b))
-                    ((unsigned short *)imgSprite.data)[pos+7-b] = 0xffff;
-                else 
-                    ((unsigned short *)imgSprite.data)[pos+7-b] = 0x00ff;
+    unsigned char id = 0;
+    for (int y = 0; y < 16; y++) {
+        for (int x = 0; x < 16; x++) {
+            for(int l = 0; l < 8; l++) {
+                int pos = ((128*y+x)*8) + l * 128;
+                for (int b = 7; b >= 0; b--) {
+                    if (BIT_CHECK(Peek((id * 8) + 48 + l), b))
+                        ((unsigned short *)imgSprite.data)[pos+7-b] = 0xffff;
+                    else 
+                        ((unsigned short *)imgSprite.data)[pos+7-b] = 0x00ff;
                 }
             }           
             id++;
         }
     }
+
     UnloadTexture(spriteTexture);
     spriteTexture = LoadTextureFromImage(imgSprite);
 }
@@ -201,10 +200,10 @@ void Tools::DrawSprite(int id, int x, int y, int col, int flag) {
 void Tools::DrawMetaSprite(int id, int x, int y) {
     id = IntClamp(id, 0, 63);
     unsigned int dir = (id * 20) + 2096;
-
     for ( unsigned char i=0; i<=3; i++) {
-        if (Peek(dir + 4) == 255) continue;;
-        DrawSprite(Peek(dir + i * 5), Peek(dir + 1 + i * 5) + x, Peek(dir + 2 + i * 5) + y, Peek(dir + 3 + i * 5), Peek(dir + 4 + i * 5));
+        if (Peek(dir + 4) == 255) continue;
+        DrawSprite(Peek(dir + i * 5), Peek(dir + 1 + i * 5) + x, Peek(dir + 2 + i * 5) + y,
+                    Peek(dir + 3 + i * 5), Peek(dir + 4 + i * 5));
     }
 }
 int Tools::GetVirtualMouse(bool isXAxis) {   
@@ -365,12 +364,12 @@ void Tools::LoadMemory(const char *path) {
     }
 }
 
-unsigned char Tools::Peek(unsigned int dir) {
+unsigned char Tools::Peek(unsigned short dir) {
     dir = IntClamp(dir, 0, 4096);
     return (MainMemory)[dir];
 }
 
-void Tools::Poke(unsigned int dir, unsigned char value) {
+void Tools::Poke(unsigned short dir, unsigned char value) {
     dir = IntClamp(dir, 0, 4096);
     value = IntClamp(value, 0, 255);
     MainMemory[dir] = value;

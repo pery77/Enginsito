@@ -94,6 +94,6 @@ class Tools{
 
         static void DumpMemory(const char *path);
         static void LoadMemory(const char *path);
-        static unsigned char Peek(unsigned int dir);
-        static void Poke(unsigned int dir,unsigned char value);
+        static unsigned char Peek(unsigned short dir);
+        static void Poke(unsigned short dir,unsigned char value);
 };
