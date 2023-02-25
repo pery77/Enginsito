@@ -12,12 +12,22 @@ import "assets/lib/ui.bas"
     vibratoD = 0
     vibratoS = 0
 
+    toneAmount = 0 
+    toneSpeed = 0
+    toneSquare = 0
+    toneDuty = 0
+
     repSp = 0
     repOf = 0
     repSw = 0
-def tick()
 
- k = key.get()
+    lpfCutoff = 255
+    lpfSweep = 0
+    lpfRes = 0
+    hpfCutoff = 0
+    hpfSweep = 0
+def tick()
+    k = key.get()
     IF k <> 0 THEN 
         'sfx.set(0,wave,35,envA,envD,envS,envR)
         'sfx.play(0, 1000)
@@ -26,10 +36,12 @@ def tick()
         sfx.play(0) 
     ENDIF  
     IF key.pressed(65) THEN
-        sfx.env(0,envA,envT,envP,envR)
-        sfx.freq(0,fSlide,fDelta,vibratoD,vibratoS)
-        sfx.repeat(0,repSp, repOf,repSw)
-        sfx.render(0,wave,freq)
+        sfx.env(0, envA, envT, envP, envR)
+        sfx.freq(0, fSlide, fDelta, vibratoD, vibratoS)
+        sfx.tone(0, toneAmount, toneSpeed, toneSquare, toneDuty)
+        sfx.repeat(0, repSp, repOf, repSw)
+        sfx.filter(0, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
+        sfx.render(0, wave, freq)
         sfx.play(0) 
     ENDIF  
 
@@ -177,7 +189,7 @@ def draw()
 
     'p = slider(p,80,16,128,255)
 
-    instrument = ui.slider(instrument,17,85,41,16)
+    'instrument = ui.slider(instrument,17,85,41,16)
 
     drawWave(20,30)
 
@@ -185,19 +197,28 @@ def draw()
     envT = ui.knob(envT,112,36,0,255)
     envP = ui.knob(envP,144,36,0,255)
     envR = ui.knob(envR,176,36,0,255)
+    
     freq = ui.knob(freq,220,36,0,255)
-
 
     fSlide = ui.knob(fSlide,80, 78,-127,127)
     fDelta = ui.knob(fDelta,112,78,-127,127)
     vibratoD = ui.knob(vibratoD,144,78,0,255)
     vibratoS = ui.knob(vibratoS,176,78,0,255)
 
+    toneAmount = ui.knob(toneAmount,80, 120,-127,127)
+    toneSpeed = ui.knob(toneSpeed,112,120,0,255)
+    toneSquare = ui.knob(toneSquare,144,120,0,255)
+    toneDuty = ui.knob(toneDuty,176, 120,-127,127)
 
-    'repSp = ui.knob(repSp,144,78,0,255)
-    'repOf = ui.knob(repOf,176,78,0,255)
-    'repSw = ui.knob(repSw,208,78,0,255)
+    repSp = ui.knob(repSp,220,78,0,255)
+    repOf = ui.knob(repOf,252,78,-127,127)
+    repSw = ui.knob(repSw,284,78,-127,127)
 
+    lpfCutoff = ui.knob(lpfCutoff,80, 162, 0, 255)
+    lpfSweep = ui.knob(lpfSweep,112,162,-127,127)
+    lpfRes = ui.knob(lpfRes,144,162,0,255)
+    hpfCutoff = ui.knob(hpfCutoff,176, 162,-127,127)
+    hpfSweep = ui.knob(hpfSweep,208, 162,-127,127)
 
     'lx = 77
     'ly = 88
@@ -215,13 +236,13 @@ def draw()
     'draw.line(lx2+s,ly2,lx3,ly,2,14)
 
 
-    c = ui.toogle(c,5,110,3)
-    e = ui.toogle(e,20,110,3)
-IF c THEN
-    synthKeys()
-    ELSE
-    drawSoundButtons()
-ENDIF
+    'c = ui.toogle(c,5,110,3)
+    'e = ui.toogle(e,20,110,3)
+    'IF c THEN
+    '    synthKeys()
+    '    ELSE
+    '    drawSoundButtons()
+    'ENDIF
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
     IF NOT ui.mouseWorking THEN  ui.drawmouse() ENDIF
 
