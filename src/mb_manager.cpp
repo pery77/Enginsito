@@ -107,7 +107,12 @@ int MBManager::OpenBas(const char * file){
 	mb_end_module(bas);
 
 	mb_begin_module(bas, "SFX");
-		mb_register_func(bas, "SET", sfxSet); 
+		mb_register_func(bas, "RENDER", sfxRender); 
+		mb_register_func(bas, "ENV", sfxEnv); 
+		mb_register_func(bas, "FREQ", sfxFreq); 
+		mb_register_func(bas, "TONE", sfxTone); 
+		mb_register_func(bas, "REPEAT", sfxRepeat); 
+		mb_register_func(bas, "FILTER", sfxFilter); 
 		mb_register_func(bas, "PLAY", sfxPlay);
 	mb_end_module(bas);
 
@@ -1196,7 +1201,7 @@ int MBManager::stopNote(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
-int MBManager::sfxSet(struct mb_interpreter_t* s, void** l){
+int MBManager::sfxRender(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
@@ -1210,6 +1215,23 @@ int MBManager::sfxSet(struct mb_interpreter_t* s, void** l){
 		mb_check(mb_pop_int(s, l, &id));
 		mb_check(mb_pop_int(s, l, &wave));
 		mb_check(mb_pop_int(s, l, &freq));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SFXRender(id, wave, freq);
+
+	return result;
+}
+int MBManager::sfxEnv(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    int id;
+	int att, susT, susP, dec;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &id));
 		mb_check(mb_pop_int(s, l, &att));
 		mb_check(mb_pop_int(s, l, &susT));
 		mb_check(mb_pop_int(s, l, &susP));
@@ -1217,28 +1239,117 @@ int MBManager::sfxSet(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXSet(id, wave, freq, att, susP, susT, dec);
+    audioR->SFXEnv(id, att, susT, susP, dec);
 
 	return result;
 }
+int MBManager::sfxFreq(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    int id;
+	int slide, delta, vibratoD, vibratoS;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &id));
+		mb_check(mb_pop_int(s, l, &slide));
+		mb_check(mb_pop_int(s, l, &delta));
+		mb_check(mb_pop_int(s, l, &vibratoD));
+		mb_check(mb_pop_int(s, l, &vibratoS));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SFXFreq(id, slide, delta, vibratoD, vibratoS);
+
+	return result;
+
+}
+
+int MBManager::sfxTone(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    int id;
+	int ammount, speed, square, duty;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &id));
+		mb_check(mb_pop_int(s, l, &ammount));
+		mb_check(mb_pop_int(s, l, &speed));
+		mb_check(mb_pop_int(s, l, &square));
+		mb_check(mb_pop_int(s, l, &duty));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SFXTone(id, ammount, speed, square, duty);
+
+	return result;
+}
+
+int MBManager::sfxRepeat(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    int id;
+	int  speed, offset, sweep;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &id));
+		mb_check(mb_pop_int(s, l, &speed));
+		mb_check(mb_pop_int(s, l, &offset));
+		mb_check(mb_pop_int(s, l, &sweep));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SFXRepeat(id, speed, offset, sweep);
+
+	return result;
+}
+
+int MBManager::sfxFilter(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    int id;
+	int lpfCuttoff, lpfSweep, lpfRes, hpfCuttoff, hpfSweep;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &id));
+		mb_check(mb_pop_int(s, l, &lpfCuttoff));
+		mb_check(mb_pop_int(s, l, &lpfSweep));
+		mb_check(mb_pop_int(s, l, &lpfRes));
+		mb_check(mb_pop_int(s, l, &hpfCuttoff));
+		mb_check(mb_pop_int(s, l, &hpfSweep));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SFXFilter(id, lpfCuttoff, lpfSweep, lpfRes, hpfCuttoff, hpfSweep);
+
+	return result;
+}
+
 int MBManager::sfxPlay(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
     int id;
-    int fq;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
 		mb_check(mb_pop_int(s, l, &id));
-		mb_check(mb_pop_int(s, l, &fq));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXPlay(id,fq);
+    audioR->SFXPlay(id);
 
 	return result;
 }
+
+//Sprites
 int MBManager::drawSprite(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);

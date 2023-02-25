@@ -12,6 +12,7 @@
 #define MAX_WAVE_SLOTS            16
 #define WAIT_TICKS                30
 
+#define AUDIO_STEP                 0.00390625
 class AudioManager {
     public:
 
@@ -36,8 +37,13 @@ class AudioManager {
     void Stop();
     void GetPresets();
     
-    void SFXSet(int id, int waveType,int freq,int att, int susT, int susP, int dec);
-    void SFXPlay(int id, int fq);
+    void SFXPlay(unsigned char id);
+    void SFXRender(unsigned char id, unsigned char waveType,unsigned char freq);
+    void SFXEnv(unsigned char id, unsigned char att, unsigned char susT, unsigned char susP, unsigned char dec);
+    void SFXFreq(unsigned char id, unsigned char slide, unsigned char delta, unsigned char vibratoD, unsigned char vibratoS);
+    void SFXTone(unsigned char id, unsigned char amount, unsigned char speed, unsigned char square, unsigned char duty);
+    void SFXRepeat(unsigned char id, unsigned char speed, unsigned char offset, unsigned char sweep);
+    void SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, unsigned char lpfRes, unsigned char hpfCutoff, unsigned char hpfSweep);
 
     private:
     const char* sequence = "";

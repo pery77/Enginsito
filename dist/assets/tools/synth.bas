@@ -1,10 +1,20 @@
 import "assets/lib/ui.bas"
-    envA = 0
-    envD = 0
-    envS = 30
-    envR = 40
     wave= 0
-freq = 35
+    freq = 76
+
+    envA = 0
+    envT = 76
+    envP = 0
+    envR = 102
+
+    fSlide = 0
+    fDelta = 0
+    vibratoD = 0
+    vibratoS = 0
+
+    repSp = 0
+    repOf = 0
+    repSw = 0
 def tick()
 
  k = key.get()
@@ -13,11 +23,14 @@ def tick()
         'sfx.play(0, 1000)
     ENDIF
     IF key.pressed(32) THEN 
-        sfx.play(0, 1000) 
+        sfx.play(0) 
     ENDIF  
     IF key.pressed(65) THEN
-        sfx.set(0,wave,freq,envA,envD,envS,envR)
-        sfx.play(0, 1000) 
+        sfx.env(0,envA,envT,envP,envR)
+        sfx.freq(0,fSlide,fDelta,vibratoD,vibratoS)
+        sfx.repeat(0,repSp, repOf,repSw)
+        sfx.render(0,wave,freq)
+        sfx.play(0) 
     ENDIF  
 
 enddef
@@ -138,7 +151,7 @@ DEF drawWave(x,y)
 ENDDEF
 frame = 0
 def draw()
-    cls(2)
+    cls(1)
     frame = frame +1
     time = time + delta()
     if frame > 30 then
@@ -168,28 +181,38 @@ def draw()
 
     drawWave(20,30)
 
-    envA = ui.knob(envA,80,36,0,100)
-    envD = ui.knob(envD,112,36,0,100)
-    envS = ui.knob(envS,144,36,0,100)
-    envR = ui.knob(envR,176,36,0,100)
+    envA = ui.knob(envA,80,36,0,255)
+    envT = ui.knob(envT,112,36,0,255)
+    envP = ui.knob(envP,144,36,0,255)
+    envR = ui.knob(envR,176,36,0,255)
     freq = ui.knob(freq,220,36,0,255)
 
 
+    fSlide = ui.knob(fSlide,80, 78,-127,127)
+    fDelta = ui.knob(fDelta,112,78,-127,127)
+    vibratoD = ui.knob(vibratoD,144,78,0,255)
+    vibratoS = ui.knob(vibratoS,176,78,0,255)
 
-    lx = 77
-    ly = 88
-    h = 20
-    w = 20
-    s = 20
-    lx1 = lx+envA * (w / 100)
-    ly1 = ly-h
-    lx2 = lx1 + envD  * (w / 100)
-    ly2 = h + ly1 - envS * (h / 100)
-    lx3 = lx2 + envR * (w / 100) + s
-    draw.line(lx,ly,lx1,ly1,2,14)
-    draw.line(lx1,ly1,lx2,ly2,2,14)
-    draw.line(lx2,ly2,lx2+s,ly2,2,14)
-    draw.line(lx2+s,ly2,lx3,ly,2,14)
+
+    'repSp = ui.knob(repSp,144,78,0,255)
+    'repOf = ui.knob(repOf,176,78,0,255)
+    'repSw = ui.knob(repSw,208,78,0,255)
+
+
+    'lx = 77
+    'ly = 88
+    'h = 20
+    'w = 20
+    's = 20
+    'lx1 = lx+envA * (w / 100)
+    'ly1 = ly-h
+    'lx2 = lx1 + envD  * (w / 100)
+    'ly2 = h + ly1 - envS * (h / 100)
+    'lx3 = lx2 + envR * (w / 100) + s
+    'draw.line(lx,ly,lx1,ly1,2,14)
+    'draw.line(lx1,ly1,lx2,ly2,2,14)
+    'draw.line(lx2,ly2,lx2+s,ly2,2,14)
+    'draw.line(lx2+s,ly2,lx3,ly,2,14)
 
 
     c = ui.toogle(c,5,110,3)

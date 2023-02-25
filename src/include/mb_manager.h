@@ -95,7 +95,13 @@ class MBManager{
         static int setSequence(struct mb_interpreter_t* s, void** l); 
         static int playNote(struct mb_interpreter_t* s, void** l);
         static int stopNote(struct mb_interpreter_t* s, void** l);
-        static int sfxSet(struct mb_interpreter_t* s, void** l);
+        
+        static int sfxRender(struct mb_interpreter_t* s, void** l);
+        static int sfxEnv(struct mb_interpreter_t* s, void** l);
+        static int sfxFreq(struct mb_interpreter_t* s, void** l);
+        static int sfxTone(struct mb_interpreter_t* s, void** l);
+        static int sfxRepeat(struct mb_interpreter_t* s, void** l);
+        static int sfxFilter(struct mb_interpreter_t* s, void** l);
         static int sfxPlay(struct mb_interpreter_t* s, void** l);
 
         //Sprites
