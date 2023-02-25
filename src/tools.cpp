@@ -142,18 +142,6 @@ void Tools::AddMetaSprite(unsigned char id,unsigned char postition, unsigned cha
     Poke(dir + 4, flags);
 }
 
-void Tools::ClearMetaSprite(unsigned char id) {
-    id = IntClamp(id, 0, 63);
-    unsigned int dir = (id * 20) + 2096;
-    for ( unsigned char i=0; i<4 ; i++) {
-        Poke(dir     + (i * 5), 0);
-        Poke(dir + 1 + (i * 5), 0);
-        Poke(dir + 2 + (i * 5), 0);
-        Poke(dir + 3 + (i * 5), 0);
-        Poke(dir + 4 + (i * 5), 255);
-    }   
-}
-
 std::array<int,20> Tools::GetMetaSprite(unsigned char id) {
     id = IntClamp(id, 0, 63);
     unsigned int dir = 2096 + (id * 20);
