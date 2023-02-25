@@ -202,8 +202,9 @@ void Tools::DrawMetaSprite(int id, int x, int y) {
     unsigned int dir = (id * 20) + 2096;
     for ( unsigned char i=0; i<=3; i++) {
         if (Peek(dir + 4) == 255) continue;
-        DrawSprite(Peek(dir + i * 5), Peek(dir + 1 + i * 5) + x, Peek(dir + 2 + i * 5) + y,
-                    Peek(dir + 3 + i * 5), Peek(dir + 4 + i * 5));
+        signed char xx = (signed char)Peek(dir + 1 + i * 5);
+        signed char yy = (signed char)Peek(dir + 2 + i * 5);
+        DrawSprite(Peek(dir + i * 5), xx + x, yy + y, Peek(dir + 3 + i * 5), Peek(dir + 4 + i * 5));
     }
 }
 int Tools::GetVirtualMouse(bool isXAxis) {   
