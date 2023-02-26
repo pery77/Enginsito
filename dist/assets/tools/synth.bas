@@ -148,7 +148,7 @@ DEF drawWave(x,y)
             onColor = 13
         ENDIF
         DRAW.circle(x+i*14-8, y+16, 3, 1, onColor)
-        DRAW.circle(x+i*14-8, y+16, 3, 0, 1)
+        DRAW.circle(x+i*14-8, y+16, 3, 0, 2)
     NEXT
 
     Draw.rect(x-17,y-7,60,30,2,0)

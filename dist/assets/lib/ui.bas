@@ -85,8 +85,8 @@ def slider(v,x,y,w,max)
 
     v = ROUND(w * v/max)
     cb = colorHiHover
-    colN = 8
-    colNH = 13
+    colN = 9
+    colNH = 10
     col = colN
 
     mx = x+v+1
