@@ -1,41 +1,36 @@
 import "assets/lib/ui.bas"
-    wave= 0
-    freq = 76
 
-    envA = 0
-    envT = 76
-    envP = 0
-    envR = 102
+wave= 0
+freq = 76
+envA = 0
+envT = 76
+envP = 0
+envR = 102
+fSlide = 0
+fDelta = 0
+vibratoD = 0
+vibratoS = 0
+toneAmount = 0 
+toneSpeed = 0
+toneSquare = 0
+toneDuty = 0
+repSp = 0
+repOf = 0
+repSw = 0
+lpfCutoff = 255
+lpfSweep = 0
+lpfRes = 0
+hpfCutoff = 0
+hpfSweep = 0
 
-    fSlide = 0
-    fDelta = 0
-    vibratoD = 0
-    vibratoS = 0
+bgCol = 1
 
-    toneAmount = 0 
-    toneSpeed = 0
-    toneSquare = 0
-    toneDuty = 0
-
-    repSp = 0
-    repOf = 0
-    repSw = 0
-
-    lpfCutoff = 255
-    lpfSweep = 0
-    lpfRes = 0
-    hpfCutoff = 0
-    hpfSweep = 0
 def tick()
     k = key.get()
     IF k <> 0 THEN 
-        'sfx.set(0,wave,35,envA,envD,envS,envR)
-        'sfx.play(0, 1000)
     ENDIF
-    IF key.pressed(32) THEN 
-        sfx.play(0) 
-    ENDIF  
-    IF key.pressed(65) THEN
+
+    IF key.pressed(32) THEN
         sfx.env(0, envA, envT, envP, envR)
         sfx.freq(0, fSlide, fDelta, vibratoD, vibratoS)
         sfx.tone(0, toneAmount, toneSpeed, toneSquare, toneDuty)
@@ -81,7 +76,7 @@ DEF sKey(id)
         DRAW.rect(x,y+1,14,size * 0.65,0,0)
         DRAW.rect(x,y+1,14,size * 0.65,2,keyBCol) 
     ENDIF
-'IF key.pressed(72) THEN sound.note(80,0,100) ENDIF
+    'IF key.pressed(72) THEN sound.note(80,0,100) ENDIF
     IF hover AND mouse.pressed(0) THEN
         sound.note(code,instrument,100)
         soundOn = true;
@@ -145,25 +140,25 @@ ENDDEF
 
 wave = 0
 DEF drawWave(x,y)
-    wave = ui.slider(wave,x,y,8,3)
+    wave = ui.slider(wave,x+8,y,16,3)
 
     FOR i = 0 TO 3
         onColor = 0
         IF i = wave THEN
-            onColor = 3
+            onColor = 13
         ENDIF
-        DRAW.circle(x-10,15+y+i*10,3,1,onColor)
-        DRAW.circle(x-10,15+y+i*10,3,0,12)
+        DRAW.circle(x+i*14-8, y+16, 3, 1, onColor)
+        DRAW.circle(x+i*14-8, y+16, 3, 0, 1)
     NEXT
 
-    Draw.rect(x-17,y-7,60,60,2,0)
-    Draw.rect( x-4, y-12,30,10,0,2)
-    Draw.text("Wave", x-2, y-12,1,0)
+    Draw.rect(x-17,y-7,60,30,2,0)
+    Draw.rect( x-4, y-12,34,10,0,bgCol)
+    Draw.text("Wave", x-2, y-10,1,0)
 
 ENDDEF
 frame = 0
 def draw()
-    cls(1)
+    cls(bgCol)
     frame = frame +1
     time = time + delta()
     if frame > 30 then
@@ -176,22 +171,9 @@ def draw()
     endif
 
     draw.rect(0,0,320,9,0,0)
-    draw.text(intToText("T: %06i",time), 0, 0, 1, 15)
-    'draw.text(intToText("D: %04i", delta()), 54, 0, 1, 15)
-    'draw.text(intToText(">: %03i", envD ), 160, 0, 1, 15)
+    draw.text(intToText("T: %06i",time), 0, 0, 1, 3)
 
-    'IF button (2,16,"play") THEN print sfx.play(0,1000) ENDIF
-'
-    'IF button (2,28,"square") THEN print sfx.set(0,0) ENDIF
-    'IF button (2,38,"sawtooth") THEN print sfx.set(0,1) ENDIF
-    'IF button (2,48,"sine") THEN print sfx.set(0,2) ENDIF
-    'IF button (2,58,"noise") THEN print sfx.set(0,3) ENDIF
-
-    'p = slider(p,80,16,128,255)
-
-    'instrument = ui.slider(instrument,17,85,41,16)
-
-    drawWave(20,30)
+    drawWave(260,25)
 
     envA = ui.knob(envA,80,36,0,255)
     envT = ui.knob(envT,112,36,0,255)
@@ -217,32 +199,9 @@ def draw()
     lpfCutoff = ui.knob(lpfCutoff,80, 162, 0, 255)
     lpfSweep = ui.knob(lpfSweep,112,162,-127,127)
     lpfRes = ui.knob(lpfRes,144,162,0,255)
-    hpfCutoff = ui.knob(hpfCutoff,176, 162,-127,127)
+    hpfCutoff = ui.knob(hpfCutoff,176, 162,0,255)
     hpfSweep = ui.knob(hpfSweep,208, 162,-127,127)
 
-    'lx = 77
-    'ly = 88
-    'h = 20
-    'w = 20
-    's = 20
-    'lx1 = lx+envA * (w / 100)
-    'ly1 = ly-h
-    'lx2 = lx1 + envD  * (w / 100)
-    'ly2 = h + ly1 - envS * (h / 100)
-    'lx3 = lx2 + envR * (w / 100) + s
-    'draw.line(lx,ly,lx1,ly1,2,14)
-    'draw.line(lx1,ly1,lx2,ly2,2,14)
-    'draw.line(lx2,ly2,lx2+s,ly2,2,14)
-    'draw.line(lx2+s,ly2,lx3,ly,2,14)
-
-
-    'c = ui.toogle(c,5,110,3)
-    'e = ui.toogle(e,20,110,3)
-    'IF c THEN
-    '    synthKeys()
-    '    ELSE
-    '    drawSoundButtons()
-    'ENDIF
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
     IF NOT ui.mouseWorking THEN  ui.drawmouse() ENDIF
 
