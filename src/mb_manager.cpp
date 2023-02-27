@@ -1207,14 +1207,13 @@ int MBManager::sfxRender(struct mb_interpreter_t* s, void** l){
 
     int id;
 	int wave;
-	int freq;
-	int att, susT, susP, dec;
+	float freq;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
 		mb_check(mb_pop_int(s, l, &id));
 		mb_check(mb_pop_int(s, l, &wave));
-		mb_check(mb_pop_int(s, l, &freq));
+		mb_check(mb_pop_real(s, l, &freq));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 

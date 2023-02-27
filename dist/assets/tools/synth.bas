@@ -1,7 +1,7 @@
 import "assets/lib/ui.bas"
 
 wave= 0
-freq = 76
+freq = 69
 envA = 0
 envT = 76
 envP = 0
@@ -36,8 +36,20 @@ def tick()
         sfx.tone(0, toneAmount, toneSpeed, toneSquare, toneDuty)
         sfx.repeat(0, repSp, repOf, repSw)
         sfx.filter(0, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
-        sfx.render(0, wave, freq)
+        '0.0621 A0
+        '0.1242 A1
+        '0.1757 A2
+        '0.2485 A3
+        '0.3515 A4
+        'sfx.render(0, wave,  0.3515) A4
+        sfx.render(0, wave, 0.087875 * (sqr((2^((freq - 21)/12)))))
         sfx.play(0) 
+
+        for l = 0 to 128
+            print intToText("%i > ",l)
+            print 0.087875 * (sqr((2^(l/12))));
+        next
+
     ENDIF  
 
 enddef
@@ -180,7 +192,8 @@ def draw()
     envP = ui.knob(envP,144,36,0,255)
     envR = ui.knob(envR,176,36,0,255)
     
-    freq = ui.knob(freq,220,36,0,255)
+    'freq = ui.knob(freq,220,36,0,108)
+    freq = ui.slider(freq,20,180,100,100)
 
     fSlide = ui.knob(fSlide,80, 78,-127,127)
     fDelta = ui.knob(fDelta,112,78,-127,127)
