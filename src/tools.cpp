@@ -35,7 +35,7 @@ Color Tools::SetColor(int color, int r, int g, int b){
     Poke(color * 3 + 2, b);
 }
 
-void Tools::InitFont(){
+void Tools::InitFont() {
 
     UnloadFont(font);
     RenderSprites();
@@ -49,8 +49,7 @@ void Tools::InitFont(){
     font.glyphs = (GlyphInfo *)RL_MALLOC(font.glyphCount*sizeof(GlyphInfo));
     font.recs = (Rectangle *)RL_MALLOC(font.glyphCount*sizeof(Rectangle));
 
-    for (int i = 0; i < font.glyphCount; i++)
-    {
+    for (int i = 0; i < font.glyphCount; i++) {
         font.glyphs[i].value = i;
 
         font.recs[i].x = (float)(i % 16 * charsWidth);
@@ -120,11 +119,11 @@ void Tools::SetSprite(unsigned int id, unsigned char b0, unsigned char b1, unsig
 
 }
 
-Texture Tools::GetSpriteTexture(){
+Texture Tools::GetSpriteTexture() {
     return spriteTexture;
 }
 
-unsigned char Tools::GetSpriteByte(unsigned int id, unsigned char byte){
+unsigned char Tools::GetSpriteByte(unsigned int id, unsigned char byte) {
     id = IntClamp(id, 0, 255);
     return Peek((id * 8) + 48 + byte);
 }
@@ -190,9 +189,8 @@ void Tools::DrawMetaSprite(int id, int x, int y) {
     unsigned int dir = (id * 20) + 2096;
     for ( unsigned char i=0; i<=3; i++) {
         if (Peek(dir + 4) == 255) continue;
-        signed char xx = (signed char)Peek(dir + 1 + i * 5);
-        signed char yy = (signed char)Peek(dir + 2 + i * 5);
-        DrawSprite(Peek(dir + i * 5), xx + x, yy + y, Peek(dir + 3 + i * 5), Peek(dir + 4 + i * 5));
+        DrawSprite(Peek(dir + i * 5), Peek(dir + 1 + i * 5) + x, Peek(dir + 2 + i * 5) + y,
+                    Peek(dir + 3 + i * 5), Peek(dir + 4 + i * 5));
     }
 }
 int Tools::GetVirtualMouse(bool isXAxis) {   
@@ -272,7 +270,7 @@ std::stringstream Tools::GetFiles(const char *path) {
     }
 
     for(auto& p : std::filesystem::directory_iterator(current_path)){
-        if (p.is_regular_file()){
+        if (p.is_regular_file()) {
             std::string file = p.path().stem().string();   
             if (IsFileExtension(p.path().filename().string().c_str(), PROGRAM_EXTENSION))
                 result  << file << "\n";
@@ -295,7 +293,7 @@ std::stringstream Tools::GetFolders(const char *path) {
     }
 
     for(auto& p : std::filesystem::directory_iterator(current_path)) {
-        if (p.is_directory()){
+        if (p.is_directory()) {
             std::string folder = p.path().filename().string();
             result << folder << "\n";
         }
