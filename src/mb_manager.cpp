@@ -1207,17 +1207,17 @@ int MBManager::sfxRender(struct mb_interpreter_t* s, void** l){
 
     int id;
 	int wave;
-	float freq;
+	int note;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
 		mb_check(mb_pop_int(s, l, &id));
 		mb_check(mb_pop_int(s, l, &wave));
-		mb_check(mb_pop_real(s, l, &freq));
+		mb_check(mb_pop_int(s, l, &note));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXRender(id, wave, freq);
+    audioR->SFXRender(id, wave, note);
 
 	return result;
 }

@@ -88,12 +88,14 @@ void AudioManager::Stop(){
     audioTick = 0;
 }
 
-void AudioManager::SFXRender(unsigned char id, unsigned char waveType, float freq){
+void AudioManager::SFXRender(unsigned char id, unsigned char waveType, unsigned char note){
     params[id].waveTypeValue = waveType;
-    params[id].startFrequencyValue = (float) (freq);
+    float n = ((note - 21)/12.0);
+    float f =  0.087875 * (sqrt(pow(2, n)));
+    params[id].startFrequencyValue = f;
     wave[id].data = GenerateWave(params[id], &wave[id].frameCount);
     sound[id] = LoadSoundFromWave(wave[id]);
-    printf("SFX Render: [%i] wave: [%i] freq: [%f]\n",id,  params[id].waveTypeValue, params[id].startFrequencyValue);
+    printf("SFX Render: [%i] wave: [%i]\n",id,  params[id].waveTypeValue);
 }
 void AudioManager::SFXEnv(unsigned char id, unsigned char att, unsigned char susT, unsigned char susP, unsigned char dec){
     params[id].attackTimeValue = (float) (att * AUDIO_STEP);
