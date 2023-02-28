@@ -100,6 +100,16 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "SETPOS", setMousePosition); 
 	mb_end_module(bas);
 
+	mb_begin_module(bas, "PAD");
+		mb_register_func(bas, "ISAVIABLE", isGamepadAvailable);
+		mb_register_func(bas, "NAME", getGamepadName);
+		mb_register_func(bas, "PRESSED", buttonPressed);
+		mb_register_func(bas, "DOWN", buttonDown);
+		mb_register_func(bas, "RELEASED", buttonReleased);
+		mb_register_func(bas, "UP", buttonUp);
+		mb_register_func(bas, "GET", getButton);
+	mb_end_module(bas);
+
 	mb_begin_module(bas, "SOUND");
 		mb_register_func(bas, "MUSIC", setSequence); 
 		mb_register_func(bas, "NOTE", playNote);
@@ -1002,6 +1012,139 @@ int MBManager::getKeyChar(struct mb_interpreter_t* s, void** l){
 	return result;
 }
 
+int MBManager::isGamepadAvailable(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+    int gamePadId = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &gamePadId));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = IsGamepadAvailable(gamePadId);
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+int MBManager::getGamepadName(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_string(ret, 0);
+
+    int gamePadId = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &gamePadId));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.string = (char *)GetGamepadName(gamePadId);
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+
+int MBManager::buttonPressed(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+    int gamePadId, buttonId = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &gamePadId));
+		mb_check(mb_pop_int(s, l, &buttonId));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = IsGamepadButtonPressed(gamePadId, buttonId);
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+int MBManager::buttonDown(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+    int gamePadId, buttonId = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &gamePadId));
+		mb_check(mb_pop_int(s, l, &buttonId));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = IsGamepadButtonDown(gamePadId, buttonId);
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+int MBManager::buttonReleased(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+    int gamePadId, buttonId = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &gamePadId));
+		mb_check(mb_pop_int(s, l, &buttonId));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = IsGamepadButtonReleased(gamePadId, buttonId);
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+int MBManager::buttonUp(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+    int gamePadId, buttonId = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &gamePadId));
+		mb_check(mb_pop_int(s, l, &buttonId));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = IsGamepadButtonUp(gamePadId, buttonId);
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+int MBManager::getButton(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = GetGamepadButtonPressed();
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
 int MBManager::mouseX(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1145,7 +1288,7 @@ int MBManager::setMousePosition(struct mb_interpreter_t* s, void** l){
 	return result;
 }
 
-//Sound
+// Sound
 int MBManager::setSequence(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1264,7 +1407,6 @@ int MBManager::sfxFreq(struct mb_interpreter_t* s, void** l){
 	return result;
 
 }
-
 int MBManager::sfxTone(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1286,7 +1428,6 @@ int MBManager::sfxTone(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
-
 int MBManager::sfxRepeat(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1307,7 +1448,6 @@ int MBManager::sfxRepeat(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
-
 int MBManager::sfxFilter(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1330,7 +1470,6 @@ int MBManager::sfxFilter(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
-
 int MBManager::sfxPlay(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1348,7 +1487,7 @@ int MBManager::sfxPlay(struct mb_interpreter_t* s, void** l){
 	return result;
 }
 
-//Sprites
+// Sprites
 int MBManager::drawSprite(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1375,7 +1514,6 @@ int MBManager::drawSprite(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
-
 int MBManager::drawMetaSprite(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1454,6 +1592,7 @@ int MBManager::getMetaSprite(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+// Memory
 int MBManager::peek(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1517,6 +1656,7 @@ int MBManager::loadMemory(struct mb_interpreter_t* s, void** l) {
 	return result;
 }
 
+// CRT
 int MBManager::crtEnabled(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);

@@ -91,6 +91,23 @@ class MBManager{
         static int mouseReleased(struct mb_interpreter_t* s, void** l);
         static int mouseUp(struct mb_interpreter_t* s, void** l);  
 
+        //gamepads
+       
+        //int GetGamepadButtonPressed(void);                      // Get the last gamepad button pressed
+        //int GetGamepadAxisCount(int gamepad);                   // Get gamepad axis count for a gamepad
+        //float GetGamepadAxisMovement(int gamepad, int axis);    // Get axis movement value for a gamepad axis
+        //int SetGamepadMappings(const char *mappings);           // Set internal gamepad mappings (SDL_GameControllerDB)
+
+        static int isGamepadAvailable(struct mb_interpreter_t* s, void** l);
+        static int getGamepadName(struct mb_interpreter_t* s, void** l);
+        
+        static int buttonPressed(struct mb_interpreter_t* s, void** l);
+        static int buttonDown(struct mb_interpreter_t* s, void** l);
+        static int buttonReleased(struct mb_interpreter_t* s, void** l);
+        static int buttonUp(struct mb_interpreter_t* s, void** l);
+        
+        static int getButton(struct mb_interpreter_t* s, void** l);
+
         //Sound
         static int setSequence(struct mb_interpreter_t* s, void** l); 
         static int playNote(struct mb_interpreter_t* s, void** l);

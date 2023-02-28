@@ -2,13 +2,13 @@
 #include <stdio.h>
 
 tsf* ptsf;
-
+/*
 void audioInputCallback(void *buffer, unsigned int frames)
 {
 	int sampleCount = (frames / (0.5 * sizeof(short)));
 	tsf_render_short(ptsf, (short*)buffer, sampleCount, 0);
 }
-
+*/
 AudioManager::AudioManager(){
 
     for (int i = 0; i < MAX_WAVE_SLOTS; i++)
@@ -27,6 +27,7 @@ AudioManager::AudioManager(){
         wave[i].data = GenerateWave(params[i], &wave[i].frameCount);
         sound[i] = LoadSoundFromWave(wave[i]);
     }
+    /*
     //ptsf = tsf_load_filename("assets/keygen.sf2");
     ptsf = tsf_load_filename("assets/ins.sf2");
     
@@ -40,7 +41,7 @@ AudioManager::AudioManager(){
 
     //sequence = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
     GetPresets();
-   
+   */
 }
 
 AudioManager::~AudioManager(){}
@@ -65,22 +66,22 @@ void AudioManager::GetPresets()
 	}
 } 
 void AudioManager::SetSequence(const char* newSequence, int newVoice){
-    sequence = newSequence;
-    voice = newVoice;
-    audioTick = 0;
+    //sequence = newSequence;
+    //voice = newVoice;
+    //audioTick = 0;
 }
 const char* AudioManager::GetSequence(){
         return sequence;
 }
 
 void AudioManager::PlayNote(int note, int voice, int volume){
-    if (volume<0) volume = 0;
-    if (volume>100) volume = 100;
-    tsf_note_on(ptsf, voice, note, volume*0.01);
+    //if (volume<0) volume = 0;
+    //if (volume>100) volume = 100;
+    //tsf_note_on(ptsf, voice, note, volume*0.01);
 }
 void AudioManager::StopNote(int note, int voice){
-    //tsf_note_off(ptsf, voice, note);
-    tsf_note_off_all(ptsf);
+    ////tsf_note_off(ptsf, voice, note);
+    //tsf_note_off_all(ptsf);
 }
 
 void AudioManager::Stop(){
@@ -147,5 +148,6 @@ void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned
 }
 
 void AudioManager::SFXPlay(unsigned char id){
+        //StopSound(sound[id]);
         PlaySound(sound[id]);
 }
