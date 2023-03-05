@@ -39,11 +39,11 @@ void PostProcessing::setUpShaders(){
     blurTextureLoc = GetShaderLocation(crtShader, "blurTexture");
     resolutionCRTLoc = GetShaderLocation(crtShader, "resolution");
     uTimeLoc = GetShaderLocation(crtShader, "uTime");
-    testLoc = GetShaderLocation(crtShader, "test");
     curvatureLoc = GetShaderLocation(crtShader, "curvatureDistance");
 
     blurPowerLoc = GetShaderLocation(crtShader, "uBlurPower");
     blurFactorLoc = GetShaderLocation(crtShader, "uBlurFactor");
+    chromaticLoc = GetShaderLocation(crtShader, "uChromatic");
 }
 
 void PostProcessing::RenderMain(){
@@ -82,11 +82,12 @@ void PostProcessing::RenderFinal(){
         BeginShaderMode(crtShader);
             SetShaderValue(crtShader, resolutionCRTLoc, &resolution, SHADER_UNIFORM_VEC2);
             SetShaderValue(crtShader, uTimeLoc, &uTime, SHADER_UNIFORM_FLOAT);
-            SetShaderValue(crtShader, testLoc, &uTest, SHADER_UNIFORM_FLOAT);
             SetShaderValue(crtShader, curvatureLoc, &uCurvature, SHADER_UNIFORM_FLOAT);
             
             SetShaderValue(crtShader, blurPowerLoc, &uBlurPower, SHADER_UNIFORM_FLOAT);
             SetShaderValue(crtShader, blurFactorLoc, &uBlurFactor, SHADER_UNIFORM_FLOAT);
+
+            SetShaderValue(crtShader, chromaticLoc, &uChromatic, SHADER_UNIFORM_FLOAT);
 
             SetShaderValueTexture(crtShader, grilleLoc, grilleTexture);
             SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
@@ -112,12 +113,12 @@ void PostProcessing::ReloadShaders(){
 
 void PostProcessing::UpdateGameScreenRects(){
 
-	screenScale = Tools::Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
+	screenScale = Tools::Min((float)GetScreenWidth()/(float)GAME_SCREEN_W,(float)GetScreenHeight()/(float)GAME_SCREEN_H);
 	gameRect = { 0, 0, (float)(GAME_SCREEN_W), -(float)(GAME_SCREEN_H)};
 	gameScaledRect = { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
 	resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
 
-	currentAspectRatio = (float)GetScreenWidth()/GetScreenHeight();
+	currentAspectRatio = (float)GetScreenWidth()/(float)GetScreenHeight();
     bool aspectRatioOk = Tools::CompareFloats(currentAspectRatio , GAME_RATIO, 0.05);
 
 	if (!aspectRatioOk) {
@@ -153,4 +154,22 @@ void PostProcessing::FullScreen(){
 void PostProcessing::SetState(bool newState){
     enabled = newState;
     SetTextureFilter(mainRender.texture, enabled ? TEXTURE_FILTER_BILINEAR : TEXTURE_FILTER_POINT);
+}
+
+void PostProcessing::SetCRTFloat(CRTProperty property, float value){
+    switch (property)
+    {
+    case CRTProperty::BlurPower:
+            uBlurPower = value * 0.03921;
+        break;
+    case CRTProperty::BlurFactor:
+            uBlurFactor = value * 0.01568;
+        break;
+    case CRTProperty::Chromatic:
+            uChromatic = value * 0.01176;
+        break;
+    
+    default:
+        break;
+    }
 }

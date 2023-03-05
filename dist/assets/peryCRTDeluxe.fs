@@ -10,7 +10,6 @@ uniform sampler2D grilleTexture;
 
 uniform vec2 resolution;
 uniform float uTime;
-uniform float test;
 
 uniform float uBlurPower;
 uniform float uBlurFactor;
@@ -18,9 +17,9 @@ uniform float uBlurFactor;
 uniform float vignetteIntensity = 0.20;
 
 uniform float hardScan = -6.0;
-uniform float chromatic = 0.3;
+uniform float uChromatic = 0.3;
 
-uniform float grilleForce = 0.07;
+uniform float grilleForce = 0.2;
 uniform float grilleLevel = 0.08;
 
 const vec2 textureSize = vec2(320,200);
@@ -82,9 +81,9 @@ void main(){
     uv.x = (uv.x - dist.y * dist.y * dist.x * strength/(resolution.x/resolution.y));
     uv.y = (uv.y - dist.x * dist.x * dist.y * strength);
 
-    float texelR = texture2D(texture0, vec2(uv.x + (chromatic * 0.003125), uv.y)).r;
+    float texelR = texture2D(texture0, vec2(uv.x + (uChromatic * 0.003125), uv.y)).r;
     float texelG = texture2D(texture0, uv).g;
-    float texelB = texture2D(texture0, vec2(uv.x - (chromatic * 0.003125), uv.y)).b;
+    float texelB = texture2D(texture0, vec2(uv.x - (uChromatic * 0.003125), uv.y)).b;
 
     vec3 texelColor = vec3(texelR, texelG, texelB);
     vec3 blurColor = texture2D(blurTexture, uv).rgb;
@@ -96,10 +95,10 @@ void main(){
     vec3 blur = gamma(blurColor * uBlurPower, uBlurFactor);
 
     texelColor += blur;
-    texelColor *= scanline;
-    texelColor *= noiseF;
-    texelColor *= fliker;
-	texelColor += grille * grilleForce;
+    //texelColor *= scanline;
+    //texelColor *= noiseF;
+    //texelColor *= fliker;
+	//texelColor += grille * (grilleForce);
     texelColor *= vignette(uv, blur);
 
     finalColor = vec4(texelColor, 1);

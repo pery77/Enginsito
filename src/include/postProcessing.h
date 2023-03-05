@@ -7,6 +7,12 @@ struct BlurPass{
 	float offset;
 };
 
+enum CRTProperty{
+    BlurPower,
+    BlurFactor,
+    Chromatic
+};
+
 class PostProcessing{
 
     public:
@@ -35,6 +41,7 @@ class PostProcessing{
 
     float uBlurPower = 0.85;
     float uBlurFactor = 1.2;
+    float uChromatic = 0.3;
 
     void ReloadShaders();
 
@@ -47,6 +54,8 @@ class PostProcessing{
 	float previusWindowsWidth;
 	float previusWindowsHeight;
 	float currentAspectRatio;
+
+    void SetCRTFloat(CRTProperty location, float value);
 
     private:
     void setUpShaders();
@@ -68,14 +77,13 @@ class PostProcessing{
     int blurTextureLoc;
     int resolutionCRTLoc;
     int uTimeLoc;
-    int testLoc;
     int curvatureLoc;
 
     int blurPowerLoc;
     int blurFactorLoc;
+    int chromaticLoc;
 
     Rectangle gameRect = { 0, 0, (float)(320), -(float)(200)};
     Rectangle gameScaledRect { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
     Vector2 resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
-
 };

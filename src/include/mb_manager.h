@@ -73,6 +73,7 @@ class MBManager{
 
         static int saveFile(struct mb_interpreter_t* s, void** l);
         //Input
+        //Keys
         static int keyPressed(struct mb_interpreter_t* s, void** l);
         static int keyDown(struct mb_interpreter_t* s, void** l);
         static int keyReleased(struct mb_interpreter_t* s, void** l);
@@ -80,7 +81,8 @@ class MBManager{
         
         static int getKey(struct mb_interpreter_t* s, void** l);
         static int getKeyChar(struct mb_interpreter_t* s, void** l);
-
+        
+        //Mouse
         static int mouseX(struct mb_interpreter_t* s, void** l);
         static int mouseY(struct mb_interpreter_t* s, void** l);
         static int mouseWheel(struct mb_interpreter_t* s, void** l);  
@@ -91,10 +93,7 @@ class MBManager{
         static int mouseReleased(struct mb_interpreter_t* s, void** l);
         static int mouseUp(struct mb_interpreter_t* s, void** l);  
 
-        //gamepads
-       
-        //int SetGamepadMappings(const char *mappings);           // Set internal gamepad mappings (SDL_GameControllerDB)
-
+        //Gamepads
         static int isGamepadAvailable(struct mb_interpreter_t* s, void** l);
         static int getGamepadName(struct mb_interpreter_t* s, void** l);
         
@@ -132,4 +131,7 @@ class MBManager{
 
         //CRT
         static int crtEnabled(struct mb_interpreter_t* s, void** l);
+        static int crtBlurPower(struct mb_interpreter_t* s, void** l);
+        static int crtBlurFactor(struct mb_interpreter_t* s, void** l);
+        static int crtChromatic(struct mb_interpreter_t* s, void** l);
 };
