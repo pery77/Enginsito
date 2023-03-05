@@ -93,9 +93,6 @@ class MBManager{
 
         //gamepads
        
-        //int GetGamepadButtonPressed(void);                      // Get the last gamepad button pressed
-        //int GetGamepadAxisCount(int gamepad);                   // Get gamepad axis count for a gamepad
-        //float GetGamepadAxisMovement(int gamepad, int axis);    // Get axis movement value for a gamepad axis
         //int SetGamepadMappings(const char *mappings);           // Set internal gamepad mappings (SDL_GameControllerDB)
 
         static int isGamepadAvailable(struct mb_interpreter_t* s, void** l);
@@ -107,6 +104,9 @@ class MBManager{
         static int buttonUp(struct mb_interpreter_t* s, void** l);
         
         static int getButton(struct mb_interpreter_t* s, void** l);
+        static int getAxisCount(struct mb_interpreter_t* s, void** l);
+        static int axisValue(struct mb_interpreter_t* s, void** l);
+
 
         //Sound
         static int setSequence(struct mb_interpreter_t* s, void** l); 

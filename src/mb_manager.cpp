@@ -108,6 +108,9 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "RELEASED", buttonReleased);
 		mb_register_func(bas, "UP", buttonUp);
 		mb_register_func(bas, "GET", getButton);
+
+		mb_register_func(bas, "AXISCOUNT", getAxisCount);
+		mb_register_func(bas, "AXISVALUE", axisValue);
 	mb_end_module(bas);
 
 	mb_begin_module(bas, "SOUND");
@@ -1142,6 +1145,45 @@ int MBManager::getButton(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     ret.value.integer = GetGamepadButtonPressed();
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+int MBManager::getAxisCount(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+	int gamePad = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &gamePad));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = GetGamepadAxisCount(gamePad);
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+int MBManager::axisValue(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+	int gamePad, axis = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &gamePad));
+		mb_check(mb_pop_int(s, l, &axis));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = GetGamepadAxisMovement(gamePad, axis) * 100;
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
