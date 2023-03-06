@@ -10,7 +10,10 @@ struct BlurPass{
 enum CRTProperty{
     BlurPower,
     BlurFactor,
-    Chromatic
+    Chromatic,
+    Curvature,
+    Vignetting,
+    ScanLine
 };
 
 class PostProcessing{
@@ -37,11 +40,13 @@ class PostProcessing{
     RenderTexture2D mainRender;
     float uTime;
     float uTest;
-    float uCurvature;
 
     float uBlurPower = 0.85;
     float uBlurFactor = 1.2;
     float uChromatic = 0.3;
+    float uCurvature = 0.15;
+    float uVignetteIntensity = 0.2;
+    float uScanline = 0.5;
 
     void ReloadShaders();
 
@@ -73,15 +78,18 @@ class PostProcessing{
     int offsetLoc;
 
     // CRT shader locations
+    // Internal
     int grilleLoc;
     int blurTextureLoc;
     int resolutionCRTLoc;
-    int uTimeLoc;
-    int curvatureLoc;
-
+    int timeLoc;
+    // User
     int blurPowerLoc;
     int blurFactorLoc;
     int chromaticLoc;
+    int curvatureLoc;
+    int vignetteIntensityLoc;
+    int scanlineLoc;
 
     Rectangle gameRect = { 0, 0, (float)(320), -(float)(200)};
     Rectangle gameScaledRect { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};

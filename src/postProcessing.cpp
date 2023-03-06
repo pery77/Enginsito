@@ -38,12 +38,14 @@ void PostProcessing::setUpShaders(){
     grilleLoc = GetShaderLocation(crtShader, "grilleTexture");
     blurTextureLoc = GetShaderLocation(crtShader, "blurTexture");
     resolutionCRTLoc = GetShaderLocation(crtShader, "resolution");
-    uTimeLoc = GetShaderLocation(crtShader, "uTime");
-    curvatureLoc = GetShaderLocation(crtShader, "curvatureDistance");
+    timeLoc = GetShaderLocation(crtShader, "uTime");
 
     blurPowerLoc = GetShaderLocation(crtShader, "uBlurPower");
     blurFactorLoc = GetShaderLocation(crtShader, "uBlurFactor");
     chromaticLoc = GetShaderLocation(crtShader, "uChromatic");
+    curvatureLoc = GetShaderLocation(crtShader, "uCurvature");
+    vignetteIntensityLoc = GetShaderLocation(crtShader, "uVignetteIntensity");
+    scanlineLoc = GetShaderLocation(crtShader, "uScanline");
 }
 
 void PostProcessing::RenderMain(){
@@ -80,17 +82,18 @@ void PostProcessing::RenderFinal(){
     if (enabled){
 
         BeginShaderMode(crtShader);
+            SetShaderValueTexture(crtShader, grilleLoc, grilleTexture);
+            SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
             SetShaderValue(crtShader, resolutionCRTLoc, &resolution, SHADER_UNIFORM_VEC2);
-            SetShaderValue(crtShader, uTimeLoc, &uTime, SHADER_UNIFORM_FLOAT);
-            SetShaderValue(crtShader, curvatureLoc, &uCurvature, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(crtShader, timeLoc, &uTime, SHADER_UNIFORM_FLOAT);
             
             SetShaderValue(crtShader, blurPowerLoc, &uBlurPower, SHADER_UNIFORM_FLOAT);
             SetShaderValue(crtShader, blurFactorLoc, &uBlurFactor, SHADER_UNIFORM_FLOAT);
-
             SetShaderValue(crtShader, chromaticLoc, &uChromatic, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(crtShader, curvatureLoc, &uCurvature, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(crtShader, vignetteIntensityLoc, &uVignetteIntensity, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(crtShader, scanlineLoc, &uScanline, SHADER_UNIFORM_FLOAT);
 
-            SetShaderValueTexture(crtShader, grilleLoc, grilleTexture);
-            SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
     }
         DrawTexturePro(mainRender.texture, gameRect, gameScaledRect,
                                 { 0, 0 }, 0.0f, WHITE); 
@@ -109,7 +112,6 @@ void PostProcessing::ReloadShaders(){
 
     setUpShaders();
 }
-
 
 void PostProcessing::UpdateGameScreenRects(){
 
@@ -157,18 +159,27 @@ void PostProcessing::SetState(bool newState){
 }
 
 void PostProcessing::SetCRTFloat(CRTProperty property, float value){
+    value *= 0.03921; // byte to float normalized 1/255
     switch (property)
     {
     case CRTProperty::BlurPower:
-            uBlurPower = value * 0.03921;
+            uBlurPower = value;
         break;
     case CRTProperty::BlurFactor:
-            uBlurFactor = value * 0.01568;
+            uBlurFactor = value;
         break;
     case CRTProperty::Chromatic:
-            uChromatic = value * 0.01176;
+            uChromatic = value;
         break;
-    
+    case CRTProperty::Curvature:
+            uCurvature = value;
+        break;
+    case CRTProperty::Vignetting:
+            uVignetteIntensity = value;
+        break;
+    case CRTProperty::ScanLine:
+            uScanline = value;
+        break;    
     default:
         break;
     }

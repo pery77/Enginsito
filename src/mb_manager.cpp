@@ -65,6 +65,9 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "BLURPOWER", crtBlurPower);
 		mb_register_func(bas, "BLURFACTOR", crtBlurFactor);
 		mb_register_func(bas, "CHROMATIC", crtChromatic);
+		mb_register_func(bas, "CURVATURE", crtCurvature);
+		mb_register_func(bas, "VIGNETTING", crtVignetting);
+		mb_register_func(bas, "SCANLINE", crtScanline);
 	mb_end_module(bas);
 
 	mb_reg_fun(bas, intToText);
@@ -1760,5 +1763,50 @@ int MBManager::crtChromatic(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
    	postProcessingR->SetCRTFloat(CRTProperty::Chromatic, value);
+	return result;
+}
+int MBManager::crtCurvature(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int value;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &value));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	postProcessingR->SetCRTFloat(CRTProperty::Curvature, value);
+	return result;
+}
+int MBManager::crtVignetting(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int value;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &value));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	postProcessingR->SetCRTFloat(CRTProperty::Vignetting, value);
+	return result;
+}
+int MBManager::crtScanline(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int value;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &value));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	postProcessingR->SetCRTFloat(CRTProperty::ScanLine, value);
 	return result;
 }

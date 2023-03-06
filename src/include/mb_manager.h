@@ -134,4 +134,7 @@ class MBManager{
         static int crtBlurPower(struct mb_interpreter_t* s, void** l);
         static int crtBlurFactor(struct mb_interpreter_t* s, void** l);
         static int crtChromatic(struct mb_interpreter_t* s, void** l);
+        static int crtCurvature(struct mb_interpreter_t* s, void** l);
+        static int crtVignetting(struct mb_interpreter_t* s, void** l);
+        static int crtScanline(struct mb_interpreter_t* s, void** l);
 };
