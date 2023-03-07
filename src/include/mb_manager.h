@@ -137,4 +137,5 @@ class MBManager{
         static int crtCurvature(struct mb_interpreter_t* s, void** l);
         static int crtVignetting(struct mb_interpreter_t* s, void** l);
         static int crtScanline(struct mb_interpreter_t* s, void** l);
+        static int crtSetGrille(struct mb_interpreter_t* s, void** l);
 };

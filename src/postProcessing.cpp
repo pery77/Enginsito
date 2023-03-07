@@ -15,12 +15,15 @@ void PostProcessing::setUpShaders(){
 	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT);
 
-    grilleTexture = LoadTexture("assets/grille.png");
-    GenTextureMipmaps(&grilleTexture);
-	SetTextureFilter(grilleTexture, TEXTURE_FILTER_BILINEAR);
-	SetTextureWrap(grilleTexture,TEXTURE_WRAP_REPEAT);
+    grilleTextures[0] = LoadTexture("assets/grille1.png");
+    grilleTextures[1] = LoadTexture("assets/grille2.png");
+    grilleTextures[2] = LoadTexture("assets/grille3.png");
+    for (int gt = 0; gt<3; gt++){
+        GenTextureMipmaps(&grilleTextures[gt]);
+        SetTextureFilter(grilleTextures[gt], TEXTURE_FILTER_BILINEAR);
+        SetTextureWrap(grilleTextures[gt],TEXTURE_WRAP_REPEAT);
+    }
     
-
     //Blur shader
     blurShader = LoadShader(0, "assets/blur.fs");
 
@@ -82,7 +85,7 @@ void PostProcessing::RenderFinal(){
     if (enabled){
 
         BeginShaderMode(crtShader);
-            SetShaderValueTexture(crtShader, grilleLoc, grilleTexture);
+            SetShaderValueTexture(crtShader, grilleLoc, grilleTextures[currentGrilleTexture]);
             SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
             SetShaderValue(crtShader, resolutionCRTLoc, &resolution, SHADER_UNIFORM_VEC2);
             SetShaderValue(crtShader, timeLoc, &uTime, SHADER_UNIFORM_FLOAT);
@@ -105,7 +108,9 @@ void PostProcessing::ReloadShaders(){
 
     UnloadRenderTexture(mainRender);
     UnloadRenderTexture(bufferTexture);
-    UnloadTexture(grilleTexture);
+    for (int gt = 0; gt<3; gt++){
+        UnloadTexture(grilleTextures[gt]);
+    }
 
     UnloadShader(blurShader);
     UnloadShader(crtShader);
@@ -184,3 +189,9 @@ void PostProcessing::SetCRTFloat(CRTProperty property, float value){
         break;
     }
 }
+
+ void PostProcessing::SetGrilleTexture(int newTextureId){
+    if (newTextureId<0) newTextureId = 0;
+    if (newTextureId>2) newTextureId = 2;
+    currentGrilleTexture = newTextureId;
+ }

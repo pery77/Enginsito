@@ -61,12 +61,14 @@ class PostProcessing{
 	float currentAspectRatio;
 
     void SetCRTFloat(CRTProperty location, float value);
+    void SetGrilleTexture(int newTextureId);
 
     private:
     void setUpShaders();
 
     RenderTexture2D bufferTexture;
-    Texture grilleTexture;
+    Texture grilleTextures[3];
+    int currentGrilleTexture;
     Shader crtShader;
     Shader blurShader;
 

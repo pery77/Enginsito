@@ -1,12 +1,13 @@
 import "assets/lib/ui.bas"
 ui.buttonW = 30
 
-blurPower = 16
-blurFactor = 16
-chromatic = 32
-curvature = 32
-vignetting = 32
-scanline = 32
+blurPower = 36
+blurFactor = 36
+chromatic = 48
+curvature = 90
+vignetting = 24
+scanline = 24
+grille = 0
 
 def draw()
     cls(0)
@@ -24,6 +25,7 @@ def draw()
 
     blurPower = ui.knob(blurPower,20,48,0,255)
     blurFactor = ui.knob(blurFactor,50,48,0,255)
+    grille = ui.knob(grille,80,48,0,2)
 
     chromatic = ui.knob(chromatic,20,88,0,255)
     curvature = ui.knob(curvature,50,88,0,255)
@@ -36,6 +38,7 @@ def draw()
     crt.curvature(curvature)
     crt.vignetting(vignetting)
     crt.scanline(scanline)
+    crt.grille(grille)
 
 
     IF mouse.down(2) THEN ui.drawPalette() ENDIF
