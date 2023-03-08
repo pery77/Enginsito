@@ -69,6 +69,8 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "VIGNETTING", crtVignetting);
 		mb_register_func(bas, "SCANLINE", crtScanline);
 		mb_register_func(bas, "GRILLE", crtSetGrille);
+		mb_register_func(bas, "GRILLESCALE", crtGrilleScale);
+		mb_register_func(bas, "GRILLEFORCE", crtGrilleForce);
 	mb_end_module(bas);
 
 	mb_reg_fun(bas, intToText);
@@ -1824,5 +1826,35 @@ int MBManager::crtSetGrille(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
    	postProcessingR->SetGrilleTexture(value);
+	return result;
+}
+int MBManager::crtGrilleScale(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int value;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &value));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	postProcessingR->SetCRTFloat(CRTProperty::GrilleScale, value);
+	return result;
+}
+int MBManager::crtGrilleForce(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int value;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &value));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	postProcessingR->SetCRTFloat(CRTProperty::GrilleForce, value);
 	return result;
 }

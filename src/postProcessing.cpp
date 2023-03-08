@@ -49,6 +49,8 @@ void PostProcessing::setUpShaders(){
     curvatureLoc = GetShaderLocation(crtShader, "uCurvature");
     vignetteIntensityLoc = GetShaderLocation(crtShader, "uVignetteIntensity");
     scanlineLoc = GetShaderLocation(crtShader, "uScanline");
+    grilleScaleLoc = GetShaderLocation(crtShader, "uGrilleScale");
+    grilleForceLoc = GetShaderLocation(crtShader, "uGrilleForce");
 }
 
 void PostProcessing::RenderMain(){
@@ -96,6 +98,8 @@ void PostProcessing::RenderFinal(){
             SetShaderValue(crtShader, curvatureLoc, &uCurvature, SHADER_UNIFORM_FLOAT);
             SetShaderValue(crtShader, vignetteIntensityLoc, &uVignetteIntensity, SHADER_UNIFORM_FLOAT);
             SetShaderValue(crtShader, scanlineLoc, &uScanline, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(crtShader, grilleScaleLoc, &uGrilleScale, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(crtShader, grilleForceLoc, &uGrilleForce, SHADER_UNIFORM_FLOAT);
 
     }
         DrawTexturePro(mainRender.texture, gameRect, gameScaledRect,
@@ -164,7 +168,9 @@ void PostProcessing::SetState(bool newState){
 }
 
 void PostProcessing::SetCRTFloat(CRTProperty property, float value){
+    value = Clamp(value, 0.0, 255.0);
     value *= 0.03921; // byte to float normalized 1/255
+
     switch (property)
     {
     case CRTProperty::BlurPower:
@@ -184,7 +190,13 @@ void PostProcessing::SetCRTFloat(CRTProperty property, float value){
         break;
     case CRTProperty::ScanLine:
             uScanline = value;
-        break;    
+        break;
+    case CRTProperty::GrilleScale:
+            uGrilleScale = value;
+        break;  
+    case CRTProperty::GrilleForce:
+            uGrilleForce = value;
+        break;                   
     default:
         break;
     }

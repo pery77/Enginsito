@@ -18,8 +18,8 @@ uniform float uCurvature = 0.15;
 uniform float uVignetteIntensity = 0.2;
 uniform float uScanline = 0.5;
 
-uniform float grilleForce = 0.2;
-uniform float grilleLevel = 0.08;
+uniform float uGrilleScale = 0.08;
+uniform float uGrilleForce = 0.2;
 
 const vec2 textureSize = vec2(320,200);
 
@@ -89,31 +89,43 @@ float border(vec2 uv){
 	if (uv.y<0 && uv.x<0) r = 1.0;
 	return r;
 }
+float mask(float x, float n, float e){
+	return abs(pow(sin(x * 3.141592 * n),e));
+}
+
 void main(){
 
 	vec2 uv = curve(fragTexCoord);
+
 	//Chromatic
     float texelR = texture2D(texture0, vec2(uv.x + (0.3 * uChromatic * 0.003125), uv.y)).r;
     float texelG = texture2D(texture0, uv).g;
     float texelB = texture2D(texture0, vec2(uv.x - (0.3 * uChromatic * 0.003125), uv.y)).b;
+	
 	//Textures
     vec3 texelColor = vec3(texelR, texelG, texelB);
     vec3 blurColor = texture2D(blurTexture, uv).rgb;
-    vec3 grille = texture2D(grilleTexture, uv * resolution.x * grilleLevel).rgb;
+    vec3 grille = texture2D(grilleTexture, uv * resolution.y * (uGrilleScale * 0.025)).rgb;
 
     float noiseF = mix(0.92, 1, noise(uv));
 	float fliker = mix(0.98, 1, (sin(60.0*uTime+uv.y*4.0)*0.5+0.5));
-	float scanline = scan(uv,-1.0) + scan(uv,0.0) + scan(uv,1.0);
+	
     vec3 blur = gamma(blurColor * (uBlurPower + 0.05), uBlurFactor + 0.05);
+ 	float scanline = (mask(uv.y, 200, uScanline));
+ 	float g = (mask(uv.x, 320, uGrilleScale));
 
-    texelColor += blur * blur;
-    texelColor *= mix(0.5,1.0,scanline);
+    vec3 blur2 = blur * blur;
+	texelColor += blur2;
+    texelColor *= mix(blur2 ,vec3(1.0), scanline);
+
+	//texelColor *= gamma(grille , uGrilleForce);
     texelColor *= noiseF;
     texelColor *= fliker;
 	//texelColor += grille * (grilleForce);
     texelColor *= vignette(uv, blurColor);
 	texelColor *= border(uv);
-	
+
+	texelColor *= mix(blur2 ,vec3(1.0), g);
 
     finalColor = vec4(texelColor, 1);
 

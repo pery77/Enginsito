@@ -8,6 +8,8 @@ curvature = 90
 vignetting = 24
 scanline = 24
 grille = 0
+gScale = 20
+gForce = 20
 
 def draw()
     cls(0)
@@ -32,13 +34,18 @@ def draw()
     vignetting = ui.knob(vignetting,80,88,0,255)
     scanline = ui.knob(scanline,110,88,0,255)
     
+    gScale = ui.knob(gScale,20,128,0,255)
+    gForce = ui.knob(gForce,50,128,0,255)
     crt.blurPower(blurPower)
+
     crt.blurFactor(blurFactor)
     crt.chromatic(chromatic)
     crt.curvature(curvature)
     crt.vignetting(vignetting)
     crt.scanline(scanline)
     crt.grille(grille)
+    crt.grilleScale(gScale)
+    crt.grilleForce(gForce)
 
 
     IF mouse.down(2) THEN ui.drawPalette() ENDIF

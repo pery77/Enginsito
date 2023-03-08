@@ -13,7 +13,9 @@ enum CRTProperty{
     Chromatic,
     Curvature,
     Vignetting,
-    ScanLine
+    ScanLine,
+    GrilleScale,
+    GrilleForce
 };
 
 class PostProcessing{
@@ -47,6 +49,8 @@ class PostProcessing{
     float uCurvature = 0.15;
     float uVignetteIntensity = 0.2;
     float uScanline = 0.5;
+    float uGrilleScale = 0.08;
+    float uGrilleForce = 0.5;
 
     void ReloadShaders();
 
@@ -92,6 +96,8 @@ class PostProcessing{
     int curvatureLoc;
     int vignetteIntensityLoc;
     int scanlineLoc;
+    int grilleScaleLoc;
+    int grilleForceLoc;
 
     Rectangle gameRect = { 0, 0, (float)(320), -(float)(200)};
     Rectangle gameScaledRect { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
