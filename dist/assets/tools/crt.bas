@@ -13,6 +13,11 @@ gForce = 255
 
 def draw()
     cls(0)
+
+    for id = 0 to 15
+        x=id*20
+        draw.rect(x,0,19,32,0,id)
+    next
     for x = 1 to 31
         for y = 1 to 19
             draw.line(x*10,0,x*10,200,1,1)

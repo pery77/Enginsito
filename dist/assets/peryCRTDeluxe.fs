@@ -79,7 +79,7 @@ float border(vec2 uv){
 	if (uv.y<0) r = abs(uv.y*f);
 	return r;
 }
-float mask(float x, float n, float e){
+float lines(float x, float n, float e){
 	return clamp(abs(sin(x * 3.141592 * n) * e) + 1 - e, 0, 1);
 }
 vec3 mainImage(vec2 uv){
@@ -94,6 +94,7 @@ vec3 mainImage(vec2 uv){
 	
     return vec3(texelR, texelG, texelB);
 }
+
 void main(){
 	//Uv
 	vec2 uv = curve(fragTexCoord);
@@ -101,14 +102,14 @@ void main(){
 	//Textures
 	vec3 texelColor = mainImage(uv);
     vec3 blurColor = texture2D(blurTexture, uv).rgb;
-    //vec3 grille = texture2D(grilleTexture, uv * resolution.y * (uGrilleScale * 0.025)).rgb;
+    vec3 grille = texture2D(grilleTexture, uv * resolution.y * 0.125).rgb;
 
     float noiseF = mix(0.92, 1, noise(uv));
 	float fliker = mix(0.98, 1, (sin(60.0*uTime+uv.y*4.0)*0.5+0.5));
 	
     vec3 blur = gamma(blurColor * (5 * uBlurPower + 0.05), 5 * (uBlurFactor * uBlurFactor) + 0.05);
- 	float scanlineF = (mask(uv.y, 200, uScanline));
- 	float verticalLineF = (mask(uv.x, 320, uVerticalLine));
+ 	float scanlineF = (lines(uv.y, 200, uScanline));
+ 	float verticalLineF = (lines(uv.x, 320, uVerticalLine));
 	
     vec3 blur2 = blur * blur * blur;
 	vec3 scanline = mix(blur2 ,vec3(1.0), scanlineF);
@@ -124,7 +125,8 @@ void main(){
     texelColor *= vignette(uv, blur);
 	texelColor *= border(uv);
 
-	//if (uv.x > 0.8) texelColor = blur;
+	//if (uv.x > 0.0) 
+	texelColor *= gamma(grille,uGrilleForce*10);
 
     finalColor = vec4(texelColor, 1);
 }
