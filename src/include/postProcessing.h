@@ -49,7 +49,7 @@ class PostProcessing{
     float uCurvature = 0.15;
     float uVignetteIntensity = 0.2;
     float uScanline = 0.5;
-    float uGrilleScale = 0.08;
+    float uVerticalLine = 0.08;
     float uGrilleForce = 0.5;
 
     void ReloadShaders();
@@ -96,7 +96,7 @@ class PostProcessing{
     int curvatureLoc;
     int vignetteIntensityLoc;
     int scanlineLoc;
-    int grilleScaleLoc;
+    int verticalLineLoc;
     int grilleForceLoc;
 
     Rectangle gameRect = { 0, 0, (float)(320), -(float)(200)};

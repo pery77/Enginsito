@@ -1,15 +1,15 @@
 import "assets/lib/ui.bas"
 ui.buttonW = 30
 
-blurPower = 36
-blurFactor = 36
-chromatic = 48
-curvature = 90
-vignetting = 24
-scanline = 24
+blurPower = 50
+blurFactor = 170
+chromatic = 80
+curvature = 100
+vignetting = 50
+scanline = 50
 grille = 0
-gScale = 20
-gForce = 20
+vLine = 10
+gForce = 255
 
 def draw()
     cls(0)
@@ -27,15 +27,16 @@ def draw()
 
     blurPower = ui.knob(blurPower,20,48,0,255)
     blurFactor = ui.knob(blurFactor,50,48,0,255)
-    grille = ui.knob(grille,80,48,0,2)
+    //grille = ui.knob(grille,80,48,0,2)
 
     chromatic = ui.knob(chromatic,20,88,0,255)
     curvature = ui.knob(curvature,50,88,0,255)
     vignetting = ui.knob(vignetting,80,88,0,255)
-    scanline = ui.knob(scanline,110,88,0,255)
-    
-    gScale = ui.knob(gScale,20,128,0,255)
-    gForce = ui.knob(gForce,50,128,0,255)
+
+    scanline = ui.knob(scanline,20,128,0,255)
+    vLine = ui.knob(vLine,50,128,0,255)
+    //gForce = ui.knob(gForce,80,128,0,255)
+
     crt.blurPower(blurPower)
 
     crt.blurFactor(blurFactor)
@@ -44,7 +45,7 @@ def draw()
     crt.vignetting(vignetting)
     crt.scanline(scanline)
     crt.grille(grille)
-    crt.grilleScale(gScale)
+    crt.verticalLine(vLine)
     crt.grilleForce(gForce)
 
 

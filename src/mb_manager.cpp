@@ -69,7 +69,7 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "VIGNETTING", crtVignetting);
 		mb_register_func(bas, "SCANLINE", crtScanline);
 		mb_register_func(bas, "GRILLE", crtSetGrille);
-		mb_register_func(bas, "GRILLESCALE", crtGrilleScale);
+		mb_register_func(bas, "VERTICALLINE", crtVerticalLine);
 		mb_register_func(bas, "GRILLEFORCE", crtGrilleForce);
 	mb_end_module(bas);
 
@@ -1828,7 +1828,7 @@ int MBManager::crtSetGrille(struct mb_interpreter_t* s, void** l){
    	postProcessingR->SetGrilleTexture(value);
 	return result;
 }
-int MBManager::crtGrilleScale(struct mb_interpreter_t* s, void** l){
+int MBManager::crtVerticalLine(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
