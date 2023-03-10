@@ -51,6 +51,8 @@ void PostProcessing::setUpShaders(){
     scanlineLoc = GetShaderLocation(crtShader, "uScanline");
     verticalLineLoc = GetShaderLocation(crtShader, "uVerticalLine");
     grilleForceLoc = GetShaderLocation(crtShader, "uGrilleForce");
+    noiseLoc = GetShaderLocation(crtShader, "uNoise");
+    flikerLoc = GetShaderLocation(crtShader, "uFliker");
 }
 
 void PostProcessing::RenderMain(){
@@ -100,6 +102,8 @@ void PostProcessing::RenderFinal(){
             SetShaderValue(crtShader, scanlineLoc, &uScanline, SHADER_UNIFORM_FLOAT);
             SetShaderValue(crtShader, verticalLineLoc, &uVerticalLine, SHADER_UNIFORM_FLOAT);
             SetShaderValue(crtShader, grilleForceLoc, &uGrilleForce, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(crtShader, noiseLoc, &uNoise, SHADER_UNIFORM_FLOAT);
+            SetShaderValue(crtShader, flikerLoc, &uFliker, SHADER_UNIFORM_FLOAT);
 
     }
         DrawTexturePro(mainRender.texture, gameRect, gameScaledRect,
@@ -171,34 +175,39 @@ void PostProcessing::SetCRTFloat(CRTProperty property, float value){
     value = Clamp(value, 0.0, 255.0);
     value *= 0.003921; // byte to float normalized 1/255
 
-    switch (property)
-    {
-    case CRTProperty::BlurPower:
-            uBlurPower = value;
-        break;
-    case CRTProperty::BlurFactor:
-            uBlurFactor = value;
-        break;
-    case CRTProperty::Chromatic:
-            uChromatic = value;
-        break;
-    case CRTProperty::Curvature:
-            uCurvature = value;
-        break;
-    case CRTProperty::Vignetting:
-            uVignetteIntensity = value;
-        break;
-    case CRTProperty::ScanLine:
-            uScanline = value;
-        break;
-    case CRTProperty::GrilleScale:
-            uVerticalLine = value;
-        break;  
-    case CRTProperty::GrilleForce:
-            uGrilleForce = value;
-        break;                   
-    default:
-        break;
+    switch (property){
+        case CRTProperty::BlurPower:
+                uBlurPower = value;
+            break;
+        case CRTProperty::BlurFactor:
+                uBlurFactor = value;
+            break;
+        case CRTProperty::Chromatic:
+                uChromatic = value;
+            break;
+        case CRTProperty::Curvature:
+                uCurvature = value;
+            break;
+        case CRTProperty::Vignetting:
+                uVignetteIntensity = value;
+            break;
+        case CRTProperty::ScanLine:
+                uScanline = value;
+            break;
+        case CRTProperty::GrilleScale:
+                uVerticalLine = value;
+            break;  
+        case CRTProperty::GrilleForce:
+                uGrilleForce = value;
+            break;                   
+         case CRTProperty::Noise:
+                uNoise = value;
+            break;       
+        case CRTProperty::Fliker:
+                uFliker = value;
+            break;        
+        default:
+            break;
     }
 }
 

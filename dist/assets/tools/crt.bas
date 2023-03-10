@@ -10,6 +10,8 @@ scanline = 50
 grille = 0
 vLine = 10
 gForce = 128
+noise = 50
+fliker = 10
 
 def draw()
     cls(0)
@@ -42,6 +44,9 @@ def draw()
     vLine = ui.knob(vLine,50,128,0,255)
     gForce = ui.knob(gForce,80,128,0,255)
 
+    noise = ui.knob(noise,20,168,0,255)
+    fliker = ui.knob(fliker,50,168,0,255)
+
     crt.blurPower(blurPower)
 
     crt.blurFactor(blurFactor)
@@ -52,7 +57,8 @@ def draw()
     crt.grille(grille)
     crt.verticalLine(vLine)
     crt.grilleForce(gForce)
-
+    crt.noise(noise)
+    crt.fliker(fliker)
 
     IF mouse.down(2) THEN 
         ui.drawPalette() 

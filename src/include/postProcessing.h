@@ -15,7 +15,9 @@ enum CRTProperty{
     Vignetting,
     ScanLine,
     GrilleScale,
-    GrilleForce
+    GrilleForce,
+    Noise,
+    Fliker
 };
 
 class PostProcessing{
@@ -51,6 +53,8 @@ class PostProcessing{
     float uScanline = 0.5;
     float uVerticalLine = 0.08;
     float uGrilleForce = 0.5;
+    float uNoise = 0.8;
+    float uFliker = 0.94;
 
     void ReloadShaders();
 
@@ -89,6 +93,7 @@ class PostProcessing{
     int blurTextureLoc;
     int resolutionCRTLoc;
     int timeLoc;
+    
     // User
     int blurPowerLoc;
     int blurFactorLoc;
@@ -98,6 +103,8 @@ class PostProcessing{
     int scanlineLoc;
     int verticalLineLoc;
     int grilleForceLoc;
+    int noiseLoc;
+    int flikerLoc;
 
     Rectangle gameRect = { 0, 0, (float)(320), -(float)(200)};
     Rectangle gameScaledRect { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};

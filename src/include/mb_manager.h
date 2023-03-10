@@ -140,4 +140,6 @@ class MBManager{
         static int crtSetGrille(struct mb_interpreter_t* s, void** l);
         static int crtVerticalLine(struct mb_interpreter_t* s, void** l);
         static int crtGrilleForce(struct mb_interpreter_t* s, void** l);
+        static int crtNoise(struct mb_interpreter_t* s, void** l);
+        static int crtFliker(struct mb_interpreter_t* s, void** l);
 };

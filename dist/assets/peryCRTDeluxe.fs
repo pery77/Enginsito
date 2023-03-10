@@ -21,6 +21,11 @@ uniform float uScanline = 0.5;
 uniform float uVerticalLine = 0.08;
 uniform float uGrilleForce = 0.2;
 
+uniform float uNoise = 0.8;
+uniform float uFliker = 0.94;
+
+
+
 const vec2 textureSize = vec2(320,200);
 
 out vec4 finalColor;
@@ -47,12 +52,12 @@ vec3 gamma(vec3 color, float outputGamma){
 
 //Noise
 float rand(vec2 co){
-	float speed = 0.001 * uTime;
-	return fract((sin( dot(co.xy , vec2(100.0 * speed, 1.0 * speed) )) * 16818.0 + speed));
+	float speed = 0.0001 * uTime;
+	return fract((sin( dot(co.xy , vec2(speed, 100*speed) )) * 16818.0 + speed));
 }
  	
 float noise(vec2 p) {
-	p *= textureSize;
+	p *= textureSize * 0.9;
 	vec2 ip = floor(p);
 	vec2 u = fract(p);
 	u = u*u*(3.0-2.0*u);
@@ -109,8 +114,8 @@ void main(){
     vec3 blurColor = texture2D(blurTexture, uv).rgb;
     vec3 grille = texture2D(grilleTexture, uv * resolution.y * 0.11).rgb;
 
-    float noiseF = mix(0.92, 1, noise(uv));
-	float fliker = mix(0.98, 1, (sin(60.0*uTime+uv.y*4.0)*0.5+0.5));
+    float noiseF = mix((1-uNoise)*0.5 + 0.5, 1, noise(uv));
+	float fliker = mix((1-uFliker)*0.5 + 0.5, 1, (sin((30 * uTime) + (uv.y * 6.28))*0.5+0.5));
 	
     vec3 blur = gamma(blurColor * (5 * uBlurPower + 0.05), 5 * (uBlurFactor * uBlurFactor) + 0.05);
  	float scanlineF = (lines(uv.y, textureSize.y, uScanline));
