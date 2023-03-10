@@ -16,7 +16,7 @@ def draw()
 
     for id = 0 to 15
         x=id*20
-        draw.rect(x,0,19,32,0,id)
+        draw.rect(x,0,19,20,0,id)
     next
     for x = 1 to 31
         for y = 1 to 19

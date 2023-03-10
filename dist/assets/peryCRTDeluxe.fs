@@ -28,11 +28,15 @@ out vec4 finalColor;
 //Vignette
 vec3 vignette(vec2 uv, vec3 blur){
 	uv *= 1.0 - uv.xy;
-	if (uv.x < 0 || uv.y < 0) 
-		return 0.2 * blur * (0.5/(uVignetteIntensity + 0.01));
+
+	if (uv.x < 0 || uv.y < 0){
+		return clamp(0.2 * blur * (0.75/(uVignetteIntensity + 0.01)),0 ,1);
+	}
+	float vigF = abs((2000.0*uv.x*uv.y*(1.0-uv.x)*(1.0-uv.y)));
+	vec3 vigIn= vec3(clamp(pow(vigF, 0.5) ,0.0 ,1.0));
 
 	float vig = abs((16.0*uv.x*uv.y*(1.0-uv.x)*(1.0-uv.y)));
-	return vec3(clamp(pow(vig, uVignetteIntensity),0.0 ,1.0));
+	return vec3(clamp(pow(vig, uVignetteIntensity),0.0 ,1.0)) * vigIn;
 }
 
 vec3 gamma(vec3 color, float outputGamma){
@@ -55,10 +59,10 @@ float noise(vec2 p) {
 		mix(rand(ip+vec2(0.0,1.0)),rand(ip+vec2(1.0,1.0)),u.x),u.y);
 	return res*res;
 }
+
 float gaus(float pos, float scale) {
 	return exp2(scale*pos*pos);
 }
-
 
 vec2 curve(vec2 uv){
 	if (uCurvature < 0.001) return uv;
@@ -73,10 +77,10 @@ vec2 curve(vec2 uv){
 float border(vec2 uv){
 	uv *= 1.0 - uv.xy;
 	float r = 1.0;
-	float f = 100.0;
-	if (uv.y<0 && uv.x<0) return abs((uv.y + uv.x )*f);
-	if (uv.x<0) r = abs(uv.x*f);
-	if (uv.y<0) r = abs(uv.y*f);
+	float f = 60.0;
+	if (uv.y<0 && uv.x<0) return clamp(abs((uv.y + uv.x )*f),0,1);
+	if (uv.x<0) r = clamp(abs(uv.x*f),0,1);
+	if (uv.y<0) r = clamp(abs(uv.y*f),0,1);
 	return r;
 }
 float lines(float x, float n, float e){
