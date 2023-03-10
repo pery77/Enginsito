@@ -32,10 +32,12 @@ vec3 vignette(vec2 uv, vec3 blur){
 	if (uv.x < 0 || uv.y < 0){
 		return clamp(0.2 * blur * (0.75/(uVignetteIntensity + 0.01)),0 ,1);
 	}
-	float vigF = abs((2000.0*uv.x*uv.y*(1.0-uv.x)*(1.0-uv.y)));
-	vec3 vigIn= vec3(clamp(pow(vigF, 0.5) ,0.0 ,1.0));
 
-	float vig = abs((16.0*uv.x*uv.y*(1.0-uv.x)*(1.0-uv.y)));
+	float vUvs = uv.x*uv.y*(1.0-uv.x)*(1.0-uv.y);
+	float vigF = abs(2000.0*vUvs);
+	float vig = abs(16.0*vUvs);
+
+	vec3 vigIn= vec3(clamp(pow(vigF, 0.5) ,0.0 ,1.0));
 	return vec3(clamp(pow(vig, uVignetteIntensity),0.0 ,1.0)) * vigIn;
 }
 
@@ -60,10 +62,6 @@ float noise(vec2 p) {
 	return res*res;
 }
 
-float gaus(float pos, float scale) {
-	return exp2(scale*pos*pos);
-}
-
 vec2 curve(vec2 uv){
 	if (uCurvature < 0.001) return uv;
 	uv = (uv - 0.5) * 2.0;
@@ -74,6 +72,7 @@ vec2 curve(vec2 uv){
 	uv =  uv *0.92 + 0.04;
 	return uv;
 }
+
 float border(vec2 uv){
 	uv *= 1.0 - uv.xy;
 	float r = 1.0;
@@ -83,9 +82,11 @@ float border(vec2 uv){
 	if (uv.y<0) r = clamp(abs(uv.y*f),0,1);
 	return r;
 }
+
 float lines(float x, float n, float e){
 	return clamp(abs(sin(x * 3.141592 * n) * e) + 1 - e, 0, 1);
 }
+
 vec3 mainImage(vec2 uv){
 	//Chromatic
     float texelR = texture2D(texture0, vec2(uv.x + (uChromatic * 0.003125), uv.y)).r;
@@ -106,14 +107,14 @@ void main(){
 	//Textures
 	vec3 texelColor = mainImage(uv);
     vec3 blurColor = texture2D(blurTexture, uv).rgb;
-    vec3 grille = texture2D(grilleTexture, uv * resolution.y * 0.125).rgb;
+    vec3 grille = texture2D(grilleTexture, uv * resolution.y * 0.11).rgb;
 
     float noiseF = mix(0.92, 1, noise(uv));
 	float fliker = mix(0.98, 1, (sin(60.0*uTime+uv.y*4.0)*0.5+0.5));
 	
     vec3 blur = gamma(blurColor * (5 * uBlurPower + 0.05), 5 * (uBlurFactor * uBlurFactor) + 0.05);
- 	float scanlineF = (lines(uv.y, 200, uScanline));
- 	float verticalLineF = (lines(uv.x, 320, uVerticalLine));
+ 	float scanlineF = (lines(uv.y, textureSize.y, uScanline));
+ 	float verticalLineF = (lines(uv.x, textureSize.x, uVerticalLine));
 	
     vec3 blur2 = blur * blur * blur;
 	vec3 scanline = mix(blur2 ,vec3(1.0), scanlineF);
@@ -129,8 +130,8 @@ void main(){
     texelColor *= vignette(uv, blur);
 	texelColor *= border(uv);
 
-	//if (uv.x > 0.0) 
-	texelColor *= gamma(grille,uGrilleForce*10);
+	//if (uv.x > 0.5) 
+	texelColor *= mix(vec3(1.0), gamma(grille,2.2), uGrilleForce);
 
     finalColor = vec4(texelColor, 1);
 }

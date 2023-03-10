@@ -9,7 +9,7 @@ vignetting = 50
 scanline = 50
 grille = 0
 vLine = 10
-gForce = 255
+gForce = 128
 
 def draw()
     cls(0)
@@ -40,7 +40,7 @@ def draw()
 
     scanline = ui.knob(scanline,20,128,0,255)
     vLine = ui.knob(vLine,50,128,0,255)
-    //gForce = ui.knob(gForce,80,128,0,255)
+    gForce = ui.knob(gForce,80,128,0,255)
 
     crt.blurPower(blurPower)
 
@@ -54,6 +54,9 @@ def draw()
     crt.grilleForce(gForce)
 
 
-    IF mouse.down(2) THEN ui.drawPalette() ENDIF
+    IF mouse.down(2) THEN 
+        ui.drawPalette() 
+    ENDIF
+
     ui.drawmouse()
 enddef
