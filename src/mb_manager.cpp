@@ -1842,7 +1842,7 @@ int MBManager::crtVerticalLine(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	postProcessingR->SetCRTFloat(CRTProperty::GrilleScale, value);
+   	postProcessingR->SetCRTFloat(CRTProperty::VerticalLine, value);
 	return result;
 }
 int MBManager::crtGrilleForce(struct mb_interpreter_t* s, void** l){

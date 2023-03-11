@@ -14,7 +14,7 @@ enum CRTProperty{
     Curvature,
     Vignetting,
     ScanLine,
-    GrilleScale,
+    VerticalLine,
     GrilleForce,
     Noise,
     Fliker
@@ -93,7 +93,7 @@ class PostProcessing{
     int blurTextureLoc;
     int resolutionCRTLoc;
     int timeLoc;
-    
+
     // User
     int blurPowerLoc;
     int blurFactorLoc;

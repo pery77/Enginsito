@@ -173,6 +173,8 @@ void PostProcessing::SetState(bool newState){
 
 void PostProcessing::SetCRTFloat(CRTProperty property, float value){
     value = Clamp(value, 0.0, 255.0);
+    unsigned char v = (unsigned char)value;
+    unsigned short dir = 4080;
     value *= 0.003921; // byte to float normalized 1/255
 
     switch (property){
@@ -181,38 +183,49 @@ void PostProcessing::SetCRTFloat(CRTProperty property, float value){
             break;
         case CRTProperty::BlurFactor:
                 uBlurFactor = value;
+                dir += 1;
             break;
         case CRTProperty::Chromatic:
                 uChromatic = value;
+                dir += 2;
             break;
         case CRTProperty::Curvature:
                 uCurvature = value;
+                dir += 3;
             break;
         case CRTProperty::Vignetting:
                 uVignetteIntensity = value;
+                dir += 4;
             break;
         case CRTProperty::ScanLine:
                 uScanline = value;
+                dir += 5;
             break;
-        case CRTProperty::GrilleScale:
+        case CRTProperty::VerticalLine:
                 uVerticalLine = value;
+                dir += 6;
             break;  
         case CRTProperty::GrilleForce:
                 uGrilleForce = value;
+                dir += 7;
             break;                   
          case CRTProperty::Noise:
                 uNoise = value;
+                dir += 8;
             break;       
         case CRTProperty::Fliker:
                 uFliker = value;
+                dir += 9;
             break;        
         default:
             break;
     }
+    Tools::Poke(dir,v);
 }
 
  void PostProcessing::SetGrilleTexture(int newTextureId){
     if (newTextureId<0) newTextureId = 0;
     if (newTextureId>2) newTextureId = 2;
+    Tools::Poke(4090, newTextureId);
     currentGrilleTexture = newTextureId;
  }

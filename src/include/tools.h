@@ -19,6 +19,8 @@
 #define PROGRAM_EXTENSION   ".bas"
 #define BOOT_FILE           "assets/boot.txt"
 
+#define PE_VERSION          257
+
 struct Vector2i {
 	int x;
 	int y;
@@ -93,4 +95,7 @@ class Tools{
         static void LoadMemory(const char *path);
         static unsigned char Peek(unsigned short dir);
         static void Poke(unsigned short dir,unsigned char value);
+
+        static int GetVersion();
+        static void SetVersion();
 };

@@ -336,6 +336,7 @@ void Tools::DumpMemory(const char *path) {
 
     FILE *f = fopen(path, "wb");
     if (f) {
+        SetVersion();
         size_t r = fwrite(MainMemory, sizeof(MainMemory[0]), 4096, f);
         printf("Wrote %zu elements\n", r);
         fclose(f);
@@ -360,4 +361,13 @@ void Tools::Poke(unsigned short dir, unsigned char value) {
     dir = IntClamp(dir, 0, 4096);
     value = IntClamp(value, 0, 255);
     MainMemory[dir] = value;
+}
+
+int Tools::GetVersion(){
+    return (Peek(4094)*256) + Peek(4095);
+}
+
+void Tools::SetVersion(){
+    Poke(4094, PE_VERSION / 256);
+    Poke(4095, PE_VERSION % 256);
 }
