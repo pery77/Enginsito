@@ -4,6 +4,7 @@
 #include "rfxgen.h"
 #include "tsf.h"
 #include <math.h>
+#include "MMLParser.h"
 
 #define SAMPLERATE               22050
 #define SAMPLESIZE               16
@@ -49,5 +50,7 @@ class AudioManager {
     private:
     const char* sequence = "";
     int audioTick = 0;
+
+    //void mmlCallback(MMLEvent event, int ch, int num, int velocity);
 
 };

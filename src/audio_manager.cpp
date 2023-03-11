@@ -9,10 +9,37 @@ void audioInputCallback(void *buffer, unsigned int frames)
 	tsf_render_short(ptsf, (short*)buffer, sampleCount, 0);
 }
 */
+
+MMLParser mml;
+const char* music = "T96 KIf+ L8 @0"
+    "O5 c.d16ccfa a<b>gr<b4^ 16a16>f4^8<g>d <f4L32e+fgfL8e+rr"
+    "O5 d.e=16d16.d32e32f.e16d <b+4.>crr L16c<b=a+b=a+b=>a=gfe+dc L8<b4a+a=rr"
+    "O4 g=.a16g=g=4g= g=b>dg=b>d <<f.g+16fa4g f4r"
+    "@48 [O4 a4.^8gf e+fg:c4. >c4.^8<bagabe+4.]2 >dc<b^ 8>c<a4Q4bgQ8f4rr4r";
+/*
+void AudioManager::mmlCallback(MMLEvent event, int ch, int num, int velocity) {
+    switch (event) {
+    case MML_NOTE_ON:
+        //midiOutShortMsg(h, MIDIMSG(0x9, ch, num, velocity));
+        printf("%d ", num);
+        AudioManager::PlayNote(0,num,100);
+        
+        // printf("%d (%d)\r\n", num, mml.getTotalSteps());
+        break;
+    case MML_NOTE_OFF:
+        //midiOutShortMsg(h, MIDIMSG(0x8, ch, num, 0));
+        printf("- ");
+        break;
+    case MML_PROGRAM_CHANGE:
+        //midiOutShortMsg(h, MIDIMSG(0xC, ch, num, 0));
+        printf("CHP.");
+        break;
+    }
+}
+*/
 AudioManager::AudioManager(){
 
-    for (int i = 0; i < MAX_WAVE_SLOTS; i++)
-    {
+    for (int i = 0; i < MAX_WAVE_SLOTS; i++){
         // Reset generation parameters
         // NOTE: Random seed for generation is set
         ResetWaveParams(&params[i]);
@@ -42,10 +69,13 @@ AudioManager::AudioManager(){
     //sequence = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
     GetPresets();
    */
+    //mml.setCallback(mmlCallback);
+    mml.play(music, true);
+
 }
 
 AudioManager::~AudioManager(){}
-
+unsigned long tick = 0;
 void AudioManager::Update(){
 /*
     tsf_play_async(ptsf, voice, sequence, 1.0f);
@@ -56,6 +86,13 @@ void AudioManager::Update(){
     }
     audioTick++;
 */
+    if (mml.isPlaying()) {
+        if (!mml.update(tick)) {
+            puts("Error\r\n");
+            printf("EERROORORO");
+        }
+        tick++;
+    }
 }
 void AudioManager::GetPresets()
 {
@@ -78,6 +115,7 @@ void AudioManager::PlayNote(int note, int voice, int volume){
     //if (volume<0) volume = 0;
     //if (volume>100) volume = 100;
     //tsf_note_on(ptsf, voice, note, volume*0.01);
+    SFXRender(voice,0,note);
 }
 void AudioManager::StopNote(int note, int voice){
     ////tsf_note_off(ptsf, voice, note);
