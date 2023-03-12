@@ -45,16 +45,16 @@ class PostProcessing{
     float uTime;
     float uTest;
 
-    float uBlurPower = 0.85;
-    float uBlurFactor = 1.2;
-    float uChromatic = 0.3;
-    float uCurvature = 0.15;
-    float uVignetteIntensity = 0.2;
-    float uScanline = 0.5;
-    float uVerticalLine = 0.08;
+    float uBlurPower = 0.19;
+    float uBlurFactor = 0.6;
+    float uChromatic = 0.31;
+    float uCurvature = 0.39;
+    float uVignetteIntensity = 0.19;
+    float uScanline = 0.19;
+    float uVerticalLine = 0.03;
     float uGrilleForce = 0.5;
-    float uNoise = 0.8;
-    float uFliker = 0.94;
+    float uNoise = 0.19;
+    float uFliker = 0.03;
 
     void ReloadShaders();
 
@@ -76,7 +76,7 @@ class PostProcessing{
 
     RenderTexture2D bufferTexture;
     Texture grilleTextures[3];
-    int currentGrilleTexture;
+    int currentGrilleTexture = 0;
     Shader crtShader;
     Shader blurShader;
 

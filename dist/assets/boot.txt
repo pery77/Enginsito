@@ -1,3 +1,3 @@
 cd tools
-load CRT
+load music
 run

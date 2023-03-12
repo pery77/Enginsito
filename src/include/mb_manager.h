@@ -111,6 +111,9 @@ class MBManager{
         static int setSequence(struct mb_interpreter_t* s, void** l); 
         static int playNote(struct mb_interpreter_t* s, void** l);
         static int stopNote(struct mb_interpreter_t* s, void** l);
+        static int musicPlay(struct mb_interpreter_t* s, void** l);
+        static int musicStop(struct mb_interpreter_t* s, void** l);
+
         
         static int sfxRender(struct mb_interpreter_t* s, void** l);
         static int sfxEnv(struct mb_interpreter_t* s, void** l);

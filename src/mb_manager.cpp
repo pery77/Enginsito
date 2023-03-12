@@ -124,10 +124,12 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "AXISVALUE", axisValue);
 	mb_end_module(bas);
 
-	mb_begin_module(bas, "SOUND");
-		mb_register_func(bas, "MUSIC", setSequence); 
+	mb_begin_module(bas, "MUSIC");
+		mb_register_func(bas, "SET", setSequence); 
 		mb_register_func(bas, "NOTE", playNote);
-		mb_register_func(bas, "STOP", stopNote);
+		mb_register_func(bas, "NOTEOFF", stopNote);
+		mb_register_func(bas, "PLAY", musicPlay);
+		mb_register_func(bas, "STOP", musicStop);
 	mb_end_module(bas);
 
 	mb_begin_module(bas, "SFX");
@@ -1352,11 +1354,10 @@ int MBManager::setSequence(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
 		mb_check(mb_pop_string(s, l, &arg));
-		mb_check(mb_pop_int(s, l, &voice));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SetSequence(arg, voice);
+    audioR->SetSequence(arg);
 	return result;
 }
 int MBManager::playNote(struct mb_interpreter_t* s, void** l){
@@ -1394,6 +1395,34 @@ int MBManager::stopNote(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     audioR->StopNote(key, voice);
+
+	return result;
+}
+int MBManager::musicPlay(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    int key;
+	int voice;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->MusicPlay();
+
+	return result;
+}
+int MBManager::musicStop(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    int key;
+	int voice;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->MusicStop();
 
 	return result;
 }

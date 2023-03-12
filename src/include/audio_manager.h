@@ -30,12 +30,13 @@ class AudioManager {
 
     void Update();
     int voice = 0;
-    void SetSequence(const char* newSequence, int voice);
+    void SetSequence(const char* newSequence);
     const char* GetSequence();
 
     void PlayNote(int note, int voice, int volume);
     void StopNote(int note, int voice);
-    void Stop();
+    void MusicPlay();
+    void MusicStop();
     void GetPresets();
     
     void SFXPlay(unsigned char id);

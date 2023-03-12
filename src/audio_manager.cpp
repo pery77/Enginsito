@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 tsf* ptsf;
+MMLParser* mml;
 /*
 void audioInputCallback(void *buffer, unsigned int frames)
 {
@@ -10,16 +11,7 @@ void audioInputCallback(void *buffer, unsigned int frames)
 }
 */
 
-MMLParser* mml;
-unsigned long tick = 0;
-/*
-const char* music = "T120 KIf+ L8 @0"
-    "O5 c.d16ccfa a<b>gr<b4^ 16a16>f4^8<g>d <f4L32e+fgfL8e+rr"
-    "O5 d.e=16d16.d32e32f.e16d <b+4.>crr L16c<b=a+b=a+b=>a=gfe+dc L8<b4a+a=rr"
-    "O4 g=.a16g=g=4g= g=b>dg=b>d <<f.g+16fa4g f4r"
-    "@48 [O4 a4.^8gf e+fg:c4. >c4.^8<bagabe+4.]2 >dc<b^ 8>c<a4Q4bgQ8f4rr4r";
-*/
-const char* music = "MML@t126a+16f16>f16<f16>d+16<f16>c+16<f16>c16<f16>c+16<f16>c16<f16a+16f16>c16<f16>c+16<f16>d+16<f16>c+16<f16>c16<f16g+16f16>c16<f16a+16f16a+16f16>f16<f16>d+16<f16>c+16<f16>c16<f16>c+16<f16>c16<f16a+16f16>c16<f16>c+16<f16>d+16<f16>c+16<f16>c16<f16g+16f16>c16<f16a+16f16>d+8g+16f2&f16d+8c+8d+8.g+8.f4.d+8c+8d+8g+16f2&f16d+4f+8.g+4&g+16f8.f+4&f+16d+8g+16f2&f16d+8c+8d+8.g+8.f4.d+8c+8d+8g+16f2&f16d+8f8f+8.g+4&g+16f8g8a8>c8<c8.<a+8.>a+8c8.<a+8.>a+8c8.<a+8.>a+8c+16>c+16<c16>c16<<a+16>a+16<g+16>g+16c8<a+16>a+4&a+16c8<a+16>a+4&a+16c8<a+16>a+4&a+16>c+8d+8c16c+8.,o3a+1>f1o3a+1>f1<<a+8>a+16<a+8a+16>a+8<a+8>a+8<a+8>a+8<g+8>g+16<g+8g+16>g+8<g+8>g+8<g+8>g+8<f+8>f+16<f+8f+16>f+8<f+8>f+8<f+8>f+8<f8>f16<f8f16>f8<f8>f8<f8>f8<a+8>a+16<a+8a+16>a+8<a+8>a+8<a+8>a+8<g+8>g+16<g+8g+16>g+8<g+8>g+8<g+8>g+8<f+8>f+16<f+8f+16>f+8<f+8>f+8<f+8>f+8<f8>f16<f8f16>f8<f8><g8><a8>c8><<a+8.a+8.a+8><g+8.g+8.g+8><f+8.f+8.f+8><g+8.g+8.g+8><a+8.a+8.a+8><g+8.g+8.g+16g+16f+8.f+8.f+16>f+16<g+8>g+8<g+16g+16>g+8;";
+
 void mmlCallback(MMLEvent event, int ch, int num, int velocity, AudioManager* au) {
     switch (event) {
     case MML_NOTE_ON:
@@ -32,6 +24,7 @@ void mmlCallback(MMLEvent event, int ch, int num, int velocity, AudioManager* au
     case MML_NOTE_OFF:
         //midiOutShortMsg(h, MIDIMSG(0x8, ch, num, 0));
         printf("- ");
+        au->StopNote(num,0);
         break;
     case MML_PROGRAM_CHANGE:
         //midiOutShortMsg(h, MIDIMSG(0xC, ch, num, 0));
@@ -72,9 +65,10 @@ AudioManager::AudioManager(){
     //sequence = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
     GetPresets();
    */
+
     mml = new MMLParser(this);
     mml->setCallback(mmlCallback);
-    mml->play(music, true);
+
 }
 
 AudioManager::~AudioManager(){}
@@ -90,10 +84,10 @@ void AudioManager::Update(){
     audioTick++;
 */
     if (mml->isPlaying()) {
-        if (!mml->update(tick)) {
+        if (!mml->update(audioTick)) {
             puts("Error\r\n");
         }
-        tick++;
+        audioTick++;
     }
 }
 void AudioManager::GetPresets()
@@ -104,10 +98,9 @@ void AudioManager::GetPresets()
 		printf("Preset #%d '%s'\n", i, tsf_get_presetname(ptsf, i));
 	}
 } 
-void AudioManager::SetSequence(const char* newSequence, int newVoice){
-    //sequence = newSequence;
-    //voice = newVoice;
-    //audioTick = 0;
+void AudioManager::SetSequence(const char* newSequence){
+    sequence = newSequence;
+    audioTick = 0;
 }
 const char* AudioManager::GetSequence(){
         return sequence;
@@ -124,10 +117,12 @@ void AudioManager::StopNote(int note, int voice){
     ////tsf_note_off(ptsf, voice, note);
     //tsf_note_off_all(ptsf);
 }
-
-void AudioManager::Stop(){
-    sequence = "";
+void AudioManager::MusicPlay(){
     audioTick = 0;
+    mml->play(sequence, true);
+}
+void AudioManager::MusicStop(){
+    mml->stop();
 }
 
 void AudioManager::SFXRender(unsigned char id, unsigned char waveType, unsigned char note){
