@@ -1,7 +1,6 @@
 //
 // MMLParser.cpp
 //
-
 #include "MMLParser.h"
 
 #define TIMEBASE 192
@@ -19,7 +18,7 @@ int16_t MMLParser::tempo = 120;
 MMLParser *MMLParser::pFirstMMLParser = NULL;
 MMLParser *MMLParser::pPrevMMLParser = NULL;
 
-MMLParser::MMLParser(int _channel) {
+MMLParser::MMLParser(AudioManager* _audioManager, int _channel) {
 	if (!pFirstMMLParser) {
 		pFirstMMLParser = this;
 	}
@@ -31,9 +30,12 @@ MMLParser::MMLParser(int _channel) {
 
 	channel = _channel;
 	pfnCallback = NULL;
+	audioM = _audioManager;
 	maxVelocity = 127;
 	init();
 }
+
+MMLParser::~MMLParser(){}
 
 void MMLParser::init() {
 	_isPlaying = false;
@@ -64,20 +66,20 @@ void MMLParser::play(MMLPTR mml, bool _isLoop) {
 
 void MMLParser::noteOn(int num, int velocity) {
 	if (pfnCallback) {
-		(*pfnCallback)(MML_NOTE_ON, channel, num, velocity);
+		(*pfnCallback)(MML_NOTE_ON, channel, num, velocity, audioM);
 	}
 	prevNum = num;
 }
 
 void MMLParser::noteOff() {
 	if (pfnCallback) {
-		(*pfnCallback)(MML_NOTE_OFF, channel, prevNum, 0);
+		(*pfnCallback)(MML_NOTE_OFF, channel, prevNum, 0, audioM);
 	}
 }
 
 void MMLParser::programChange(int prog) {
 	if (pfnCallback) {
-		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, prog, 0);
+		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, prog, 0, audioM);
 	}
 }
 

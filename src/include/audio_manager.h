@@ -15,9 +15,10 @@
 #define WAIT_TICKS                30
 
 #define AUDIO_STEP                 0.00390625
-class AudioManager {
-    public:
 
+class AudioManager {
+    
+    public:
     AudioManager();
     ~AudioManager();
 
@@ -26,8 +27,6 @@ class AudioManager {
     Sound sound[MAX_WAVE_SLOTS] = { 0 };
 
     //tsf* ptsf = tsf_load_filename("assets/8bit.sf2");
-    //tsf* ptsf = tsf_load_filename("assets/ins.sf2");
-    //tsf* ptsf = tsf_load_filename("assets/florestan-subset.sf2");
 
     void Update();
     int voice = 0;
@@ -46,11 +45,9 @@ class AudioManager {
     void SFXTone(unsigned char id, unsigned char amount, unsigned char speed, unsigned char square, unsigned char duty);
     void SFXRepeat(unsigned char id, unsigned char speed, unsigned char offset, unsigned char sweep);
     void SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, unsigned char lpfRes, unsigned char hpfCutoff, unsigned char hpfSweep);
-
+    
     private:
     const char* sequence = "";
     int audioTick = 0;
-
-    //void mmlCallback(MMLEvent event, int ch, int num, int velocity);
 
 };

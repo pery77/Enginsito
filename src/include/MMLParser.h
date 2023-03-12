@@ -25,14 +25,17 @@ struct MMLLoop {
 };
 
 #define MAX_LOOP_NEST 4
-
+class AudioManager;
 //
 // MMLParser class
 //
 class MMLParser {
 public:
-	MMLParser(int channel = 0);
-	void setCallback(void (*_pfnCallback)(MMLEvent, int, int, int)) { pfnCallback = _pfnCallback; }
+
+	MMLParser(AudioManager* audioManager, int channel = 0);
+	~MMLParser();
+
+	void setCallback(void (*_pfnCallback)(MMLEvent, int, int, int, AudioManager*)) { pfnCallback = _pfnCallback; }
 	void setChannel(int _channel) { channel = _channel; }
 	void setMaxVelocity(int _maxVelocity) { maxVelocity = _maxVelocity;	}
 	void play(MMLPTR mml, bool isLoop = false);
@@ -43,17 +46,17 @@ public:
 	bool update(unsigned long tick);
 	MMLPTR getErrorPoint() { return p - 1; }
 	int getTotalSteps() { return totalSteps; }
-
+	
 	static void stopAll();
 	static void pauseAll(bool b);
 	static bool updateAll(unsigned long tick);
 	static void setTempo(int _tempo) { tempo = _tempo; }
-
 protected:
 	MMLParser *pNextMMLParser;
 	static MMLParser *pFirstMMLParser;
 	static MMLParser *pPrevMMLParser;
 
+	AudioManager* audioM;
 	int channel;
 	bool _isPlaying;
 	bool _isPaused;
@@ -80,7 +83,8 @@ protected:
 	static int16_t tempo;
 	int prevNum;
 
-	void(*pfnCallback)(MMLEvent, int, int, int); // channel, note number, velocity
+	void(*pfnCallback)(MMLEvent, int, int, int, AudioManager*); // channel, note number, velocity
+
 	void init();
 	void startup();
 	bool parse();
