@@ -148,7 +148,7 @@ extern "C" {
 
 /* Max length of a single symbol */
 #ifndef _SINGLE_SYMBOL_MAX_LENGTH
-#	define _SINGLE_SYMBOL_MAX_LENGTH 128
+#	define _SINGLE_SYMBOL_MAX_LENGTH 1024
 #endif /* _SINGLE_SYMBOL_MAX_LENGTH */
 
 /* Buffer length of some string operations */

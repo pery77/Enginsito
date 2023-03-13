@@ -12,6 +12,19 @@ MBManager::MBManager(PostProcessing* postProcessing){
 
 MBManager::~MBManager(){
 }
+
+void MBManager::managerError(int state){
+	int pos;
+    unsigned short row;
+    unsigned short col;
+
+    mb_error_e error = mb_get_last_error(bas, &basFile, &pos, &row, &col);
+	const char* errorDes = mb_get_error_desc(error);
+    if(state > 0){
+        printf("ERROR [%i]:\n%s\npos = %i, row = %i col = %i \n",error ,errorDes , pos, row, col);
+    }
+}
+
 void MBManager::UpdateAudio(){
 	audioR->Update();
 }
@@ -153,34 +166,16 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, saveFile);
 
     int loadState = mb_load_file(bas, file);
-	switch (loadState){
-		case 0:
-			printf("Loading %s\n",file);
-			break;
-		case 3:
-			printf("Error loading %s\n",file);
-		default:
-			printf("ERROR %i\n", loadState);
-			break;
-	}
-	return loadState;
 	
+	printf("Loading: [ %s ]\n",file);
+	managerError(loadState);
+	
+	return loadState;
 }    
 
 void MBManager::Run(){
-	int pos;
-    unsigned short row;
-    unsigned short col;
-    mb_error_e e;
-
 	int run = mb_run(bas, true);
-    e = mb_get_last_error(bas, &basFile, &pos, &row, &col);
-
-    if(run > 0){
-        printf("Run code: %i, \n",run);
-        printf("ERROR Code: %i, pos = %i, row  = %i col = %i \n",e , pos, row, col);
-    }
-
+	managerError(run);
 }
 void MBManager::CloseBas(){
 	mb_close(&bas);

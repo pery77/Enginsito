@@ -35,6 +35,8 @@ class MBManager{
         mb_value_t drawRoutine;
         mb_value_t endRoutine;
 
+        void managerError(int state);
+
         void doRoutine(char* routineName, mb_value_t routine);
 
         //Draw
