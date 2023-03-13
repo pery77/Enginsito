@@ -39,8 +39,9 @@ class AudioManager {
     void MusicStop();
     void GetPresets();
     
-    void SFXPlay(unsigned char id);
-    void SFXRender(unsigned char id, unsigned char waveType, unsigned char note);
+    void SFXPlay(unsigned char id, unsigned char vol = 127);
+    void SFXRender(unsigned char id, unsigned char note);
+    void SFXWave(unsigned char id, unsigned char waveType);
     void SFXEnv(unsigned char id, unsigned char att, unsigned char susT, unsigned char susP, unsigned char dec);
     void SFXFreq(unsigned char id, unsigned char slide, unsigned char delta, unsigned char vibratoD, unsigned char vibratoS);
     void SFXTone(unsigned char id, unsigned char amount, unsigned char speed, unsigned char square, unsigned char duty);

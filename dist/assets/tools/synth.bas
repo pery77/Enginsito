@@ -36,7 +36,8 @@ def tick()
         sfx.tone(0, toneAmount, toneSpeed, toneSquare, toneDuty)
         sfx.repeat(0, repSp, repOf, repSw)
         sfx.filter(0, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
-        sfx.render(0, wave, note)
+        sfx.wave(0, wave)
+        sfx.render(0, note)
         sfx.play(0) 
 
     ENDIF  

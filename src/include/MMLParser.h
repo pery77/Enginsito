@@ -89,7 +89,7 @@ protected:
 	void startup();
 	bool parse();
 
-	void noteOn(int num, int velocity = 0);
+	void noteOn(int channel, int num, int velocity = 0);
 	void noteOff();
 	void programChange(int prog);
 

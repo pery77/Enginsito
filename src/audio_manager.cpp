@@ -14,22 +14,17 @@ void audioInputCallback(void *buffer, unsigned int frames)
 
 void mmlCallback(MMLEvent event, int ch, int num, int velocity, AudioManager* au) {
     switch (event) {
-    case MML_NOTE_ON:
-        //midiOutShortMsg(h, MIDIMSG(0x9, ch, num, velocity));
-        printf("%d ", num);
-        au->PlayNote(num,0,velocity);
-        //PlayNote(0,num,100);
-        //printf("%d (%d)\r\n", num, mml.getTotalSteps());
-        break;
-    case MML_NOTE_OFF:
-        //midiOutShortMsg(h, MIDIMSG(0x8, ch, num, 0));
-        printf("- ");
-        au->StopNote(num,0);
-        break;
-    case MML_PROGRAM_CHANGE:
-        //midiOutShortMsg(h, MIDIMSG(0xC, ch, num, 0));
-        printf("CHP.");
-        break;
+        case MML_NOTE_ON:
+            printf("(%d)%d,%d >%d", ch, num, velocity, mml->getTotalSteps());
+            au->PlayNote(num, ch, velocity);
+            break;
+        case MML_NOTE_OFF:
+            printf("- ");
+            au->StopNote(num, ch);
+            break;
+        case MML_PROGRAM_CHANGE:
+            printf("\n[Voice:%d]\n", ch);
+            break;
     }
 }
 
@@ -110,12 +105,13 @@ void AudioManager::PlayNote(int note, int voice, int volume){
     //if (volume<0) volume = 0;
     //if (volume>100) volume = 100;
     //tsf_note_on(ptsf, voice, note, volume*0.01);
-    SFXRender(voice,0,note);
-    SFXPlay(0);
+    SFXRender(voice, note);
+    SFXPlay(voice, volume);
 }
 void AudioManager::StopNote(int note, int voice){
     ////tsf_note_off(ptsf, voice, note);
     //tsf_note_off_all(ptsf);
+    //StopSound(sound[voice]);
 }
 void AudioManager::MusicPlay(){
     audioTick = 0;
@@ -125,22 +121,21 @@ void AudioManager::MusicStop(){
     mml->stop();
 }
 
-void AudioManager::SFXRender(unsigned char id, unsigned char waveType, unsigned char note){
-    params[id].waveTypeValue = waveType;
+void AudioManager::SFXRender(unsigned char id, unsigned char note){
     float n = ((note - 21)/12.0);
     float f =  0.087875 * (sqrt(pow(2, n)));
     params[id].startFrequencyValue = f;
     wave[id].data = GenerateWave(params[id], &wave[id].frameCount);
     sound[id] = LoadSoundFromWave(wave[id]);
-    printf("SFX Render: [%i] wave: [%i]\n",id,  params[id].waveTypeValue);
+}
+void AudioManager::SFXWave(unsigned char id, unsigned char waveType){
+    params[id].waveTypeValue = waveType;
 }
 void AudioManager::SFXEnv(unsigned char id, unsigned char att, unsigned char susT, unsigned char susP, unsigned char dec){
     params[id].attackTimeValue = (float) (att * AUDIO_STEP);
     params[id].sustainTimeValue = (float) (susT * AUDIO_STEP);
     params[id].sustainPunchValue = (float) (susP * AUDIO_STEP);
     params[id].decayTimeValue = (float) (dec * AUDIO_STEP);
-    printf("SFX Env: [%i] attack: [%f] susT: [%f] susP: [%f] dec: [%f]\n",id,
-    params[id].attackTimeValue, params[id].sustainTimeValue, params[id].sustainPunchValue, params[id].decayTimeValue);
 }
 void AudioManager::SFXFreq(unsigned char id, unsigned char slide, unsigned char delta, unsigned char vibratoD, unsigned char vibratoS){
     signed char sl = (signed char)slide;
@@ -149,22 +144,16 @@ void AudioManager::SFXFreq(unsigned char id, unsigned char slide, unsigned char 
     params[id].deltaSlideValue = (float) (de * AUDIO_STEP) * 2;
     params[id].vibratoDepthValue = (float) (vibratoD * AUDIO_STEP);
     params[id].vibratoSpeedValue = (float) (vibratoS * AUDIO_STEP);
-    printf("SFX FQ: [%i]  slide: [%f] delta: [%f] vDep: [%f] vSpeed: [%f]\n",id ,
-      params[id].slideValue, params[id].deltaSlideValue, params[id].vibratoDepthValue, params[id].vibratoSpeedValue);
-
 }
 void AudioManager::SFXTone(unsigned char id, unsigned char amount, unsigned char speed, unsigned char square, unsigned char duty){
-    printf("SFX Tone: [%i]\n",id);
     signed char am = (signed char) amount;
     signed char du = (signed char) duty;
     params[id].changeAmountValue = (float) (am * AUDIO_STEP) * 2;
     params[id].changeSpeedValue = (float) (speed * AUDIO_STEP);
     params[id].squareDutyValue = (float) (square * AUDIO_STEP);
-    params[id].dutySweepValue = (float) (du * AUDIO_STEP) * 2;
-        
+    params[id].dutySweepValue = (float) (du * AUDIO_STEP) * 2;  
 }
 void AudioManager::SFXRepeat(unsigned char id, unsigned char speed, unsigned char offset, unsigned char sweep){
-    printf("SFX Repeat: [%i]\n",id);
     signed char off = (signed char) offset;
     signed char sw = (signed char) sweep;
     params[id].repeatSpeedValue = (float) (speed * AUDIO_STEP);
@@ -173,7 +162,6 @@ void AudioManager::SFXRepeat(unsigned char id, unsigned char speed, unsigned cha
 }
 void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, 
         unsigned char lpfRes, unsigned char hpfCutoff, unsigned char hpfSweep){
-    printf("SFX Filter: [%i]\n",id);
     signed char ls= (signed char)lpfSweep;
     signed char hs = (signed char)hpfSweep;
     params[id].lpfCutoffValue = (float) (lpfCutoff * AUDIO_STEP);
@@ -183,11 +171,9 @@ void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned
     params[id].hpfCutoffSweepValue = (float) (hs * AUDIO_STEP) * 2;
 }
 
-void AudioManager::SFXPlay(unsigned char id){
-        //StopSound(sound[id]);
+void AudioManager::SFXPlay(unsigned char id, unsigned char vol){
+        if (vol > 0) 
+            SetSoundVolume(sound[id], (float)(vol * 0.007874)); // 1/127
+
         PlaySound(sound[id]);
 }
-/*
-void AudioManager::SetMMLAM(AudioManager* _aM){
-    mml->setAudioManager(_aM);
-}*/

@@ -118,6 +118,7 @@ class MBManager{
 
         
         static int sfxRender(struct mb_interpreter_t* s, void** l);
+        static int sfxWave(struct mb_interpreter_t* s, void** l);
         static int sfxEnv(struct mb_interpreter_t* s, void** l);
         static int sfxFreq(struct mb_interpreter_t* s, void** l);
         static int sfxTone(struct mb_interpreter_t* s, void** l);

@@ -147,6 +147,7 @@ int MBManager::OpenBas(const char * file){
 
 	mb_begin_module(bas, "SFX");
 		mb_register_func(bas, "RENDER", sfxRender); 
+		mb_register_func(bas, "WAVE", sfxWave); 
 		mb_register_func(bas, "ENV", sfxEnv); 
 		mb_register_func(bas, "FREQ", sfxFreq); 
 		mb_register_func(bas, "TONE", sfxTone); 
@@ -1426,18 +1427,34 @@ int MBManager::sfxRender(struct mb_interpreter_t* s, void** l){
 	mb_assert(s && l);
 
     int id;
-	int wave;
 	int note;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
 		mb_check(mb_pop_int(s, l, &id));
-		mb_check(mb_pop_int(s, l, &wave));
 		mb_check(mb_pop_int(s, l, &note));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXRender(id, wave, note);
+    audioR->SFXRender(id, note);
+
+	return result;
+}
+int MBManager::sfxWave(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    int id;
+	int wave;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &id));
+		mb_check(mb_pop_int(s, l, &wave));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SFXWave(id, wave);
 
 	return result;
 }

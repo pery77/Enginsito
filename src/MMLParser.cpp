@@ -64,7 +64,7 @@ void MMLParser::play(MMLPTR mml, bool _isLoop) {
 	_isPlaying = true;
 }
 
-void MMLParser::noteOn(int num, int velocity) {
+void MMLParser::noteOn(int channel, int num, int velocity) {
 	if (pfnCallback) {
 		(*pfnCallback)(MML_NOTE_ON, channel, num, velocity, audioM);
 	}
@@ -78,6 +78,7 @@ void MMLParser::noteOff() {
 }
 
 void MMLParser::programChange(int prog) {
+	channel = prog;
 	if (pfnCallback) {
 		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, prog, 0, audioM);
 	}
@@ -125,7 +126,8 @@ bool MMLParser::update(unsigned long tick) {
 	}
 	//	return (60 * 1000 / tempo) * steps / 48;
 	if (steps) {
-		//int e = (int)(tick - startTick) * 48 * tempo / (60 * 1000) - totalSteps;
+		//int e = (int)(tick - startTick) * 48 * tempo / (60 * 1000) - totalSteps; //Original
+		// now is 60, because FPS?
 		int e = (int)(tick - startTick) * 48 * tempo/(60*60) - totalSteps;
 		if (stepsGate) {
 			if (e >= stepsGate) {
@@ -241,7 +243,7 @@ bool MMLParser::parseTone(char c) {
 	} else if (v > maxVelocity) {
 		v = maxVelocity;
 	}
-	noteOn(num, v);
+	noteOn(channel, num, v);
 	return true;
 }
 
