@@ -1,22 +1,22 @@
 #include "audio_manager.h"
 #include <stdio.h>
+#include <cstring>
 
 tsf* ptsf;
-MMLParser* mml;
-/*
+MMLParser* mml[TRACK_COUNT];
+
 void audioInputCallback(void *buffer, unsigned int frames)
 {
 	int sampleCount = (frames / (0.5 * sizeof(short)));
 	tsf_render_short(ptsf, (short*)buffer, sampleCount, 0);
 }
-*/
-
 
 void mmlCallback(MMLEvent event, int ch, int num, int velocity, AudioManager* au) {
     switch (event) {
         case MML_NOTE_ON:
-            printf("(%d)%d,%d >%d", ch, num, velocity, mml->getTotalSteps());
+            printf("(%d)%d,%d", ch, num, velocity);
             au->PlayNote(num, ch, velocity);
+            //mml[x]->getTotalSteps()
             break;
         case MML_NOTE_OFF:
             printf("- ");
@@ -46,9 +46,7 @@ AudioManager::AudioManager(){
         sound[i] = LoadSoundFromWave(wave[i]);
     }
     /*
-    //ptsf = tsf_load_filename("assets/keygen.sf2");
-    ptsf = tsf_load_filename("assets/ins.sf2");
-    
+    ptsf = tsf_load_filename("assets/keygen.sf2");
     SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
     AudioStream stream = LoadAudioStream(SAMPLERATE, SAMPLESIZE, CHANNELS);
     SetAudioStreamCallback(stream, audioInputCallback);
@@ -56,35 +54,30 @@ AudioManager::AudioManager(){
     PlayAudioStream(stream);
 
     tsf_set_output(ptsf, TSF_STEREO_INTERLEAVED, SAMPLERATE, -7); 
-
-    //sequence = "ML AA8G8E.D8C2P2 E.D8C<A8G8G2>P2 <G.A8G.A8>C.D8EG A.G8E8D8CD2";
     GetPresets();
    */
-
-    mml = new MMLParser(this);
-    mml->setCallback(mmlCallback);
+    for (int i = 0; i < TRACK_COUNT; i++) {
+        mml[i] = new MMLParser(this);
+        mml[i]->setCallback(mmlCallback);
+    }
 
 }
 
 AudioManager::~AudioManager(){}
 
 void AudioManager::Update(){
-/*
-    tsf_play_async(ptsf, voice, sequence, 1.0f);
-
-    if (sequence && *sequence && audioTick == WAIT_TICKS) {
-        sequence = tsf_play_await(ptsf, GetFrameTime());
-        audioTick = 0;
-    }
-    audioTick++;
-*/
-    if (mml->isPlaying()) {
-        if (!mml->update(audioTick)) {
-            puts("Error\r\n");
+    bool isPlaying = false;
+    for (int i = 0; i < TRACK_COUNT; i++) {
+        if (mml[i]->isPlaying()) {
+            isPlaying = true;
+            if (!mml[i]->update(audioTick)) {
+                puts("Error\r\n");
+            }
         }
-        audioTick++;
     }
+    if (isPlaying) audioTick++;
 }
+
 void AudioManager::GetPresets()
 {
     int i;
@@ -93,17 +86,17 @@ void AudioManager::GetPresets()
 		printf("Preset #%d '%s'\n", i, tsf_get_presetname(ptsf, i));
 	}
 } 
-void AudioManager::SetSequence(const char* newSequence){
-    sequence = newSequence;
+void AudioManager::SetSequence(unsigned char id, const char* newSequence){
+    if (id > TRACK_COUNT - 1) 
+        id = TRACK_COUNT - 1;
+    sequence[id] = newSequence;
     audioTick = 0;
 }
-const char* AudioManager::GetSequence(){
-        return sequence;
+const char* AudioManager::GetSequence(unsigned char id){
+        return sequence[id];
 }
 
 void AudioManager::PlayNote(int note, int voice, int volume){
-    //if (volume<0) volume = 0;
-    //if (volume>100) volume = 100;
     //tsf_note_on(ptsf, voice, note, volume*0.01);
     SFXRender(voice, note);
     SFXPlay(voice, volume);
@@ -115,10 +108,15 @@ void AudioManager::StopNote(int note, int voice){
 }
 void AudioManager::MusicPlay(){
     audioTick = 0;
-    mml->play(sequence, true);
+    for (int i = 0; i < TRACK_COUNT; i++) {
+        size_t lenght = strlen(sequence[i]);
+        if (lenght > 1) mml[i]->play(sequence[i], true);
+    }
 }
 void AudioManager::MusicStop(){
-    mml->stop();
+    for (int i = 0; i < TRACK_COUNT; i++) {
+        mml[i]->stop();
+    }
 }
 
 void AudioManager::SFXRender(unsigned char id, unsigned char note){
@@ -172,8 +170,6 @@ void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned
 }
 
 void AudioManager::SFXPlay(unsigned char id, unsigned char vol){
-        if (vol > 0) 
-            SetSoundVolume(sound[id], (float)(vol * 0.007874)); // 1/127
-
+        SetSoundVolume(sound[id], (float)(vol * 0.007874)); // 1/127
         PlaySound(sound[id]);
 }

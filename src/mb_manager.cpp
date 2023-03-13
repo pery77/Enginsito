@@ -1344,16 +1344,17 @@ int MBManager::setSequence(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
+	int id;
     char* arg = 0;
-	int voice;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &id));
 		mb_check(mb_pop_string(s, l, &arg));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SetSequence(arg);
+    audioR->SetSequence(id, arg);
 	return result;
 }
 int MBManager::playNote(struct mb_interpreter_t* s, void** l){

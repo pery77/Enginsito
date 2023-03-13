@@ -12,9 +12,9 @@
 #define MAX_SAMPLES               512
 #define MAX_SAMPLES_PER_UPDATE    4096
 #define MAX_WAVE_SLOTS            16
-#define WAIT_TICKS                30
 
 #define AUDIO_STEP                 0.00390625
+#define TRACK_COUNT                4
 
 class AudioManager {
     
@@ -30,8 +30,8 @@ class AudioManager {
 
     void Update();
     int voice = 0;
-    void SetSequence(const char* newSequence);
-    const char* GetSequence();
+    void SetSequence(unsigned char id, const char* newSequence);
+    const char* GetSequence(unsigned char id);
 
     void PlayNote(int note, int voice, int volume);
     void StopNote(int note, int voice);
@@ -49,7 +49,6 @@ class AudioManager {
     void SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, unsigned char lpfRes, unsigned char hpfCutoff, unsigned char hpfSweep);
     
     private:
-    const char* sequence = "";
     int audioTick = 0;
-
+    const char* sequence[TRACK_COUNT] {""};
 };
