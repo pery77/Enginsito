@@ -50,5 +50,5 @@ class AudioManager {
     
     private:
     int audioTick = 0;
-    const char* sequence[TRACK_COUNT] {""};
+    const char* sequence[TRACK_COUNT];
 };

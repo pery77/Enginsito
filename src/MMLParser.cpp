@@ -128,7 +128,7 @@ bool MMLParser::update(unsigned long tick) {
 	if (steps) {
 		//int e = (int)(tick - startTick) * 48 * tempo / (60 * 1000) - totalSteps; //Original
 		// now is 60, because FPS?
-		int e = (int)(tick - startTick) * 48 * tempo/(60*60) - totalSteps;
+		int e = (int)(tick - startTick) * 48 * tempo / ( 60 * 60 ) - totalSteps;
 		if (stepsGate) {
 			if (e >= stepsGate) {
 				noteOff();

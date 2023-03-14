@@ -59,8 +59,8 @@ AudioManager::AudioManager(){
     for (int i = 0; i < TRACK_COUNT; i++) {
         mml[i] = new MMLParser(this);
         mml[i]->setCallback(mmlCallback);
+        sequence[i] = "";
     }
-
 }
 
 AudioManager::~AudioManager(){}
@@ -70,9 +70,7 @@ void AudioManager::Update(){
     for (int i = 0; i < TRACK_COUNT; i++) {
         if (mml[i]->isPlaying()) {
             isPlaying = true;
-            if (!mml[i]->update(audioTick)) {
-                puts("Error\r\n");
-            }
+            mml[i]->update(audioTick);
         }
     }
     if (isPlaying) audioTick++;
@@ -110,7 +108,11 @@ void AudioManager::MusicPlay(){
     audioTick = 0;
     for (int i = 0; i < TRACK_COUNT; i++) {
         size_t lenght = strlen(sequence[i]);
-        if (lenght > 1) mml[i]->play(sequence[i], true);
+        if (lenght > 2){
+            printf("Playing #%d '%s'\n", i, sequence[i]);
+            mml[i]->play(sequence[i], true);
+        }
+            
     }
 }
 void AudioManager::MusicStop(){
