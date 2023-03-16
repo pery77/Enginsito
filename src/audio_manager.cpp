@@ -1,6 +1,7 @@
 #include "audio_manager.h"
 #include <stdio.h>
 #include <cstring>
+#include <cmath>
 
 tsf* ptsf;
 MMLParser* mml[TRACK_COUNT];
@@ -112,53 +113,97 @@ void AudioManager::MusicStop(){
 
 //Effects
 void AudioManager::SFXRender(unsigned char id, unsigned char note){
+
     float n = ((note - 21)/12.0);
     float f =  0.087875 * (sqrt(pow(2, n)));
+
     params[id].startFrequencyValue = f;
+
     wave[id].data = GenerateWave(params[id], &wave[id].frameCount);
     sound[id] = LoadSoundFromWave(wave[id]);
+
+    sfxBytes[id].startFrequency = note;
 }
 void AudioManager::SFXWave(unsigned char id, unsigned char waveType){
+
     params[id].waveTypeValue = waveType;
+    sfxBytes[id].wave = waveType;
 }
 void AudioManager::SFXEnv(unsigned char id, unsigned char att, unsigned char susT, unsigned char susP, unsigned char dec){
-    params[id].attackTimeValue = (float) (att * AUDIO_STEP);
-    params[id].sustainTimeValue = (float) (susT * AUDIO_STEP);
+
+    params[id].attackTimeValue   = (float) (att * AUDIO_STEP);
+    params[id].sustainTimeValue  = (float) (susT * AUDIO_STEP);
     params[id].sustainPunchValue = (float) (susP * AUDIO_STEP);
-    params[id].decayTimeValue = (float) (dec * AUDIO_STEP);
+    params[id].decayTimeValue    = (float) (dec * AUDIO_STEP);
+    
+    sfxBytes[id].attackTime   = att ;
+    sfxBytes[id].sustainTime  = susT;
+    sfxBytes[id].sustainPunch = susP;
+    sfxBytes[id].decayTime    = dec ;
+
 }
 void AudioManager::SFXFreq(unsigned char id, unsigned char slide, unsigned char delta, unsigned char vibratoD, unsigned char vibratoS){
+
     signed char sl = (signed char)slide;
     signed char de = (signed char)delta;
-    params[id].slideValue = (float) (sl * AUDIO_STEP) * 2;
-    params[id].deltaSlideValue = (float) (de * AUDIO_STEP) * 2;
+
+    params[id].slideValue        = (float) (sl * AUDIO_STEP) * 2;
+    params[id].deltaSlideValue   = (float) (de * AUDIO_STEP) * 2;
     params[id].vibratoDepthValue = (float) (vibratoD * AUDIO_STEP);
     params[id].vibratoSpeedValue = (float) (vibratoS * AUDIO_STEP);
+
+    sfxBytes[id].slide        = slide;
+    sfxBytes[id].deltaSlide   = delta;
+    sfxBytes[id].vibratoDepth = vibratoD;
+    sfxBytes[id].vibratoSpeed = vibratoS;
 }
 void AudioManager::SFXTone(unsigned char id, unsigned char amount, unsigned char speed, unsigned char square, unsigned char duty){
+
     signed char am = (signed char) amount;
     signed char du = (signed char) duty;
+
     params[id].changeAmountValue = (float) (am * AUDIO_STEP) * 2;
-    params[id].changeSpeedValue = (float) (speed * AUDIO_STEP);
-    params[id].squareDutyValue = (float) (square * AUDIO_STEP);
-    params[id].dutySweepValue = (float) (du * AUDIO_STEP) * 2;  
+    params[id].changeSpeedValue  = (float) (speed * AUDIO_STEP);
+    params[id].squareDutyValue   = (float) (square * AUDIO_STEP);
+    params[id].dutySweepValue    = (float) (du * AUDIO_STEP) * 2;
+
+    sfxBytes[id].changeAmount = amount;
+    sfxBytes[id].changeSpeed  = speed;
+    sfxBytes[id].squareDuty   = square;
+    sfxBytes[id].dutySweep    = duty;
+
 }
 void AudioManager::SFXRepeat(unsigned char id, unsigned char speed, unsigned char offset, unsigned char sweep){
+
     signed char off = (signed char) offset;
     signed char sw = (signed char) sweep;
+
     params[id].repeatSpeedValue = (float) (speed * AUDIO_STEP);
     params[id].phaserOffsetValue = (float) (off * AUDIO_STEP) * 2;
     params[id].phaserSweepValue = (float) (sw * AUDIO_STEP) * 2;
+
+    sfxBytes[id].repeatSpeed  = speed;
+    sfxBytes[id].phaserOffset = offset;
+    sfxBytes[id].phaserSweep  = sweep;
+
 }
 void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, 
         unsigned char lpfRes, unsigned char hpfCutoff, unsigned char hpfSweep){
+
     signed char ls= (signed char)lpfSweep;
     signed char hs = (signed char)hpfSweep;
+
     params[id].lpfCutoffValue = (float) (lpfCutoff * AUDIO_STEP);
     params[id].lpfCutoffSweepValue = (float) (ls * AUDIO_STEP) * 2;
     params[id].lpfResonanceValue = (float) (lpfRes * AUDIO_STEP);
     params[id].hpfCutoffValue = (float) (hpfCutoff * AUDIO_STEP);
     params[id].hpfCutoffSweepValue = (float) (hs * AUDIO_STEP) * 2;
+
+    sfxBytes[id].lpfCutoff      = lpfCutoff;
+    sfxBytes[id].lpfCutoffSweep = lpfSweep;
+    sfxBytes[id].lpfResonance   = lpfRes;
+    sfxBytes[id].hpfCutoff      = hpfCutoff;
+    sfxBytes[id].hpfCutoffSweep = hpfSweep;
 }
 
 void AudioManager::SFXPlay(unsigned char id, unsigned char vol){
@@ -167,66 +212,68 @@ void AudioManager::SFXPlay(unsigned char id, unsigned char vol){
 }
 
 void AudioManager::LoadSoundData(unsigned char id){
-    unsigned int dir = 3376 + (id * 21);
+    unsigned int dir = 3376 + (id * 22);
 
-    params[id].waveTypeValue     = Tools::Peek(dir);
-    params[id].attackTimeValue   = Tools::Peek(dir + 1);
-    params[id].sustainTimeValue  = Tools::Peek(dir + 2);
-    params[id].sustainPunchValue = Tools::Peek(dir + 3);
-    params[id].decayTimeValue    = Tools::Peek(dir + 4);
+    sfxBytes[id].wave     = Tools::Peek(dir);
 
-    params[id].slideValue        = Tools::Peek(dir + 5); 
-    params[id].deltaSlideValue   = Tools::Peek(dir + 6);
-    params[id].vibratoDepthValue = Tools::Peek(dir + 7);
-    params[id].vibratoSpeedValue = Tools::Peek(dir + 8);
+    sfxBytes[id].attackTime   = Tools::Peek(dir + 1);
+    sfxBytes[id].sustainTime  = Tools::Peek(dir + 2);
+    sfxBytes[id].sustainPunch = Tools::Peek(dir + 3);
+    sfxBytes[id].decayTime    = Tools::Peek(dir + 4);
 
-    params[id].changeAmountValue = Tools::Peek(dir + 9); 
-    params[id].changeSpeedValue  = Tools::Peek(dir + 10);
-    params[id].squareDutyValue   = Tools::Peek(dir + 11);
-    params[id].dutySweepValue    = Tools::Peek(dir + 12);
+    sfxBytes[id].slide        = Tools::Peek(dir + 5); 
+    sfxBytes[id].deltaSlide   = Tools::Peek(dir + 6);
+    sfxBytes[id].vibratoDepth = Tools::Peek(dir + 7);
+    sfxBytes[id].vibratoSpeed = Tools::Peek(dir + 8);
 
-    params[id].repeatSpeedValue  = Tools::Peek(dir + 13); 
-    params[id].phaserOffsetValue = Tools::Peek(dir + 14); 
-    params[id].phaserSweepValue  = Tools::Peek(dir + 15); 
+    sfxBytes[id].changeAmount = Tools::Peek(dir + 9); 
+    sfxBytes[id].changeSpeed  = Tools::Peek(dir + 10);
+    sfxBytes[id].squareDuty   = Tools::Peek(dir + 11);
+    sfxBytes[id].dutySweep    = Tools::Peek(dir + 12);
 
-    params[id].lpfCutoffValue      = Tools::Peek(dir + 16); 
-    params[id].lpfCutoffSweepValue = Tools::Peek(dir + 17); 
-    params[id].lpfResonanceValue   = Tools::Peek(dir + 18); 
-    params[id].hpfCutoffValue      = Tools::Peek(dir + 19); 
-    params[id].hpfCutoffSweepValue = Tools::Peek(dir + 20); 
+    sfxBytes[id].repeatSpeed  = Tools::Peek(dir + 13); 
+    sfxBytes[id].phaserOffset = Tools::Peek(dir + 14); 
+    sfxBytes[id].phaserSweep  = Tools::Peek(dir + 15); 
+
+    sfxBytes[id].lpfCutoff      = Tools::Peek(dir + 16); 
+    sfxBytes[id].lpfCutoffSweep = Tools::Peek(dir + 17); 
+    sfxBytes[id].lpfResonance   = Tools::Peek(dir + 18); 
+    sfxBytes[id].hpfCutoff      = Tools::Peek(dir + 19); 
+    sfxBytes[id].hpfCutoffSweep = Tools::Peek(dir + 20); 
     
-    params[id].startFrequencyValue = Tools::Peek(dir + 21); 
+    sfxBytes[id].startFrequency = Tools::Peek(dir + 21); 
+    
 }
 void AudioManager::SaveSoundData(unsigned char id){
-    unsigned int dir = 3376 + (id * 21);
+    unsigned int dir = 3376 + (id * 22);
 
-    Tools::Poke(dir , params[id].waveTypeValue);
-    Tools::Poke(dir + 1, params[id].attackTimeValue * 255);
-    Tools::Poke(dir + 2, params[id].sustainTimeValue * 255);
-    Tools::Poke(dir + 3, params[id].sustainPunchValue * 255);
-    Tools::Poke(dir + 4, params[id].decayTimeValue * 255);
+    Tools::Poke(dir, sfxBytes[id].wave);
+    Tools::Poke(dir + 1, sfxBytes[id].attackTime);
+    Tools::Poke(dir + 2, sfxBytes[id].sustainTime);
+    Tools::Poke(dir + 3, sfxBytes[id].sustainPunch);
+    Tools::Poke(dir + 4, sfxBytes[id].decayTime);
 
-    Tools::Poke(dir + 5, params[id].slideValue);
-    Tools::Poke(dir + 6, params[id].deltaSlideValue);
-    Tools::Poke(dir + 7, params[id].vibratoDepthValue);
-    Tools::Poke(dir + 8, params[id].vibratoSpeedValue);
+    Tools::Poke(dir + 5, sfxBytes[id].slide);
+    Tools::Poke(dir + 6, sfxBytes[id].deltaSlide);
+    Tools::Poke(dir + 7, sfxBytes[id].vibratoDepth);
+    Tools::Poke(dir + 8, sfxBytes[id].vibratoSpeed);
 
-    Tools::Poke(dir + 9,  params[id].changeAmountValue);
-    Tools::Poke(dir + 10, params[id].changeSpeedValue );
-    Tools::Poke(dir + 11, params[id].squareDutyValue);
-    Tools::Poke(dir + 12, params[id].dutySweepValue);
+    Tools::Poke(dir + 9,  sfxBytes[id].changeAmount);
+    Tools::Poke(dir + 10, sfxBytes[id].changeSpeed);
+    Tools::Poke(dir + 11, sfxBytes[id].squareDuty);
+    Tools::Poke(dir + 12, sfxBytes[id].dutySweep);
 
-    Tools::Poke(dir + 13, params[id].repeatSpeedValue );
-    Tools::Poke(dir + 14, params[id].phaserOffsetValue);
-    Tools::Poke(dir + 15, params[id].phaserSweepValue );
+    Tools::Poke(dir + 13, sfxBytes[id].repeatSpeed);
+    Tools::Poke(dir + 14, sfxBytes[id].phaserOffset);
+    Tools::Poke(dir + 15, sfxBytes[id].phaserSweep);
 
-    Tools::Poke(dir + 16, params[id].lpfCutoffValue);
-    Tools::Poke(dir + 17, params[id].lpfCutoffSweepValue);
-    Tools::Poke(dir + 18, params[id].lpfResonanceValue);
-    Tools::Poke(dir + 19, params[id].hpfCutoffValue);
-    Tools::Poke(dir + 20, params[id].hpfCutoffSweepValue);
+    Tools::Poke(dir + 16, sfxBytes[id].lpfCutoff);
+    Tools::Poke(dir + 17, sfxBytes[id].lpfCutoffSweep);
+    Tools::Poke(dir + 18, sfxBytes[id].lpfResonance);
+    Tools::Poke(dir + 19, sfxBytes[id].hpfCutoff);
+    Tools::Poke(dir + 20, sfxBytes[id].hpfCutoffSweep);
 
-    Tools::Poke(dir + 21, params[id].startFrequencyValue);
+    Tools::Poke(dir + 21, sfxBytes[id].startFrequency);
 }
 
 //tsf

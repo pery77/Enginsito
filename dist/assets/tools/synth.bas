@@ -197,6 +197,7 @@ def draw()
     hpfSweep = ui.knob(hpfSweep,208, 162,-127,127)
 
     IF ui.button(256,176,"Save") THEN 
+    for currentSound = 0 to 15
         sfx.env(currentSound, envA, envT, envP, envR)
         sfx.freq(currentSound, fSlide, fDelta, vibratoD, vibratoS)
         sfx.tone(currentSound, toneAmount, toneSpeed, toneSquare, toneDuty)
@@ -204,7 +205,9 @@ def draw()
         sfx.filter(currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
         sfx.wave(currentSound, wave)
         sfx.save(currentSound)
-        dumpMemory("default.bin")
+        sfx.render(currentSound, note)
+        dumpMemory("bios.bin")
+    next
     ENDIF
 
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
