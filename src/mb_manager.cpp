@@ -154,6 +154,7 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "REPEAT", sfxRepeat); 
 		mb_register_func(bas, "FILTER", sfxFilter); 
 		mb_register_func(bas, "PLAY", sfxPlay);
+		mb_register_func(bas, "SAVE", saveSfx);
 	mb_end_module(bas);
 
 
@@ -1578,6 +1579,22 @@ int MBManager::sfxPlay(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     audioR->SFXPlay(id);
+
+	return result;
+}
+int MBManager::saveSfx(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    int id;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &id));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SaveSoundData(id);
 
 	return result;
 }

@@ -31,14 +31,14 @@ def tick()
     ENDIF
 
     IF key.pressed(32) THEN
-        sfx.env(0, envA, envT, envP, envR)
-        sfx.freq(0, fSlide, fDelta, vibratoD, vibratoS)
-        sfx.tone(0, toneAmount, toneSpeed, toneSquare, toneDuty)
-        sfx.repeat(0, repSp, repOf, repSw)
-        sfx.filter(0, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
-        sfx.wave(0, wave)
-        sfx.render(0, note)
-        sfx.play(0) 
+        sfx.env(currentSound, envA, envT, envP, envR)
+        sfx.freq(currentSound, fSlide, fDelta, vibratoD, vibratoS)
+        sfx.tone(currentSound, toneAmount, toneSpeed, toneSquare, toneDuty)
+        sfx.repeat(currentSound, repSp, repOf, repSw)
+        sfx.filter(currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
+        sfx.wave(currentSound, wave)
+        sfx.render(currentSound, note)
+        sfx.play(currentSound) 
 
     ENDIF  
 
@@ -158,32 +158,23 @@ DEF drawWave(x,y)
     Draw.text("Wave", x-2, y-10,1,0)
 
 ENDDEF
-frame = 0
+
+currentSound = 0
 def draw()
     cls(bgCol)
-    frame = frame +1
     time = time + delta()
-    if frame > 30 then
-        'print cc;
-        'sfx.set(0,wave,35+cc,envA,envD,envS,envR)
-        'sfx.play(0, 1000 + (cc*83.33333333))
-        cc=cc+1
-        if cc > 12 then cc = 0 endif
-        frame = 0
-    endif
 
     draw.rect(0,0,320,9,0,0)
     draw.text(intToText("T: %06i",time), 0, 0, 1, 3)
 
     drawWave(260,25)
-
     envA = ui.knob(envA,80,36,0,255)
     envT = ui.knob(envT,112,36,0,255)
     envP = ui.knob(envP,144,36,0,255)
     envR = ui.knob(envR,176,36,0,255)
     
-    'freq = ui.knob(freq,220,36,0,108)
     note = ui.slider(note,40,180,120,120)
+    currentSound = ui.slider(currentSound,20,12,32,16)
 
     fSlide = ui.knob(fSlide,80, 78,-127,127)
     fDelta = ui.knob(fDelta,112,78,-127,127)
@@ -204,6 +195,17 @@ def draw()
     lpfRes = ui.knob(lpfRes,144,162,0,255)
     hpfCutoff = ui.knob(hpfCutoff,176, 162,0,255)
     hpfSweep = ui.knob(hpfSweep,208, 162,-127,127)
+
+    IF ui.button(256,176,"Save") THEN 
+        sfx.env(currentSound, envA, envT, envP, envR)
+        sfx.freq(currentSound, fSlide, fDelta, vibratoD, vibratoS)
+        sfx.tone(currentSound, toneAmount, toneSpeed, toneSquare, toneDuty)
+        sfx.repeat(currentSound, repSp, repOf, repSw)
+        sfx.filter(currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
+        sfx.wave(currentSound, wave)
+        sfx.save(currentSound)
+        dumpMemory("default.bin")
+    ENDIF
 
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
     IF NOT ui.mouseWorking THEN  ui.drawmouse() ENDIF

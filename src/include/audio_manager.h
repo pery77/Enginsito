@@ -5,6 +5,7 @@
 #include "tsf.h"
 #include <math.h>
 #include "MMLParser.h"
+#include "tools.h"
 
 #define SAMPLERATE               22050
 #define SAMPLESIZE               16
@@ -37,7 +38,7 @@ class AudioManager {
     void StopNote(int note, int voice);
     void MusicPlay();
     void MusicStop();
-    void GetPresets();
+    void GetTSFPresets();
     
     void SFXPlay(unsigned char id, unsigned char vol = 127);
     void SFXRender(unsigned char id, unsigned char note);
@@ -48,6 +49,9 @@ class AudioManager {
     void SFXRepeat(unsigned char id, unsigned char speed, unsigned char offset, unsigned char sweep);
     void SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, unsigned char lpfRes, unsigned char hpfCutoff, unsigned char hpfSweep);
     
+    void LoadSoundData(unsigned char id);
+    void SaveSoundData(unsigned char id);
+
     private:
     int audioTick = 0;
     const char* sequence[TRACK_COUNT];

@@ -98,4 +98,5 @@ class Tools{
 
         static int GetVersion();
         static void SetVersion();
+
 };

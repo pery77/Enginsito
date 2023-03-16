@@ -5,13 +5,12 @@
 tsf* ptsf;
 MMLParser* mml[TRACK_COUNT];
 
-void audioInputCallback(void *buffer, unsigned int frames)
-{
-	int sampleCount = (frames / (0.5 * sizeof(short)));
-	tsf_render_short(ptsf, (short*)buffer, sampleCount, 0);
+void audioInputCallback(void *buffer, unsigned int frames){
+	//int sampleCount = (frames / (0.5 * sizeof(short)));
+	//tsf_render_short(ptsf, (short*)buffer, sampleCount, 0);
 }
 
-void mmlCallback(MMLEvent event, int ch, int num, int velocity, AudioManager* au) {
+void mmlCallback(MMLEvent event, int ch, int num, int velocity, AudioManager* au){
     switch (event) {
         case MML_NOTE_ON:
             printf("(%d)%d,%d", ch, num, velocity);
@@ -45,17 +44,17 @@ AudioManager::AudioManager(){
         wave[i].data = GenerateWave(params[i], &wave[i].frameCount);
         sound[i] = LoadSoundFromWave(wave[i]);
     }
-    /*
-    ptsf = tsf_load_filename("assets/keygen.sf2");
+   
+    //ptsf = tsf_load_filename("assets/keygen.sf2");
     SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
     AudioStream stream = LoadAudioStream(SAMPLERATE, SAMPLESIZE, CHANNELS);
     SetAudioStreamCallback(stream, audioInputCallback);
 
     PlayAudioStream(stream);
 
-    tsf_set_output(ptsf, TSF_STEREO_INTERLEAVED, SAMPLERATE, -7); 
-    GetPresets();
-   */
+    //tsf_set_output(ptsf, TSF_STEREO_INTERLEAVED, SAMPLERATE, -7); 
+    //GetPresets();
+   
     for (int i = 0; i < TRACK_COUNT; i++) {
         mml[i] = new MMLParser(this);
         mml[i]->setCallback(mmlCallback);
@@ -65,6 +64,7 @@ AudioManager::AudioManager(){
 
 AudioManager::~AudioManager(){}
 
+//Music
 void AudioManager::Update(){
     bool isPlaying = false;
     for (int i = 0; i < TRACK_COUNT; i++) {
@@ -76,14 +76,6 @@ void AudioManager::Update(){
     if (isPlaying) audioTick++;
 }
 
-void AudioManager::GetPresets()
-{
-    int i;
-	for (int i = 0; i < tsf_get_presetcount(ptsf); i++)
-	{
-		printf("Preset #%d '%s'\n", i, tsf_get_presetname(ptsf, i));
-	}
-} 
 void AudioManager::SetSequence(unsigned char id, const char* newSequence){
     if (id > TRACK_COUNT - 1) 
         id = TRACK_COUNT - 1;
@@ -95,13 +87,11 @@ const char* AudioManager::GetSequence(unsigned char id){
 }
 
 void AudioManager::PlayNote(int note, int voice, int volume){
-    //tsf_note_on(ptsf, voice, note, volume*0.01);
     SFXRender(voice, note);
     SFXPlay(voice, volume);
 }
 void AudioManager::StopNote(int note, int voice){
-    ////tsf_note_off(ptsf, voice, note);
-    //tsf_note_off_all(ptsf);
+
     //StopSound(sound[voice]);
 }
 void AudioManager::MusicPlay(){
@@ -111,8 +101,7 @@ void AudioManager::MusicPlay(){
         if (lenght > 2){
             printf("Playing #%d '%s'\n", i, sequence[i]);
             mml[i]->play(sequence[i], true);
-        }
-            
+        }    
     }
 }
 void AudioManager::MusicStop(){
@@ -121,6 +110,7 @@ void AudioManager::MusicStop(){
     }
 }
 
+//Effects
 void AudioManager::SFXRender(unsigned char id, unsigned char note){
     float n = ((note - 21)/12.0);
     float f =  0.087875 * (sqrt(pow(2, n)));
@@ -175,3 +165,73 @@ void AudioManager::SFXPlay(unsigned char id, unsigned char vol){
         SetSoundVolume(sound[id], (float)(vol * 0.007874)); // 1/127
         PlaySound(sound[id]);
 }
+
+void AudioManager::LoadSoundData(unsigned char id){
+    unsigned int dir = 3376 + (id * 21);
+
+    params[id].waveTypeValue     = Tools::Peek(dir);
+    params[id].attackTimeValue   = Tools::Peek(dir + 1);
+    params[id].sustainTimeValue  = Tools::Peek(dir + 2);
+    params[id].sustainPunchValue = Tools::Peek(dir + 3);
+    params[id].decayTimeValue    = Tools::Peek(dir + 4);
+
+    params[id].slideValue        = Tools::Peek(dir + 5); 
+    params[id].deltaSlideValue   = Tools::Peek(dir + 6);
+    params[id].vibratoDepthValue = Tools::Peek(dir + 7);
+    params[id].vibratoSpeedValue = Tools::Peek(dir + 8);
+
+    params[id].changeAmountValue = Tools::Peek(dir + 9); 
+    params[id].changeSpeedValue  = Tools::Peek(dir + 10);
+    params[id].squareDutyValue   = Tools::Peek(dir + 11);
+    params[id].dutySweepValue    = Tools::Peek(dir + 12);
+
+    params[id].repeatSpeedValue  = Tools::Peek(dir + 13); 
+    params[id].phaserOffsetValue = Tools::Peek(dir + 14); 
+    params[id].phaserSweepValue  = Tools::Peek(dir + 15); 
+
+    params[id].lpfCutoffValue      = Tools::Peek(dir + 16); 
+    params[id].lpfCutoffSweepValue = Tools::Peek(dir + 17); 
+    params[id].lpfResonanceValue   = Tools::Peek(dir + 18); 
+    params[id].hpfCutoffValue      = Tools::Peek(dir + 19); 
+    params[id].hpfCutoffSweepValue = Tools::Peek(dir + 20); 
+    
+    params[id].startFrequencyValue = Tools::Peek(dir + 21); 
+}
+void AudioManager::SaveSoundData(unsigned char id){
+    unsigned int dir = 3376 + (id * 21);
+
+    Tools::Poke(dir , params[id].waveTypeValue);
+    Tools::Poke(dir + 1, params[id].attackTimeValue * 255);
+    Tools::Poke(dir + 2, params[id].sustainTimeValue * 255);
+    Tools::Poke(dir + 3, params[id].sustainPunchValue * 255);
+    Tools::Poke(dir + 4, params[id].decayTimeValue * 255);
+
+    Tools::Poke(dir + 5, params[id].slideValue);
+    Tools::Poke(dir + 6, params[id].deltaSlideValue);
+    Tools::Poke(dir + 7, params[id].vibratoDepthValue);
+    Tools::Poke(dir + 8, params[id].vibratoSpeedValue);
+
+    Tools::Poke(dir + 9,  params[id].changeAmountValue);
+    Tools::Poke(dir + 10, params[id].changeSpeedValue );
+    Tools::Poke(dir + 11, params[id].squareDutyValue);
+    Tools::Poke(dir + 12, params[id].dutySweepValue);
+
+    Tools::Poke(dir + 13, params[id].repeatSpeedValue );
+    Tools::Poke(dir + 14, params[id].phaserOffsetValue);
+    Tools::Poke(dir + 15, params[id].phaserSweepValue );
+
+    Tools::Poke(dir + 16, params[id].lpfCutoffValue);
+    Tools::Poke(dir + 17, params[id].lpfCutoffSweepValue);
+    Tools::Poke(dir + 18, params[id].lpfResonanceValue);
+    Tools::Poke(dir + 19, params[id].hpfCutoffValue);
+    Tools::Poke(dir + 20, params[id].hpfCutoffSweepValue);
+
+    Tools::Poke(dir + 21, params[id].startFrequencyValue);
+}
+
+//tsf
+void AudioManager::GetTSFPresets(){
+	for (int i = 0; i < tsf_get_presetcount(ptsf); i++){
+		printf("Preset #%d '%s'\n", i, tsf_get_presetname(ptsf, i));
+	}
+} 
