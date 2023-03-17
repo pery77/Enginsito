@@ -33,8 +33,9 @@ AudioManager::AudioManager(){
     for (int i = 0; i < MAX_WAVE_SLOTS; i++){
         // Reset generation parameters
         // NOTE: Random seed for generation is set
-        ResetWaveParams(&params[i]);
+        //ResetWaveParams(&params[i]);
         //params[i] = GenRandomize();
+        LoadSoundData(i);
 
         // Default wave values
         wave[i].sampleRate = RFXGEN_GEN_SAMPLE_RATE;
@@ -123,11 +124,13 @@ void AudioManager::SFXRender(unsigned char id, unsigned char note){
     sound[id] = LoadSoundFromWave(wave[id]);
 
     sfxBytes[id].startFrequency = note;
+    SaveSoundData(id);
 }
 void AudioManager::SFXWave(unsigned char id, unsigned char waveType){
 
     params[id].waveTypeValue = waveType;
     sfxBytes[id].wave = waveType;
+    SaveSoundData(id);
 }
 void AudioManager::SFXEnv(unsigned char id, unsigned char att, unsigned char susT, unsigned char susP, unsigned char dec){
 
@@ -140,7 +143,7 @@ void AudioManager::SFXEnv(unsigned char id, unsigned char att, unsigned char sus
     sfxBytes[id].sustainTime  = susT;
     sfxBytes[id].sustainPunch = susP;
     sfxBytes[id].decayTime    = dec ;
-
+    SaveSoundData(id);
 }
 void AudioManager::SFXFreq(unsigned char id, unsigned char slide, unsigned char delta, unsigned char vibratoD, unsigned char vibratoS){
 
@@ -156,6 +159,7 @@ void AudioManager::SFXFreq(unsigned char id, unsigned char slide, unsigned char 
     sfxBytes[id].deltaSlide   = delta;
     sfxBytes[id].vibratoDepth = vibratoD;
     sfxBytes[id].vibratoSpeed = vibratoS;
+    SaveSoundData(id);
 }
 void AudioManager::SFXTone(unsigned char id, unsigned char amount, unsigned char speed, unsigned char square, unsigned char duty){
 
@@ -171,6 +175,7 @@ void AudioManager::SFXTone(unsigned char id, unsigned char amount, unsigned char
     sfxBytes[id].changeSpeed  = speed;
     sfxBytes[id].squareDuty   = square;
     sfxBytes[id].dutySweep    = duty;
+    SaveSoundData(id);
 
 }
 void AudioManager::SFXRepeat(unsigned char id, unsigned char speed, unsigned char offset, unsigned char sweep){
@@ -185,6 +190,7 @@ void AudioManager::SFXRepeat(unsigned char id, unsigned char speed, unsigned cha
     sfxBytes[id].repeatSpeed  = speed;
     sfxBytes[id].phaserOffset = offset;
     sfxBytes[id].phaserSweep  = sweep;
+    SaveSoundData(id);
 
 }
 void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, 
@@ -204,6 +210,7 @@ void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned
     sfxBytes[id].lpfResonance   = lpfRes;
     sfxBytes[id].hpfCutoff      = hpfCutoff;
     sfxBytes[id].hpfCutoffSweep = hpfSweep;
+    SaveSoundData(id);
 }
 
 void AudioManager::SFXPlay(unsigned char id, unsigned char vol){

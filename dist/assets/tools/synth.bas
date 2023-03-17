@@ -1,45 +1,79 @@
 import "assets/lib/ui.bas"
 
-wave= 0
-note = 69
+wave = 0
+note = 0
 envA = 0
-envT = 76
+envT = 0
 envP = 0
-envR = 102
-fSlide = 0
-fDelta = 0
+envR = 0
+    
+fSlide =  0
+fDelta =  0 
 vibratoD = 0
 vibratoS = 0
-toneAmount = 0 
-toneSpeed = 0
+
+toneAmount = 0
+toneSpeed  = 0
 toneSquare = 0
-toneDuty = 0
+toneDuty   = 0
+
 repSp = 0
 repOf = 0
 repSw = 0
-lpfCutoff = 255
-lpfSweep = 0
-lpfRes = 0
+
+lpfCutoff = 0
+lpfSweep  = 0
+lpfRes    = 0
 hpfCutoff = 0
-hpfSweep = 0
+hpfSweep  = 0
+
+def loadsound(id)
+    dir = 3376 + (id * 22);
+
+    wave = Peek(dir)
+    note = Peek(dir + 21)
+
+    envA = Peek(dir + 1)
+    envT = Peek(dir + 2)
+    envP = Peek(dir + 3)
+    envR = Peek(dir + 4)
+    
+    fSlide =   Peek(dir + 5)
+    fDelta =   Peek(dir + 6)
+    vibratoD = Peek(dir + 7)
+    vibratoS = Peek(dir + 8)
+
+    toneAmount = Peek(dir + 9)
+    toneSpeed  = Peek(dir + 10)
+    toneSquare = Peek(dir + 11)
+    toneDuty   = Peek(dir + 12)
+
+    repSp = Peek(dir + 13)
+    repOf = Peek(dir + 14)
+    repSw = Peek(dir + 15)
+
+    lpfCutoff = Peek(dir + 16)
+    lpfSweep  = Peek(dir + 17)
+    lpfRes    = Peek(dir + 18)
+    hpfCutoff = Peek(dir + 19)
+    hpfSweep  = Peek(dir + 20)
+enddef
 
 bgCol = 1
-
 def tick()
     k = key.get()
     IF k <> 0 THEN 
     ENDIF
 
     IF key.pressed(32) THEN
-        sfx.env(currentSound, envA, envT, envP, envR)
-        sfx.freq(currentSound, fSlide, fDelta, vibratoD, vibratoS)
-        sfx.tone(currentSound, toneAmount, toneSpeed, toneSquare, toneDuty)
-        sfx.repeat(currentSound, repSp, repOf, repSw)
-        sfx.filter(currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
-        sfx.wave(currentSound, wave)
-        sfx.render(currentSound, note)
+        'sfx.env(currentSound, envA, envT, envP, envR)
+        'sfx.freq(currentSound, fSlide, fDelta, vibratoD, vibratoS)
+        'sfx.tone(currentSound, toneAmount, toneSpeed, toneSquare, toneDuty)
+        'sfx.repeat(currentSound, repSp, repOf, repSw)
+        'sfx.filter(currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
+        'sfx.wave(currentSound, wave)
+        'sfx.render(currentSound, note)
         sfx.play(currentSound) 
-
     ENDIF  
 
 enddef
@@ -160,21 +194,32 @@ DEF drawWave(x,y)
 ENDDEF
 
 currentSound = 0
+nextSound = 0
+loadsound(currentSound)
 def draw()
     cls(bgCol)
     time = time + delta()
 
-    draw.rect(0,0,320,9,0,0)
-    draw.text(intToText("T: %06i",time), 0, 0, 1, 3)
+    draw.rect(0,0,320,10,0,0)
+    draw.text(intToText("T: %06i",time), 2, 2, 1, 3)
+
+    nextSound = ui.slider(nextSound,20,12,30,15)
+
+    if nextSound <> currentSound THEN
+        currentSound = nextSound
+        loadsound(currentSound)
+        sfx.render(currentSound)
+        sfx.play(currentSound) 
+    ENDIF
 
     drawWave(260,25)
+
     envA = ui.knob(envA,80,36,0,255)
     envT = ui.knob(envT,112,36,0,255)
     envP = ui.knob(envP,144,36,0,255)
     envR = ui.knob(envR,176,36,0,255)
     
     note = ui.slider(note,40,180,120,120)
-    currentSound = ui.slider(currentSound,20,12,32,16)
 
     fSlide = ui.knob(fSlide,80, 78,-127,127)
     fDelta = ui.knob(fDelta,112,78,-127,127)
@@ -197,17 +242,15 @@ def draw()
     hpfSweep = ui.knob(hpfSweep,208, 162,-127,127)
 
     IF ui.button(256,176,"Save") THEN 
-    for currentSound = 0 to 15
         sfx.env(currentSound, envA, envT, envP, envR)
         sfx.freq(currentSound, fSlide, fDelta, vibratoD, vibratoS)
         sfx.tone(currentSound, toneAmount, toneSpeed, toneSquare, toneDuty)
         sfx.repeat(currentSound, repSp, repOf, repSw)
         sfx.filter(currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
         sfx.wave(currentSound, wave)
-        sfx.save(currentSound)
         sfx.render(currentSound, note)
+        'sfx.save(currentSound)
         dumpMemory("bios.bin")
-    next
     ENDIF
 
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
