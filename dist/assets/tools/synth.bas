@@ -27,6 +27,10 @@ lpfRes    = 0
 hpfCutoff = 0
 hpfSweep  = 0
 
+currentSound = 0
+nextSound = 0
+
+
 def loadsound(id)
     dir = 3376 + (id * 22);
 
@@ -59,6 +63,7 @@ def loadsound(id)
     hpfSweep  = Peek(dir + 20)
 enddef
 
+loadsound(currentSound)
 bgCol = 1
 def tick()
     k = key.get()
@@ -66,14 +71,14 @@ def tick()
     ENDIF
 
     IF key.pressed(32) THEN
-        'sfx.env(currentSound, envA, envT, envP, envR)
-        'sfx.freq(currentSound, fSlide, fDelta, vibratoD, vibratoS)
-        'sfx.tone(currentSound, toneAmount, toneSpeed, toneSquare, toneDuty)
-        'sfx.repeat(currentSound, repSp, repOf, repSw)
-        'sfx.filter(currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
-        'sfx.wave(currentSound, wave)
-        'sfx.render(currentSound, note)
-        sfx.play(currentSound) 
+        sfx.env(currentSound, envA, envT, envP, envR)
+        sfx.freq(currentSound, fSlide, fDelta, vibratoD, vibratoS)
+        sfx.tone(currentSound, toneAmount, toneSpeed, toneSquare, toneDuty)
+        sfx.repeat(currentSound, repSp, repOf, repSw)
+        sfx.filter(currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
+        sfx.wave(currentSound, wave)
+        sfx.render(currentSound, note)
+        sfx.play(currentSound, 127) 
     ENDIF  
 
 enddef
@@ -193,9 +198,8 @@ DEF drawWave(x,y)
 
 ENDDEF
 
-currentSound = 0
-nextSound = 0
-loadsound(currentSound)
+
+
 def draw()
     cls(bgCol)
     time = time + delta()
@@ -208,12 +212,11 @@ def draw()
     if nextSound <> currentSound THEN
         currentSound = nextSound
         loadsound(currentSound)
-        sfx.render(currentSound)
-        sfx.play(currentSound) 
+        sfx.play(currentSound, 127) 
     ENDIF
 
     drawWave(260,25)
-
+    draw.text(inttotext("%i", currentSound),2,30,2,5)
     envA = ui.knob(envA,80,36,0,255)
     envT = ui.knob(envT,112,36,0,255)
     envP = ui.knob(envP,144,36,0,255)
@@ -249,7 +252,6 @@ def draw()
         sfx.filter(currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
         sfx.wave(currentSound, wave)
         sfx.render(currentSound, note)
-        'sfx.save(currentSound)
         dumpMemory("bios.bin")
     ENDIF
 

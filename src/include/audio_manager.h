@@ -17,37 +17,6 @@
 #define AUDIO_STEP                 0.00390625
 #define TRACK_COUNT                4
 
-struct SfxBytes{
-    unsigned char wave;
-
-    unsigned char attackTime;
-    unsigned char sustainTime;
-    unsigned char sustainPunch;
-    unsigned char decayTime;
- 
-    signed char slide;
-    signed char deltaSlide;
-    unsigned char vibratoDepth;
-    unsigned char vibratoSpeed;
-
-    signed char changeAmount;
-    unsigned char changeSpeed;
-    unsigned char squareDuty;
-    signed char dutySweep;
-
-    unsigned char repeatSpeed;
-    signed char phaserOffset;
-    signed char phaserSweep;
-
-    unsigned char lpfCutoff;
-    signed char lpfCutoffSweep;
-    unsigned char lpfResonance;
-    unsigned char hpfCutoff;
-    signed char hpfCutoffSweep;
-
-    unsigned char startFrequency;
-};
-
 class AudioManager {
     
     public:
@@ -57,7 +26,6 @@ class AudioManager {
     WaveParams params[MAX_WAVE_SLOTS] = { 0 }; // Wave parameters for generation
     Wave wave[MAX_WAVE_SLOTS] = { 0 };
     Sound sound[MAX_WAVE_SLOTS] = { 0 };
-    SfxBytes sfxBytes[MAX_WAVE_SLOTS] = { 0 };
 
     //tsf* ptsf = tsf_load_filename("assets/8bit.sf2");
 
@@ -82,10 +50,12 @@ class AudioManager {
     void SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, unsigned char lpfRes, unsigned char hpfCutoff, unsigned char hpfSweep);
     
     void LoadSoundData(unsigned char id);
-    void SaveSoundData(unsigned char id);
+
+    unsigned short GetSoundDir(unsigned char id);
 
     private:
     int audioTick = 0;
     const char* sequence[TRACK_COUNT];
+    void setNote(unsigned char id, unsigned char note);
     
 };

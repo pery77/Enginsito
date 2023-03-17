@@ -126,8 +126,6 @@ class MBManager{
         static int sfxFilter(struct mb_interpreter_t* s, void** l);
         static int sfxPlay(struct mb_interpreter_t* s, void** l);
 
-        static int saveSfx(struct mb_interpreter_t* s, void** l);
-
         //Sprites
         static int drawSprite(struct mb_interpreter_t* s, void** l);
         static int drawMetaSprite(struct mb_interpreter_t* s, void** l);
