@@ -3,12 +3,52 @@
 #include <cstring>
 #include <cmath>
 
+
 tsf* ptsf;
 MMLParser* mml[TRACK_COUNT];
 
+AudioStream stream;
+
+#define MAX_VOICES 4
+typedef struct {
+    bool noteOn;
+    int note;
+    float volume;
+    float time;
+} Voice;
+static Voice voices[MAX_VOICES] = {0};
+
+
+float frequency_from_note(int midi_note) {
+    return 440.0f * pow(2.0f, (midi_note - 69) / 12.0f);
+}
+
+unsigned char sine_wave(int note, float time) {
+    float frequency = frequency_from_note(note);
+    float value = sin(2.0f * PI * frequency * time);
+    return (unsigned char) ((value + 1.0f) * 127.5f);
+}
+
+float steps = 1.0f / 22050.0f;
+float t = 0;
 void audioInputCallback(void *buffer, unsigned int frames){
-	//int sampleCount = (frames / (0.5 * sizeof(short)));
-	//tsf_render_short(ptsf, (short*)buffer, sampleCount, 0);
+
+    unsigned char *bufferData = (unsigned char*) buffer;
+
+    for (int i = 0; i < frames; i++) {
+        unsigned char sample = 0;
+        for (int j = 0; j < MAX_VOICES; j++) {
+            if (voices[j].noteOn) {
+                sample += sine_wave(voices[j].note, t) * voices[j].volume;
+                voices[j].time += steps;
+            }else{
+                voices[j].time = 0;
+            }
+        }
+
+        bufferData[i] = sample;
+        t += steps;
+    }
 }
 
 void mmlCallback(MMLEvent event, int ch, int num, int velocity, AudioManager* au){
@@ -43,27 +83,56 @@ AudioManager::AudioManager(){
         sound[i] = LoadSoundFromWave(wave[i]);
     }
    
-    //ptsf = tsf_load_filename("assets/keygen.sf2");
-    SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
-    AudioStream stream = LoadAudioStream(SAMPLERATE, SAMPLESIZE, CHANNELS);
+    SetAudioStreamBufferSizeDefault(512);
+    stream = LoadAudioStream(22050, 8, 1);
     SetAudioStreamCallback(stream, audioInputCallback);
 
     PlayAudioStream(stream);
-
-    //tsf_set_output(ptsf, TSF_STEREO_INTERLEAVED, SAMPLERATE, -7); 
-    //GetPresets();
    
     for (int i = 0; i < TRACK_COUNT; i++) {
         mml[i] = new MMLParser(this);
         mml[i]->setCallback(mmlCallback);
         sequence[i] = "";
     }
+
+    voices[0].note = 69;
+    voices[0].volume = 0.4f;
+    voices[1].note = 69;
+    voices[1].volume = 0.4f;
 }
 
 AudioManager::~AudioManager(){}
 
 //Music
 void AudioManager::Update(){
+    
+    if (IsKeyPressed(KEY_ONE)) {
+        voices[0].noteOn = true;
+        printf("%i ",voices[0].note);
+    }
+    if (IsKeyReleased(KEY_ONE)) {
+        voices[0].noteOn = false;
+    }
+    if (IsKeyPressed(KEY_TWO)) {
+        voices[1].noteOn = true;
+        printf("%i ",voices[1].note);
+    }
+    if (IsKeyReleased(KEY_TWO)) {
+        voices[1].noteOn = false;
+    }
+    if (IsKeyReleased(KEY_UP)) {
+         voices[0].note++; 
+    }
+    if (IsKeyReleased(KEY_DOWN)) {
+        voices[0].note--; 
+    }
+        if (IsKeyReleased(KEY_LEFT)) {
+         voices[1].note++; 
+    }
+    if (IsKeyReleased(KEY_RIGHT)) {
+        voices[1].note--; 
+    }
+
     bool isPlaying = false;
     for (int i = 0; i < TRACK_COUNT; i++) {
         if (mml[i]->isPlaying()) {
