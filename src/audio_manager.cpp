@@ -140,11 +140,8 @@ void AudioManager::SFXEnv(unsigned char id, unsigned char att, unsigned char sus
 }
 void AudioManager::SFXFreq(unsigned char id, unsigned char slide, unsigned char delta, unsigned char vibratoD, unsigned char vibratoS){
 
-    signed char sl = (signed char)slide;
-    signed char de = (signed char)delta;
-
-    params[id].slideValue        = (float) (sl * AUDIO_STEP) * 2;
-    params[id].deltaSlideValue   = (float) (de * AUDIO_STEP) * 2;
+    params[id].slideValue        = (float) (Tools::ToSigned(slide) * AUDIO_STEP) * 2;
+    params[id].deltaSlideValue   = (float) (Tools::ToSigned(delta) * AUDIO_STEP) * 2;
     params[id].vibratoDepthValue = (float) (vibratoD * AUDIO_STEP);
     params[id].vibratoSpeedValue = (float) (vibratoS * AUDIO_STEP);
 
@@ -157,13 +154,10 @@ void AudioManager::SFXFreq(unsigned char id, unsigned char slide, unsigned char 
 }
 void AudioManager::SFXTone(unsigned char id, unsigned char amount, unsigned char speed, unsigned char square, unsigned char duty){
 
-    signed char am = (signed char) amount;
-    signed char du = (signed char) duty;
-
-    params[id].changeAmountValue = (float) (am * AUDIO_STEP) * 2;
+    params[id].changeAmountValue = (float) (Tools::ToSigned(amount) * AUDIO_STEP) * 2;
     params[id].changeSpeedValue  = (float) (speed * AUDIO_STEP);
     params[id].squareDutyValue   = (float) (square * AUDIO_STEP);
-    params[id].dutySweepValue    = (float) (du * AUDIO_STEP) * 2;
+    params[id].dutySweepValue    = (float) (Tools::ToSigned(duty) * AUDIO_STEP) * 2;
     
     unsigned short dir = GetSoundDir(id);
     Tools::Poke(dir + 9,  amount);
@@ -174,12 +168,9 @@ void AudioManager::SFXTone(unsigned char id, unsigned char amount, unsigned char
 }
 void AudioManager::SFXRepeat(unsigned char id, unsigned char speed, unsigned char offset, unsigned char sweep){
 
-    signed char off = (signed char) offset;
-    signed char sw = (signed char) sweep;
-
     params[id].repeatSpeedValue = (float) (speed * AUDIO_STEP);
-    params[id].phaserOffsetValue = (float) (off * AUDIO_STEP) * 2;
-    params[id].phaserSweepValue = (float) (sw * AUDIO_STEP) * 2;
+    params[id].phaserOffsetValue = (float) (Tools::ToSigned(offset) * AUDIO_STEP) * 2;
+    params[id].phaserSweepValue = (float) (Tools::ToSigned(sweep) * AUDIO_STEP) * 2;
 
     unsigned short dir = GetSoundDir(id);
     Tools::Poke(dir + 13, speed);
@@ -191,14 +182,11 @@ void AudioManager::SFXRepeat(unsigned char id, unsigned char speed, unsigned cha
 void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, 
         unsigned char lpfRes, unsigned char hpfCutoff, unsigned char hpfSweep){
 
-    signed char ls= (signed char)lpfSweep;
-    signed char hs = (signed char)hpfSweep;
-
     params[id].lpfCutoffValue = (float) (lpfCutoff * AUDIO_STEP);
-    params[id].lpfCutoffSweepValue = (float) (ls * AUDIO_STEP) * 2;
+    params[id].lpfCutoffSweepValue = (float) (Tools::ToSigned(lpfSweep) * AUDIO_STEP) * 2;
     params[id].lpfResonanceValue = (float) (lpfRes * AUDIO_STEP);
     params[id].hpfCutoffValue = (float) (hpfCutoff * AUDIO_STEP);
-    params[id].hpfCutoffSweepValue = (float) (hs * AUDIO_STEP) * 2;
+    params[id].hpfCutoffSweepValue = (float) (Tools::ToSigned(hpfSweep) * AUDIO_STEP) * 2;
 
     unsigned short dir = GetSoundDir(id);
     Tools::Poke(dir + 16, lpfCutoff);
@@ -237,6 +225,8 @@ void AudioManager::setNote(unsigned char id, unsigned char note){
 unsigned short AudioManager::GetSoundDir(unsigned char id){
     return (3376 + (id * 22));
 }
+
+
 //tsf
 void AudioManager::GetTSFPresets(){
 	for (int i = 0; i < tsf_get_presetcount(ptsf); i++){

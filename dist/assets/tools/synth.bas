@@ -42,35 +42,31 @@ def loadsound(id)
     envP = Peek(dir + 3)
     envR = Peek(dir + 4)
     
-    fSlide =   Peek(dir + 5)
-    fDelta =   Peek(dir + 6)
+    fSlide =   toSigned(Peek(dir + 5))
+    fDelta =   toSigned(Peek(dir + 6))
     vibratoD = Peek(dir + 7)
     vibratoS = Peek(dir + 8)
 
-    toneAmount = Peek(dir + 9)
+    toneAmount = toSigned(Peek(dir + 9))
     toneSpeed  = Peek(dir + 10)
     toneSquare = Peek(dir + 11)
-    toneDuty   = Peek(dir + 12)
+    toneDuty   = toSigned(Peek(dir + 12))
 
     repSp = Peek(dir + 13)
-    repOf = Peek(dir + 14)
-    repSw = Peek(dir + 15)
+    repOf = toSigned(Peek(dir + 14))
+    repSw = toSigned(Peek(dir + 15))
 
     lpfCutoff = Peek(dir + 16)
-    lpfSweep  = Peek(dir + 17)
+    lpfSweep  = toSigned(Peek(dir + 17))
     lpfRes    = Peek(dir + 18)
     hpfCutoff = Peek(dir + 19)
-    hpfSweep  = Peek(dir + 20)
+    hpfSweep  = toSigned(Peek(dir + 20))
 enddef
 
 loadsound(currentSound)
 bgCol = 1
-def tick()
-    k = key.get()
-    IF k <> 0 THEN 
-    ENDIF
 
-    IF key.pressed(32) THEN
+def saveSound()
         sfx.env(currentSound, envA, envT, envP, envR)
         sfx.freq(currentSound, fSlide, fDelta, vibratoD, vibratoS)
         sfx.tone(currentSound, toneAmount, toneSpeed, toneSquare, toneDuty)
@@ -78,6 +74,15 @@ def tick()
         sfx.filter(currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
         sfx.wave(currentSound, wave)
         sfx.render(currentSound, note)
+enddef
+
+def tick()
+    k = key.get()
+    IF k <> 0 THEN 
+    ENDIF
+
+    IF key.pressed(32) THEN
+        saveSound()
         sfx.play(currentSound, 127) 
     ENDIF  
 
@@ -244,14 +249,12 @@ def draw()
     hpfCutoff = ui.knob(hpfCutoff,176, 162,0,255)
     hpfSweep = ui.knob(hpfSweep,208, 162,-127,127)
 
+    IF ui.button(256,166,"Load") THEN 
+        loadMemroy("bios.bin")
+    ENDIF
+
     IF ui.button(256,176,"Save") THEN 
-        sfx.env(currentSound, envA, envT, envP, envR)
-        sfx.freq(currentSound, fSlide, fDelta, vibratoD, vibratoS)
-        sfx.tone(currentSound, toneAmount, toneSpeed, toneSquare, toneDuty)
-        sfx.repeat(currentSound, repSp, repOf, repSw)
-        sfx.filter(currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep)
-        sfx.wave(currentSound, wave)
-        sfx.render(currentSound, note)
+        saveSound()
         dumpMemory("bios.bin")
     ENDIF
 

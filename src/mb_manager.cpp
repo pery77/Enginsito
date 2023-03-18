@@ -100,6 +100,7 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, getSpriteByte);
 	mb_reg_fun(bas, peek);
 	mb_reg_fun(bas, poke);
+	mb_reg_fun(bas, toSigned);
 	mb_reg_fun(bas, dumpMemory);
 	mb_reg_fun(bas, loadMemory);
 
@@ -1719,6 +1720,21 @@ int MBManager::poke(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
    	Tools::Poke(dir,value);
+
+	return result;
+}
+int MBManager::toSigned(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int value;
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &value));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	mb_check(mb_push_int(s, l, Tools::ToSigned(value)));
 
 	return result;
 }

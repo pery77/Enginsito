@@ -57,5 +57,4 @@ class AudioManager {
     int audioTick = 0;
     const char* sequence[TRACK_COUNT];
     void setNote(unsigned char id, unsigned char note);
-    
 };

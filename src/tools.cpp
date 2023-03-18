@@ -382,3 +382,15 @@ void Tools::SetVersion(){
     Poke(4094, PE_VERSION / 256);
     Poke(4095, PE_VERSION % 256);
 }
+
+int8_t Tools::ToSigned(unsigned char value){
+    int8_t result = value;
+    if (value>127) result = value - 256;
+    return result;
+}
+
+unsigned char Tools::ToUnsigned(int8_t value){
+    unsigned char result = value;
+    if (value<0) result = value + 256;
+    return result;
+}

@@ -99,4 +99,7 @@ class Tools{
         static int GetVersion();
         static void SetVersion();
 
+        static int8_t ToSigned(unsigned char value);
+        static unsigned char ToUnsigned(int8_t value);
+
 };

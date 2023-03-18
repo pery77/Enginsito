@@ -70,6 +70,7 @@ class MBManager{
         static int getFolders(struct mb_interpreter_t* s, void** l);
         static int peek(struct mb_interpreter_t* s, void** l);
         static int poke(struct mb_interpreter_t* s, void** l);
+        static int toSigned(struct mb_interpreter_t* s, void** l);
         static int dumpMemory(struct mb_interpreter_t* s, void** l);
         static int loadMemory(struct mb_interpreter_t* s, void** l);
 
