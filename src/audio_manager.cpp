@@ -6,43 +6,24 @@
 
 tsf* ptsf;
 MMLParser* mml[TRACK_COUNT];
+RetroSynth* synth;
 
 AudioStream stream;
 
-#define MAX_VOICES 4
-typedef struct {
-    bool noteOn;
-    int note;
-    float volume;
-    float time;
-} Voice;
-static Voice voices[MAX_VOICES] = {0};
-
-
-float frequency_from_note(int midi_note) {
-    return 440.0f * pow(2.0f, (midi_note - 69) / 12.0f);
-}
-
-unsigned char sine_wave(int note, float time) {
-    float frequency = frequency_from_note(note);
-    float value = sin(2.0f * PI * frequency * time);
-    return (unsigned char) ((value + 1.0f) * 127.5f);
-}
-
-float steps = 1.0f / 22050.0f;
+float steps = 1.0f / 44100.0f;
 float t = 0;
 void audioInputCallback(void *buffer, unsigned int frames){
 
-    unsigned char *bufferData = (unsigned char*) buffer;
+    short *bufferData = (short*) buffer;
 
     for (int i = 0; i < frames; i++) {
-        unsigned char sample = 0;
+        short sample = 0;
         for (int j = 0; j < MAX_VOICES; j++) {
-            if (voices[j].noteOn) {
-                sample += sine_wave(voices[j].note, t) * voices[j].volume;
-                voices[j].time += steps;
+            if (synth->voices[j].noteOn) {
+                sample += synth->SineWave(synth->voices[j].note, t) * synth->voices[j].volume * 32000.0;
+                synth->voices[j].time += steps;
             }else{
-                voices[j].time = 0;
+                synth->voices[j].time = 0;
             }
         }
 
@@ -83,8 +64,8 @@ AudioManager::AudioManager(){
         sound[i] = LoadSoundFromWave(wave[i]);
     }
    
-    SetAudioStreamBufferSizeDefault(512);
-    stream = LoadAudioStream(22050, 8, 1);
+    SetAudioStreamBufferSizeDefault(2048);
+    stream = LoadAudioStream(44100, 16, 1);
     SetAudioStreamCallback(stream, audioInputCallback);
 
     PlayAudioStream(stream);
@@ -95,10 +76,7 @@ AudioManager::AudioManager(){
         sequence[i] = "";
     }
 
-    voices[0].note = 69;
-    voices[0].volume = 0.4f;
-    voices[1].note = 69;
-    voices[1].volume = 0.4f;
+    synth = new RetroSynth();
 }
 
 AudioManager::~AudioManager(){}
@@ -106,33 +84,6 @@ AudioManager::~AudioManager(){}
 //Music
 void AudioManager::Update(){
     
-    if (IsKeyPressed(KEY_ONE)) {
-        voices[0].noteOn = true;
-        printf("%i ",voices[0].note);
-    }
-    if (IsKeyReleased(KEY_ONE)) {
-        voices[0].noteOn = false;
-    }
-    if (IsKeyPressed(KEY_TWO)) {
-        voices[1].noteOn = true;
-        printf("%i ",voices[1].note);
-    }
-    if (IsKeyReleased(KEY_TWO)) {
-        voices[1].noteOn = false;
-    }
-    if (IsKeyReleased(KEY_UP)) {
-         voices[0].note++; 
-    }
-    if (IsKeyReleased(KEY_DOWN)) {
-        voices[0].note--; 
-    }
-        if (IsKeyReleased(KEY_LEFT)) {
-         voices[1].note++; 
-    }
-    if (IsKeyReleased(KEY_RIGHT)) {
-        voices[1].note--; 
-    }
-
     bool isPlaying = false;
     for (int i = 0; i < TRACK_COUNT; i++) {
         if (mml[i]->isPlaying()) {
@@ -154,11 +105,13 @@ const char* AudioManager::GetSequence(unsigned char id){
 }
 
 void AudioManager::PlayNote(int note, int voice, int volume){
-    SFXRender(voice, note);
-    SFXPlay(voice, volume);
+    //SFXRender(voice, note);
+    //SFXPlay(voice, volume);
+    synth->voices[voice].note = note;
+    synth->voices[voice].noteOn = true;
 }
 void AudioManager::StopNote(int note, int voice){
-
+    synth->voices[voice].noteOn = false;
     //StopSound(sound[voice]);
 }
 void AudioManager::MusicPlay(){
@@ -246,7 +199,6 @@ void AudioManager::SFXRepeat(unsigned char id, unsigned char speed, unsigned cha
     Tools::Poke(dir + 14, offset);
     Tools::Poke(dir + 15, sweep);
    
-
 }
 void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, 
         unsigned char lpfRes, unsigned char hpfCutoff, unsigned char hpfSweep){
@@ -270,7 +222,9 @@ void AudioManager::SFXPlay(unsigned char id, unsigned char vol){
         SetSoundVolume(sound[id], (float)(vol * 0.007874)); // 1/127
         PlaySound(sound[id]);
 }
-
+void AudioManager::SFXStop(unsigned char id){
+        StopSound(sound[id]);
+}
 void AudioManager::LoadSoundData(unsigned char id){
     unsigned int dir = 3376 + (id * 22);
     

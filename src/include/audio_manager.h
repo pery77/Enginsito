@@ -6,6 +6,7 @@
 #include <math.h>
 #include "MMLParser.h"
 #include "tools.h"
+#include "retroSynth.h"
 
 #define SAMPLERATE               22050
 #define SAMPLESIZE               16
@@ -41,6 +42,7 @@ class AudioManager {
     void GetTSFPresets();
     
     void SFXPlay(unsigned char id, unsigned char vol = 127);
+    void SFXStop(unsigned char id);
     void SFXRender(unsigned char id, unsigned char note);
     void SFXWave(unsigned char id, unsigned char waveType);
     void SFXEnv(unsigned char id, unsigned char att, unsigned char susT, unsigned char susP, unsigned char dec);
