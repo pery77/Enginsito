@@ -51,3 +51,8 @@ FTYPE RetroSynth::osc(const FTYPE dTime, const FTYPE dHertz, const int nType, co
             return 0.0;
 	}
 }
+
+
+FTYPE env(const FTYPE dTime, envelope &env, const FTYPE dTimeOn, const FTYPE dTimeOff){
+	return env.amplitude(dTime, dTimeOn, dTimeOff);
+}

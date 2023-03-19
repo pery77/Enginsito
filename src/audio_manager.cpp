@@ -3,7 +3,6 @@
 #include <cstring>
 #include <cmath>
 
-
 tsf* ptsf;
 MMLParser* mml[TRACK_COUNT];
 RetroSynth* synth;
@@ -11,7 +10,9 @@ RetroSynth* synth;
 AudioStream stream;
 
 float steps = 1.0f / 44100.0f;
-float t = 0;
+double musicTime = 0.0;
+short limit = 16000;
+
 void audioInputCallback(void *buffer, unsigned int frames){
 
     short *bufferData = (short*) buffer;
@@ -26,19 +27,23 @@ void audioInputCallback(void *buffer, unsigned int frames){
                 ++notes;
             }
         }
-        if (notes > 1) reduceGain = 1./notes; 
+        if (notes > 1) reduceGain = 0.8/notes; 
         for (int j = 0; j < MAX_VOICES; j++) {
-            if (synth->voices[j].noteOn) {
-                sample += synth->RenderNote(synth->voices[j].osc, synth->voices[j].note, t) * synth->voices[j].volume * 32000.0 * reduceGain;
-                if (sample > 64000) sample = 64000;
-                synth->voices[j].time += steps;
-            }else{
-                synth->voices[j].time = 0;
-            }
+            //if (synth->voices[j].noteOn) {
+                float amplitude = synth->voices[j].env.amplitude(musicTime, synth->voices[j].timeOn, synth->voices[j].timeOff);
+                if (amplitude > 0.01){
+                    sample += synth->RenderNote(synth->voices[j].osc, synth->voices[j].note, musicTime) 
+                                                * synth->voices[j].volume * 32000.0 * amplitude * reduceGain;
+                }
+
+           // }
         }
 
+        if (sample > limit) sample = limit;
+        if (sample < -limit) sample = -limit;
+        
         bufferData[i] = sample;
-        t += steps;
+        musicTime += steps;
     }
 }
 
@@ -118,20 +123,27 @@ void AudioManager::PlayNote(int channel, int osc, int note, int volume){
     synth->voices[channel].note = note;
     synth->voices[channel].noteOn = true;
     synth->voices[channel].volume = volume * 0.007874; // 1/127
+    synth->voices[channel].timeOn = musicTime;
+    synth->voices[channel].timeOff = 0;
+    printf("NoteOn: %f\n",synth->voices[channel].timeOn);
+
     //SFXRender(voice, note);
     //SFXPlay(voice, volume);
 }
 void AudioManager::StopNote(int channel){
     synth->voices[channel].noteOn = false;
+    synth->voices[channel].timeOff = musicTime;
+    printf("NoteOff: %f Life: %f\n",synth->voices[channel].timeOff, synth->voices[channel].timeOff - synth->voices[channel].timeOn);
     //StopSound(sound[voice]);
 }
 void AudioManager::MusicPlay(){
     audioTick = 0;
+    musicTime = 0;
     for (int i = 0; i < TRACK_COUNT; i++) {
         size_t lenght = strlen(sequence[i]);
         if (lenght > 2){
             printf("Playing #%d '%s'\n", i, sequence[i]);
-            mml[i]->play(sequence[i], true);
+            mml[i]->play(sequence[i], false);
         }    
     }
 }

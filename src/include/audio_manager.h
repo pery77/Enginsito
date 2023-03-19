@@ -8,15 +8,15 @@
 #include "tools.h"
 #include "retroSynth.h"
 
-#define SAMPLERATE               22050
-#define SAMPLESIZE               16
+#define SAMPLERATE                44100
+#define SAMPLESIZE                16
 #define CHANNELS                  2
 #define MAX_SAMPLES               512
 #define MAX_SAMPLES_PER_UPDATE    4096
 #define MAX_WAVE_SLOTS            16
 
-#define AUDIO_STEP                 0.00390625
-#define TRACK_COUNT                4
+#define AUDIO_STEP                0.00390625
+#define TRACK_COUNT               4
 
 class AudioManager {
     
