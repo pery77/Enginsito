@@ -35,8 +35,8 @@ class AudioManager {
     void SetSequence(unsigned char id, const char* newSequence);
     const char* GetSequence(unsigned char id);
 
-    void PlayNote(int note, int voice, int volume);
-    void StopNote(int note, int voice);
+    void PlayNote(int channel, int osc, int note, int volume);
+    void StopNote(int channel);
     void MusicPlay();
     void MusicStop();
     void GetTSFPresets();

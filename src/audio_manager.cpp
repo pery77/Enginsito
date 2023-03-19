@@ -32,20 +32,19 @@ void audioInputCallback(void *buffer, unsigned int frames){
     }
 }
 
-void mmlCallback(MMLEvent event, int ch, int num, int velocity, AudioManager* au){
+void mmlCallback(MMLEvent event, int channel, int osc, int note, int volume, AudioManager* au){
     switch (event) {
         case MML_NOTE_ON:
-            printf("(%d)%d,%d", ch, num, velocity);
-            au->PlayNote(num, ch, velocity);
+            au->PlayNote(channel, osc, note, volume);
             //mml[x]->getTotalSteps()
             break;
         case MML_NOTE_OFF:
             printf("- ");
-            au->StopNote(num, ch);
+            au->StopNote(channel);
             break;
         case MML_PROGRAM_CHANGE:
-            printf("\n[Voice:%d]\n", ch);
-            break;
+            printf("\n[OSC:%d]\n", osc);
+            break; 
     }
 }
 
@@ -72,6 +71,7 @@ AudioManager::AudioManager(){
    
     for (int i = 0; i < TRACK_COUNT; i++) {
         mml[i] = new MMLParser(this);
+        mml[i]->setChannel(i);
         mml[i]->setCallback(mmlCallback);
         sequence[i] = "";
     }
@@ -104,14 +104,15 @@ const char* AudioManager::GetSequence(unsigned char id){
         return sequence[id];
 }
 
-void AudioManager::PlayNote(int note, int voice, int volume){
+void AudioManager::PlayNote(int channel, int osc, int note, int volume){
+    synth->voices[channel].osc = osc;
+    synth->voices[channel].note = note;
+    synth->voices[channel].noteOn = true;
     //SFXRender(voice, note);
     //SFXPlay(voice, volume);
-    synth->voices[voice].note = note;
-    synth->voices[voice].noteOn = true;
 }
-void AudioManager::StopNote(int note, int voice){
-    synth->voices[voice].noteOn = false;
+void AudioManager::StopNote(int channel){
+    synth->voices[channel].noteOn = false;
     //StopSound(sound[voice]);
 }
 void AudioManager::MusicPlay(){

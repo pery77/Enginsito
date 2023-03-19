@@ -4,6 +4,7 @@
 
 typedef struct {
     bool noteOn = false;
+    int osc = 0;
     int note = 69;
     float volume = 0.5;
     float time;

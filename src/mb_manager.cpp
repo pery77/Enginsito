@@ -1363,19 +1363,18 @@ int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
-    int key;
-	int voice;
-	int velocity;
+    int channel, osc, note, volume;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_int(s, l, &key));
-		mb_check(mb_pop_int(s, l, &voice));
-		mb_check(mb_pop_int(s, l, &velocity));
+		mb_check(mb_pop_int(s, l, &channel));
+		mb_check(mb_pop_int(s, l, &osc));
+		mb_check(mb_pop_int(s, l, &note));
+		mb_check(mb_pop_int(s, l, &volume));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->PlayNote(key, voice, velocity);
+    audioR->PlayNote(channel, osc, note, volume);
 
 	return result;
 }
@@ -1383,17 +1382,16 @@ int MBManager::stopNote(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
-    int key;
+    int channel;
 	int voice;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_int(s, l, &key));
-		mb_check(mb_pop_int(s, l, &voice));
+		mb_check(mb_pop_int(s, l, &channel));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->StopNote(key, voice);
+    audioR->StopNote(channel);
 
 	return result;
 }

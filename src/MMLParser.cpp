@@ -64,26 +64,33 @@ void MMLParser::play(MMLPTR mml, bool _isLoop) {
 	_isPlaying = true;
 }
 
-void MMLParser::noteOn(int channel, int num, int velocity) {
+void MMLParser::noteOn(int note, int volume) {
 	if (pfnCallback) {
-		(*pfnCallback)(MML_NOTE_ON, channel, num, velocity, audioM);
+		(*pfnCallback)(MML_NOTE_ON, channel, osc, note, volume, audioM);
 	}
-	prevNum = num;
+	prevNum = note;
 }
 
 void MMLParser::noteOff() {
 	if (pfnCallback) {
-		(*pfnCallback)(MML_NOTE_OFF, channel, prevNum, 0, audioM);
+		(*pfnCallback)(MML_NOTE_OFF,  channel, osc, 0, 0, audioM);
 	}
 }
 
-void MMLParser::programChange(int prog) {
-	channel = prog;
+void MMLParser::programChange(int _osc) {
+	osc = _osc;
 	if (pfnCallback) {
-		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, prog, 0, audioM);
+		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, osc, 0, 0, audioM);
 	}
 }
-
+/*
+void MMLParser::setChannel(int _channel) {
+	channel = _channel;
+	if (pfnCallback) {
+		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, osc, 0, 0, audioM);
+	}
+}
+*/
 void MMLParser::stop() {
 	noteOff();
 	init();
@@ -243,7 +250,7 @@ bool MMLParser::parseTone(char c) {
 	} else if (v > maxVelocity) {
 		v = maxVelocity;
 	}
-	noteOn(channel, num, v);
+	noteOn(num, v);
 	return true;
 }
 

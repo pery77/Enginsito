@@ -35,7 +35,7 @@ public:
 	MMLParser(AudioManager* audioManager, int channel = 0);
 	~MMLParser();
 
-	void setCallback(void (*_pfnCallback)(MMLEvent, int, int, int, AudioManager*)) { pfnCallback = _pfnCallback; }
+	void setCallback(void (*_pfnCallback)(MMLEvent, int, int, int, int, AudioManager*)) { pfnCallback = _pfnCallback; }
 	void setChannel(int _channel) { channel = _channel; }
 	void setMaxVelocity(int _maxVelocity) { maxVelocity = _maxVelocity;	}
 	void play(MMLPTR mml, bool isLoop = false);
@@ -58,6 +58,7 @@ protected:
 
 	AudioManager* audioM;
 	int channel;
+	int osc;
 	bool _isPlaying;
 	bool _isPaused;
 	bool isLoop;
@@ -83,15 +84,15 @@ protected:
 	static int16_t tempo;
 	int prevNum;
 
-	void(*pfnCallback)(MMLEvent, int, int, int, AudioManager*); // channel, note number, velocity
+	void(*pfnCallback)(MMLEvent, int, int, int, int, AudioManager*); // channel, note number, velocity
 
 	void init();
 	void startup();
 	bool parse();
 
-	void noteOn(int channel, int num, int velocity = 0);
+	void noteOn(int note, int volume = 127);
 	void noteOff();
-	void programChange(int prog);
+	void programChange(int osc);
 
 	bool parseTone(char c);
 	int parseNote(int noteIndex, int* pOctave = NULL, bool* pNoTranspose = NULL);
