@@ -18,31 +18,25 @@ void audioInputCallback(void *buffer, unsigned int frames){
     short *bufferData = (short*) buffer;
 
     for (int i = 0; i < frames; i++) {
-        short sample = 0;
-        float reduceGain = 1.0;
-        int notes = 0;
 
+        short samples[MAX_VOICES] = {0};
+        short mixedSample = 0;
+        
         for (int j = 0; j < MAX_VOICES; j++) {
-            if (synth->voices[j].noteOn) {
-                ++notes;
+
+            float amplitude = synth->voices[j].env.amplitude(musicTime, synth->voices[j].timeOn, synth->voices[j].timeOff);
+            if (amplitude > 0.01) {
+                samples[j] += synth->RenderNote(synth->voices[j].osc, synth->voices[j].note, musicTime) 
+                                            * synth->voices[j].volume * 32000.0 * amplitude;
+                
             }
         }
-        if (notes > 1) reduceGain = 0.8/notes; 
-        for (int j = 0; j < MAX_VOICES; j++) {
-            //if (synth->voices[j].noteOn) {
-                float amplitude = synth->voices[j].env.amplitude(musicTime, synth->voices[j].timeOn, synth->voices[j].timeOff);
-                if (amplitude > 0.01){
-                    sample += synth->RenderNote(synth->voices[j].osc, synth->voices[j].note, musicTime) 
-                                                * synth->voices[j].volume * 32000.0 * amplitude * reduceGain;
-                }
 
-           // }
+        for (int j = 0; j < MAX_VOICES; j++) {
+            mixedSample += samples[j] * 0.25;
         }
 
-        if (sample > limit) sample = limit;
-        if (sample < -limit) sample = -limit;
-        
-        bufferData[i] = sample;
+        bufferData[i] = mixedSample;
         musicTime += steps;
     }
 }
@@ -97,6 +91,25 @@ AudioManager::~AudioManager(){}
 
 //Music
 void AudioManager::Update(){
+
+    if (IsKeyPressed(KEY_A)){
+        PlayNote(0,0,69,100);
+    }
+    if (IsKeyReleased(KEY_A)){
+        StopNote(0);
+    }
+    if (IsKeyPressed(KEY_S)){
+        PlayNote(1,1,69-12,100);
+    }
+    if (IsKeyReleased(KEY_S)){
+        StopNote(1);
+    }
+    if (IsKeyPressed(KEY_D)){
+        PlayNote(2,2,69+12,100);
+    }
+    if (IsKeyReleased(KEY_D)){
+        StopNote(2);
+    }
     
     bool isPlaying = false;
     for (int i = 0; i < TRACK_COUNT; i++) {
@@ -121,20 +134,12 @@ const char* AudioManager::GetSequence(unsigned char id){
 void AudioManager::PlayNote(int channel, int osc, int note, int volume){
     synth->voices[channel].osc = osc;
     synth->voices[channel].note = note;
-    synth->voices[channel].noteOn = true;
     synth->voices[channel].volume = volume * 0.007874; // 1/127
     synth->voices[channel].timeOn = musicTime;
     synth->voices[channel].timeOff = 0;
-    printf("NoteOn: %f\n",synth->voices[channel].timeOn);
-
-    //SFXRender(voice, note);
-    //SFXPlay(voice, volume);
 }
 void AudioManager::StopNote(int channel){
-    synth->voices[channel].noteOn = false;
     synth->voices[channel].timeOff = musicTime;
-    printf("NoteOff: %f Life: %f\n",synth->voices[channel].timeOff, synth->voices[channel].timeOff - synth->voices[channel].timeOn);
-    //StopSound(sound[voice]);
 }
 void AudioManager::MusicPlay(){
     audioTick = 0;
@@ -148,7 +153,10 @@ void AudioManager::MusicPlay(){
     }
 }
 void AudioManager::MusicStop(){
+    audioTick = 0;
+    musicTime = 0;
     for (int i = 0; i < TRACK_COUNT; i++) {
+        StopNote(i);
         mml[i]->stop();
     }
 }

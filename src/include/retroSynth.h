@@ -1,7 +1,7 @@
 #pragma once
 
 #define MAX_VOICES 4
-#define FTYPE float
+#define FTYPE double
 
 struct envelope {
 	virtual FTYPE amplitude(const FTYPE dTime, const FTYPE dTimeOn, const FTYPE dTimeOff) = 0;
@@ -20,7 +20,7 @@ struct envelope_adsr : public envelope{
 		dAttackTime = 0.04;
 		dDecayTime = 0.04;
 		dSustainAmplitude = 1.0;
-		dReleaseTime = 0.2;
+		dReleaseTime = 0.02;
 		dStartAmplitude = 1.0;
 	}
 
@@ -57,7 +57,6 @@ struct envelope_adsr : public envelope{
 };
 
 typedef struct {
-    bool noteOn = false;
     int osc = 0;
     int note = 69;
     float volume = 0.5;
