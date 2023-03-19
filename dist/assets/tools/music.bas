@@ -7,12 +7,12 @@ sfx.wave(1,2)
 'music.set(0,"T100 @3 >>e16-e8-e8-c16-e8-g4-<g4>-c8.<g8.e8.a8b8a+16a8g16.>e16g16.a8f16g8e8c16d16<b8.>c8.<g8.e8.a8b8a+16a8g16.>e16g16.a8f16g8e8c16d16<b4&b16>g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.g16f+16f16d+8e8>c8c16c4.<g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.d+8.d8.c2&c8g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.g16f+16f16d+8e8>c8c16c4.<g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.d+8.d8.c2")
 'music.set(1,"T100 @88 <d16d8d8d16d8g4<g4>g8.e8.c8.f8g8f+16f8c16.>c16e16.f8d16e8c8<a16b16g8.g8.e8.c8.f8g8f+16f8c16.>c16e16.f8d16e8c8<a16b16g8.c8.g8.>c8<f8.>c16c16c16<f8c8.e8.g16>c4.&c16<g8c8.g8.>c8<f8.>c16c16c16<f8c8g+8.a+8.>c8.<g16g8c8c8.g8.>c8<f8.>c16c16c16<f8c8.g8.g16>c4.&c16<g8c8.g8.>c8<f8.>c16c16c16<f8c8g+8.a+8.>c8.")
 
-''music.set(2,"")
-'music.set(3,"")
-'music.set(0,"T140 o2 cdefgab>c")
-'music.set(1,"T140 o3 cdefgab>c")
-'music.set(1,"T140 O3 cdefgab>c")
-music.set(2,"T140 @22 O6 cdefgab>c")
+
+music.set(0,"T140 o2 v20 cdefgab>c")
+music.set(1,"T140 o3 v20 cdefgab>c")
+music.set(2,"T140 O4 v20 cdefgab>c")
+music.set(3,"T140 @22 O6 v120 cdefgab>c")
+
 music.stop()
 music.play()
 def draw()

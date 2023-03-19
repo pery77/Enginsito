@@ -83,14 +83,7 @@ void MMLParser::programChange(int _osc) {
 		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, osc, 0, 0, audioM);
 	}
 }
-/*
-void MMLParser::setChannel(int _channel) {
-	channel = _channel;
-	if (pfnCallback) {
-		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, osc, 0, 0, audioM);
-	}
-}
-*/
+
 void MMLParser::stop() {
 	noteOff();
 	init();

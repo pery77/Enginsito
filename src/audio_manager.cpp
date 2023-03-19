@@ -39,7 +39,6 @@ void mmlCallback(MMLEvent event, int channel, int osc, int note, int volume, Aud
             //mml[x]->getTotalSteps()
             break;
         case MML_NOTE_OFF:
-            printf("- ");
             au->StopNote(channel);
             break;
         case MML_PROGRAM_CHANGE:
@@ -108,6 +107,7 @@ void AudioManager::PlayNote(int channel, int osc, int note, int volume){
     synth->voices[channel].osc = osc;
     synth->voices[channel].note = note;
     synth->voices[channel].noteOn = true;
+    synth->voices[channel].volume = volume * 0.007874; // 1/127
     //SFXRender(voice, note);
     //SFXPlay(voice, volume);
 }
@@ -220,7 +220,7 @@ void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned
 }
 
 void AudioManager::SFXPlay(unsigned char id, unsigned char vol){
-        SetSoundVolume(sound[id], (float)(vol * 0.007874)); // 1/127
+        SetSoundVolume(sound[id], (float)(vol * 0.003906)); // 1/256
         PlaySound(sound[id]);
 }
 void AudioManager::SFXStop(unsigned char id){
