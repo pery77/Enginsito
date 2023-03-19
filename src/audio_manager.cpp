@@ -18,9 +18,19 @@ void audioInputCallback(void *buffer, unsigned int frames){
 
     for (int i = 0; i < frames; i++) {
         short sample = 0;
+        float reduceGain = 1.0;
+        int notes = 0;
+
         for (int j = 0; j < MAX_VOICES; j++) {
             if (synth->voices[j].noteOn) {
-                sample += synth->SineWave(synth->voices[j].note, t) * synth->voices[j].volume * 32000.0;
+                ++notes;
+            }
+        }
+        if (notes > 1) reduceGain = 1./notes; 
+        for (int j = 0; j < MAX_VOICES; j++) {
+            if (synth->voices[j].noteOn) {
+                sample += synth->RenderNote(synth->voices[j].osc, synth->voices[j].note, t) * synth->voices[j].volume * 32000.0 * reduceGain;
+                if (sample > 64000) sample = 64000;
                 synth->voices[j].time += steps;
             }else{
                 synth->voices[j].time = 0;
