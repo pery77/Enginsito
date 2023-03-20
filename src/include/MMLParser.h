@@ -90,7 +90,7 @@ protected:
 	void startup();
 	bool parse();
 
-	void noteOn(int note, int volume = 127);
+	void noteOn(int note, int volume = 64);
 	void noteOff();
 	void programChange(int osc);
 

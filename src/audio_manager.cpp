@@ -9,11 +9,11 @@ RetroSynth* synth;
 
 AudioStream stream;
 
-float steps = 1.0f / 44100.0f;
+float steps = 1.0f / (float)SAMPLE_RATE;
 double musicTime = 0.0;
-short limit = 16000;
+bool isPlaying = false;
 
-void audioInputCallback(void *buffer, unsigned int frames){
+void audioInputCallback(void *buffer, unsigned int frames) {
 
     short *bufferData = (short*) buffer;
 
@@ -24,11 +24,14 @@ void audioInputCallback(void *buffer, unsigned int frames){
         
         for (int j = 0; j < MAX_VOICES; j++) {
 
-            float amplitude = synth->voices[j].env.amplitude(musicTime, synth->voices[j].timeOn, synth->voices[j].timeOff);
-            if (amplitude > 0.01) {
+            float amplitude = synth->voices[j].env.amplitude(musicTime, synth->voices[j].timeOn, 
+                                                                synth->voices[j].timeOff);
+            if (amplitude > 0.1) {
                 samples[j] += synth->RenderNote(synth->voices[j].osc, synth->voices[j].note, musicTime) 
                                             * synth->voices[j].volume * 32000.0 * amplitude;
-                
+            }
+            else{
+                samples[j] = 0;
             }
         }
 
@@ -45,7 +48,6 @@ void mmlCallback(MMLEvent event, int channel, int osc, int note, int volume, Aud
     switch (event) {
         case MML_NOTE_ON:
             au->PlayNote(channel, osc, note, volume);
-            //mml[x]->getTotalSteps()
             break;
         case MML_NOTE_OFF:
             au->StopNote(channel);
@@ -71,8 +73,8 @@ AudioManager::AudioManager(){
         sound[i] = LoadSoundFromWave(wave[i]);
     }
    
-    SetAudioStreamBufferSizeDefault(2048);
-    stream = LoadAudioStream(44100, 16, 1);
+    SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
+    stream = LoadAudioStream(SAMPLE_RATE, SAMPLE_SIZE, CHANNELS);
     SetAudioStreamCallback(stream, audioInputCallback);
 
     PlayAudioStream(stream);
@@ -92,40 +94,22 @@ AudioManager::~AudioManager(){}
 //Music
 void AudioManager::Update(){
 
-    if (IsKeyPressed(KEY_A)){
-        PlayNote(0,0,69,100);
-    }
-    if (IsKeyReleased(KEY_A)){
-        StopNote(0);
-    }
-    if (IsKeyPressed(KEY_S)){
-        PlayNote(1,1,69-12,100);
-    }
-    if (IsKeyReleased(KEY_S)){
-        StopNote(1);
-    }
-    if (IsKeyPressed(KEY_D)){
-        PlayNote(2,2,69+12,100);
-    }
-    if (IsKeyReleased(KEY_D)){
-        StopNote(2);
-    }
-    
-    bool isPlaying = false;
+    MusicIsPlaying = false;
     for (int i = 0; i < TRACK_COUNT; i++) {
         if (mml[i]->isPlaying()) {
-            isPlaying = true;
-            mml[i]->update(audioTick);
+            MusicIsPlaying = true;
+            mml[i]->update(AudioTick);
         }
     }
-    if (isPlaying) audioTick++;
+    isPlaying = MusicIsPlaying;
+    if (MusicIsPlaying) AudioTick++;
 }
 
 void AudioManager::SetSequence(unsigned char id, const char* newSequence){
     if (id > TRACK_COUNT - 1) 
         id = TRACK_COUNT - 1;
     sequence[id] = newSequence;
-    audioTick = 0;
+    AudioTick = 0;
 }
 const char* AudioManager::GetSequence(unsigned char id){
         return sequence[id];
@@ -142,25 +126,30 @@ void AudioManager::StopNote(int channel){
     synth->voices[channel].timeOff = musicTime;
 }
 void AudioManager::MusicPlay(){
-    audioTick = 0;
+    AudioTick = 0;
     musicTime = 0;
     for (int i = 0; i < TRACK_COUNT; i++) {
         size_t lenght = strlen(sequence[i]);
         if (lenght > 2){
             printf("Playing #%d '%s'\n", i, sequence[i]);
             mml[i]->play(sequence[i], false);
+            MusicIsPlaying = true;
         }    
     }
 }
 void AudioManager::MusicStop(){
-    audioTick = 0;
+    AudioTick = 0;
     musicTime = 0;
     for (int i = 0; i < TRACK_COUNT; i++) {
         StopNote(i);
         mml[i]->stop();
+        MusicIsPlaying = false;
     }
 }
-
+unsigned int AudioManager::GetMusicPosition(int channel)
+{
+    return mml[channel]->getTotalSteps();
+}
 //Effects
 void AudioManager::SFXRender(unsigned char id, unsigned char note){
 
@@ -250,7 +239,7 @@ void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned
 }
 
 void AudioManager::SFXPlay(unsigned char id, unsigned char vol){
-        SetSoundVolume(sound[id], (float)(vol * 0.003906)); // 1/256
+        SetSoundVolume(sound[id], (float)(vol * AUDIO_STEP)); // 1/256
         PlaySound(sound[id]);
 }
 void AudioManager::SFXStop(unsigned char id){

@@ -8,14 +8,14 @@
 #include "tools.h"
 #include "retroSynth.h"
 
-#define SAMPLERATE                44100
-#define SAMPLESIZE                16
-#define CHANNELS                  2
+#define SAMPLE_RATE               44100
+#define SAMPLE_SIZE               16
+#define CHANNELS                  1
 #define MAX_SAMPLES               512
-#define MAX_SAMPLES_PER_UPDATE    4096
+#define MAX_SAMPLES_PER_UPDATE    2048
 #define MAX_WAVE_SLOTS            16
 
-#define AUDIO_STEP                0.00390625
+#define AUDIO_STEP                0.00390625 // 1. / 256.
 #define TRACK_COUNT               4
 
 class AudioManager {
@@ -40,6 +40,7 @@ class AudioManager {
     void MusicPlay();
     void MusicStop();
     void GetTSFPresets();
+    unsigned int GetMusicPosition(int channel);
     
     void SFXPlay(unsigned char id, unsigned char vol = 127);
     void SFXStop(unsigned char id);
@@ -55,8 +56,11 @@ class AudioManager {
 
     unsigned short GetSoundDir(unsigned char id);
 
+
+    bool MusicIsPlaying = false;
+    unsigned int AudioTick = 0;
+
     private:
-    int audioTick = 0;
     const char* sequence[TRACK_COUNT];
     void setNote(unsigned char id, unsigned char note);
 };

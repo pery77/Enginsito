@@ -144,6 +144,8 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "NOTEOFF", stopNote);
 		mb_register_func(bas, "PLAY", musicPlay);
 		mb_register_func(bas, "STOP", musicStop);
+		mb_register_func(bas, "POSITION", getMusicPosition);
+		mb_register_func(bas, "TICK", getMusicTick);
 	mb_end_module(bas);
 
 	mb_begin_module(bas, "SFX");
@@ -1423,6 +1425,41 @@ int MBManager::musicStop(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+int MBManager::getMusicPosition(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+    int channel = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &channel));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = audioR->GetMusicPosition(channel);
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+int MBManager::getMusicTick(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = audioR->AudioTick;
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+//SFX
 int MBManager::sfxRender(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
