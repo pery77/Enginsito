@@ -141,9 +141,10 @@ void AudioManager::MusicStop(){
     AudioTick = 0;
     musicTime = 0;
     for (int i = 0; i < TRACK_COUNT; i++) {
-        StopNote(i);
         mml[i]->stop();
         MusicIsPlaying = false;
+        synth->voices[i].timeOn = -999;
+        synth->voices[i].timeOff = -1;
     }
 }
 unsigned int AudioManager::GetMusicPosition(int channel)

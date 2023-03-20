@@ -60,6 +60,8 @@ void MMLParser::play(MMLPTR mml, bool _isLoop) {
 	pStart = mml;
 	isLoop = _isLoop;
 	startup();
+	printf("L: %i" , measure());
+	startup();
 //	tempo = 120;
 	_isPlaying = true;
 }
@@ -154,6 +156,42 @@ bool MMLParser::update(unsigned long tick) {
 		}
 	}
 	return true;
+}
+unsigned int MMLParser::measure() {
+	unsigned int tick = 0;
+
+	while (*p != '\0') {
+		prevTick = tick;
+		if (!p || _isPaused) return true;
+		if (startTick == 0) {
+			startTick = tick;
+		}
+
+		if (steps) {
+			int e = (int)(tick - startTick) * 48 * tempo / ( 60 * 60 ) - totalSteps;
+			if (stepsGate) {
+				if (e >= stepsGate) {
+					stepsGate = 0;
+				}
+			}
+			if (e >= steps) {
+				totalSteps += steps;
+				steps = 0;
+			}
+		}
+
+		if (steps == 0) {
+			if (*p != '\0') {
+				while (steps == 0 && *p != '\0') {
+					if (!parse()) break;
+				}
+			}
+		}
+
+		tick++;
+		printf("T: %i " , tick);
+	}
+	return totalSteps;
 }
 
 bool MMLParser::parse() {

@@ -44,6 +44,7 @@ public:
 	bool isPlaying() { return _isPlaying; }
 	bool isPaused() { return _isPaused; }
 	bool update(unsigned long tick);
+	unsigned int measure();
 	MMLPTR getErrorPoint() { return p - 1; }
 	int getTotalSteps() { return totalSteps; }
 	
