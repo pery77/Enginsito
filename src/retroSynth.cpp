@@ -35,8 +35,14 @@ FTYPE RetroSynth::osc(const FTYPE dTime, const FTYPE dHertz, const int nType, co
         case OSC_SINE: // Sine wave bewteen -1 and +1
             return sin(dFreq);
 
-        case OSC_SQUARE: // Square wave between -1 and +1
+        case OSC_SQUARE50: // Square wave between -1 and +1
             return sin(dFreq) > 0 ? 1.0 : -1.0;
+
+        case OSC_SQUARE25: // Square wave 25%
+            return sin(dFreq) > 0.5 ? 1.0 : -1.0;    
+
+        case OSC_SQUARE12: // Square wave 12%
+            return sin(dFreq) > 0.75 ? 1.0 : -1.0;  
 
         case OSC_TRIANGLE: // Triangle wave between -1 and +1
             return asin(sin(dFreq)) * INV2PI;

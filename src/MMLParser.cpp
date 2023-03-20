@@ -160,7 +160,7 @@ bool MMLParser::update(unsigned long tick) {
 unsigned int MMLParser::measure() {
 	unsigned int tick = 0;
 
-	while (*p != '\0') {
+	do {
 		prevTick = tick;
 		if (!p || _isPaused) return true;
 		if (startTick == 0) {
@@ -191,6 +191,8 @@ unsigned int MMLParser::measure() {
 		tick++;
 		printf("T: %i " , tick);
 	}
+	while (*p != '\0');
+	totalSteps += steps;
 	return totalSteps;
 }
 

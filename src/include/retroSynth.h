@@ -67,10 +67,12 @@ typedef struct {
 } Voice;
 
 const int OSC_SINE = 0;
-const int OSC_SQUARE = 1;
-const int OSC_TRIANGLE = 2;
-const int OSC_SAW_DIG = 3;
-const int OSC_NOISE = 4;
+const int OSC_SQUARE50 = 1;
+const int OSC_SQUARE25 = 2;
+const int OSC_SQUARE12 = 3;
+const int OSC_TRIANGLE = 4;
+const int OSC_SAW_DIG = 5;
+const int OSC_NOISE = 6;
 
 class RetroSynth{
 
