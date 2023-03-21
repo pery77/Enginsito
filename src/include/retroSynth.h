@@ -86,6 +86,6 @@ class RetroSynth{
 
     private:
     float frequencyFromNote(int midi_note);
-    FTYPE osc(const FTYPE dTime, const FTYPE dHertz, const int nType = OSC_SINE, const FTYPE dLFOHertz = 0.0, const FTYPE dLFOAmplitude = 0.0, FTYPE dCustom = 50.0);
+    FTYPE osc(const FTYPE dTime, const FTYPE dHertz, const int nType, const FTYPE dLFOHertz = 0.0, const FTYPE dLFOAmplitude = 0.0);
 
 };

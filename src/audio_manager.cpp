@@ -147,9 +147,11 @@ void AudioManager::MusicStop(){
         synth->voices[i].timeOff = -1;
     }
 }
-unsigned int AudioManager::GetMusicPosition(int channel)
-{
+unsigned int AudioManager::GetMusicPosition(int channel){
     return mml[channel]->getTotalSteps();
+}
+unsigned int AudioManager::GetMusicSize(int channel){
+    return mml[channel]->getSize();
 }
 //Effects
 void AudioManager::SFXRender(unsigned char id, unsigned char note){

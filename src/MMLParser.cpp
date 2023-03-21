@@ -60,28 +60,29 @@ void MMLParser::play(MMLPTR mml, bool _isLoop) {
 	pStart = mml;
 	isLoop = _isLoop;
 	startup();
-	printf("L: %i" , measure());
+	size = measure();
+	printf("Size: %i" , size);
 	startup();
 //	tempo = 120;
 	_isPlaying = true;
 }
 
 void MMLParser::noteOn(int note, int volume) {
-	if (pfnCallback) {
+	if (pfnCallback && !isMeasuring) {
 		(*pfnCallback)(MML_NOTE_ON, channel, osc, note, volume, audioM);
 	}
 	prevNum = note;
 }
 
 void MMLParser::noteOff() {
-	if (pfnCallback) {
+	if (pfnCallback && !isMeasuring) {
 		(*pfnCallback)(MML_NOTE_OFF,  channel, osc, 0, 0, audioM);
 	}
 }
 
 void MMLParser::programChange(int _osc) {
 	osc = _osc;
-	if (pfnCallback) {
+	if (pfnCallback && !isMeasuring) {
 		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, osc, 0, 0, audioM);
 	}
 }
@@ -159,7 +160,7 @@ bool MMLParser::update(unsigned long tick) {
 }
 unsigned int MMLParser::measure() {
 	unsigned int tick = 0;
-
+	isMeasuring = true;
 	do {
 		prevTick = tick;
 		if (!p || _isPaused) return true;
@@ -189,10 +190,10 @@ unsigned int MMLParser::measure() {
 		}
 
 		tick++;
-		printf("T: %i " , tick);
 	}
 	while (*p != '\0');
 	totalSteps += steps;
+	isMeasuring = false;
 	return totalSteps;
 }
 

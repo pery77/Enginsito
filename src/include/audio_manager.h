@@ -41,6 +41,7 @@ class AudioManager {
     void MusicStop();
     void GetTSFPresets();
     unsigned int GetMusicPosition(int channel);
+    unsigned int GetMusicSize(int channel);
     
     void SFXPlay(unsigned char id, unsigned char vol = 127);
     void SFXStop(unsigned char id);
@@ -55,7 +56,6 @@ class AudioManager {
     void LoadSoundData(unsigned char id);
 
     unsigned short GetSoundDir(unsigned char id);
-
 
     bool MusicIsPlaying = false;
     unsigned int AudioTick = 0;

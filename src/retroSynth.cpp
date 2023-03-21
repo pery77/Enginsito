@@ -22,12 +22,11 @@ float RetroSynth::frequencyFromNote(int midi_note) {
 
 float RetroSynth::RenderNote(int oscT, int note, float time) {
     float frequency = frequencyFromNote(note);
-    //float value = sin(PI2 * frequency * time);
     float value = osc(time, frequency, oscT);
     return value;
 }
 
-FTYPE RetroSynth::osc(const FTYPE dTime, const FTYPE dHertz, const int nType, const FTYPE dLFOHertz, const FTYPE dLFOAmplitude, FTYPE dCustom) {
+FTYPE RetroSynth::osc(const FTYPE dTime, const FTYPE dHertz, const int nType, const FTYPE dLFOHertz, const FTYPE dLFOAmplitude) {
 
 	FTYPE dFreq = w(dHertz) * dTime + dLFOAmplitude * dHertz * (sin(w(dLFOHertz) * dTime));
 	switch (nType)

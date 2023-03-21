@@ -117,6 +117,7 @@ class MBManager{
         static int musicPlay(struct mb_interpreter_t* s, void** l);
         static int musicStop(struct mb_interpreter_t* s, void** l);
         static int getMusicPosition(struct mb_interpreter_t* s, void** l);
+        static int getMusicSize(struct mb_interpreter_t* s, void** l);
         static int getMusicTick(struct mb_interpreter_t* s, void** l);
 
         

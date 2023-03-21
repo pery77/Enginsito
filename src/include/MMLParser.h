@@ -44,7 +44,7 @@ public:
 	bool isPlaying() { return _isPlaying; }
 	bool isPaused() { return _isPaused; }
 	bool update(unsigned long tick);
-	unsigned int measure();
+	unsigned int getSize() { return size; }
 	MMLPTR getErrorPoint() { return p - 1; }
 	int getTotalSteps() { return totalSteps; }
 	
@@ -84,12 +84,15 @@ protected:
 	uint8_t prog;
 	static int16_t tempo;
 	int prevNum;
+	bool isMeasuring;
+	unsigned int size;
 
 	void(*pfnCallback)(MMLEvent, int, int, int, int, AudioManager*); // channel, note number, velocity
 
 	void init();
 	void startup();
 	bool parse();
+	unsigned int measure();
 
 	void noteOn(int note, int volume = 64);
 	void noteOff();
