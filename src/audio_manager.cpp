@@ -19,10 +19,10 @@ void audioInputCallback(void *buffer, unsigned int frames) {
 
     for (int i = 0; i < frames; i++) {
 
-        short samples[MAX_VOICES] = {0};
+        short samples[TRACK_COUNT] = {0};
         short mixedSample = 0;
         
-        for (int j = 0; j < MAX_VOICES; j++) {
+        for (int j = 0; j < TRACK_COUNT; j++) {
 
             float amplitude = synth->voices[j].env.amplitude(musicTime, synth->voices[j].timeOn, 
                                                                 synth->voices[j].timeOff);
@@ -35,7 +35,7 @@ void audioInputCallback(void *buffer, unsigned int frames) {
             }
         }
 
-        for (int j = 0; j < MAX_VOICES; j++) {
+        for (int j = 0; j < TRACK_COUNT; j++) {
             mixedSample += samples[j] * 0.25;
         }
 
@@ -105,24 +105,24 @@ void AudioManager::Update(){
     if (MusicIsPlaying) AudioTick++;
 }
 
-void AudioManager::SetSequence(unsigned char id, const char* newSequence){
+void AudioManager::SetSequence(uint8_t id, const char* newSequence){
     if (id > TRACK_COUNT - 1) 
         id = TRACK_COUNT - 1;
     sequence[id] = newSequence;
     AudioTick = 0;
 }
-const char* AudioManager::GetSequence(unsigned char id){
+const char* AudioManager::GetSequence(uint8_t id){
         return sequence[id];
 }
 
-void AudioManager::PlayNote(int channel, int osc, int note, int volume){
+void AudioManager::PlayNote(uint8_t channel, uint8_t osc, uint8_t note, uint8_t volume){
     synth->voices[channel].osc = osc;
     synth->voices[channel].note = note;
     synth->voices[channel].volume = volume * 0.007874; // 1/127
     synth->voices[channel].timeOn = musicTime;
     synth->voices[channel].timeOff = 0;
 }
-void AudioManager::StopNote(int channel){
+void AudioManager::StopNote(uint8_t channel){
     synth->voices[channel].timeOff = musicTime;
 }
 void AudioManager::MusicPlay(){
@@ -147,14 +147,14 @@ void AudioManager::MusicStop(){
         synth->voices[i].timeOff = -1;
     }
 }
-unsigned int AudioManager::GetMusicPosition(int channel){
+unsigned int AudioManager::GetMusicPosition(uint8_t channel){
     return mml[channel]->getTotalSteps();
 }
-unsigned int AudioManager::GetMusicSize(int channel){
+unsigned int AudioManager::GetMusicSize(uint8_t channel){
     return mml[channel]->getSize();
 }
 //Effects
-void AudioManager::SFXRender(unsigned char id, unsigned char note){
+void AudioManager::SFXRender(uint8_t id, uint8_t note){
 
     setNote(id, note);
 
@@ -164,13 +164,13 @@ void AudioManager::SFXRender(unsigned char id, unsigned char note){
     unsigned short dir = GetSoundDir(id);
     Tools::Poke(dir + 21, note);
 }
-void AudioManager::SFXWave(unsigned char id, unsigned char waveType){
+void AudioManager::SFXWave(uint8_t id, uint8_t waveType){
 
     params[id].waveTypeValue = waveType;
     unsigned short dir = GetSoundDir(id);
     Tools::Poke(dir, waveType);
 }
-void AudioManager::SFXEnv(unsigned char id, unsigned char att, unsigned char susT, unsigned char susP, unsigned char dec){
+void AudioManager::SFXEnv(uint8_t id, uint8_t att, uint8_t susT, uint8_t susP, uint8_t dec){
 
     params[id].attackTimeValue   = (float) (att * AUDIO_STEP);
     params[id].sustainTimeValue  = (float) (susT * AUDIO_STEP);
@@ -183,7 +183,7 @@ void AudioManager::SFXEnv(unsigned char id, unsigned char att, unsigned char sus
     Tools::Poke(dir + 3, susP);
     Tools::Poke(dir + 4, dec);
 }
-void AudioManager::SFXFreq(unsigned char id, unsigned char slide, unsigned char delta, unsigned char vibratoD, unsigned char vibratoS){
+void AudioManager::SFXFreq(uint8_t id, uint8_t slide, uint8_t delta, uint8_t vibratoD, uint8_t vibratoS){
 
     params[id].slideValue        = (float) (Tools::ToSigned(slide) * AUDIO_STEP) * 2;
     params[id].deltaSlideValue   = (float) (Tools::ToSigned(delta) * AUDIO_STEP) * 2;
@@ -197,7 +197,7 @@ void AudioManager::SFXFreq(unsigned char id, unsigned char slide, unsigned char 
     Tools::Poke(dir + 8, vibratoS);
   
 }
-void AudioManager::SFXTone(unsigned char id, unsigned char amount, unsigned char speed, unsigned char square, unsigned char duty){
+void AudioManager::SFXTone(uint8_t id, uint8_t amount, uint8_t speed, uint8_t square, uint8_t duty){
 
     params[id].changeAmountValue = (float) (Tools::ToSigned(amount) * AUDIO_STEP) * 2;
     params[id].changeSpeedValue  = (float) (speed * AUDIO_STEP);
@@ -211,7 +211,7 @@ void AudioManager::SFXTone(unsigned char id, unsigned char amount, unsigned char
     Tools::Poke(dir + 12, duty);
 
 }
-void AudioManager::SFXRepeat(unsigned char id, unsigned char speed, unsigned char offset, unsigned char sweep){
+void AudioManager::SFXRepeat(uint8_t id, uint8_t speed, uint8_t offset, uint8_t sweep){
 
     params[id].repeatSpeedValue = (float) (speed * AUDIO_STEP);
     params[id].phaserOffsetValue = (float) (Tools::ToSigned(offset) * AUDIO_STEP) * 2;
@@ -223,8 +223,8 @@ void AudioManager::SFXRepeat(unsigned char id, unsigned char speed, unsigned cha
     Tools::Poke(dir + 15, sweep);
    
 }
-void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, 
-        unsigned char lpfRes, unsigned char hpfCutoff, unsigned char hpfSweep){
+void AudioManager::SFXFilter(uint8_t id, uint8_t lpfCutoff, uint8_t lpfSweep, 
+        uint8_t lpfRes, uint8_t hpfCutoff, uint8_t hpfSweep){
 
     params[id].lpfCutoffValue = (float) (lpfCutoff * AUDIO_STEP);
     params[id].lpfCutoffSweepValue = (float) (Tools::ToSigned(lpfSweep) * AUDIO_STEP) * 2;
@@ -241,14 +241,14 @@ void AudioManager::SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned
    
 }
 
-void AudioManager::SFXPlay(unsigned char id, unsigned char vol){
+void AudioManager::SFXPlay(uint8_t id, uint8_t vol){
         SetSoundVolume(sound[id], (float)(vol * AUDIO_STEP)); // 1/256
         PlaySound(sound[id]);
 }
-void AudioManager::SFXStop(unsigned char id){
+void AudioManager::SFXStop(uint8_t id){
         StopSound(sound[id]);
 }
-void AudioManager::LoadSoundData(unsigned char id){
+void AudioManager::LoadSoundData(uint8_t id){
     unsigned int dir = 3376 + (id * 22);
     
     SFXWave(id, Tools::Peek(dir));
@@ -261,14 +261,14 @@ void AudioManager::LoadSoundData(unsigned char id){
     setNote(id, Tools::Peek(dir + 21));
     
 }
-void AudioManager::setNote(unsigned char id, unsigned char note){
+void AudioManager::setNote(uint8_t id, uint8_t note){
 
     float n = ((note - 21)/12.0);
     float f =  0.087875 * (sqrt(pow(2, n)));
 
     params[id].startFrequencyValue = f;
 }
-unsigned short AudioManager::GetSoundDir(unsigned char id){
+unsigned short AudioManager::GetSoundDir(uint8_t id){
     return (3376 + (id * 22));
 }
 

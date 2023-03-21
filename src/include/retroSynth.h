@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_VOICES 4
+#define MAX_VOICES 4 // one per track
 #define FTYPE double
 
 struct envelope {

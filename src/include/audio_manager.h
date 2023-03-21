@@ -32,35 +32,35 @@ class AudioManager {
 
     void Update();
     int voice = 0;
-    void SetSequence(unsigned char id, const char* newSequence);
-    const char* GetSequence(unsigned char id);
+    void SetSequence(uint8_t id, const char* newSequence);
+    const char* GetSequence(uint8_t id);
 
-    void PlayNote(int channel, int osc, int note, int volume);
-    void StopNote(int channel);
+    void PlayNote(uint8_t channel, uint8_t osc, uint8_t note, uint8_t volume);
+    void StopNote(uint8_t channel);
     void MusicPlay();
     void MusicStop();
     void GetTSFPresets();
-    unsigned int GetMusicPosition(int channel);
-    unsigned int GetMusicSize(int channel);
+    unsigned int GetMusicPosition(uint8_t channel);
+    unsigned int GetMusicSize(uint8_t channel);
     
-    void SFXPlay(unsigned char id, unsigned char vol = 127);
-    void SFXStop(unsigned char id);
-    void SFXRender(unsigned char id, unsigned char note);
-    void SFXWave(unsigned char id, unsigned char waveType);
-    void SFXEnv(unsigned char id, unsigned char att, unsigned char susT, unsigned char susP, unsigned char dec);
-    void SFXFreq(unsigned char id, unsigned char slide, unsigned char delta, unsigned char vibratoD, unsigned char vibratoS);
-    void SFXTone(unsigned char id, unsigned char amount, unsigned char speed, unsigned char square, unsigned char duty);
-    void SFXRepeat(unsigned char id, unsigned char speed, unsigned char offset, unsigned char sweep);
-    void SFXFilter(unsigned char id, unsigned char lpfCutoff, unsigned char lpfSweep, unsigned char lpfRes, unsigned char hpfCutoff, unsigned char hpfSweep);
+    void SFXPlay(uint8_t id, uint8_t vol = 127);
+    void SFXStop(uint8_t id);
+    void SFXRender(uint8_t id, uint8_t note);
+    void SFXWave(uint8_t id, uint8_t waveType);
+    void SFXEnv(uint8_t id, uint8_t att, uint8_t susT, uint8_t susP, uint8_t dec);
+    void SFXFreq(uint8_t id, uint8_t slide, uint8_t delta, uint8_t vibratoD, uint8_t vibratoS);
+    void SFXTone(uint8_t id, uint8_t amount, uint8_t speed, uint8_t square, uint8_t duty);
+    void SFXRepeat(uint8_t id, uint8_t speed, uint8_t offset, uint8_t sweep);
+    void SFXFilter(uint8_t id, uint8_t lpfCutoff, uint8_t lpfSweep, uint8_t lpfRes, uint8_t hpfCutoff, uint8_t hpfSweep);
     
-    void LoadSoundData(unsigned char id);
+    void LoadSoundData(uint8_t id);
 
-    unsigned short GetSoundDir(unsigned char id);
+    unsigned short GetSoundDir(uint8_t id);
 
     bool MusicIsPlaying = false;
     unsigned int AudioTick = 0;
 
     private:
     const char* sequence[TRACK_COUNT];
-    void setNote(unsigned char id, unsigned char note);
+    void setNote(uint8_t id, uint8_t note);
 };

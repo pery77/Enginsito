@@ -58,17 +58,17 @@ protected:
 	static MMLParser *pPrevMMLParser;
 
 	AudioManager* audioM;
-	int channel;
-	int osc;
+	uint8_t channel = 0;
+	uint8_t osc = 0;
 	bool _isPlaying;
 	bool _isPaused;
 	bool isLoop;
-	unsigned long startTick;
-	unsigned long prevTick;
-	unsigned long pauseTick;
-	int steps;
-	int stepsGate;
-	int totalSteps;
+	unsigned long startTick = 0;
+	unsigned long prevTick = 0;
+	unsigned long pauseTick = 0;
+	unsigned int steps = 0;
+	unsigned int stepsGate = 0;
+	unsigned int totalSteps = 0;
 	MMLPTR pStart;
 	MMLPTR p;
 	MMLLoop mmlLoops[MAX_LOOP_NEST];
@@ -85,7 +85,7 @@ protected:
 	static int16_t tempo;
 	int prevNum;
 	bool isMeasuring;
-	unsigned int size;
+	unsigned int size = 0;
 
 	void(*pfnCallback)(MMLEvent, int, int, int, int, AudioManager*); // channel, note number, velocity
 
