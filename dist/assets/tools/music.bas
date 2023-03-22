@@ -86,13 +86,13 @@ kettonote(55,OSC_NOISE)
 
 enddef
 
-    envA = 0
-    envD = 0
-    envS = 0
-    envR = 0
-    envAM =0
-    lfoN = 0
-    lfoA = 0
+envA = 1
+envD = 1
+envS = 255
+envR = 5
+envAM =255
+lfoN = 0
+lfoA = 0
 
 def draw()
     cls(1)
@@ -132,8 +132,9 @@ def draw()
     envAM = ui.knob(envAM,222,80,0,255)
     lfoN = ui.knob(lfoN,262,80,0,255)
     lfoA = ui.knob(lfoA,292,80,0,255)
-    music.env(0,envA, envD, envS, endR, envAM)
-    music.lfo(0,lfoN, lfoA, envS, endR, envAM)
+    
+    music.env(0,envA, envD, envS, envR, envAM)
+    music.lfo(0,lfoN, lfoA)
 
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
     IF NOT ui.mouseWorking THEN  ui.drawmouse() ENDIF
