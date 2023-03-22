@@ -147,6 +147,8 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "POSITION", getMusicPosition);
 		mb_register_func(bas, "SIZE", getMusicSize);
 		mb_register_func(bas, "TICK", getMusicTick);
+		mb_register_func(bas, "ENV", setEnv);
+		mb_register_func(bas, "LFO", setLFO);
 	mb_end_module(bas);
 
 	mb_begin_module(bas, "SFX");
@@ -1477,6 +1479,46 @@ int MBManager::getMusicTick(struct mb_interpreter_t* s, void** l){
 
     ret.value.integer = audioR->AudioTick;
     mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+int MBManager::setEnv(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    int channel, attk, dec, sus, rel, amp = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &channel));
+		mb_check(mb_pop_int(s, l, &attk));
+		mb_check(mb_pop_int(s, l, &dec));
+		mb_check(mb_pop_int(s, l, &sus));
+		mb_check(mb_pop_int(s, l, &rel));
+		mb_check(mb_pop_int(s, l, &amp));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SetEnv(channel, attk, dec, sus, rel, amp);
+
+	return result;
+}
+
+int MBManager::setLFO(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    int channel, note, amp = 0;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &channel));
+		mb_check(mb_pop_int(s, l, &note));
+		mb_check(mb_pop_int(s, l, &amp));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SetLFO(channel, note, amp);
+
 	return result;
 }
 //SFX

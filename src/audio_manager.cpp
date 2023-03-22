@@ -24,11 +24,12 @@ void audioInputCallback(void *buffer, unsigned int frames) {
         
         for (int j = 0; j < TRACK_COUNT; j++) {
 
-            float amplitude = synth->voices[j].env.amplitude(musicTime, synth->voices[j].timeOn, 
-                                                                synth->voices[j].timeOff);
-            if (amplitude > 0.1) {
-                samples[j] += synth->RenderNote(synth->voices[j].osc, synth->voices[j].note, musicTime) 
-                                            * synth->voices[j].volume * 32000.0 * amplitude;
+            float amplitude = synth->channels[j].env.amplitude(musicTime, synth->channels[j].timeOn, 
+                                                                synth->channels[j].timeOff);
+            if (amplitude > 0.0001) {
+                samples[j] += synth->RenderNote(synth->channels[j].osc, synth->channels[j].note, musicTime,synth->channels[j].timeOn,
+                                                    synth->channels[j].lfo.dLFOHertz, synth->channels[j].lfo.dLFOAmplitude) 
+                                            * synth->channels[j].volume * 32000.0 * amplitude;
             }
             else{
                 samples[j] = 0;
@@ -116,14 +117,14 @@ const char* AudioManager::GetSequence(uint8_t id){
 }
 
 void AudioManager::PlayNote(uint8_t channel, uint8_t osc, uint8_t note, uint8_t volume){
-    synth->voices[channel].osc = osc;
-    synth->voices[channel].note = note;
-    synth->voices[channel].volume = volume * 0.007874; // 1/127
-    synth->voices[channel].timeOn = musicTime;
-    synth->voices[channel].timeOff = 0;
+    synth->channels[channel].osc = osc;
+    synth->channels[channel].note = note;
+    synth->channels[channel].volume = volume * 0.007874; // 1/127
+    synth->channels[channel].timeOn = musicTime;
+    synth->channels[channel].timeOff = 0;
 }
 void AudioManager::StopNote(uint8_t channel){
-    synth->voices[channel].timeOff = musicTime;
+    synth->channels[channel].timeOff = musicTime;
 }
 void AudioManager::MusicPlay(){
     AudioTick = 0;
@@ -143,8 +144,8 @@ void AudioManager::MusicStop(){
     for (int i = 0; i < TRACK_COUNT; i++) {
         mml[i]->stop();
         MusicIsPlaying = false;
-        synth->voices[i].timeOn = -999;
-        synth->voices[i].timeOff = -1;
+        synth->channels[i].timeOn = -999;
+        synth->channels[i].timeOff = -1;
     }
 }
 unsigned int AudioManager::GetMusicPosition(uint8_t channel){
@@ -153,6 +154,25 @@ unsigned int AudioManager::GetMusicPosition(uint8_t channel){
 unsigned int AudioManager::GetMusicSize(uint8_t channel){
     return mml[channel]->getSize();
 }
+
+void AudioManager::SetEnv(uint8_t channel, uint8_t attackTime, uint8_t decayTime,
+                         uint8_t sustainAmplitude, uint8_t releaseTime, uint8_t startAmplitude){
+
+    synth->SetEnv(channel, 
+            attackTime * AUDIO_STEP,
+            decayTime * AUDIO_STEP,
+            sustainAmplitude * AUDIO_STEP,
+            releaseTime * AUDIO_STEP,
+            startAmplitude * AUDIO_STEP);
+ }
+void AudioManager::SetLFO(uint8_t channel, uint8_t lfoNote, uint8_t lfoAmp){
+    
+    synth->SetLFO(channel,
+        lfoNote * 0.25,
+        lfoAmp * AUDIO_STEP * 0.25
+    );
+}
+
 //Effects
 void AudioManager::SFXRender(uint8_t id, uint8_t note){
 
@@ -271,7 +291,6 @@ void AudioManager::setNote(uint8_t id, uint8_t note){
 unsigned short AudioManager::GetSoundDir(uint8_t id){
     return (3376 + (id * 22));
 }
-
 
 //tsf
 void AudioManager::GetTSFPresets(){

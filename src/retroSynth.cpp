@@ -16,13 +16,13 @@ RetroSynth::RetroSynth(){
 RetroSynth::~RetroSynth(){
 }
 
-float RetroSynth::frequencyFromNote(int midi_note) {
+float RetroSynth::FrequencyFromNote(int midi_note) {
     return 440.0f * pow(2.0f, (midi_note - 69) / 12.0f);
 }
 
-float RetroSynth::RenderNote(int oscT, int note, float time) {
-    float frequency = frequencyFromNote(note);
-    float value = osc(time, frequency, oscT);
+float RetroSynth::RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp) {
+    float frequency = FrequencyFromNote(note);
+    float value = osc(time - timeOn, frequency, oscT, lfoHertz, lfoAmp);
     return value;
 }
 
@@ -60,4 +60,19 @@ FTYPE RetroSynth::osc(const FTYPE dTime, const FTYPE dHertz, const int nType, co
 
 FTYPE env(const FTYPE dTime, envelope &env, const FTYPE dTimeOn, const FTYPE dTimeOff){
 	return env.amplitude(dTime, dTimeOn, dTimeOff);
+}
+
+void RetroSynth::SetEnv(int channel, float attackTime, float decayTime,
+                         float sustainAmplitude, float releaseTime, float startAmplitude){
+
+    channels[channel].env.dAttackTime = attackTime;
+    channels[channel].env.dDecayTime = decayTime;
+    channels[channel].env.dSustainAmplitude = sustainAmplitude;
+    channels[channel].env.dReleaseTime = releaseTime;
+    channels[channel].env.dStartAmplitude = startAmplitude;
+ }
+void RetroSynth::SetLFO(int channel, float lfoHertz, float lfoAmp){
+
+    channels[channel].lfo.dLFOHertz = lfoHertz;
+    channels[channel].lfo.dLFOAmplitude = lfoAmp;
 }

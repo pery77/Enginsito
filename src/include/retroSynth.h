@@ -57,14 +57,19 @@ struct envelope_adsr : public envelope{
 };
 
 typedef struct {
+	FTYPE dLFOHertz = 0.0;
+ 	FTYPE dLFOAmplitude = 0.0;
+} LFO;
+
+typedef struct {
     int osc = 0;
     int note = 69;
     float volume = 0.5;
     double timeOn = 0.0;
     double timeOff = 0.0;
     envelope_adsr env;
-
-} Voice;
+	LFO lfo;
+} Channel;
 
 const int OSC_SINE = 0;
 const int OSC_SQUARE50 = 1;
@@ -80,12 +85,14 @@ class RetroSynth{
     RetroSynth();
     ~RetroSynth();
 
-    float RenderNote(int oscT, int note, float time);
+    float RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp);
+	void SetEnv(int channel, float attackTime, float decayTime, float sustainAmplitude, float releaseTime, float dStartAmplitude);
+	void SetLFO(int channel, float lfoHertz, float lfoAmp);
+    float FrequencyFromNote(int midi_note);
 
-    Voice voices[MAX_VOICES] = {0};
+    Channel channels[MAX_VOICES] = {0};
 
     private:
-    float frequencyFromNote(int midi_note);
-    FTYPE osc(const FTYPE dTime, const FTYPE dHertz, const int nType, const FTYPE dLFOHertz = 0.0, const FTYPE dLFOAmplitude = 0.0);
+    FTYPE osc(const FTYPE dTime, const FTYPE dHertz, const int nType, const FTYPE dLFOHertz, const FTYPE dLFOAmplitude);
 
 };
