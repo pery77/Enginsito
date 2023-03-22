@@ -35,7 +35,7 @@ class AudioManager {
     void SetSequence(uint8_t id, const char* newSequence);
     const char* GetSequence(uint8_t id);
 
-    void PlayNote(uint8_t channel, uint8_t osc, uint8_t note, uint8_t volume);
+    void PlayNote(uint8_t channel, uint8_t note, uint8_t volume);
     void StopNote(uint8_t channel);
     void MusicPlay();
     void MusicStop();
@@ -45,6 +45,7 @@ class AudioManager {
 
     void SetEnv(uint8_t channel, uint8_t attackTime, uint8_t decayTime, uint8_t sustainAmplitude, uint8_t releaseTime, uint8_t dStartAmplitude);
 	void SetLFO(uint8_t channel, uint8_t lfoHertz, uint8_t lfoAmp);
+	void SetOSC(uint8_t channel, uint8_t osc);
     
     void SFXPlay(uint8_t id, uint8_t vol = 127);
     void SFXStop(uint8_t id);

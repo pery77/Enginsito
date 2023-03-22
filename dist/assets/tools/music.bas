@@ -94,6 +94,9 @@ envAM =255
 lfoN = 0
 lfoA = 0
 
+music.osc(0,1)
+music.osc(1,0)
+
 def draw()
     cls(1)
     time = time + delta()
@@ -132,7 +135,7 @@ def draw()
     envAM = ui.knob(envAM,222,80,0,255)
     lfoN = ui.knob(lfoN,262,80,0,255)
     lfoA = ui.knob(lfoA,292,80,0,255)
-    
+
     music.env(0,envA, envD, envS, envR, envAM)
     music.lfo(0,lfoN, lfoA)
 

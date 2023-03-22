@@ -80,10 +80,9 @@ void MMLParser::noteOff() {
 	}
 }
 
-void MMLParser::programChange(int _osc) {
-	osc = _osc;
+void MMLParser::programChange(int _prog) {
 	if (pfnCallback && !isMeasuring) {
-		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, osc, 0, 0, audioM);
+		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, _prog, 0, 0, audioM);
 	}
 }
 

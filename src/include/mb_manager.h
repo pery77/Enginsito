@@ -121,6 +121,7 @@ class MBManager{
         static int getMusicTick(struct mb_interpreter_t* s, void** l);
         static int setEnv(struct mb_interpreter_t* s, void** l);
         static int setLFO(struct mb_interpreter_t* s, void** l);
+        static int setOsc(struct mb_interpreter_t* s, void** l);
 
         
         static int sfxRender(struct mb_interpreter_t* s, void** l);

@@ -149,6 +149,7 @@ int MBManager::OpenBas(const char * file){
 		mb_register_func(bas, "TICK", getMusicTick);
 		mb_register_func(bas, "ENV", setEnv);
 		mb_register_func(bas, "LFO", setLFO);
+		mb_register_func(bas, "OSC", setOsc);
 	mb_end_module(bas);
 
 	mb_begin_module(bas, "SFX");
@@ -1379,7 +1380,7 @@ int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->PlayNote(channel, osc, note, volume);
+    audioR->PlayNote(channel, note, volume);
 
 	return result;
 }
@@ -1518,6 +1519,23 @@ int MBManager::setLFO(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     audioR->SetLFO(channel, note, amp);
+
+	return result;
+}
+int MBManager::setOsc(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    int channel, osc;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+    if(mb_has_arg(s, l)) {
+		mb_check(mb_pop_int(s, l, &channel));
+		mb_check(mb_pop_int(s, l, &osc));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    audioR->SetOSC(channel, osc);
 
 	return result;
 }

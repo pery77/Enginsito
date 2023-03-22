@@ -76,3 +76,7 @@ void RetroSynth::SetLFO(int channel, float lfoHertz, float lfoAmp){
     channels[channel].lfo.dLFOHertz = lfoHertz;
     channels[channel].lfo.dLFOAmplitude = lfoAmp;
 }
+void RetroSynth::SetOsc(int channel, float osc){
+    
+    channels[channel].osc = osc;
+}

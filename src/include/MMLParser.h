@@ -87,7 +87,7 @@ protected:
 	bool isMeasuring;
 	unsigned int size = 0;
 
-	void(*pfnCallback)(MMLEvent, int, int, int, int, AudioManager*); // channel, note number, velocity
+	void(*pfnCallback)(MMLEvent, int, int, int, int, AudioManager*); // event channel, note, program, velocity
 
 	void init();
 	void startup();

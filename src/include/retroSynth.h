@@ -98,6 +98,8 @@ class RetroSynth{
     float RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp);
 	void SetEnv(int channel, float attackTime, float decayTime, float sustainAmplitude, float releaseTime, float dStartAmplitude);
 	void SetLFO(int channel, float lfoHertz, float lfoAmp);
+	void SetOsc(int channel, float osc);
+	
     float FrequencyFromNote(int midi_note);
 
     Channel channels[MAX_VOICES] = {0};

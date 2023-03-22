@@ -26,14 +26,14 @@ void audioInputCallback(void *buffer, unsigned int frames) {
 
             float amplitude = synth->channels[j].env.amplitude(musicTime, synth->channels[j].timeOn, 
                                                                 synth->channels[j].timeOff);
-            //if (amplitude > 0.0001) {
+            if (amplitude > 0.0001) {
                 samples[j] += synth->RenderNote(synth->channels[j].osc, synth->channels[j].note, musicTime,synth->channels[j].timeOn,
                                                     synth->channels[j].lfo.dLFOHertz, synth->channels[j].lfo.dLFOAmplitude) 
                                             * synth->channels[j].volume * 32000.0 * amplitude;
-           //}
-           // else{
-                //samples[j] = 0;
-           // }
+            }
+            else{
+                samples[j] = 0;
+            }
         }
 
         for (int j = 0; j < TRACK_COUNT; j++) {
@@ -45,16 +45,27 @@ void audioInputCallback(void *buffer, unsigned int frames) {
     }
 }
 
-void mmlCallback(MMLEvent event, int channel, int osc, int note, int volume, AudioManager* au){
+void mmlCallback(MMLEvent event, int channel, int program, int note, int volume, AudioManager* au){
     switch (event) {
         case MML_NOTE_ON:
-            au->PlayNote(channel, osc, note, volume);
+            if (channel == 5){
+                au->SFXRender(program, note);
+                au->SFXPlay(program, volume);
+            }
+            else{
+                au->PlayNote(channel, note, volume);
+            }
             break;
         case MML_NOTE_OFF:
-            au->StopNote(channel);
+            if (channel == 5){
+                au->SFXStop(program);
+            }
+            else{
+                au->StopNote(channel);
+            }
             break;
         case MML_PROGRAM_CHANGE:
-            printf("\n[OSC:%d]\n", osc);
+            printf("\n[Program: %i]\n", program);
             break; 
     }
 }
@@ -116,8 +127,7 @@ const char* AudioManager::GetSequence(uint8_t id){
         return sequence[id];
 }
 
-void AudioManager::PlayNote(uint8_t channel, uint8_t osc, uint8_t note, uint8_t volume){
-    synth->channels[channel].osc = osc;
+void AudioManager::PlayNote(uint8_t channel, uint8_t note, uint8_t volume){
     synth->channels[channel].note = note;
     synth->channels[channel].volume = volume * 0.007874; // 1/127
     synth->channels[channel].timeOn = musicTime;
@@ -125,7 +135,6 @@ void AudioManager::PlayNote(uint8_t channel, uint8_t osc, uint8_t note, uint8_t 
 }
 void AudioManager::StopNote(uint8_t channel){
     synth->channels[channel].timeOff = musicTime;
-    printf("Note: %f-%f  > %f \n", synth->channels[channel].timeOn, synth->channels[channel].timeOff, synth->channels[channel].timeOff - synth->channels[channel].timeOn);
 }
 void AudioManager::MusicPlay(){
     AudioTick = 0;
@@ -133,7 +142,6 @@ void AudioManager::MusicPlay(){
     for (int i = 0; i < TRACK_COUNT; i++) {
         size_t lenght = strlen(sequence[i]);
         if (lenght > 2){
-            printf("Playing #%d '%s'\n", i, sequence[i]);
             mml[i]->play(sequence[i], false);
             MusicIsPlaying = true;
         }    
@@ -172,6 +180,10 @@ void AudioManager::SetLFO(uint8_t channel, uint8_t lfoNote, uint8_t lfoAmp){
         lfoNote * 0.25,
         lfoAmp * AUDIO_STEP * 0.25
     );
+}
+void AudioManager::SetOSC(uint8_t channel, uint8_t osc){
+    
+    synth->SetOsc(channel, osc);
 }
 
 //Effects
