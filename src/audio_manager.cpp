@@ -4,7 +4,7 @@
 #include <cmath>
 
 tsf* ptsf;
-MMLParser* mml[TRACK_COUNT];
+MMLParser* mml[TRACK_COUNT + 1];
 RetroSynth* synth;
 
 AudioStream stream;
@@ -48,16 +48,18 @@ void audioInputCallback(void *buffer, unsigned int frames) {
 void mmlCallback(MMLEvent event, int channel, int program, int note, int volume, AudioManager* au){
     switch (event) {
         case MML_NOTE_ON:
-            if (channel == 5){
+        printf("[CHAN: %i] %i\n", channel ,note);
+            if (channel == TRACK_COUNT){
                 au->SFXRender(program, note);
                 au->SFXPlay(program, volume);
+                printf("[Playing: %i] %i\n", program ,note);
             }
             else{
                 au->PlayNote(channel, note, volume);
             }
             break;
         case MML_NOTE_OFF:
-            if (channel == 5){
+            if (channel == TRACK_COUNT){
                 au->SFXStop(program);
             }
             else{
@@ -65,7 +67,7 @@ void mmlCallback(MMLEvent event, int channel, int program, int note, int volume,
             }
             break;
         case MML_PROGRAM_CHANGE:
-            printf("\n[Program: %i]\n", program);
+            printf("[Program: %i]\n", program);
             break; 
     }
 }
@@ -91,7 +93,7 @@ AudioManager::AudioManager(){
 
     PlayAudioStream(stream);
    
-    for (int i = 0; i < TRACK_COUNT; i++) {
+    for (int i = 0; i < TRACK_COUNT + 1; i++) {
         mml[i] = new MMLParser(this);
         mml[i]->setChannel(i);
         mml[i]->setCallback(mmlCallback);
@@ -107,7 +109,7 @@ AudioManager::~AudioManager(){}
 void AudioManager::Update(){
 
     MusicIsPlaying = false;
-    for (int i = 0; i < TRACK_COUNT; i++) {
+    for (int i = 0; i < TRACK_COUNT + 1; i++) {
         if (mml[i]->isPlaying()) {
             MusicIsPlaying = true;
             mml[i]->update(AudioTick);
@@ -118,8 +120,8 @@ void AudioManager::Update(){
 }
 
 void AudioManager::SetSequence(uint8_t id, const char* newSequence){
-    if (id > TRACK_COUNT - 1) 
-        id = TRACK_COUNT - 1;
+    if (id > TRACK_COUNT) 
+        id = TRACK_COUNT;
     sequence[id] = newSequence;
     AudioTick = 0;
 }
@@ -139,7 +141,7 @@ void AudioManager::StopNote(uint8_t channel){
 void AudioManager::MusicPlay(){
     AudioTick = 0;
     musicTime = 0;
-    for (int i = 0; i < TRACK_COUNT; i++) {
+    for (int i = 0; i < TRACK_COUNT + 1; i++) {
         size_t lenght = strlen(sequence[i]);
         if (lenght > 2){
             mml[i]->play(sequence[i], false);
@@ -150,11 +152,14 @@ void AudioManager::MusicPlay(){
 void AudioManager::MusicStop(){
     AudioTick = 0;
     musicTime = 0;
-    for (int i = 0; i < TRACK_COUNT; i++) {
+    for (int i = 0; i < TRACK_COUNT + 1; i++) {
         mml[i]->stop();
         MusicIsPlaying = false;
-        synth->channels[i].timeOn = -2;
-        synth->channels[i].timeOff = -1;
+        if (i<TRACK_COUNT)
+        {
+            synth->channels[i].timeOn = -2;
+            synth->channels[i].timeOff = -1;
+        }
     }
 }
 unsigned int AudioManager::GetMusicPosition(uint8_t channel){

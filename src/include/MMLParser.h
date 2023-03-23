@@ -59,7 +59,6 @@ protected:
 
 	AudioManager* audioM;
 	uint8_t channel = 0;
-	uint8_t osc = 0;
 	bool _isPlaying;
 	bool _isPaused;
 	bool isLoop;
@@ -96,7 +95,7 @@ protected:
 
 	void noteOn(int note, int volume = 64);
 	void noteOff();
-	void programChange(int osc);
+	void programChange(int _prog);
 
 	bool parseTone(char c);
 	int parseNote(int noteIndex, int* pOctave = NULL, bool* pNoTranspose = NULL);

@@ -69,20 +69,21 @@ void MMLParser::play(MMLPTR mml, bool _isLoop) {
 
 void MMLParser::noteOn(int note, int volume) {
 	if (pfnCallback && !isMeasuring) {
-		(*pfnCallback)(MML_NOTE_ON, channel, osc, note, volume, audioM);
+		(*pfnCallback)(MML_NOTE_ON, channel, prog, note, volume, audioM);
 	}
 	prevNum = note;
 }
 
 void MMLParser::noteOff() {
 	if (pfnCallback && !isMeasuring) {
-		(*pfnCallback)(MML_NOTE_OFF,  channel, osc, 0, 0, audioM);
+		(*pfnCallback)(MML_NOTE_OFF,  channel, prog, 0, 0, audioM);
 	}
 }
 
 void MMLParser::programChange(int _prog) {
+	prog = _prog;
 	if (pfnCallback && !isMeasuring) {
-		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, _prog, 0, 0, audioM);
+		(*pfnCallback)(MML_PROGRAM_CHANGE, channel, prog, 0, 0, audioM);
 	}
 }
 
