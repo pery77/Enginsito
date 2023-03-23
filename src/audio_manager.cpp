@@ -130,12 +130,14 @@ const char* AudioManager::GetSequence(uint8_t id){
 }
 
 void AudioManager::PlayNote(uint8_t channel, uint8_t note, uint8_t volume){
+    if (channel >= TRACK_COUNT) return;
     synth->channels[channel].note = note;
     synth->channels[channel].volume = volume * 0.007874; // 1/127
     synth->channels[channel].timeOn = musicTime;
     synth->channels[channel].timeOff = 0;
 }
 void AudioManager::StopNote(uint8_t channel){
+    if (channel >= TRACK_COUNT) return;
     synth->channels[channel].timeOff = musicTime;
 }
 void AudioManager::MusicPlay(){
@@ -152,7 +154,7 @@ void AudioManager::MusicPlay(){
 void AudioManager::MusicStop(){
     AudioTick = 0;
     musicTime = 0;
-    for (int i = 0; i < TRACK_COUNT + 1; i++) {
+    for (int i = 0; i < TRACK_COUNT; i++) {
         mml[i]->stop();
         MusicIsPlaying = false;
         if (i<TRACK_COUNT)
@@ -182,8 +184,8 @@ void AudioManager::SetEnv(uint8_t channel, uint8_t attackTime, uint8_t decayTime
 void AudioManager::SetLFO(uint8_t channel, uint8_t lfoNote, uint8_t lfoAmp){
     
     synth->SetLFO(channel,
-        lfoNote * 0.25,
-        lfoAmp * AUDIO_STEP * 0.25
+        lfoNote * AUDIO_STEP * 2,
+        lfoAmp * AUDIO_STEP * 0.125
     );
 }
 void AudioManager::SetOSC(uint8_t channel, uint8_t osc){
@@ -280,13 +282,16 @@ void AudioManager::SFXFilter(uint8_t id, uint8_t lpfCutoff, uint8_t lpfSweep,
 }
 
 void AudioManager::SFXPlay(uint8_t id, uint8_t vol){
-        SetSoundVolume(sound[id], (float)(vol * AUDIO_STEP)); // 1/256
-        PlaySound(sound[id]);
+    id = Tools::IntClamp(id, 0, MAX_WAVE_SLOTS - 1);
+    SetSoundVolume(sound[id], (float)(vol * AUDIO_STEP)); // 1/256
+    PlaySound(sound[id]);
 }
 void AudioManager::SFXStop(uint8_t id){
-        StopSound(sound[id]);
+    id = Tools::IntClamp(id, 0, MAX_WAVE_SLOTS - 1);
+    StopSound(sound[id]);
 }
 void AudioManager::LoadSoundData(uint8_t id){
+    id = Tools::IntClamp(id, 0, MAX_WAVE_SLOTS - 1);
     unsigned int dir = 3376 + (id * 22);
     
     SFXWave(id, Tools::Peek(dir));

@@ -1369,12 +1369,11 @@ int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
-    int channel, osc, note, volume;
+    int channel, note, volume;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
 		mb_check(mb_pop_int(s, l, &channel));
-		mb_check(mb_pop_int(s, l, &osc));
 		mb_check(mb_pop_int(s, l, &note));
 		mb_check(mb_pop_int(s, l, &volume));
 	}

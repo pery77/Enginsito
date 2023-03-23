@@ -1,8 +1,4 @@
 import "assets/lib/ui.bas"
-'Tetris
-
-
-
 
 def mario()
     m1 = "T100 @1 v30 >>e16-e8-e8-c16-e8-g4-<g4>-c8.<g8.e8.a8b8a+16a8g16.>e16g16.a8f16g8e8c16d16<b8.>c8.<g8.e8.a8b8a+16a8g16.>e16g16.a8f16g8e8c16d16<b4&b16>g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.g16f+16f16d+8e8>c8c16c4.<g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.d+8.d8.c2&c8g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.g16f+16f16d+8e8>c8c16c4.<g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.d+8.d8.c2"
@@ -14,21 +10,22 @@ def mario()
     music.set(1,m2)
     music.set(2,m3)
     music.set(3,m4)
+    music.set(4,"")
 enddef
 
 def tetris()
-    t1 = "t130 @5 v60 >e4<b8>c8d8e16d16c8<b8a4a8>c8e4d8c8<b4.>c8d4e4c4<a4a2r8>d4f8a4g8f8e4.c8e4d8c8<b4b8>c8d4e4c4<a4a4r4"
-    t2 = "t130 @1 v80 o2e8>e8<e8>e8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<a8>a8<g+8>g+8<g+8>g+8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<b8>c8d8<d8r8d8r8d8a8f8c8>c8r8c8<c8g8g8r8b8>b8r8b8r8e8r8g+8<a8>e8<a8>e8<a4r4"
+    t1 = "t130 @1 v60 >e4<b8>c8d8e16d16c8<b8a4a8>c8e4d8c8<b4.>c8d4e4c4<a4a2r8>d4f8a4g8f8e4.c8e4d8c8<b4b8>c8d4e4c4<a4a4r4"
+    t2 = "t130  v80 o2e8>e8<e8>e8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<a8>a8<g+8>g+8<g+8>g+8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<b8>c8d8<d8r8d8r8d8a8f8c8>c8r8c8<c8g8g8r8b8>b8r8b8r8e8r8g+8<a8>e8<a8>e8<a4r4"
 
     music.set(0,t1)
-    music.set(1,"")
+    music.set(1,t2)
     music.set(2,"")
     music.set(3,"")
-    music.set(4,t2)
+    music.set(4,"")
 enddef
 
 'music.stop()
-music.play()
+'music.play()
 
 OSC_SINE = 0;
 OSC_SQUARE50 = 1;
@@ -40,7 +37,8 @@ OSC_NOISE = 6;
 
 def kettonote(k,o)
     IF key.pressed(k) THEN
-        music.note(0,o,69,50)
+        music.osc(0,o)
+        music.note(0,69,50)
     endif
     if key.released(k) then
         music.noteoff(0)
@@ -53,13 +51,13 @@ def tick()
         print k;
     ENDIF
 
-kettonote(49,OSC_SINE)
-kettonote(50,OSC_SQUARE50)
-kettonote(51,OSC_SQUARE25)
-kettonote(52,OSC_SQUARE12)
-kettonote(53,OSC_TRIANGLE)
-kettonote(54,OSC_SAW_DIG)
-kettonote(55,OSC_NOISE)
+    kettonote(49,OSC_SINE)
+    kettonote(50,OSC_SQUARE50)
+    kettonote(51,OSC_SQUARE25)
+    kettonote(52,OSC_SQUARE12)
+    kettonote(53,OSC_TRIANGLE)
+    kettonote(54,OSC_SAW_DIG)
+    kettonote(55,OSC_NOISE)
 
 enddef
 
@@ -75,6 +73,7 @@ music.osc(0,1)
 music.osc(1,5)
 
 def drawChan(ch,x,y)
+
     envA = ui.knob(envA,x, y,0,255)
     envD = ui.knob(envD,x + 32,y,0,255)
     envS = ui.knob(envS,x + 64,y,0,255)
