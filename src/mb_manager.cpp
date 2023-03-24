@@ -54,6 +54,8 @@ int MBManager::OpenBas(const char * file){
 	mb_init();
 	mb_open(&bas);
 
+	mb_set_printer(bas, my_print);
+
 	mb_reg_fun(bas, cls);
 	mb_begin_module(bas, "DRAW");
 		mb_register_func(bas, "PIXEL", drawPixel);
@@ -2078,5 +2080,31 @@ int MBManager::crtFliker(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
    	postProcessingR->SetCRTFloat(CRTProperty::Fliker, value);
+	return result;
+}
+
+int MBManager::my_print(struct mb_interpreter_t* s, const char* fmt, ...) {
+	char buf[64];
+	char* ptr = buf;
+	size_t len = sizeof(buf);
+	int result = 0;
+	va_list argptr;
+	mb_unrefvar(s);
+
+	va_start(argptr, fmt);
+	result = vsnprintf(ptr, len, fmt, argptr);
+	if(result < 0) {
+		fprintf(stderr, "Encoding error.\n");
+	} else if(result > (int)len) {
+		len = result + 1;
+		ptr = (char*)malloc(result + 1);
+		result = vsnprintf(ptr, len, fmt, argptr);
+	}
+	va_end(argptr);
+	if(result >= 0)
+		printf(ptr); /* Change me */
+	if(ptr != buf)
+		free(ptr);
+
 	return result;
 }

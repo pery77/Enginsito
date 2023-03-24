@@ -1,5 +1,16 @@
 import "assets/lib/ui.bas"
 
+class instrument
+    osc = 0
+    envA = 4
+    envD = 1
+    envS = 255
+    envR = 5
+    envAM =255
+    lfoN = 0
+    lfoA = 0
+endclass
+
 def mario()
     m1 = "T100 @1 v30 >>e16-e8-e8-c16-e8-g4-<g4>-c8.<g8.e8.a8b8a+16a8g16.>e16g16.a8f16g8e8c16d16<b8.>c8.<g8.e8.a8b8a+16a8g16.>e16g16.a8f16g8e8c16d16<b4&b16>g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.g16f+16f16d+8e8>c8c16c4.<g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.d+8.d8.c2&c8g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.g16f+16f16d+8e8>c8c16c4.<g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.d+8.d8.c2"
     m2 = "T100 @0 v100 <d16d8d8d16d8g4<g4>g8.e8.c8.f8g8f+16f8c16.>c16e16.f8d16e8c8<a16b16g8.g8.e8.c8.f8g8f+16f8c16.>c16e16.f8d16e8c8<a16b16g8.c8.g8.>c8<f8.>c16c16c16<f8c8.e8.g16>c4.&c16<g8c8.g8.>c8<f8.>c16c16c16<f8c8g+8.a+8.>c8.<g16g8c8c8.g8.>c8<f8.>c16c16c16<f8c8.g8.g16>c4.&c16<g8c8.g8.>c8<f8.>c16c16c16<f8c8g+8.a+8.>c8."
@@ -21,7 +32,7 @@ def tetris()
     music.set(1,t2)
     music.set(2,"")
     music.set(3,"")
-    music.set(4,"")
+    music.set(4,"t130 @4 v80 o2c8r8c8r8")
 enddef
 
 'music.stop()
@@ -61,30 +72,27 @@ def tick()
 
 enddef
 
-envA = 1
-envD = 1
-envS = 255
-envR = 5
-envAM =255
-lfoN = 0
-lfoA = 0
-
-music.osc(0,1)
-music.osc(1,5)
+instruments = list(0, 1, 2, 3)
+set(instruments, 0, new (instrument))
+set(instruments, 1, new (instrument))
+set(instruments, 2, new (instrument))
+set(instruments, 3, new (instrument))
 
 def drawChan(ch,x,y)
-
-    envA = ui.knob(envA,x, y,0,255)
-    envD = ui.knob(envD,x + 32,y,0,255)
-    envS = ui.knob(envS,x + 64,y,0,255)
-    envR = ui.knob(envR,x + 96,y,0,255)
-    envAM = ui.knob(envAM,x + 130,y,0,255)
-    lfoN = ui.knob(lfoN,x + 170,y,0,255)
-    lfoA = ui.knob(lfoA,x + 202,y,0,255)
-
-    music.env(ch,envA, envD, envS, envR, envAM)
-    music.lfo(ch,lfoN, lfoA)
+    inst = get(instruments, ch);
+    inst.osc = ui.slider(inst.osc, x-36, y-4, 6, 6)
+    inst.envA  = ui.knob(inst.envA, x, y, 0, 255)
+    inst.envD  = ui.knob(inst.envD, x + 32, y, 0, 255)
+    inst.envS  = ui.knob(inst.envS, x + 64, y, 0, 255)
+    inst.envR  = ui.knob(inst.envR, x + 96, y, 0, 255)
+    inst.envAM = ui.knob(inst.envAM,x + 130, y, 0, 255)
+    inst.lfoN  = ui.knob(inst.lfoN, x + 170, y, 0, 255)
+    inst.lfoA  = ui.knob(inst.lfoA, x + 202, y, 0, 255)
+    music.osc(ch,inst.osc)
+    music.env(ch,inst.envA, inst.envD, inst.envS, inst.envR, inst.envAM)
+    music.lfo(ch,inst.lfoN, inst.lfoA)
 enddef
+
 def draw()
     cls(1)
     time = time + delta()
@@ -113,12 +121,9 @@ def draw()
     if ui.button(264,55,"Mario") then
         mario()
     endif
-    if ui.button(264,65,"Castel") then
-        castel()
-    endif
-    'envA = ui.knob(envA,80,36,0,255)
 
-    'note = ui.slider(note,40,180,120,120)
+
+    
 
 
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF
