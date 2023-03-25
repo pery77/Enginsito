@@ -5,10 +5,6 @@ def load(file)
     if file = 1 then
         import "assets/lib/palettes/pico.bas"
     endif
-    if file = 2 then
-        import "assets/lib/palettes/test.inc"
-    endif
-
 enddef
 
 import "assets/lib/palettes/gray.bas"
