@@ -2,7 +2,6 @@
 #include "../../libs/raylib/include/raylib.h"
 
 #include "rfxgen.h"
-#include "tsf.h"
 #include <math.h>
 #include "MMLParser.h"
 #include "tools.h"
@@ -28,8 +27,6 @@ class AudioManager {
     Wave wave[MAX_WAVE_SLOTS] = { 0 };
     Sound sound[MAX_WAVE_SLOTS] = { 0 };
 
-    //tsf* ptsf = tsf_load_filename("assets/8bit.sf2");
-
     void Update();
     int voice = 0;
     void SetSequence(uint8_t id, const char* newSequence);
@@ -39,7 +36,7 @@ class AudioManager {
     void StopNote(uint8_t channel);
     void MusicPlay();
     void MusicStop();
-    void GetTSFPresets();
+    
     unsigned int GetMusicPosition(uint8_t channel);
     unsigned int GetMusicSize(uint8_t channel);
 

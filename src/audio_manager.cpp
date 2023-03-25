@@ -3,7 +3,6 @@
 #include <cstring>
 #include <cmath>
 
-tsf* ptsf;
 MMLParser* mml[TRACK_COUNT + 1];
 RetroSynth* synth;
 
@@ -314,10 +313,3 @@ void AudioManager::setNote(uint8_t id, uint8_t note){
 unsigned short AudioManager::GetSoundDir(uint8_t id){
     return (3376 + (id * 22));
 }
-
-//tsf
-void AudioManager::GetTSFPresets(){
-	for (int i = 0; i < tsf_get_presetcount(ptsf); i++){
-		printf("Preset #%d '%s'\n", i, tsf_get_presetname(ptsf, i));
-	}
-} 

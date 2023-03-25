@@ -3,6 +3,8 @@
 #include "raygui.h"
 #include "my_basic.h"
 
+#include <vector>
+
 #define TSF_IMPLEMENTATION
 #define RFXGEN_IMPLEMENTATION
 #include "tools.h"
@@ -36,13 +38,12 @@ void dropFile(){
 
 int main(int argc, char *argv[]){
 
-    IniManager* config = new IniManager();
     std::stringstream ss;
     ss << "./" << ASSETS_FOLDER << "/";
     FileWatcher* fw = new FileWatcher{ss.str(), 3.0f};
 
-    const int windowWidth = GAME_SCREEN_W * config->size;
-    const int windowHeight = GAME_SCREEN_H * config->size;
+    const int windowWidth = GAME_SCREEN_W * 3;
+    const int windowHeight = GAME_SCREEN_H * 3;
 
 	//Set Vsync and make the window resizeable
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -223,7 +224,6 @@ int main(int argc, char *argv[]){
 
     basic->CloseBas();
 
-    delete config;
     delete basic;
     delete postProcessing;
 
