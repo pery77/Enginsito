@@ -7,10 +7,12 @@ aliens = list()
 score = 0
 hiScore = 100000
 lives = 3
-maxbullets = 3
+maxbullets = 10
 
 alienTick = 0
 alienTickJump = 30
+alienStep = 0
+alienDir = 8
 
 'Set sounds
 sfx.render(5, 90)
@@ -25,6 +27,10 @@ setSprite(5,48,4,34,0,0,10,72,16)            'rock damange 1
 
 setSprite(6,4,2,7,13,31,47,36,2)    'alien 1a
 setSprite(7,4,2,7,13,31,47,66,4)    'alien 1b
+setSprite(8,3,7,13,31,15,4,2,4)     'alien 2a
+setSprite(9,3,7,15,29,15,4,8,4)     'alien 2b
+setSprite(10,3,15,31,57,63,14,25,12)     'alien 3a
+setSprite(11,3,15,31,57,63,15,10,20)     'alien 3b
 
 setSprite(16,16,9,0,84,0,9,16,0)    'explosion
 
@@ -83,7 +89,7 @@ class player
                 b = new (bullet)
                 b.x = x + 7 
                 b.y = y - 8
-                b.speed = -1
+                b.speed = -2
                 push(bullets, b)
                 sfx.play(5, 127)
             endif
@@ -143,8 +149,13 @@ class alien
     shape = 0
     dead = 0
     deadCounter = 0
+    st = 0
 
     def update()
+        if st then
+            st = 0
+            x = x + alienDir
+        endif
         'Check for player bullets collision
         for b in bullets
             if checkCollisionAABB(b.x,b.y,2,4,x+2,y,11,8) then
@@ -160,11 +171,12 @@ class alien
     enddef
     def draw()
         if dead then
-            draw.sprite(16,x,y,3)
-            draw.sprite(16,x+8,y,3,8)
+            draw.sprite(16,x,y,4)
+            draw.sprite(16,x+8,y,4,8)
         else
-            draw.sprite(6,x,y,3)
-            draw.sprite(6,x+8,y,3,8)
+            an = alienStep mod 2 = 0 
+            draw.sprite(2 * shape + 6 + an,x,y,3)
+            draw.sprite(2 * shape + 6 + an,x+8,y,3,8)
         endif
     enddef
     def isDead()
@@ -200,17 +212,20 @@ addMetaRock(13,18)
 addMetaRock(23,18)
 addMetaRock(33,18)
 
-def addAlien(x,y)
+def addAlien(x,y, shape)
     a = new (alien)
     a.x = x * 20
-    a.y = y * 8
-    a.shape = 0
+    a.y = y * 12
+    a.shape = shape
     push(aliens, a)
 
 enddef
-for n = 0 to 9
-    addAlien(n,6)
-    addAlien(n,8 )
+for n = 3 to 12
+    addAlien(n,2,1)
+    addAlien(n,3,0)
+    addAlien(n,4,0)
+    addAlien(n,5,2)
+    addAlien(n,6,2)
 next
 
 'UI
@@ -263,9 +278,23 @@ def tick()
     next
 
     alienTick = alienTick + 1
-    if alienTick > alienTickJump then
+    if alienTick > len(aliens)/2 then
         alienTick = 0
-
+        alienStep = alienStep + 1
+        maxX = 0
+        minX = 999
+        for a in aliens
+            a.st = 1
+            if a.x > maxX then
+                maxX = a.x
+            endif 
+            if a.x < minX then
+                minX = a.x
+            endif 
+        next
+        if maxX > 300 or minX < 2 then
+            alienDir = 1 - alienDir
+        endif
     endif
 
 enddef
