@@ -23,6 +23,33 @@ redK = getColor(0,0)
 greenK = getColor(0,1)
 blueK = getColor(0,2)
 
+timeF = 0
+colCount = 0
+colL = list()
+def updateFlicker()
+    if timeF > 3 then
+        timeF = 0
+        r = 0
+        g = 0
+        b = 0
+
+        if colCount = 0 then r = 255 endif
+        if colCount = 1 then 
+            r = 155
+            g = 255
+            b = 255
+        endif
+        if colCount = 2 then b = 255 endif
+        colCount = colCount + 1
+
+        if (colCount > 2) then colCount = 0 endif
+
+
+        setColor(15,r,g,b)
+    endif
+    timeF = timeF + 1
+enddef
+
 def colorBox(id)
     x=id*20
     y = 24
@@ -48,7 +75,7 @@ def colorBox(id)
 enddef
 
 def colorBoxSelector(y)
-    draw.text(intToText("Color: %02i",selectedColor), 2, y+1, 1, 3)
+    draw.text(intToText("Color: %02i",selectedColor), 2, y+1, 1, 15)
     draw.rect(78,y,80,10,1, 3)
     draw.rect(79,y+1,78,8,0, selectedColor)
     
@@ -88,11 +115,12 @@ enddef
 
 def draw()
     cls(0)
+    'updateFlicker()
     colorBoxSelector(4)
 
     'files(4,62)
 
-    IF ui.button (168,3,"Restore") THEN restorePalette() ENDIF
+    IF ui.button (168,3,"Restore") THEN loadmemory("bios.bin") ENDIF
     'IF ui.button (4,62,"PicoPal") THEN setPicoPalette() ENDIF
 
 drawKnobs(18,88)
