@@ -254,8 +254,10 @@ def draw()
     ENDIF
 
     IF ui.button(256,176,"Save") THEN 
-        saveSound()
-        dumpMemory("bios.bin")
+        'saveSound()
+        'dumpMemory("bios.bin")
+        t$ = intToText("sfx.env(%i, %i, %i, %i, %i)",currentSound, envA, envT, envP, envR) + Chr(13)
+        savefile("assets/clipBoard.dat", t$)
     ENDIF
 
     IF mouse.down(1) THEN  ui.drawPalette() ENDIF

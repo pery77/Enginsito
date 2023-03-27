@@ -1,47 +1,56 @@
-import "assets/lib/ui.bas"
-
+import "assets/games/invaders_data.dat"
 'Variables
 bullets = list()
 rocks = list()
 aliens = list()
 score = 0
-hiScore = 100000
+' hiScore = readed from invader_data.dat
 lives = 3
 maxbullets = 10
 
 alienTick = 0
 alienTickJump = 30
 alienStep = 0
-alienDir = 8
+alienDir = 4
+alienDown = 4
 
 'Set sounds
-sfx.render(5, 90)
+sfx.render(5, 90) 'shot
 
 'Set graphics
 setSprite(0,15,31,63,127,255,255,255,255)    'rock square
 setSprite(1,255,255,255,255,240,224,192,128) 'rock square down
 setSprite(2,255,255,255,255,255,255,255,255) 'rock full
-setSprite(3,171,221,162,173,75,151,201,229) 'rock damange 3
-setSprite(4,52,28,163,8,64,26,73,28)         'rock damange 2
-setSprite(5,48,4,34,0,0,10,72,16)            'rock damange 1
+setSprite(3,222,124,58,125,126,123,254,255)  'rock damange 3
+setSprite(4,0,148,24,93,58,58,60,126)        'rock damange 2
+setSprite(5,0,0,16,72,16,26,24,60)           'rock damange 1
 
-setSprite(6,4,2,7,13,31,47,36,2)    'alien 1a
-setSprite(7,4,2,7,13,31,47,66,4)    'alien 1b
-setSprite(8,3,7,13,31,15,4,2,4)     'alien 2a
-setSprite(9,3,7,15,29,15,4,8,4)     'alien 2b
-setSprite(10,3,15,31,57,63,14,25,12)     'alien 3a
-setSprite(11,3,15,31,57,63,15,10,20)     'alien 3b
+setSprite(6,3,15,31,57,63,14,25,12)      'alien 1a
+setSprite(7,3,15,31,57,63,15,10,20)      'alien 1b
+setSprite(8,4,2,7,13,31,47,36,2)         'alien 2a
+setSprite(9,4,2,7,13,31,47,66,4)         'alien 2b
+setSprite(10,3,7,13,31,15,4,2,4)         'alien 3a
+setSprite(11,3,7,15,29,15,4,8,4)         'alien 3b
 
-setSprite(16,16,9,0,84,0,9,16,0)    'explosion
+setSprite(16,16,9,0,84,0,9,16,0)         'explosion
 
 renderSprites()
 
 'Tools
-
+'Collision
 def checkCollisionAABB(x1, y1, w1, h1, x2, y2, w2, h2)
-    xOverlap = (x1 + w1 >= x2) AND (x2 + w2 >= x1)
-    yOverlap = (y1 + h1 >= y2) AND (y2 + h2 >= y1)
-    return xOverlap AND yOverlap
+    xOverlap = (x1 + w1 >= x2) and (x2 + w2 >= x1)
+    yOverlap = (y1 + h1 >= y2) and (y2 + h2 >= y1)
+    return xOverlap and yOverlap
+enddef
+
+def addScore(s)
+    score = score + s
+    if hiScore < score then
+        hiScore = score
+        t$ = intToText("hiScore = %i", hiScore) + Chr(13)
+        savefile("assets/games/invaders_data.dat", t$)
+    endif
 enddef
 
 'Classes
@@ -150,18 +159,26 @@ class alien
     dead = 0
     deadCounter = 0
     st = 0
+    dw = 0
 
     def update()
         if st then
             st = 0
             x = x + alienDir
         endif
+
+        if dw then
+            dw = 0
+            y = y + alienDown 
+        endif
+
         'Check for player bullets collision
         for b in bullets
             if checkCollisionAABB(b.x,b.y,2,4,x+2,y,11,8) then
                 remove(bullets, index_of(bullets, b))
                 dead = 1
                 sfx.play(15,127)
+                addScore((shape + 1) * 10)
             endif
         next
 
@@ -186,6 +203,7 @@ endclass
 
 p = new (player)
 
+'draw game objects
 def addRock(x,y,shape)
     r = new (rock)
     r.x = x * 8
@@ -220,12 +238,12 @@ def addAlien(x,y, shape)
     push(aliens, a)
 
 enddef
-for n = 3 to 12
-    addAlien(n,2,1)
-    addAlien(n,3,0)
-    addAlien(n,4,0)
-    addAlien(n,5,2)
-    addAlien(n,6,2)
+for n = 2 to 13
+    addAlien(n,2,2)
+    addAlien(n,3,1)
+    addAlien(n,4,1)
+    addAlien(n,5,0)
+    addAlien(n,6,0)
 next
 
 'UI
@@ -236,6 +254,47 @@ def drawUI()
     draw.text(intToText("SCORE %06i",score), 3,3,1,3)
     draw.text(intToText("LIVES %i",lives), 128,3,1,3)
     draw.text(intToText("HIGH %06i",hiScore), 224,3,1,3)
+    draw.text(intToText("t %i,%i,%i,%i,%i,%i",score, len(aliens),len(rocks), len(bullets), hiScore, lives), 3,190,1,3)
+
+enddef
+
+def alienMovement()
+    alienTick = alienTick + 1
+    if alienTick > len(aliens)/2 then
+        alienTick = 0
+        alienStep = alienStep + 1
+        maxX = 0
+        minX = 320
+        maxY = 0
+        minY = 200
+        for a in aliens
+            a.st = 1
+            if a.x > maxX then
+                maxX = a.x
+            endif 
+            if a.x < minX then
+                minX = a.x
+            endif 
+            if a.y > maxY then
+                maxY = a.y
+            endif
+            if a.y < minY then
+                minY = a.y
+            endif
+        next
+
+        if maxX > 300 then
+            alienDir = -4
+            for a in aliens
+                a.dw = 1
+            next
+        elseif minX < 2 then
+            alienDir = 4
+            for a in aliens
+                a.dw = 1
+            next
+        endif
+    endif
 enddef
 
 'Main update
@@ -277,25 +336,8 @@ def tick()
         ac = ac + 1    
     next
 
-    alienTick = alienTick + 1
-    if alienTick > len(aliens)/2 then
-        alienTick = 0
-        alienStep = alienStep + 1
-        maxX = 0
-        minX = 999
-        for a in aliens
-            a.st = 1
-            if a.x > maxX then
-                maxX = a.x
-            endif 
-            if a.x < minX then
-                minX = a.x
-            endif 
-        next
-        if maxX > 300 or minX < 2 then
-            alienDir = 1 - alienDir
-        endif
-    endif
+    'aliens movement
+    alienMovement()
 
 enddef
 
@@ -318,7 +360,4 @@ def draw()
         a.draw()
     next
 
-
-    IF mouse.down(2) THEN ui.drawPalette() ENDIF
-    ui.drawmouse()
 enddef

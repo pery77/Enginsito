@@ -565,41 +565,33 @@ int MBManager::intToText(struct mb_interpreter_t* s, void** l){
 	mb_assert(s && l);
 
 	char* arg = 0;
-	mb_value_t val[4];
+	
+	std::vector<mb_value_t> vals;
 
     mb_value_t ret;
     mb_make_string(ret, 0);
 
-	int i = 0;
 	mb_check(mb_attempt_open_bracket(s, l));
 		mb_check(mb_pop_string(s, l, &arg));
 		while(mb_has_arg(s, l)) {
-			mb_check(mb_pop_value(s, l, &val[i]));
-			if(val[i].type == MB_DT_REAL)
-				val[i].value.integer = (int)val[i].value.float_point;
-			i++;
-			if (i == 4) break;
+			mb_value_t val;
+			mb_check(mb_pop_value(s, l, &val));
+			if(val.type == MB_DT_REAL)
+				val.value.integer = (int)val.value.float_point;
+			vals.push_back(val);
 		}
 	mb_check(mb_attempt_close_bracket(s, l));
 	
-	switch (i)
-	{	
-		case 1:
-			ret.value.string = (char *)TextFormat(arg, val[0].value.integer);
-		break;
-		case 2:
-			ret.value.string = (char *)TextFormat(arg, val[0].value.integer, val[1].value.integer);
-		break;
-		case 3:
-			ret.value.string = (char *)TextFormat(arg, val[0].value.integer, val[1].value.integer, val[2].value.integer);
-		break;
-		case 4:
-			ret.value.string = (char *)TextFormat(arg, val[0].value.integer, val[1].value.integer, val[2].value.integer, val[3].value.integer);
-		break;
-
-		default:
-		break;
-	}
+	ret.value.string = (char *)TextFormat(arg, vals.size() > 0 ? vals[0].value.integer : 0,
+                                      vals.size() > 1 ? vals[1].value.integer : 0,
+                                      vals.size() > 2 ? vals[2].value.integer : 0,
+                                      vals.size() > 3 ? vals[3].value.integer : 0,
+									  vals.size() > 4 ? vals[4].value.integer : 0,
+									  vals.size() > 5 ? vals[5].value.integer : 0,
+									  vals.size() > 6 ? vals[6].value.integer : 0);
+    //for (size_t i = 7; i < vals.size(); i++) {
+    //    ret.value.string = (char *)TextFormat(ret.value.string, vals[i].value.integer);
+    //}
 
     mb_check(mb_push_value(s, l, ret));
 
