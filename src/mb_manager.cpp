@@ -581,18 +581,24 @@ int MBManager::intToText(struct mb_interpreter_t* s, void** l){
 			vals.push_back(val);
 		}
 	mb_check(mb_attempt_close_bracket(s, l));
-	
-	ret.value.string = (char *)TextFormat(arg, vals.size() > 0 ? vals[0].value.integer : 0,
-                                      vals.size() > 1 ? vals[1].value.integer : 0,
-                                      vals.size() > 2 ? vals[2].value.integer : 0,
-                                      vals.size() > 3 ? vals[3].value.integer : 0,
-									  vals.size() > 4 ? vals[4].value.integer : 0,
-									  vals.size() > 5 ? vals[5].value.integer : 0,
-									  vals.size() > 6 ? vals[6].value.integer : 0);
-    //for (size_t i = 7; i < vals.size(); i++) {
-    //    ret.value.string = (char *)TextFormat(ret.value.string, vals[i].value.integer);
-    //}
+	//ret.value.string = (char *)TextFormat(arg, vals.size() > 0 ? vals[0].value.integer : 0,
+    //                                  vals.size() > 1 ? vals[1].value.integer : 0,
+    //                                  vals.size() > 2 ? vals[2].value.integer : 0,
+    //                                  vals.size() > 3 ? vals[3].value.integer : 0,
+	//								  vals.size() > 4 ? vals[4].value.integer : 0,
+	//								  vals.size() > 5 ? vals[5].value.integer : 0,
+	//								  vals.size() > 6 ? vals[6].value.integer : 0);
+	std::array<int, 8> args{ 0 };
+	for (size_t i = 0; i < vals.size() && i < 8; i++) {
+		if (vals[i].type == MB_DT_REAL) {
+			args[i] = (int)vals[i].value.float_point;
+		} else {
+			args[i] = vals[i].value.integer;
+		}
+	}
 
+	ret.value.string = (char *)TextFormat(arg, args[0], args[1], args[2], args[3],
+												args[4], args[5], args[6], args[7]);
     mb_check(mb_push_value(s, l, ret));
 
 	return result;
