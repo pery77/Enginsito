@@ -1,1 +1,1 @@
-sfx.env(0, 0, 49, 0, 100)
+sfx.env(1, 0, 35, 53, 138)sfx.freq(1, 5, -61, 51, 240)sfx.tone(1, 0, 0, 0, 0)sfx.repeat(1, 0, 0, 0)sfx.filter(1, 139, -4, 0, 0, 0)sfx.wave(1, 3)sfx.render(1, 26)

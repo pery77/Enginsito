@@ -560,12 +560,18 @@ int MBManager::measureText(struct mb_interpreter_t* s, void** l){
 	return result;
 }
 //Tools
+inline int getArgIntValue(const mb_value_t& arg) {
+	return arg.type == MB_DT_REAL ? (int)arg.value.float_point : arg.value.integer;
+}
+inline float getArgFloatValue(const mb_value_t& arg) {
+	return arg.type == MB_DT_REAL ? arg.value.float_point : (float)arg.value.integer;
+}
+
 int MBManager::intToText(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	char* arg = 0;
-	
 	std::vector<mb_value_t> vals;
 
     mb_value_t ret;
@@ -576,29 +582,17 @@ int MBManager::intToText(struct mb_interpreter_t* s, void** l){
 		while(mb_has_arg(s, l)) {
 			mb_value_t val;
 			mb_check(mb_pop_value(s, l, &val));
-			if(val.type == MB_DT_REAL)
-				val.value.integer = (int)val.value.float_point;
 			vals.push_back(val);
 		}
 	mb_check(mb_attempt_close_bracket(s, l));
-	//ret.value.string = (char *)TextFormat(arg, vals.size() > 0 ? vals[0].value.integer : 0,
-    //                                  vals.size() > 1 ? vals[1].value.integer : 0,
-    //                                  vals.size() > 2 ? vals[2].value.integer : 0,
-    //                                  vals.size() > 3 ? vals[3].value.integer : 0,
-	//								  vals.size() > 4 ? vals[4].value.integer : 0,
-	//								  vals.size() > 5 ? vals[5].value.integer : 0,
-	//								  vals.size() > 6 ? vals[6].value.integer : 0);
-	std::array<int, 8> args{ 0 };
-	for (size_t i = 0; i < vals.size() && i < 8; i++) {
-		if (vals[i].type == MB_DT_REAL) {
-			args[i] = (int)vals[i].value.float_point;
-		} else {
-			args[i] = vals[i].value.integer;
-		}
-	}
 
-	ret.value.string = (char *)TextFormat(arg, args[0], args[1], args[2], args[3],
-												args[4], args[5], args[6], args[7]);
+	std::array<mb_value_t, 8> args{ MB_DT_NIL };
+	for (size_t i = 0; i < vals.size() && i < 8; i++) {
+		args[i] = vals[i];
+	}
+	
+	ret.value.string = (char *)TextFormat(arg, getArgIntValue(args[0]), getArgIntValue(args[1]), getArgIntValue(args[2]), getArgIntValue(args[3]),
+												getArgIntValue(args[4]), getArgIntValue(args[5]), getArgIntValue(args[6]), getArgIntValue(args[7]));
     mb_check(mb_push_value(s, l, ret));
 
 	return result;
@@ -608,42 +602,28 @@ int MBManager::floatToText(struct mb_interpreter_t* s, void** l){
 	mb_assert(s && l);
 
 	char* arg = 0;
-	mb_value_t val[4];
+	std::vector<mb_value_t> vals;
 
     mb_value_t ret;
     mb_make_string(ret, 0);
 
-	int i = 0;
 	mb_check(mb_attempt_open_bracket(s, l));
 		mb_check(mb_pop_string(s, l, &arg));
 		while(mb_has_arg(s, l)) {
-			mb_check(mb_pop_value(s, l, &val[i]));
-			if(val[i].type == MB_DT_INT)
-				val[i].value.float_point = (float)val[i].value.integer;
-			i++;
-			if (i == 4) break;
+			mb_value_t val;
+			mb_check(mb_pop_value(s, l, &val));
+			vals.push_back(val);
 		}
 	mb_check(mb_attempt_close_bracket(s, l));
 	
-	switch (i)
-	{	
-		case 1:
-			ret.value.string = (char *)TextFormat(arg, val[0].value.float_point);
-		break;
-		case 2:
-			ret.value.string = (char *)TextFormat(arg, val[0].value.float_point, val[1].value.float_point);
-		break;
-		case 3:
-			ret.value.string = (char *)TextFormat(arg, val[0].value.float_point, val[1].value.float_point, val[2].value.float_point);
-		break;
-		case 4:
-			ret.value.string = (char *)TextFormat(arg, val[0].value.float_point, val[1].value.float_point, val[2].value.float_point, val[3].value.float_point);
-		break;
-
-		default:
-		break;
+	std::array<mb_value_t, 8> args{ MB_DT_NIL };
+	for (size_t i = 0; i < vals.size() && i < 8; i++) {
+		args[i] = vals[i];
 	}
-
+	
+	ret.value.string = (char *)TextFormat(arg, getArgFloatValue(args[0]), getArgFloatValue(args[1]), getArgFloatValue(args[2]), getArgFloatValue(args[3]),
+												getArgFloatValue(args[4]), getArgFloatValue(args[5]), getArgFloatValue(args[6]), getArgFloatValue(args[7]));
+    
     mb_check(mb_push_value(s, l, ret));
 
 	return result;

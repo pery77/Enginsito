@@ -15,7 +15,22 @@ alienDir = 4
 alienDown = 4
 
 'Set sounds
-sfx.render(5, 90) 'shot
+'shot
+sfx.env(0, 0, 61, 0, 44)
+sfx.freq(0, 16, -64, 0, 0)
+sfx.tone(0, 0, 0, 0, 0)
+sfx.repeat(0, 0, 0, 0)
+sfx.filter(0, 125, 127, 0, 106, -55)
+sfx.wave(0, 2)
+sfx.render(0, 88)
+'explosion
+sfx.env(1, 0, 35, 53, 138)
+sfx.freq(1, 5, -61, 51, 240)
+sfx.tone(1, 0, 0, 0, 0)
+sfx.repeat(1, 0, 0, 0)
+sfx.filter(1, 139, -4, 0, 0, 0)
+sfx.wave(1, 3)
+sfx.render(1, 26)
 
 'Set graphics
 setSprite(0,15,31,63,127,255,255,255,255)    'rock square
@@ -100,7 +115,7 @@ class player
                 b.y = y - 8
                 b.speed = -2
                 push(bullets, b)
-                sfx.play(5, 127)
+                sfx.play(0, 127)
             endif
         endif
     enddef
@@ -177,7 +192,7 @@ class alien
             if checkCollisionAABB(b.x,b.y,2,4,x+2,y,11,8) then
                 remove(bullets, index_of(bullets, b))
                 dead = 1
-                sfx.play(15,127)
+                sfx.play(1,127)
                 addScore((shape + 1) * 10)
             endif
         next
@@ -254,7 +269,7 @@ def drawUI()
     draw.text(intToText("SCORE %06i",score), 3,3,1,3)
     draw.text(intToText("LIVES %i",lives), 128,3,1,3)
     draw.text(intToText("HIGH %06i",hiScore), 224,3,1,3)
-    draw.text(intToText("t %i,%i,%i,%i,%i,%i",score, len(aliens),len(rocks), len(bullets), hiScore, lives), 3,190,1,3)
+    draw.text(intToText("%i,%i,%i,%i,%i,%i",score, len(aliens),len(rocks), len(bullets), hiScore, lives), 3,190,1,3)
 
 enddef
 

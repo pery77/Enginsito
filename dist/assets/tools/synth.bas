@@ -257,6 +257,12 @@ def draw()
         'saveSound()
         'dumpMemory("bios.bin")
         t$ = intToText("sfx.env(%i, %i, %i, %i, %i)",currentSound, envA, envT, envP, envR) + Chr(13)
+        t$ = t$ + intToText("sfx.freq(%i, %i, %i, %i, %i)",currentSound, fSlide, fDelta, vibratoD, vibratoS) + Chr(13)
+        t$ = t$ + intToText("sfx.tone(%i, %i, %i, %i, %i)",currentSound, toneAmount, toneSpeed, toneSquare, toneDuty) + Chr(13)
+        t$ = t$ + intToText("sfx.repeat(%i, %i, %i, %i)",currentSound, repSp, repOf, repSw) + Chr(13)
+        t$ = t$ + intToText("sfx.filter(%i, %i, %i, %i, %i, %i)",currentSound, lpfCutoff, lpfSweep, lpfRes, hpfCutoff, hpfSweep) + Chr(13)
+        t$ = t$ + intToText("sfx.wave(%i, %i)",currentSound, wave) + Chr(13)
+        t$ = t$ + intToText("sfx.render(%i, %i)",currentSound, note)
         savefile("assets/clipBoard.dat", t$)
     ENDIF
 
