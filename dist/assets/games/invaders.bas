@@ -12,7 +12,13 @@ alienTick = 0
 alienTickJump = 30
 alienStep = 0
 alienDir = 4
-alienDown = 4
+alienDown = 8
+
+'Game states
+MENU      = 0
+PLAYING   = 1
+GAME_OVER = 2
+gameState = MENU
 
 'Set sounds
 'shot
@@ -269,13 +275,11 @@ def drawUI()
     draw.text(intToText("SCORE %06i",score), 3,3,1,3)
     draw.text(intToText("LIVES %i",lives), 128,3,1,3)
     draw.text(intToText("HIGH %06i",hiScore), 224,3,1,3)
-    draw.text(intToText("%i,%i,%i,%i,%i,%i",score, len(aliens),len(rocks), len(bullets), hiScore, lives), 3,190,1,3)
-
 enddef
 
 def alienMovement()
     alienTick = alienTick + 1
-    if alienTick > len(aliens)/2 then
+    if alienTick > len(aliens)/4 then
         alienTick = 0
         alienStep = alienStep + 1
         maxX = 0
@@ -309,11 +313,21 @@ def alienMovement()
                 a.dw = 1
             next
         endif
+        if (maxY > 130 and len(rocks)) then
+            rocks = list()
+        endif
+        if (maxY > 180) then
+            gameState = GAME_OVER
+        endif
     endif
 enddef
 
 'Main update
 def tick()
+    if gameState = GAME_OVER then
+        return
+    endif
+
     'update player
     p.update()
 
@@ -360,7 +374,9 @@ enddef
 def draw()
     cls(0)
     drawUI()
-
+    if gameState = GAME_OVER then
+        draw.text("GAME OVER", 50,80,3,3)
+    endif
     p.draw()
 
     for b in bullets
