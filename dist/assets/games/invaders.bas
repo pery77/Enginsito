@@ -37,6 +37,14 @@ sfx.repeat(1, 0, 0, 0)
 sfx.filter(1, 139, -4, 0, 0, 0)
 sfx.wave(1, 3)
 sfx.render(1, 26)
+'alien steps
+sfx.env(2, 0, 40, 0, 27)
+sfx.freq(2, 0, -11, 0, 0)
+sfx.tone(2, 0, 0, 0, 0)
+sfx.repeat(2, 0, 0, 0)
+sfx.filter(2, 255, 0, 0, 0, 0)
+sfx.wave(2, 1)
+sfx.render(2, 44)
 
 'Set graphics
 setSprite(0,15,31,63,127,255,255,255,255)    'rock square
@@ -279,9 +287,18 @@ enddef
 
 def alienMovement()
     alienTick = alienTick + 1
-    if alienTick > len(aliens)/4 then
+    stepSpeed = len(aliens)/2
+    if stepSpeed < 2 then
+        stepSpeed = 2
+    endif
+    if alienTick > stepSpeed then
         alienTick = 0
         alienStep = alienStep + 1
+       
+        sfx.stop(2)
+        sfx.play(2,80)
+        sfx.render(2, 44 - alienStep mod 4)
+
         maxX = 0
         minX = 320
         maxY = 0
