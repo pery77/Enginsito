@@ -3,6 +3,8 @@ import "assets/games/invaders_data.dat"
 bullets = list()
 rocks = list()
 aliens = list()
+aliensBullets = list()
+
 score = 0
 ' hiScore = readed from invader_data.dat
 lives = 3
@@ -13,6 +15,8 @@ alienTickJump = 30
 alienStep = 0
 alienDir = 4
 alienDown = 8
+
+alienShipTime = 0
 
 'Game states
 MENU      = 0
@@ -46,6 +50,24 @@ sfx.filter(2, 255, 0, 0, 0, 0)
 sfx.wave(2, 1)
 sfx.render(2, 44)
 
+'alien ship
+sfx.env(3, 255, 255, 0, 255)
+sfx.freq(3, 0, 19, 0, 0)
+sfx.tone(3, 0, 0, 0, 0)
+sfx.repeat(3, 50, -1, 0)
+sfx.filter(3, 34, 127, 0, 0, 0)
+sfx.wave(3, 1)
+sfx.render(3, 69)
+
+'alien shot
+sfx.env(4, 0, 104, 86, 65)
+sfx.freq(4, 0, 58, 0, 0)
+sfx.tone(4, 0, 0, 0, 0)
+sfx.repeat(4, 0, 0, 0)
+sfx.filter(4, 48, -13, 208, 102, 109)
+sfx.wave(4, 3)
+sfx.render(4, 64)
+
 'Set graphics
 setSprite(0,15,31,63,127,255,255,255,255)    'rock square
 setSprite(1,255,255,255,255,240,224,192,128) 'rock square down
@@ -62,6 +84,9 @@ setSprite(10,3,7,13,31,15,4,2,4)         'alien 3a
 setSprite(11,3,7,15,29,15,4,8,4)         'alien 3b
 
 setSprite(16,16,9,0,84,0,9,16,0)         'explosion
+
+setSprite(17,128,128,64,64,128,128,64,64)     'alien bullet
+setSprite(18,0,7,31,63,109,255,59,16)         'alien ship
 
 renderSprites()
 
@@ -230,8 +255,21 @@ class alien
     enddef
 endclass
 
-p = new (player)
+class ship
+    x = 320
+    y = 14
+    speed = -1
+    def update()
+        x = x + speed
 
+    enddef
+    def draw()
+        draw.sprite(18,x,y,6)
+        draw.sprite(18,x+8,y,6,8)
+    enddef
+endclass
+p = new (player)
+ss = nil
 'draw game objects
 def addRock(x,y,shape)
     r = new (rock)
@@ -339,10 +377,29 @@ def alienMovement()
     endif
 enddef
 
+
 'Main update
 def tick()
     if gameState = GAME_OVER then
         return
+    endif
+    
+    alienShipTime = alienShipTime + delta()
+    if alienShipTime > 6000 then
+        alienShipTime = 0
+        r = rnd(0,99)
+        if r < 10 and ss = nil then
+            ss = new (ship)
+            ss.x = 320
+            sfx.play(3,90)
+        endif
+    endif
+
+    if ss then
+        ss.update()
+        if ss.x < -16 then
+            ss = nil
+        endif
     endif
 
     'update player
@@ -395,6 +452,10 @@ def draw()
         draw.text("GAME OVER", 50,80,3,3)
     endif
     p.draw()
+
+    if ss then
+        ss.draw()
+    endif
 
     for b in bullets
         b.draw() 
