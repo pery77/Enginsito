@@ -30,6 +30,8 @@ def tetris()
 
 't1 = "t90l16ga+>dd+<ga+>dd+<ga+>dd+<ga+>dd+<f+a>dd+<f+a>dd+<f+a>dd+<f+a>dd+<fg+>dd+<fg+>dd+<fg+>dd+<fg+>dd+<eg>dd+<eg>dd+<eg>dd+<eg>dd+<d+g>cd<d+g>cd<d+g>cd<d+g>cd<dg>cd<dg>cd<dg>cd<dg>cd<cf+ab+f+a>cd+<a>cd+cd+f+d+f+af+ab+g4"
 't2 = "o5<g2a+4>d4c+4<f+2.f2&fg+4>c+8c4<e2.l16d+dd+4.g8.>d+8.d8<dc+d4.g8.>d8.c+8<df+af+ab+a>cd+cd+f+af+d+cd+c<af+g4"
+    t1 = "t120l8o5e1o2abo3cdece4d#o2bo3d#4do2a#o3d4o2abo3cdeceageceg4r4o3abo4cdece4d#o3bo4d#4do3a#o4d4o3abo4cdeceageceg4r4ef#g#abg#b4o5co4g#o5c4o4bg#b4ef#g#abg#b4o5co4g#o5c4o4b4r4ef#g#abg#b4o5co4g#o5c4o4bg#b4ef#g#abg#b4o5co4g#o5c4o4b4r4abo5cdece4d#o4bo5d#4do4a#o5d4o4abo5cdeceageceg4r4o5abo6cdece4d#o5bo6d#4do5a#o6d4o5abo6cdeceag#eg#ba4r4"
+    t2 = "e1l4o1ao2eo1ao2eo1ao2eo1ao2eo1ao2eo1ao2ecgcgo1ao2eo1ao2eo1ao2eo1ao2eo1ao2eo1ao2ecgcgebebeo3co2ebebebeo3co2ebebebeo3co2ebebebeo3co2ebao3eo2ao3eo2ao3eo2ao3eo2ao3eo2ao3ecgcgo2ao3eo2ao3eo2ao3eo2ao3eo2a4r4r2r2r4o1a4"
     music.set(0,t1)
     music.set(1,t2)
     music.set(2,"")

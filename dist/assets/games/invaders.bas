@@ -8,7 +8,8 @@ aliensBullets = list()
 score = 0
 ' hiScore = readed from invader_data.dat
 lives = 3
-maxbullets = 10
+maxbullets = 1
+maxAlienBullets = 3
 
 alienTick = 0
 alienTickJump = 30
@@ -114,15 +115,19 @@ class bullet
     speed = 0
 
     def draw()
-        draw.rect(x,y,2,4,0,10)
+        if speed < 0 then
+            draw.rect(x,y,2,4,0,10)
+        else
+            draw.sprite(17,x,y,6)
+        endif
     enddef
 
     def update()
-        y = y + speed
+           y = y + speed
     enddef
 
     def isDead()
-        return y < 14 
+        return y < 14 or y > 200
     enddef
 endclass
 
@@ -169,10 +174,16 @@ class rock
     def update()
         'Check for player bullets collision
         for b in bullets
-            'if b.x > x and b.x < x+8 and b.y > y and b.y < y+8 then
             if checkCollisionAABB(b.x,b.y,2,4,x,y,8,8) then
                 state = state - 1
                 remove(bullets, index_of(bullets, b))
+            endif
+        next
+        'Check for alien bullets collision
+        for b in aliensBullets
+            if checkCollisionAABB(b.x,b.y,2,4,x,y,8,8) then
+                state = state - 1
+                remove(aliensBullets, index_of(aliensBullets, b))
             endif
         next
     enddef
@@ -215,7 +226,26 @@ class alien
     st = 0
     dw = 0
 
+    def shot()
+        if len(aliensBullets) < maxAlienBullets then
+            b = new (bullet)
+            b.x = x + 7 
+            b.y = y + 12
+            b.speed = 1
+            push(aliensBullets, b)
+            sfx.play(4, 97)
+        endif
+    enddef
+
     def update()
+
+        if dead then
+            deadCounter = deadCounter + 1
+            return
+        endif
+
+        if rnd(0,400) = 0 then shot() endif
+
         if st then
             st = 0
             x = x + alienDir
@@ -236,9 +266,6 @@ class alien
             endif
         next
 
-        if dead then
-            deadCounter = deadCounter + 1
-        endif
     enddef
     def draw()
         if dead then
@@ -259,17 +286,45 @@ class ship
     x = 320
     y = 14
     speed = -1
+    deadCounter = 0
+    priceList = list(50,100,150,200,250,300)
+    price = 0
+    dead = 0
     def update()
+        if dead then
+            deadCounter = deadCounter + 1
+            return
+        endif
         x = x + speed
-
+        for b in bullets
+            if checkCollisionAABB(b.x,b.y,2,4,x,y,16,8) then
+                remove(bullets, index_of(bullets, b))
+                dead = 1
+                sfx.play(1,127)
+                price = priceList(rnd(0,len(priceList)))
+                addScore(price)
+            endif
+        next
     enddef
     def draw()
-        draw.sprite(18,x,y,6)
-        draw.sprite(18,x+8,y,6,8)
+        if dead then
+            if deadCounter < 10 then
+                draw.sprite(16,x,y,4)
+                draw.sprite(16,x+8,y,4,8)
+            elseif
+                draw.text(intToText("%03i",price),x-4,y,1,3)
+            endif
+        endif
+        if dead = 0 then
+            draw.sprite(18,x,y,6)
+            draw.sprite(18,x+8,y,6,8)
+        endif
     enddef
 endclass
-p = new (player)
-ss = nil
+
+playerShip = new (player)
+alienShip = nil
+
 'draw game objects
 def addRock(x,y,shape)
     r = new (rock)
@@ -303,8 +358,8 @@ def addAlien(x,y, shape)
     a.y = y * 12
     a.shape = shape
     push(aliens, a)
-
 enddef
+
 for n = 2 to 13
     addAlien(n,2,2)
     addAlien(n,3,1)
@@ -377,33 +432,37 @@ def alienMovement()
     endif
 enddef
 
+def alienShipUpdate()
+    alienShipTime = alienShipTime + delta()
+    if alienShipTime > 6000 then
+        alienShipTime = 0
+        r = rnd(0,99)
+        if r < 10 and alienShip = nil then
+            alienShip = new (ship)
+            alienShip.x = 320
+            alienShip.dead = 0
+            alienShip.deadCounter = 0
+            sfx.play(3,90)
+        endif
+    endif
 
+    if alienShip then
+        alienShip.update()
+        if alienShip.x < -16 or alienShip.deadCounter > 60 then 
+            alienShip = nil
+        endif
+    endif
+enddef
 'Main update
 def tick()
     if gameState = GAME_OVER then
         return
     endif
     
-    alienShipTime = alienShipTime + delta()
-    if alienShipTime > 6000 then
-        alienShipTime = 0
-        r = rnd(0,99)
-        if r < 10 and ss = nil then
-            ss = new (ship)
-            ss.x = 320
-            sfx.play(3,90)
-        endif
-    endif
-
-    if ss then
-        ss.update()
-        if ss.x < -16 then
-            ss = nil
-        endif
-    endif
+    alienShipUpdate()
 
     'update player
-    p.update()
+    playerShip.update()
 
     'update all player bullets
     for b in bullets 
@@ -414,6 +473,18 @@ def tick()
         b = get(bullets, 0) 
         if b.isDead() then
             remove(bullets, 0)
+        endif
+    endif
+
+    'update aliens bullets
+    for ab in aliensBullets 
+        ab.update()
+    next
+    
+    if len(aliensBullets) then 
+        ab = get(aliensBullets, 0) 
+        if ab.isDead() then
+            remove(aliensBullets, 0)
         endif
     endif
 
@@ -451,14 +522,18 @@ def draw()
     if gameState = GAME_OVER then
         draw.text("GAME OVER", 50,80,3,3)
     endif
-    p.draw()
+    playerShip.draw()
 
-    if ss then
-        ss.draw()
+    if alienShip then
+        alienShip.draw()
     endif
 
     for b in bullets
         b.draw() 
+    next
+
+    for ab in aliensBullets
+        ab.draw() 
     next
 
     for r in rocks
