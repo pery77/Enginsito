@@ -109,12 +109,31 @@ def addScore(s)
 enddef
 
 'Classes
+class groundExplosion
+    x = 0
+    y = 0
+
+endclass
+
 class bullet
     x = 0
     y = 0
     speed = 0
+    explosionFrame = 0
+    frames = list(5,4,4,5,16)
+    maxFrames = 50
 
     def draw()
+        if explosionFrame > 0 and explosionFrame < maxFrames then
+            f = (explosionFrame/10.0)
+            flag = 0
+            if f > 4 then flag = 1 endif
+            draw.sprite(frames(f),x-3,y,4,flag)
+            'draw.text(intToText("%i",f), x + 4, y, 1,3)
+            explosionFrame = explosionFrame + 1
+            return
+        endif
+
         if speed < 0 then
             draw.rect(x,y,2,4,0,10)
         else
@@ -123,11 +142,21 @@ class bullet
     enddef
 
     def update()
-           y = y + speed
+
+        if explosionFrame > 0 then
+            explosionFrame = explosionFrame + 1
+            return
+        endif
+
+        y = y + speed
+        if y > 186 then 
+            explosionFrame = 1 
+        endif
+
     enddef
 
     def isDead()
-        return y < 14 or y > 200
+        return y < 14 or explosionFrame > maxFrames - 1
     enddef
 endclass
 
@@ -158,6 +187,7 @@ class player
                 b.x = x + 7 
                 b.y = y - 8
                 b.speed = -2
+                b.explosionFrame = 0
                 push(bullets, b)
                 sfx.play(0, 127)
             endif
@@ -170,6 +200,7 @@ class rock
     y = 0
     shape = 0
     state = 4
+    breakType = 0
 
     def update()
         'Check for player bullets collision
@@ -183,6 +214,7 @@ class rock
         for b in aliensBullets
             if checkCollisionAABB(b.x,b.y,2,4,x,y,8,8) then
                 state = state - 1
+                breakType = 16 'flip Horizontala
                 remove(aliensBullets, index_of(aliensBullets, b))
             endif
         next
@@ -207,7 +239,7 @@ class rock
         endif
         draw.sprite(sp,x,y,14,flag)
         if state < 4 then
-            draw.sprite(state+2,x,y,0)
+            draw.sprite(state+2,x,y,0, breakType)
         endif
     enddef
 
@@ -232,6 +264,7 @@ class alien
             b.x = x + 7 
             b.y = y + 12
             b.speed = 1
+            b.explosionFrame = 0
             push(aliensBullets, b)
             sfx.play(4, 97)
         endif
@@ -244,7 +277,7 @@ class alien
             return
         endif
 
-        if rnd(0,400) = 0 then shot() endif
+        if rnd(0,500) = 0 then shot() endif
 
         if st then
             st = 0
@@ -311,6 +344,7 @@ class ship
             if deadCounter < 10 then
                 draw.sprite(16,x,y,4)
                 draw.sprite(16,x+8,y,4,8)
+                sfx.stop(3)
             elseif
                 draw.text(intToText("%03i",price),x-4,y,1,3)
             endif
