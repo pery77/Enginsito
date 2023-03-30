@@ -12,8 +12,8 @@ maxbullets = 1
 maxAlienBullets = 3
 
 alienTick = 0
+alienStep = 0a
 alienTickJump = 30
-alienStep = 0
 alienDir = 4
 alienDown = 8
 
@@ -23,6 +23,8 @@ alienShipTime = 0
 
 recoveryPlayerTick = 0
 
+alienShip = nil
+
 'Game states
 MENU      = 0
 PLAYING   = 1
@@ -30,7 +32,9 @@ GAME_OVER = 2
 PLAYER_DEAD = 3
 WAVE_INFO = 4
 
-gameState = 0
+gameState = MENU
+gameOverTime = 0
+menuTime = 0
 
 'Set sounds
 'shot
@@ -183,6 +187,9 @@ class player
     enddef
 
     def draw()
+        if lives < 1 then
+            return
+        endif
         col = 13
         if dead = 1 then
             col = 6
@@ -449,9 +456,12 @@ playerShip = new (player)
 def startGame()
 
     alienShip = nil
+    alienStep = 0
     wave = 0
     lives = 3
     score = 0
+    gameOverTime = 0
+    menuTime = 0
 
     playerShip.setup()
 
@@ -561,6 +571,58 @@ def alienShipUpdate()
         endif
     endif
 enddef
+
+def drawGameOver()
+        for i = 0 to 20
+            y = i * 2 + 70
+            draw.line(0, y, 320, y, 1, 1)
+        next
+        draw.text("GAME OVER", 55, 75, 3, 4)
+        if gameOverTime > 1000 then
+            col = 13
+            if sin(gameOverTime * 0.02) < 0 then
+                col = 9
+            endif
+            draw.text("Press -ENTER- to exit.", 75, 102, 1, col)
+        endif
+enddef
+
+def alienInfo(x,y,sp,txt,col)
+        draw.sprite(sp,x,y,col)
+        draw.sprite(sp,x+8,y,col,8)
+        draw.text(txt, x+24,y,1,3)
+enddef
+
+def drawMenu()
+        for i = 0 to 15
+            y = i * 2
+            draw.line(0, y, 320, y, 1, 7)
+        next
+        draw.text("INVADERS", 68, 6, 3, 5)
+        draw.text("INVADERS", 66, 4, 3, 4)
+        if menuTime > 1000 then
+            col = 13
+            if sin(menuTime * 0.02) < 0 then
+                col = 9
+            endif
+            draw.text("Press -ENTER- to start.", 75, 182, 1, col)
+        endif
+
+        if menuTime > 3000 then
+            alienInfo(120,100,10,"x 30 pts.",3)
+        endif
+        if menuTime > 4000 then
+            alienInfo(120,120,8,"x 20 pts.",3)
+        endif
+        if menuTime > 5000 then
+            alienInfo(120,140,6,"x 10 pts.",3)
+        endif
+        if menuTime > 6500 then
+            alienInfo(120,70,18," mystery.",6)
+        endif
+
+enddef
+
 'Main update
 def tick()
 
@@ -574,20 +636,23 @@ def tick()
     endif
 
     if gameState = MENU then
+        menuTime = menuTime + delta()
          if key.released(257) then
             startGame()
          endif
     endif
 
     if gameState = GAME_OVER then
-         if key.released(257) then
+        gameOverTime = gameOverTime + delta()
+        if key.released(257) then
             gameState = MENU
-         endif
+        endif
     endif
     
     if gameState <> PLAYING then
         return
     endif
+
     alienShipUpdate()
 
     'update player
@@ -647,9 +712,8 @@ enddef
 'Main draw
 def draw()
     cls(0)
-
     if gameState = MENU then
-        draw.text("Menu", 50,80,3,4)
+        drawMenu()
         return
     endif
     drawUI()
@@ -677,7 +741,7 @@ def draw()
     next
 
     if gameState = GAME_OVER then
-        draw.text("GAME OVER", 50,80,3,4)
+        drawGameOver()
     endif
 
 enddef
