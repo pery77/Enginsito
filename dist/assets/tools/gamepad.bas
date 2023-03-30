@@ -36,7 +36,13 @@ def drawPad(id)
     next
         
 enddef
-
+def tick()
+    k = key.get()
+    IF k <> 0 THEN 
+        print "Key code: " 
+        print k;
+    ENDIF
+enddef
 def draw()
     cls(0)
     for p = 0 to nPads - 1

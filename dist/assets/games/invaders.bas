@@ -17,13 +17,20 @@ alienStep = 0
 alienDir = 4
 alienDown = 8
 
+wave = 0
+
 alienShipTime = 0
+
+recoveryPlayerTick = 0
 
 'Game states
 MENU      = 0
 PLAYING   = 1
 GAME_OVER = 2
-gameState = MENU
+PLAYER_DEAD = 3
+WAVE_INFO = 4
+
+gameState = 0
 
 'Set sounds
 'shot
@@ -69,6 +76,15 @@ sfx.filter(4, 48, -13, 208, 102, 109)
 sfx.wave(4, 3)
 sfx.render(4, 64)
 
+'player explosion
+sfx.env(5, 0, 79, 203, 255)
+sfx.freq(5, -10, -63, 0, 0)
+sfx.tone(5, 37, 121, 211, 88)
+sfx.repeat(5, 12, -3, -15)
+sfx.filter(5, 154, 53, 71, 0, 0)
+sfx.wave(5, 3)
+sfx.render(5, 39)
+
 'Set graphics
 setSprite(0,15,31,63,127,255,255,255,255)    'rock square
 setSprite(1,255,255,255,255,240,224,192,128) 'rock square down
@@ -109,12 +125,6 @@ def addScore(s)
 enddef
 
 'Classes
-class groundExplosion
-    x = 0
-    y = 0
-
-endclass
-
 class bullet
     x = 0
     y = 0
@@ -130,19 +140,19 @@ class bullet
             if f > 4 then flag = 1 endif
             draw.sprite(frames(f),x-3,y,4,flag)
             'draw.text(intToText("%i",f), x + 4, y, 1,3)
-            explosionFrame = explosionFrame + 1
+            speed = 0
             return
         endif
 
         if speed < 0 then
             draw.rect(x,y,2,4,0,10)
-        else
+        endif
+        if speed > 0 then
             draw.sprite(17,x,y,6)
         endif
     enddef
 
     def update()
-
         if explosionFrame > 0 then
             explosionFrame = explosionFrame + 1
             return
@@ -164,12 +174,27 @@ class player
     x = 152
     y = 188
     speed = 2
+    dead = 0
+    def setup()
+        x = 152
+        y = 188
+        speed = 2
+        dead = 0
+    enddef
 
     def draw()
-        draw.rect(x,y,16,5,0,13)
-        draw.rect(x+1,y-1,14,1,0,13)
-        draw.rect(x+6,y-3,4,2,0,13)
-        draw.rect(x+7,y-4,2,1,0,13)
+        col = 13
+        if dead = 1 then
+            col = 6
+            if recoveryPlayerTick/200 mod 2 then
+                col = 0
+            endif
+        endif
+
+        draw.rect(x,y,16,5,0,col)
+        draw.rect(x+1,y-1,14,1,0,col)
+        draw.rect(x+6,y-3,4,2,0,col)
+        draw.rect(x+7,y-4,2,1,0,col)
     enddef
 
     def update()
@@ -192,6 +217,20 @@ class player
                 sfx.play(0, 127)
             endif
         endif
+
+        for b in aliensBullets
+            if checkCollisionAABB(b.x,b.y,2,4,x,y,16,8) then
+                dead = 1
+                lives = lives - 1
+                gameState = PLAYER_DEAD
+                if lives < 1 then
+                    gameState = GAME_OVER
+                endif
+                remove(aliensBullets, index_of(aliensBullets, b))
+                sfx.play(5, 99)
+            endif
+        next
+
     enddef
 endclass
 
@@ -356,11 +395,8 @@ class ship
     enddef
 endclass
 
-playerShip = new (player)
-alienShip = nil
-
 'draw game objects
-def addRock(x,y,shape)
+def addRock(x, y, shape)
     r = new (rock)
     r.x = x * 8
     r.y = y * 8
@@ -368,7 +404,7 @@ def addRock(x,y,shape)
     push(rocks, r)
 enddef
 
-def addMetaRock(x,y)
+def addMetaRock(x, y)
     addRock(x,     y, 1)
     addRock(x+1,   y, 0)
     addRock(x+2,   y, 0)
@@ -381,12 +417,7 @@ def addMetaRock(x,y)
     addRock(x+3, y+2, 0)
 enddef
 
-addMetaRock(3,18)
-addMetaRock(13,18)
-addMetaRock(23,18)
-addMetaRock(33,18)
-
-def addAlien(x,y, shape)
+def addAlien(x, y, shape)
     a = new (alien)
     a.x = x * 20
     a.y = y * 12
@@ -394,13 +425,36 @@ def addAlien(x,y, shape)
     push(aliens, a)
 enddef
 
-for n = 2 to 13
-    addAlien(n,2,2)
-    addAlien(n,3,1)
-    addAlien(n,4,1)
-    addAlien(n,5,0)
-    addAlien(n,6,0)
-next
+playerShip = new (player)
+
+def startGame()
+
+    alienShip = nil
+    wave = 0
+    lives = 3
+    score = 0
+    playerShip.setup()
+
+    rocks = list()
+    aliens = list()
+    bullets = list()
+    alienBullets = list()
+
+    addMetaRock(3,18)
+    addMetaRock(13,18)
+    addMetaRock(23,18)
+    addMetaRock(33,18)
+
+    for n = 2 to 13
+        addAlien(n,2,2)
+        addAlien(n,3,1)
+        addAlien(n,4,1)
+        addAlien(n,5,0)
+        addAlien(n,6,0)
+    next
+
+    gameState = PLAYING
+enddef
 
 'UI
 def drawUI()
@@ -489,10 +543,31 @@ def alienShipUpdate()
 enddef
 'Main update
 def tick()
+
+    if gameState = PLAYER_DEAD then
+        recoveryPlayerTick = recoveryPlayerTick + delta()
+        if recoveryPlayerTick > 4000 then
+            recoveryPlayerTick = 0
+            playerShip.dead = 0
+            gameState = PLAYING
+        endif
+    endif
+
+    if gameState = MENU then
+         if key.released(257) then
+            startGame()
+         endif
+    endif
+
     if gameState = GAME_OVER then
-        return
+         if key.released(257) then
+            gameState = MENU
+         endif
     endif
     
+    if gameState <> PLAYING then
+        return
+    endif
     alienShipUpdate()
 
     'update player
@@ -552,10 +627,13 @@ enddef
 'Main draw
 def draw()
     cls(0)
-    drawUI()
-    if gameState = GAME_OVER then
-        draw.text("GAME OVER", 50,80,3,3)
+
+    if gameState = MENU then
+        draw.text("Menu", 50,80,3,4)
+        return
     endif
+    drawUI()
+
     playerShip.draw()
 
     if alienShip then
@@ -577,5 +655,9 @@ def draw()
     for a in aliens
         a.draw()
     next
+
+    if gameState = GAME_OVER then
+        draw.text("GAME OVER", 50,80,3,4)
+    endif
 
 enddef
