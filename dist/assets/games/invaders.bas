@@ -240,6 +240,13 @@ class rock
     shape = 0
     state = 4
     breakType = 0
+    def setup()
+        x = 0
+        y = 0
+        shape = 0
+        state = 4
+        breakType = 0
+    enddef
 
     def update()
         'Check for player bullets collision
@@ -296,6 +303,16 @@ class alien
     deadCounter = 0
     st = 0
     dw = 0
+
+    def setup()
+        x = 0
+        y = 0
+        shape = 0
+        dead = 0
+        deadCounter = 0
+        st = 0
+        dw = 0
+    enddef
 
     def shot()
         if len(aliensBullets) < maxAlienBullets then
@@ -398,6 +415,7 @@ endclass
 'draw game objects
 def addRock(x, y, shape)
     r = new (rock)
+    r.setup()
     r.x = x * 8
     r.y = y * 8
     r.shape = shape
@@ -419,6 +437,7 @@ enddef
 
 def addAlien(x, y, shape)
     a = new (alien)
+    a.setup()
     a.x = x * 20
     a.y = y * 12
     a.shape = shape
@@ -433,12 +452,13 @@ def startGame()
     wave = 0
     lives = 3
     score = 0
+
     playerShip.setup()
 
     rocks = list()
     aliens = list()
     bullets = list()
-    alienBullets = list()
+    aliensBullets = list()
 
     addMetaRock(3,18)
     addMetaRock(13,18)
