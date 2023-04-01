@@ -8,8 +8,8 @@ aliens = list()
 aliensBullets = list()
 
 ' hiScore = readed from invader_data.dat
-score = nil ' overwrited in startGame
-lives = nil ' overwrited in startGame
+score = nil ' overwrited in startGame()
+lives = nil ' overwrited in startGame()
 maxbullets = 1
 maxAlienBullets = 3
 
@@ -20,11 +20,8 @@ alienDir = 4
 alienDown = 8
 
 wave = 0
-
 alienShipTime = 0
-
 recoveryPlayerTick = 0
-
 alienShip = nil
 
 'Game states
