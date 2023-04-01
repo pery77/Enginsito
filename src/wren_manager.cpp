@@ -30,34 +30,35 @@ void WrenManager::errorFn(WrenVM* vm, WrenErrorType errorType,
 
 WrenManager::WrenManager(){
 
-   std::string line,text;
-   std::ifstream in("assets/test.wren");
-   while(std::getline(in, line))
-   {
-       text += line + "\n";
-   }
-   const char* script = text.c_str();
+  std::string line,text;
+  std::ifstream in("assets/test.wren");
+  while(std::getline(in, line))
+  {
+      text += line + "\n";
+  }
+  const char* script = text.c_str();
 
 
-    wrenInitConfiguration(&wConfig);
-        wConfig.writeFn = &writeFn;
-        wConfig.errorFn = &errorFn;
+  wrenInitConfiguration(&wConfig);
+      wConfig.writeFn = &writeFn;
+      wConfig.errorFn = &errorFn;
 
-    WrenVM* vm = wrenNewVM(&wConfig);
-    const char* module = "main";
+  WrenVM* vm = wrenNewVM(&wConfig);
+  const char* module = "main";
 
-    WrenInterpretResult result = wrenInterpret(vm, module, script);
+  WrenInterpretResult result = wrenInterpret(vm, module, script);
 
-    switch (result) {
-        case WREN_RESULT_COMPILE_ERROR:
-        { printf("Compile Error!\n"); } break;
-        case WREN_RESULT_RUNTIME_ERROR:
-        { printf("Runtime Error!\n"); } break;
-        case WREN_RESULT_SUCCESS:
-        { printf("Success!\n"); } break;
-    }
-    wrenFreeVM(vm);
+  switch (result) {
+      case WREN_RESULT_COMPILE_ERROR:
+      { printf("Compile Error!\n"); } break;
+      case WREN_RESULT_RUNTIME_ERROR:
+      { printf("Runtime Error!\n"); } break;
+      case WREN_RESULT_SUCCESS:
+      { printf("Success!\n"); } break;
+  }
+  wrenFreeVM(vm);
 }
+
 WrenManager::~WrenManager(){}
 
 

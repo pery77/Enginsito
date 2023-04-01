@@ -60,7 +60,8 @@ int main(int argc, char *argv[]){
     Bios* bios = new Bios();
     PostProcessing* postProcessing = new PostProcessing();
     MBManager* basic = new MBManager(postProcessing);
-    WrenManager* wren = new WrenManager();
+    //DISABLED WREN AT MOMENT
+    //WrenManager* wren = new WrenManager();
 
     GameState currentState = Off;
     bool showFps = false;

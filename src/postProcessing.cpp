@@ -15,9 +15,23 @@ void PostProcessing::setUpShaders(){
 	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT);
 
-    grilleTextures[0] = LoadTexture("assets/grille1.png");
-    grilleTextures[1] = LoadTexture("assets/grille2.png");
-    grilleTextures[2] = LoadTexture("assets/grille3.png");
+    grilleTextures[0] = textureFromCode(GRILLE1_FORMAT, GRILLE1_HEIGHT, GRILLE1_HEIGHT, GRILLE1_DATA);
+    grilleTextures[1] = textureFromCode(GRILLE2_FORMAT, GRILLE2_HEIGHT, GRILLE2_HEIGHT, GRILLE2_DATA);
+    grilleTextures[2] = textureFromCode(GRILLE3_FORMAT, GRILLE3_HEIGHT, GRILLE3_HEIGHT, GRILLE3_DATA);
+
+/* //Image to Code
+    Image i1 = LoadImage("assets/grille1.png");
+    Image i2 = LoadImage("assets/grille2.png");
+    Image i3 = LoadImage("assets/grille3.png");
+
+    ExportImageAsCode(i1, "grille1.h");
+    ExportImageAsCode(i2, "grille2.h");
+    ExportImageAsCode(i3, "grille3.h");
+
+    UnloadImage(i1);
+    UnloadImage(i2);
+    UnloadImage(i3);
+*/
     for (int gt = 0; gt<3; gt++){
         GenTextureMipmaps(&grilleTextures[gt]);
         SetTextureFilter(grilleTextures[gt], TEXTURE_FILTER_BILINEAR);
@@ -25,10 +39,12 @@ void PostProcessing::setUpShaders(){
     }
     
     //Blur shader
-    blurShader = LoadShader(0, "assets/blur.fs");
+    //blurShader = LoadShader(0, "assets/blur.fs");
+    blurShader = LoadShaderFromMemory(0, blurShaderCode);
 
     //CRT shader
-    crtShader = LoadShader(0, "assets/peryCRTDeluxe.fs");
+    //crtShader = LoadShader(0, "assets/peryCRTDeluxe.fs");
+    crtShader = LoadShaderFromMemory(0, crtShaderCode);
     SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
 
 
@@ -229,3 +245,16 @@ void PostProcessing::SetCRTFloat(CRTProperty property, float value){
     Tools::Poke(4090, newTextureId);
     currentGrilleTexture = newTextureId;
  }
+
+ Texture PostProcessing::textureFromCode(int format, int height, int width, void* data){
+    
+    Image img = {0};
+    img.format = format;
+    img.height = height;
+    img.width = width;
+    img.data = data;
+    img.mipmaps = 2;
+
+    return LoadTextureFromImage(img);
+
+}

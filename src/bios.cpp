@@ -1,7 +1,9 @@
 #include "bios.h"
 
 Bios::Bios(){
-    Tools::LoadMemory("bios.bin");
+    std::stringstream ss;
+    ss << ASSETS_FOLDER << "/default.mem";
+    Tools::LoadMemory(ss.str().c_str());
     Tools::InitFont();
 }
 
