@@ -18,6 +18,8 @@
 #include <iostream>
 #include "FileWatcher.h"
 
+#include "imgui/rlImGui.h"
+
 FilePathList droppedFiles = { 0 };
 
 void dropFile(){
@@ -36,6 +38,8 @@ void dropFile(){
     }
 }
 
+
+
 int main(int argc, char *argv[]){
 
     std::stringstream ss;
@@ -52,6 +56,8 @@ int main(int argc, char *argv[]){
 	InitWindow(windowWidth, windowHeight, "peryEngine");
 	SetWindowMinSize(GAME_SCREEN_W, GAME_SCREEN_H);
 	SetTargetFPS(GAME_FPS);
+
+    rlImGuiSetup(true);
 
     InitAudioDevice();
     HideCursor();
@@ -217,6 +223,16 @@ int main(int argc, char *argv[]){
                 //postProcessing->uCurvature = 
                 //    GuiSlider((Rectangle){0,110,300,20},"", TextFormat("%f",postProcessing->uCurvature),postProcessing->uCurvature ,0,1000);
             }
+
+            		// start ImGui Conent
+		rlImGuiBegin();
+
+		// show ImGui Content
+		bool open = true;
+		ImGui::ShowDemoWindow(&open);
+
+		// end ImGui Content
+		rlImGuiEnd();
     
         EndDrawing();
     }
