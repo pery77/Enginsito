@@ -276,7 +276,7 @@ void main(){
 	//Textures
 	vec3 texelColor = mainImage(uv);
     vec3 blurColor = texture2D(blurTexture, uv).rgb;
-    vec3 grille = texture2D(grilleTexture, uv * resolution.y * 0.11).rgb;
+    vec3 grille = texture2D(grilleTexture, uv * resolution.y * 0.16).rgb;
 
     float noiseF = mix((1-uNoise)*0.5 + 0.5, 1, noise(uv));
 	float fliker = mix((1-uFliker)*0.5 + 0.5, 1, (sin((30 * uTime) + (uv.y * 6.28))*0.5+0.5));
