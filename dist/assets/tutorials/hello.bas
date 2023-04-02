@@ -12,11 +12,15 @@ def draw()
     draw.meta(0,100,100)
     draw.meta(1,160,130)
     
-    draw.rect(20,20,MOUSE.x(),mouse.y,101,rnd(0,15))
-    draw.text("EVANGELION",20 + rnd(-10,10),34,3,3)
-    for p = 0 to 160
-        for j = 0 to 100
-            'draw.pixel(p*2,j*2,rnd(0,15))
+    'draw.rect(20,20,MOUSE.x(),mouse.y,101,rnd(0,15))
+    draw.text("stress test",20 + rnd(-3,3),34,3,3)
+    draw.text("Press space for the party",50,84,1,3)
+    if key.down(32) then
+        for p = 0 to 160
+            for j = 0 to 100
+                    draw.pixel(p*2,j*2,rnd(0,15))
+                    draw.pixel(p*2-1,j*2-1,5)
+            next
         next
-    next
+    endif
 enddef
