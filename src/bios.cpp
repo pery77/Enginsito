@@ -269,3 +269,66 @@ void Bios::removeSubPath(){
 
     CurrentPath = tmp;
 }
+
+void Bios::DrawImGui(){
+
+        ImGui::Begin(Tools::GetEngineName());
+        static bool showConsole = false;
+        ImGui::Checkbox("Console", &showConsole);
+
+    if (showConsole){
+        ImGui::Begin("Console");
+
+        ImGui::End();
+    }
+
+    if (ImGui::CollapsingHeader("Info")){
+        ImGui::SeparatorText("FPS");
+        static float values[90] = {};
+        static int values_offset = 0;
+        static double refresh_time = 0.0;
+        if (refresh_time == 0.0)
+            refresh_time = ImGui::GetTime();
+        while (refresh_time < ImGui::GetTime()) // Create data at fixed 60 Hz rate for the demo
+        {
+            static float phase = 0.0f;
+            values[values_offset] = GetFPS();
+            values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
+            phase += 0.10f * values_offset;
+            refresh_time += 1.0f / 60.0f;
+        }
+        float average = 0.0f;
+        for (int n = 0; n < IM_ARRAYSIZE(values); n++)
+            average += values[n];
+        average /= (float)IM_ARRAYSIZE(values);
+        char overlay[32];
+        sprintf(overlay, "average framerate: %.3f fps", average);
+
+        ImGui::PlotLines("FPS", values, IM_ARRAYSIZE(values), values_offset,overlay ,0.0f, 60.0f, ImVec2(0, 80.0f));
+        ImGui::SeparatorText("Program");
+        ImGui::Text("Current Program:");
+        ImGui::SeparatorText("Memory");
+        ImGui::Text("Current Memory:");
+    }
+
+    if (ImGui::CollapsingHeader("Palette"))
+    {
+    }
+    if (ImGui::CollapsingHeader("Graphics"))
+    {
+    }
+    if (ImGui::CollapsingHeader("CRT filter"))
+    {
+    }
+    if (ImGui::CollapsingHeader("SFX synth"))
+    {
+    }
+    if (ImGui::CollapsingHeader("Music"))
+    {
+    }
+    if (ImGui::CollapsingHeader("Online"))
+    {
+    }
+
+    ImGui::End();
+}

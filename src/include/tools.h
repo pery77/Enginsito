@@ -53,6 +53,9 @@ typedef struct MetaSprites{
 
 class Tools{
     public:
+
+        static const char *GetEngineName();
+
         static Color GetColor(int color);
         static Color GetBiosColor(int color);
         static Color SetColor(int color, int r, int g, int b);
