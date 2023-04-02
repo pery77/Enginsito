@@ -213,7 +213,7 @@ int main(int argc, char *argv[]){
                 rlImGuiBegin();
                 bool open = true;
                 ImGui::ShowDemoWindow(&open);
-                //drawImGuiManger();
+
                 bios->DrawImGui();
                 rlImGuiEnd();
             }
