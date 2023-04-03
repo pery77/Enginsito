@@ -1,6 +1,7 @@
 #include "bios.h"
 
-Bios::Bios(){
+Bios::Bios()
+{
     std::stringstream ss;
     ss << ASSETS_FOLDER << "/default.mem";
     Tools::LoadMemory(ss.str().c_str());
@@ -9,11 +10,13 @@ Bios::Bios(){
 
 Bios::~Bios(){}
 
-void Bios::LoadBoot(){
+void Bios::LoadBoot()
+{
     std::string line;
     std::ifstream myfile (BOOT_FILE);
     if (myfile.is_open()){
-        while ( getline (myfile, line) ){
+        while ( getline (myfile, line) )
+        {
             currentLine =  line;
             ProcessCommand();
         }
@@ -271,11 +274,7 @@ void Bios::removeSubPath(){
 }
 
 //ImGui
-void inline drawConsole(){
-        ImGui::Begin("Console");
 
-        ImGui::End();
-}
 void inline drawFPS(){
     static float values[90] = {};
     static int values_offset = 0;
@@ -299,6 +298,7 @@ void inline drawFPS(){
     ImGui::PlotLines("FPS", values, IM_ARRAYSIZE(values), values_offset,overlay ,0.0f, 60.0f, ImVec2(0, 80.0f));
         
 }
+
 void Bios::DrawImGui(){
 
     ImGui::Begin(Tools::GetEngineName());
@@ -306,7 +306,7 @@ void Bios::DrawImGui(){
     ImGui::Checkbox("Console", &showConsole);
 
     if (showConsole){
-        drawConsole();
+        Tools::GetConsole()->Draw("Console", &showConsole);
     }
 
     if (ImGui::CollapsingHeader("Info")){

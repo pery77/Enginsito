@@ -12,6 +12,7 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <array>
+#include "console.h"
 
 #define GAME_SCREEN_W       320
 #define GAME_SCREEN_H       200
@@ -106,5 +107,7 @@ class Tools{
 
         static int8_t ToSigned(unsigned char value);
         static unsigned char ToUnsigned(int8_t value);
+
+        static Console* GetConsole();
 
 };

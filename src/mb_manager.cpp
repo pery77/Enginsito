@@ -21,7 +21,7 @@ void MBManager::managerError(int state){
     mb_error_e error = mb_get_last_error(bas, &basFile, &pos, &row, &col);
 	const char* errorDes = mb_get_error_desc(error);
     if(state > 0){
-        printf("ERROR [%i]:\n%s\npos = %i, row = %i col = %i \n",error ,errorDes , pos, row, col);
+        Tools::GetConsole()->AddLog("[error] [%i]:\n%s\npos = %i, in line = %i col = %i \n",error ,errorDes , pos, row, col);
     }
 }
 
@@ -178,7 +178,7 @@ int MBManager::OpenBas(const char * file){
 
     int loadState = mb_load_file(bas, file);
 	
-	printf("Loading: [ %s ]\n",file);
+	Tools::GetConsole()->AddLog("Loading: [ %s ]\n",file);
 	managerError(loadState);
 	
 	return loadState;
@@ -899,8 +899,8 @@ int MBManager::saveFile(struct mb_interpreter_t* s, void** l) {
 	
 	bool saved = SaveFileText(arg, txt);
 	
-	if (saved) printf("Saved OK: %s\n", arg);
-	else printf("ERROR saving: %s\n", arg);
+	if (saved) Tools::GetConsole()->AddLog("Saved OK: %s\n", arg);
+	else Tools::GetConsole()->AddLog("[error] saving: %s\n", arg);
 	
 	return result;
 }
@@ -2079,7 +2079,7 @@ int MBManager::my_print(struct mb_interpreter_t* s, const char* fmt, ...) {
 	}
 	va_end(argptr);
 	if(result >= 0)
-		printf(ptr); /* Change me */
+		Tools::GetConsole()->AddLog(ptr); /* Change me */
 	if(ptr != buf)
 		free(ptr);
 
