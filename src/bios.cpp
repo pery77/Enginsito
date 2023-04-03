@@ -275,7 +275,9 @@ void Bios::removeSubPath(){
 
 //ImGui
 
-void inline drawFPS(){
+void inline drawFPS()
+{
+    ImGui::PushStyleColor(ImGuiCol_PlotLines, IM_COL32(40,255,0,255));
     static float values[90] = {};
     static int values_offset = 0;
     static double refresh_time = 0.0;
@@ -296,13 +298,13 @@ void inline drawFPS(){
     char overlay[32];
     sprintf(overlay, "average framerate: %.3f fps", average);
     ImGui::PlotLines("FPS", values, IM_ARRAYSIZE(values), values_offset,overlay ,0.0f, 60.0f, ImVec2(0, 80.0f));
-        
+    ImGui::PopStyleColor();    
 }
 
 void Bios::DrawImGui(){
 
     ImGui::Begin(Tools::GetEngineName());
-    static bool showConsole = false;
+    static bool showConsole = true;
     ImGui::Checkbox("Console", &showConsole);
 
     if (showConsole){

@@ -38,26 +38,27 @@ void CustomLog(int msgType, const char *text, va_list args)
     Tools::GetConsole()->AddLog(buffer);
 }
 
-void dropFile() {
-
-    if (IsFileDropped()) {
+void dropFile() 
+{
+    if (IsFileDropped()) 
+    {
         // Is some files have been previously loaded, unload them
         if (droppedFiles.count > 0) UnloadDroppedFiles(droppedFiles);
         
         // Load new dropped files
         droppedFiles = LoadDroppedFiles();
     }
-    //TODO: BUG!! break program
+
     if (droppedFiles.count > 0)
     {
-        printf("file: %s\n", *droppedFiles.paths[0]);
-        //Tools::GetConsole()->AddLog("file: %s\n", str.c_str());
-        UnloadDroppedFiles(droppedFiles);
+        char* firstFilePath = droppedFiles.paths[0];
+        Tools::GetConsole()->AddLog("[WARN] Dropped file: %s\n", firstFilePath);
     }
 }
 
 int main(int argc, char *argv[]){
-    
+
+    Tools::GetConsole()->AddLog("Welcolme to %s", Tools::GetEngineName());
     SetTraceLogCallback(CustomLog);
 
     std::stringstream ss;

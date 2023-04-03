@@ -1,5 +1,6 @@
 #include <cctype>
 #include <cstdio>
+
 #include "imgui/rlImGui.h"
 
 struct Console
@@ -28,6 +29,7 @@ struct Console
         AutoScroll = true;
         ScrollToBottom = false;
     }
+
     ~Console()
     {
         ClearLog();

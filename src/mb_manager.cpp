@@ -21,7 +21,7 @@ void MBManager::managerError(int state){
     mb_error_e error = mb_get_last_error(bas, &basFile, &pos, &row, &col);
 	const char* errorDes = mb_get_error_desc(error);
     if(state > 0){
-        Tools::GetConsole()->AddLog("[error] [%i]:\n%s\npos = %i, in line = %i col = %i \n",error ,errorDes , pos, row, col);
+        Tools::GetConsole()->AddLog("[ERROR] [%i]:\n%s\npos = %i, in line = %i col = %i \n",error ,errorDes , pos, row, col);
     }
 }
 
@@ -900,7 +900,7 @@ int MBManager::saveFile(struct mb_interpreter_t* s, void** l) {
 	bool saved = SaveFileText(arg, txt);
 	
 	if (saved) Tools::GetConsole()->AddLog("Saved OK: %s\n", arg);
-	else Tools::GetConsole()->AddLog("[error] saving: %s\n", arg);
+	else Tools::GetConsole()->AddLog("[ERROR] saving: %s\n", arg);
 	
 	return result;
 }
