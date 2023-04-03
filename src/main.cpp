@@ -22,12 +22,12 @@ FilePathList droppedFiles = { 0 };
 
 void CustomLog(int msgType, const char *text, va_list args) {
 
-    char timeStr[64] = { 0 };
-    time_t now = time(NULL);
-    struct tm *tm_info = localtime(&now);
+    //char timeStr[64] = { 0 };
+    //time_t now = time(NULL);
+    //struct tm *tm_info = localtime(&now);
 
-    strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", tm_info);
-    printf("[%s] ", timeStr);
+    //strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", tm_info);
+    //printf("[%s] ", timeStr);
 
     switch (msgType)
     {
@@ -37,9 +37,10 @@ void CustomLog(int msgType, const char *text, va_list args) {
         case LOG_DEBUG: printf("[DEBUG]: "); break;
         default: break;
     }
-
+    std::string str(text);
     vprintf(text, args);
     printf("\n");
+    //Tools::GetConsole()->AddLog(str.c_str()); //TODO FIX IT!! 
 }
 
 void dropFile() {
@@ -51,9 +52,11 @@ void dropFile() {
         // Load new dropped files
         droppedFiles = LoadDroppedFiles();
     }
+    //TODO: BUG!! break program
     if (droppedFiles.count > 0)
     {
         printf("file: %s\n", *droppedFiles.paths[0]);
+        //Tools::GetConsole()->AddLog("file: %s\n", str.c_str());
         UnloadDroppedFiles(droppedFiles);
     }
 }
@@ -100,30 +103,30 @@ int main(int argc, char *argv[]){
     {
         fw->update([bios, postProcessing] (std::string path_to_watch, FileStatus status) -> void {
                 if(!std::filesystem::is_regular_file(std::filesystem::path(path_to_watch)) && status != FileStatus::erased) {
-            std::cout << "NO REGULAR: " << path_to_watch << '\n';
+            Tools::GetConsole()->AddLog("NO REGULAR: %s", path_to_watch.c_str());
             return;
         }
 
         switch(status) {
             case FileStatus::created:
-                std::cout << "File created: " << path_to_watch << '\n';
+                Tools::GetConsole()->AddLog("File created: %s", path_to_watch.c_str());
                 break;
             case FileStatus::modified:
-                std::cout << "File modified: " << path_to_watch << '\n';
+                Tools::GetConsole()->AddLog("File modified: %s",path_to_watch.c_str());
                 if (IsFileExtension(path_to_watch.c_str(),".bas")) {
                     bios->SetFile(path_to_watch);
                     bios->ShouldRun = true;
                     postProcessing->ReloadShaders();
                 }
                 else{
-                    printf("Is not a .bas\n");
+                    Tools::GetConsole()->AddLog("Is not a .bas");
                 }
                 break;
             case FileStatus::erased:
-                std::cout << "File erased: " << path_to_watch << '\n';
+                Tools::GetConsole()->AddLog("File erased: %s", path_to_watch.c_str());
                 break;
             default:
-                std::cout << "Error! Unknown file status.\n";
+                Tools::GetConsole()->AddLog("Error! Unknown file status.");
         }
         });
 
@@ -159,7 +162,7 @@ int main(int argc, char *argv[]){
                 basic->init();
                 currentState = Running;
             }else{
-                printf("%s not found.\n", bios->GetFile().c_str());
+                Tools::GetConsole()->AddLog("%s not found.\n", bios->GetFile().c_str());
             }
         }
         if (IsKeyReleased(KEY_ESCAPE)){
@@ -190,7 +193,7 @@ int main(int argc, char *argv[]){
             if(GetFrameTime()>10.0f) {
                 //currentState = Off;
                 //basic->CloseBas();
-                printf("Bad framerate!\n");
+                Tools::GetConsole()->AddLog("Bad framerate!\n");
             }
         }
         
