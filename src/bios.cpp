@@ -1,4 +1,8 @@
 #include "bios.h"
+#include "TextEditor.h"
+
+TextEditor editor;
+auto lang = TextEditor::LanguageDefinition::CPlusPlus();
 
 Bios::Bios()
 {
@@ -6,6 +10,9 @@ Bios::Bios()
     ss << ASSETS_FOLDER << "/default.mem";
     Tools::LoadMemory(ss.str().c_str());
     Tools::InitFont();
+
+    editor.SetLanguageDefinition(lang);
+  
 }
 
 Bios::~Bios(){}
@@ -341,6 +348,6 @@ void Bios::DrawImGui(){
     if (ImGui::CollapsingHeader("Online"))
     {
     }
-
+    editor.Render("TextEditor");
     ImGui::End();
 }
