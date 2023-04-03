@@ -20,27 +20,22 @@
 
 FilePathList droppedFiles = { 0 };
 
-void CustomLog(int msgType, const char *text, va_list args) {
-
-    //char timeStr[64] = { 0 };
-    //time_t now = time(NULL);
-    //struct tm *tm_info = localtime(&now);
-
-    //strftime(timeStr, sizeof(timeStr), "%Y-%m-%d %H:%M:%S", tm_info);
-    //printf("[%s] ", timeStr);
-
+void CustomLog(int msgType, const char *text, va_list args) 
+{
+    std::string prefix;
     switch (msgType)
     {
-        case LOG_INFO: printf("[INFO] : "); break;
-        case LOG_ERROR: printf("[ERROR]: "); break;
-        case LOG_WARNING: printf("[WARN] : "); break;
-        case LOG_DEBUG: printf("[DEBUG]: "); break;
+        case LOG_INFO: prefix = "[INFO] : "; break;
+        case LOG_ERROR: prefix = "[ERROR]: "; break;
+        case LOG_WARNING: prefix = "[WARN] : "; break;
+        case LOG_DEBUG: prefix = "[DEBUG]: "; break;
         default: break;
     }
-    std::string str(text);
-    vprintf(text, args);
-    printf("\n");
-    //Tools::GetConsole()->AddLog(str.c_str()); //TODO FIX IT!! 
+    std::string str = prefix + text;
+    char buffer[1024];
+    vsprintf(buffer, str.c_str(), args);
+    printf("%s\n", buffer);
+    Tools::GetConsole()->AddLog(buffer);
 }
 
 void dropFile() {
