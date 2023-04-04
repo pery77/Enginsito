@@ -4,6 +4,7 @@
 AudioManager* audioR;
 PostProcessing* postProcessingR;
 
+
 MBManager::MBManager(PostProcessing* postProcessing){
 	nullArg[0].type = MB_DT_NIL;
 	audioR = new AudioManager();
@@ -21,7 +22,7 @@ void MBManager::managerError(int state){
     mb_error_e error = mb_get_last_error(bas, &basFile, &pos, &row, &col);
 	const char* errorDes = mb_get_error_desc(error);
     if(state > 0){
-        Tools::GetConsole()->AddLog("[ERROR] [%i]:\n%s\npos = %i, in line = %i col = %i \n",error ,errorDes , pos, row, col);
+        Tools::GetConsole()->AddLog("[ERROR] [%i]:%s\nline: %i, col: %i, pos; %i\n",error, errorDes, row, col, pos);
     }
 }
 
@@ -49,8 +50,8 @@ void MBManager::end(){
 }
 
 // Init and close
-int MBManager::OpenBas(const char * file){ 
-	basFile = file;
+int MBManager::OpenBas(const char *file){ 
+	
 	mb_init();
 	mb_open(&bas);
 
@@ -177,8 +178,8 @@ int MBManager::OpenBas(const char * file){
 	mb_reg_fun(bas, saveFile);
 
     int loadState = mb_load_file(bas, file);
-	
-	Tools::GetConsole()->AddLog("Loading: [ %s ]\n",file);
+	basFile = file;
+	Tools::GetConsole()->AddLog("Loading: [ %s ]\n", basFile);
 	managerError(loadState);
 	
 	return loadState;

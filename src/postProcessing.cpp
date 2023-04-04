@@ -183,6 +183,8 @@ void PostProcessing::FullScreen(){
 }
 
 void PostProcessing::SetState(bool newState){
+    if (newState == enabled)
+        return;
     enabled = newState;
     SetTextureFilter(mainRender.texture, enabled ? TEXTURE_FILTER_BILINEAR : TEXTURE_FILTER_POINT);
 }

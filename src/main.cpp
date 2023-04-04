@@ -85,6 +85,10 @@ int main(int argc, char *argv[]){
     Bios* bios = new Bios();
     PostProcessing* postProcessing = new PostProcessing();
     MBManager* basic = new MBManager(postProcessing);
+    bios->postProcessingRef = postProcessing;
+    bios->mbManagerRef = basic;
+
+    Tools::GetConsole()->AddLog("mb in main: [ %p ]\n", basic);
     //DISABLED WREN AT MOMENT
     //WrenManager* wren = new WrenManager();
 
@@ -204,7 +208,6 @@ int main(int argc, char *argv[]){
                 {
                 case Off:
                     bios->Update();
-                    //DrawTexture(Tools::GetFont().texture,180,5,(Color){200,230,231,255});
                     break;
                 case Running:
                     basic->draw();
@@ -238,6 +241,11 @@ int main(int argc, char *argv[]){
 
                 bios->DrawImGui();
                 rlImGuiEnd();
+                ShowCursor();
+            }
+            else
+            {
+                HideCursor();
             }
     
         EndDrawing();

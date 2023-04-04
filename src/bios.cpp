@@ -232,7 +232,7 @@ std::string Bios::GetFile(){
     fs::path file (CurrentProgram + PROGRAM_EXTENSION);
     fs::path full_path = dir / CurrentPath / file;
 
-    printf("Get file> %s\n",full_path.string().c_str());
+    //printf("Get file> %s\n",full_path.string().c_str());
     return full_path.string();
 }
 void Bios::SetFile(std::string filePath){
@@ -322,13 +322,22 @@ void Bios::DrawImGui(){
         ImGui::SeparatorText("FPS");
         drawFPS();
         ImGui::SeparatorText("Program");
-        ImGui::Text("Current Program:");
+        ImGui::Text("Current Program: [ %s ]\n", GetFile().c_str());
         ImGui::SeparatorText("Memory");
         ImGui::Text("Current Memory:");
     }
 
     if (ImGui::CollapsingHeader("Palette"))
     {
+        for (char c = 0; c<16; c++)
+        {
+            char buffer [50];
+            sprintf (buffer, "[%i]", c);
+            Color col = Tools::GetColor(c);
+            ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
+            ImGui::ColorEdit3(buffer, (float*)&color, 0);
+            Tools::SetColor(c, color.x * 255, color.y * 255, color.z * 255);
+        }
     }
     if (ImGui::CollapsingHeader("Graphics"))
     {
@@ -338,6 +347,9 @@ void Bios::DrawImGui(){
     }
     if (ImGui::CollapsingHeader("CRT filter"))
     {
+        bool ppState = postProcessingRef->enabled;
+        ImGui::Checkbox("Enabled", &ppState);
+        postProcessingRef->SetState(ppState);
     }
     if (ImGui::CollapsingHeader("SFX synth"))
     {
@@ -348,6 +360,14 @@ void Bios::DrawImGui(){
     if (ImGui::CollapsingHeader("Online"))
     {
     }
-    editor.Render("TextEditor");
+    if (ImGui::CollapsingHeader("Editor"))
+    {
+        if (ImGui::Button("Load"))
+        {
+            Tools::GetConsole()->AddLog("Open: [ %s ]\n", GetFile().c_str());
+            //editor.SetText(s);
+        }
+        editor.Render("TextEditor");
+    }
     ImGui::End();
 }

@@ -1,3 +1,4 @@
+// https://github.com/BalazsJako/ImGuiColorTextEdit
 #pragma once
 
 #include <string>
