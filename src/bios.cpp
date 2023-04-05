@@ -308,6 +308,8 @@ void inline drawFPS()
     ImGui::PopStyleColor();    
 }
 
+static const char* fileToEdit = "ImGuiColorTextEdit/TextEditor.cpp";
+
 void Bios::DrawImGui(){
 
     ImGui::Begin(Tools::GetEngineName());
@@ -364,10 +366,85 @@ void Bios::DrawImGui(){
     {
         if (ImGui::Button("Load"))
         {
-            Tools::GetConsole()->AddLog("Open: [ %s ]\n", GetFile().c_str());
-            //editor.SetText(s);
+            fileToEdit = GetFile().c_str();
+            Tools::GetConsole()->AddLog("Open: [ %s ]\n", fileToEdit);
+            	
+            std::ifstream inFile;
+            inFile.open(fileToEdit); //open the input file
+
+            std::stringstream strStream;
+            strStream << inFile.rdbuf(); //read the file
+            std::string str = strStream.str(); //str holds the content of the file
+
+            std::cout << str << "\n"; //you can do anything with the string!!!
+            Tools::GetConsole()->AddLog(str.c_str());
+            editor.SetText(str);
         }
+
+		auto cpos = editor.GetCursorPosition();
+		ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
+		if (ImGui::BeginMenuBar())
+		{
+			if (ImGui::BeginMenu("File"))
+			{
+				if (ImGui::MenuItem("Save"))
+				{
+					auto textToSave = editor.GetText();
+					/// save text....
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Edit"))
+			{
+				bool ro = editor.IsReadOnly();
+				if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
+					editor.SetReadOnly(ro);
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Undo", "ALT-Backspace", nullptr, !ro && editor.CanUndo()))
+					editor.Undo();
+				if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && editor.CanRedo()))
+					editor.Redo();
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, editor.HasSelection()))
+					editor.Copy();
+				if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && editor.HasSelection()))
+					editor.Cut();
+				if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && editor.HasSelection()))
+					editor.Delete();
+				if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
+					editor.Paste();
+
+				ImGui::Separator();
+
+				if (ImGui::MenuItem("Select all", nullptr, nullptr))
+					editor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(editor.GetTotalLines(), 0));
+
+				ImGui::EndMenu();
+			}
+
+			if (ImGui::BeginMenu("View"))
+			{
+				if (ImGui::MenuItem("Dark palette"))
+					editor.SetPalette(TextEditor::GetDarkPalette());
+				if (ImGui::MenuItem("Light palette"))
+					editor.SetPalette(TextEditor::GetLightPalette());
+				if (ImGui::MenuItem("Retro blue palette"))
+					editor.SetPalette(TextEditor::GetRetroBluePalette());
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+
+		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
+			editor.IsOverwrite() ? "Ovr" : "Ins",
+			editor.CanUndo() ? "*" : " ",
+			editor.GetLanguageDefinition().mName.c_str(), fileToEdit);
+
         editor.Render("TextEditor");
+        ImGui::End();
     }
     ImGui::End();
 }
