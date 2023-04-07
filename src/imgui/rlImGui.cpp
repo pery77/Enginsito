@@ -464,6 +464,8 @@ void rlImGuiSetup(bool dark)
 	io.Fonts->AddFontFromMemoryCompressedTTF((void*)fa_solid_900_compressed_data, fa_solid_900_compressed_size, FONT_AWESOME_ICON_SIZE, &icons_config, icons_ranges);
 #endif
 
+    pFont = io.Fonts->AddFontFromFileTTF("font.ttf", 16.0f);
+    pFont = io.Fonts->AddFontFromFileTTF("font.ttf", 20.0f);
     pFont = io.Fonts->AddFontFromFileTTF("font.ttf", 24.0f);
 
 	rlImGuiEndInitImGui();

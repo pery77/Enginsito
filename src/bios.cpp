@@ -305,10 +305,28 @@ void inline drawFPS()
     ImGui::PopStyleColor();    
 }
 
-
+void ShowFontSelector(const char* label)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    ImFont* font_current = ImGui::GetFont();
+    if (ImGui::BeginCombo(label, font_current->GetDebugName()))
+    {
+        for (int n = 0; n < io.Fonts->Fonts.Size; n++)
+        {
+            ImFont* font = io.Fonts->Fonts[n];
+            ImGui::PushID((void*)font);
+            if (ImGui::Selectable(font->GetDebugName(), font == font_current))
+                io.FontDefault = font;
+            ImGui::PopID();
+        }
+        ImGui::EndCombo();
+    }
+}
 void Bios::DrawImGui(){
 
     ImGui::Begin(Tools::GetEngineName());
+    ShowFontSelector("Font");
+    //rlPushFont();
     static bool showConsole = true;
     ImGui::Checkbox("Console", &showConsole);
 
@@ -377,7 +395,7 @@ void Bios::DrawImGui(){
 
 		auto cpos = editor.GetCursorPosition();
 		ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
-        rlPushFont();
+
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("File"))
@@ -452,7 +470,7 @@ void Bios::DrawImGui(){
 			editor.GetLanguageDefinition().mName.c_str());
 
         editor.Render("TextEditor");
-        rlPopFont();
+        //rlPopFont();
         ImGui::End();
     }
     ImGui::End();
