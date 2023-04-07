@@ -2087,7 +2087,33 @@ const TextEditor::Palette & TextEditor::GetRetroBluePalette()
 	return p;
 }
 
-
+const TextEditor::Palette & TextEditor::GetBasicPalette()
+{
+	const static Palette p = { {
+			0xffffffff,	// None
+		0xffc586c0,	// Keyword	
+		0xffa8ceb5,	// Number
+		0xff5b91ce,	// String
+			0xff000000, // Char literal
+		0xffd4d4d4, // Punctuation
+			0xff000000,	// Preprocessor
+		0xffaadcdc, // Identifier
+		0xffd69c56, // Known identifier
+			0xff000000, // Preproc identifier
+		0xff55996a, // Comment (single line)
+		0xff55996a, // Comment (multi line)
+		0x221e1e1e, // Background
+		0xffd6d6d6, // Cursor
+		0xff784f26, // Selection
+		0xa0000099, // ErrorMarker
+			0x80007777, // Breakpoint
+		0xff696969, // Line number
+		0x40343434, // Current line fill
+		0x40221114, // Current line fill (inactive)
+		0x40aaaaaa, // Current line edge
+		} };
+	return p;
+}
 std::string TextEditor::GetText() const
 {
 	return GetText(Coordinates(), Coordinates((int)mLines.size(), 0));
@@ -3153,6 +3179,74 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Lua()
 		langDef.mAutoIndentation = false;
 
 		langDef.mName = "Lua";
+
+		inited = true;
+	}
+	return langDef;
+}
+
+const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
+{
+	static bool inited = false;
+	static LanguageDefinition langDef;
+	if (!inited)
+	{
+		static const char* const keywords[] = {
+			"REM", "NIL", "MOD", "AND", "OR", "NOT", "IS", "LET", "DIM", "IF", "THEN", "ELSEIF", "ELSE", "ENDIF", "FOR", "IN", "TO",
+			"STEP", "NEXT", "WHILE", "WEND", "DO", "UNTIL", "EXIT", "GOTO", "GOSUB", "RETURN",
+			"CALL", "DEF", "ENDDEF", "CLASS", "ENDCLASS", "ME", "NEW", "VAR", "REFLECT", "LAMBDA", "MEM", "TYPE", "IMPORT", "END"
+		};
+
+		for (auto& k : keywords)
+			langDef.mKeywords.insert(k);
+
+		static const char* const identifiers[] = {
+			"ABS", "SGN", "SQR", "FLOOR", "CEIL", "FIX", "ROUND", "SRND", "RND", "SIN", "COS", "TAN", "ASIN", "ACOS", "ATAN",
+			"EXP", "LOG", "ASC", "CHR", "LEFT", "LEN", "MID", "RIGHT", "STR", "VAL", "PRINT", "INPUT", "LIST", "DICT", "PUSH", "POP", "BACK", "INSERT",
+			"SORT", "EXISTS", "INDEX_OF", "GET", "SET", "REMOVE", "CLEAR", "CLONE", "TO_ARRAY", "ITERATOR", "MOVE_NEXT"
+		};
+		for (auto& k : identifiers)
+		{
+			Identifier id;
+			id.mDeclaration = "Built-in function";
+			langDef.mIdentifiers.insert(std::make_pair(std::string(k), id));
+		}
+
+		langDef.mTokenize = [](const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end, PaletteIndex & paletteIndex) -> bool
+		{
+			paletteIndex = PaletteIndex::Max;
+
+			while (in_begin < in_end && isascii(*in_begin) && isblank(*in_begin))
+				in_begin++;
+
+			if (in_begin == in_end)
+			{
+				out_begin = in_end;
+				out_end = in_end;
+				paletteIndex = PaletteIndex::Default;
+			}
+			else if (TokenizeCStyleString(in_begin, in_end, out_begin, out_end))
+				paletteIndex = PaletteIndex::String;
+			else if (TokenizeCStyleCharacterLiteral(in_begin, in_end, out_begin, out_end))
+				paletteIndex = PaletteIndex::CharLiteral;
+			else if (TokenizeCStyleIdentifier(in_begin, in_end, out_begin, out_end))
+				paletteIndex = PaletteIndex::Identifier;
+			else if (TokenizeCStyleNumber(in_begin, in_end, out_begin, out_end))
+				paletteIndex = PaletteIndex::Number;
+			else if (TokenizeCStylePunctuation(in_begin, in_end, out_begin, out_end))
+				paletteIndex = PaletteIndex::Punctuation;
+
+			return paletteIndex != PaletteIndex::Max;
+		};
+
+		langDef.mCommentStart = "'[";
+		langDef.mCommentEnd = "']";
+		langDef.mSingleLineComment = "'";
+
+		langDef.mCaseSensitive = false;
+		langDef.mAutoIndentation = true;
+
+		langDef.mName = "Basic";
 
 		inited = true;
 	}

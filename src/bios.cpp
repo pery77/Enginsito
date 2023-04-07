@@ -2,7 +2,7 @@
 #include "TextEditor.h"
 
 TextEditor editor;
-auto lang = TextEditor::LanguageDefinition::CPlusPlus();
+auto lang = TextEditor::LanguageDefinition::Basic();
 
 Bios::Bios()
 {
@@ -12,7 +12,7 @@ Bios::Bios()
     Tools::InitFont();
 
     editor.SetLanguageDefinition(lang);
-  
+    editor.SetPalette(TextEditor::GetBasicPalette());
 }
 
 Bios::~Bios(){}
@@ -47,7 +47,6 @@ void Bios::Update(){
 
     while (std::getline(ss, temp)){
         DrawTextEx(Tools::GetFont(), temp.c_str(), (Vector2){0, lineY}, 8, 0, Tools::GetColor(frontColor));
-        //DrawText(temp.c_str(), 0, lineY, 8, Tools::GetBiosColor(frontColor));
         lineY += 9;
         if (lineY > 184){   
             overLine = true;
@@ -60,8 +59,7 @@ void Bios::Update(){
 
     if (!overLine){
         DrawTextEx(Tools::GetFont(),TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor), (Vector2){0, lineY}, 8, 0,Tools::GetColor(frontColor));
-        //DrawText(TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor), 0, lineY, 8,Tools::GetBiosColor(frontColor));
-        
+
         if (key != 0){
             if (key == 257) { //Enter
                 ProcessCommand();
@@ -232,7 +230,6 @@ std::string Bios::GetFile(){
     fs::path file (CurrentProgram + PROGRAM_EXTENSION);
     fs::path full_path = dir / CurrentPath / file;
 
-    //printf("Get file> %s\n",full_path.string().c_str());
     return full_path.string();
 }
 void Bios::SetFile(std::string filePath){
@@ -308,7 +305,6 @@ void inline drawFPS()
     ImGui::PopStyleColor();    
 }
 
-static const char* fileToEdit = "ImGuiColorTextEdit/TextEditor.cpp";
 
 void Bios::DrawImGui(){
 
@@ -364,33 +360,43 @@ void Bios::DrawImGui(){
     }
     if (ImGui::CollapsingHeader("Editor"))
     {
-        if (ImGui::Button("Load"))
+        if (ImGui::Button("Load current"))
         {
-            fileToEdit = GetFile().c_str();
-            Tools::GetConsole()->AddLog("Open: [ %s ]\n", fileToEdit);
+            Tools::GetConsole()->AddLog("Open: [ %s ]\n", GetFile().c_str());
             	
             std::ifstream inFile;
-            inFile.open(fileToEdit); //open the input file
+            inFile.open(GetFile().c_str());
 
             std::stringstream strStream;
-            strStream << inFile.rdbuf(); //read the file
-            std::string str = strStream.str(); //str holds the content of the file
+            strStream << inFile.rdbuf();
+            std::string str = strStream.str();
 
-            std::cout << str << "\n"; //you can do anything with the string!!!
-            Tools::GetConsole()->AddLog(str.c_str());
+            std::cout << str << "\n";
             editor.SetText(str);
         }
 
 		auto cpos = editor.GetCursorPosition();
 		ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
+        rlPushFont();
 		if (ImGui::BeginMenuBar())
 		{
 			if (ImGui::BeginMenu("File"))
 			{
+                if (ImGui::MenuItem("Test ERROR"))
+				{
+					TextEditor::ErrorMarkers markers;
+                    markers.insert(std::make_pair<int, std::string>(6, "Example error here:\nInclude file not found: \"TextEditor.h\""));
+                    markers.insert(std::make_pair<int, std::string>(41, "Another example error"));
+                    editor.SetErrorMarkers(markers);
+				}
 				if (ImGui::MenuItem("Save"))
 				{
 					auto textToSave = editor.GetText();
 					/// save text....
+				}
+				if (ImGui::MenuItem("pushFont"))
+				{
+					
 				}
 				ImGui::EndMenu();
 			}
@@ -433,17 +439,20 @@ void Bios::DrawImGui(){
 					editor.SetPalette(TextEditor::GetLightPalette());
 				if (ImGui::MenuItem("Retro blue palette"))
 					editor.SetPalette(TextEditor::GetRetroBluePalette());
+                if (ImGui::MenuItem("Basic palette"))
+					editor.SetPalette(TextEditor::GetBasicPalette());
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
 		}
 
-		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
+		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
 			editor.IsOverwrite() ? "Ovr" : "Ins",
 			editor.CanUndo() ? "*" : " ",
-			editor.GetLanguageDefinition().mName.c_str(), fileToEdit);
+			editor.GetLanguageDefinition().mName.c_str());
 
         editor.Render("TextEditor");
+        rlPopFont();
         ImGui::End();
     }
     ImGui::End();
