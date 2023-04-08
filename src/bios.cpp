@@ -322,16 +322,58 @@ void ShowFontSelector(const char* label)
         ImGui::EndCombo();
     }
 }
-void Bios::DrawImGui(){
+
+void Bios::DrawExplorer()
+{
+        ImGui::SeparatorText("Program");
+        ImGui::Text("Current Paht:[ %s ]\n", CurrentPath.c_str());
+        ImGui::Text("Current Program: [ %s ]\n", CurrentProgram.c_str());
+        if(ImGui::Button("RUN"))
+        {
+            ShouldRun = true;
+        }
+        ImGui::SameLine();
+        if(ImGui::Button("NEW"))
+        {
+            CurrentProgram = "new";
+        }
+        if(ImGui::Button("Up"))
+        {
+            removeSubPath();
+        }
+
+        std::stringstream ss = Tools::GetFolders(CurrentPath.c_str());
+        std::string temp;
+        while (std::getline(ss, temp)){
+            if(ImGui::Button(temp.c_str())){
+                addSubPath(temp);
+            }
+        }
+        ss = Tools::GetFiles(CurrentPath.c_str());
+        while (std::getline(ss, temp)){
+            if(ImGui::Button(temp.c_str())){
+                CurrentProgram=temp;
+            }
+        }
+}
+void Bios::DrawImGui()
+{
+    ImGui::SetNextWindowSize(ImVec2(250, 500),ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(20, 20),ImGuiCond_FirstUseEver);
 
     ImGui::Begin(Tools::GetEngineName());
     ShowFontSelector("Font");
-    //rlPushFont();
+    
     static bool showConsole = true;
     ImGui::Checkbox("Console", &showConsole);
 
     if (showConsole){
         Tools::GetConsole()->Draw("Console", &showConsole);
+    }    
+
+    if (ImGui::CollapsingHeader("Explorer"))
+    {
+        DrawExplorer();
     }
 
     if (ImGui::CollapsingHeader("Info")){
@@ -376,35 +418,11 @@ void Bios::DrawImGui(){
     if (ImGui::CollapsingHeader("Online"))
     {
     }
-    if (ImGui::CollapsingHeader("Explorer"))
-    {
-        if(ImGui::Button("RUN"))
-        {
-            ShouldRun = true;
-        }
-        if(ImGui::Button("."))
-        {
-            removeSubPath();
-        }
 
-        std::stringstream ss = Tools::GetFolders(CurrentPath.c_str());
-        std::string temp;
-        while (std::getline(ss, temp)){
-            if(ImGui::Button(temp.c_str())){
-                addSubPath(temp);
-            }
-        }
-        ss = Tools::GetFiles(CurrentPath.c_str());
-        while (std::getline(ss, temp)){
-            if(ImGui::Button(temp.c_str())){
-                CurrentProgram=temp;
-            }
-        }
-    }
 
     if (ImGui::CollapsingHeader("Editor"))
     {
-        if (ImGui::Button("Load current"))
+        if (CurrentProgram != editorFile)
         {
             Tools::GetConsole()->AddLog("Open: [ %s ]\n", CurrentProgram.c_str());
             std::ifstream inFile;
@@ -416,9 +434,14 @@ void Bios::DrawImGui(){
 
             std::cout << str << "\n";
             editor.SetText(str);
+            editorFile = CurrentProgram;
+            
         }
 
 		auto cpos = editor.GetCursorPosition();
+
+        ImGui::SetNextWindowSize(ImVec2(400, 500),ImGuiCond_FirstUseEver);
+        ImGui::SetNextWindowPos(ImVec2(80, 80),ImGuiCond_FirstUseEver);
 		ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
 
 		if (ImGui::BeginMenuBar())
@@ -500,7 +523,7 @@ void Bios::DrawImGui(){
             CurrentProgram.c_str());
 
         editor.Render("TextEditor");
-        //rlPopFont();
+
         ImGui::End();
     }
     ImGui::End();

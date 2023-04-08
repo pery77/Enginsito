@@ -88,7 +88,6 @@ int main(int argc, char *argv[]){
     bios->postProcessingRef = postProcessing;
     bios->mbManagerRef = basic;
 
-    Tools::GetConsole()->AddLog("mb in main: [ %p ]\n", basic);
     //DISABLED WREN AT MOMENT
     //WrenManager* wren = new WrenManager();
 
@@ -208,7 +207,10 @@ int main(int argc, char *argv[]){
                 switch (currentState)
                 {
                 case Off:
-                    bios->Update();
+                    if (!showImgui)
+                    {
+                        bios->Update();
+                    }
                     break;
                 case Running:
                     basic->draw();

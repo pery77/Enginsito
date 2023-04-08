@@ -37,6 +37,7 @@ class Bios {
         std::string CurrentPath = "";
         std::string CurrentProgram = "";
 
+        void DrawExplorer();
         void DrawImGui();
 
     private:
@@ -52,5 +53,6 @@ class Bios {
         void addSubPath(std::string current);
         void removeSubPath();
         bool checkCommand(std::string command, std::string value);
+        std::string editorFile = "";
 
 };
