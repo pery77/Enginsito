@@ -338,7 +338,7 @@ void Bios::DrawImGui(){
         ImGui::SeparatorText("FPS");
         drawFPS();
         ImGui::SeparatorText("Program");
-        ImGui::Text("Current Program: [ %s ]\n", GetFile().c_str());
+        ImGui::Text("Current Program: [ %s ]\n", CurrentProgram.c_str());
         ImGui::SeparatorText("Memory");
         ImGui::Text("Current Memory:");
     }
@@ -376,12 +376,37 @@ void Bios::DrawImGui(){
     if (ImGui::CollapsingHeader("Online"))
     {
     }
+    if (ImGui::CollapsingHeader("Explorer"))
+    {
+        if(ImGui::Button("RUN"))
+        {
+            ShouldRun = true;
+        }
+        if(ImGui::Button("."))
+        {
+            removeSubPath();
+        }
+
+        std::stringstream ss = Tools::GetFolders(CurrentPath.c_str());
+        std::string temp;
+        while (std::getline(ss, temp)){
+            if(ImGui::Button(temp.c_str())){
+                addSubPath(temp);
+            }
+        }
+        ss = Tools::GetFiles(CurrentPath.c_str());
+        while (std::getline(ss, temp)){
+            if(ImGui::Button(temp.c_str())){
+                CurrentProgram=temp;
+            }
+        }
+    }
+
     if (ImGui::CollapsingHeader("Editor"))
     {
         if (ImGui::Button("Load current"))
         {
-            Tools::GetConsole()->AddLog("Open: [ %s ]\n", GetFile().c_str());
-            	
+            Tools::GetConsole()->AddLog("Open: [ %s ]\n", CurrentProgram.c_str());
             std::ifstream inFile;
             inFile.open(GetFile().c_str());
 
@@ -406,6 +431,10 @@ void Bios::DrawImGui(){
                     markers.insert(std::make_pair<int, std::string>(6, "Example error here:\nInclude file not found: \"TextEditor.h\""));
                     markers.insert(std::make_pair<int, std::string>(41, "Another example error"));
                     editor.SetErrorMarkers(markers);
+                    TextEditor::Coordinates coord;
+                    coord.mLine = 6;
+                    coord.mColumn = 0;
+                    editor.SetCursorPosition(coord);
 				}
 				if (ImGui::MenuItem("Save"))
 				{
@@ -464,10 +493,11 @@ void Bios::DrawImGui(){
 			ImGui::EndMenuBar();
 		}
 
-		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
+		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s  | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
 			editor.IsOverwrite() ? "Ovr" : "Ins",
 			editor.CanUndo() ? "*" : " ",
-			editor.GetLanguageDefinition().mName.c_str());
+			editor.GetLanguageDefinition().mName.c_str(),
+            CurrentProgram.c_str());
 
         editor.Render("TextEditor");
         //rlPopFont();

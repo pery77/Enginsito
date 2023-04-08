@@ -453,7 +453,7 @@ void rlImGuiSetup(bool dark)
 		ImGui::StyleColorsLight();
 
 	ImGuiIO& io = ImGui::GetIO();
-	io.Fonts->AddFontDefault();
+	//io.Fonts->AddFontDefault();
 
 #ifndef NO_FONT_AWESOME
 	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
