@@ -1,3 +1,4 @@
-cd games
-load invaders
-run
+/cd games
+/load invaders
+/run
+cls
