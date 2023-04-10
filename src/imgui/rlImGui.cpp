@@ -453,6 +453,12 @@ void rlImGuiSetup(bool dark)
 		ImGui::StyleColorsLight();
 
 	ImGuiIO& io = ImGui::GetIO();
+
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; 
+
 	//io.Fonts->AddFontDefault();
 
 #ifndef NO_FONT_AWESOME
@@ -512,6 +518,12 @@ void rlImGuiEnd()
 {
 	ImGui::Render();
 	rlRenderData(ImGui::GetDrawData());
+	// Update and Render additional Platform Windows
+
+    ImGui::UpdatePlatformWindows();
+    ImGui::RenderPlatformWindowsDefault();
+
+    
 }
 
 void rlImGuiShutdown()
