@@ -5,7 +5,7 @@ def init()
 enddef
 
 
-DEF ticks()
+DEF tick()
 
     k = key.get()
     IF k <> 0 THEN 
@@ -86,5 +86,5 @@ next
 enddef
 
 def end()
-    print "end";
+    print "zacabo";
 enddef

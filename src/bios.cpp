@@ -361,6 +361,7 @@ void Bios::DrawImGui()
     ImGui::SetNextWindowSize(ImVec2(250, 500),ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowPos(ImVec2(20, 20),ImGuiCond_FirstUseEver);
 
+
     ImGui::Begin(Tools::GetEngineName());
     ShowFontSelector("Font");
     
@@ -462,7 +463,7 @@ void Bios::DrawImGui()
 				if (ImGui::MenuItem("Save"))
 				{
 					auto textToSave = editor.GetText();
-					/// save text....
+                    SaveFileText(GetFile().c_str(), (char *)textToSave.c_str());
 				}
 				if (ImGui::MenuItem("pushFont"))
 				{

@@ -518,10 +518,11 @@ void rlImGuiEnd()
 {
 	ImGui::Render();
 	rlRenderData(ImGui::GetDrawData());
+	
 	// Update and Render additional Platform Windows
 
-    ImGui::UpdatePlatformWindows();
-    ImGui::RenderPlatformWindowsDefault();
+    //ImGui::UpdatePlatformWindows();
+    //ImGui::RenderPlatformWindowsDefault();
 
     
 }

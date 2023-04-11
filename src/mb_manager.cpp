@@ -56,6 +56,7 @@ int MBManager::OpenBas(const char *file){
 	mb_open(&bas);
 
 	mb_set_printer(bas, my_print);
+	mb_set_inputer(bas, my_input);
 
 	mb_reg_fun(bas, cls);
 	mb_begin_module(bas, "DRAW");
@@ -2083,6 +2084,21 @@ int MBManager::my_print(struct mb_interpreter_t* s, const char* fmt, ...) {
 		Tools::GetConsole()->AddLog(ptr); /* Change me */
 	if(ptr != buf)
 		free(ptr);
+
+	return result;
+}
+
+int MBManager::my_input(struct mb_interpreter_t* s, const char* pmt, char* buf, int n) {
+	int result = 0;
+	mb_unrefvar(s);
+
+	if(fgets(buf, n, stdin) == 0) { /* Change me */
+		fprintf(stderr, "Error reading.\n");
+		exit(1);
+	}
+	result = (int)strlen(buf);
+	if(buf[result - 1] == '\n')
+		buf[result - 1] = '\0';
 
 	return result;
 }

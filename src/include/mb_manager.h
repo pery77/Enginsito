@@ -158,4 +158,5 @@ class MBManager{
         static int crtFliker(struct mb_interpreter_t* s, void** l);
 
         static int my_print(struct mb_interpreter_t* s, const char* fmt, ...);
+        static int my_input(struct mb_interpreter_t* s, const char* pmt, char* buf, int n);
 };
