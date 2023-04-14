@@ -358,6 +358,9 @@ void Bios::DrawExplorer()
 }
 void Bios::DrawImGui()
 {
+
+    Tools::editor->Draw();
+ 
     ImGui::SetNextWindowSize(ImVec2(250, 500),ImGuiCond_FirstUseEver);
     ImGui::SetNextWindowPos(ImVec2(20, 20),ImGuiCond_FirstUseEver);
 
@@ -369,7 +372,7 @@ void Bios::DrawImGui()
     ImGui::Checkbox("Console", &showConsole);
 
     if (showConsole){
-        Tools::GetConsole()->Draw("Console", &showConsole);
+        Tools::console->Draw("Console", &showConsole);
     }    
 
     if (ImGui::CollapsingHeader("Explorer"))
@@ -425,7 +428,7 @@ void Bios::DrawImGui()
     {
         if (CurrentProgram != editorFile)
         {
-            Tools::GetConsole()->AddLog("Open: [ %s ]\n", CurrentProgram.c_str());
+            Tools::console->AddLog("Open: [ %s ]\n", CurrentProgram.c_str());
             std::ifstream inFile;
             inFile.open(GetFile().c_str());
 

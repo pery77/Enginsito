@@ -18,7 +18,8 @@ Image imgSprite;
 
 float fontSpacing = 0;
 
-Console* console = new Console();
+Console* Tools::console = new Console();
+Editor* Tools::editor = new Editor();
 
 void Tools::SetFontSpacing(int spacing){
     fontSpacing = spacing;
@@ -400,9 +401,4 @@ unsigned char Tools::ToUnsigned(int8_t value){
 const char* Tools::GetEngineName()
 {
     return TextFormat("peryEngine v: %.3f", PE_VERSION / 1000.0f);
-}
-
-Console* Tools::GetConsole()
-{
-    return console;
 }

@@ -35,7 +35,7 @@ void CustomLog(int msgType, const char *text, va_list args)
     char buffer[1024];
     vsprintf(buffer, str.c_str(), args);
     printf("%s\n", buffer);
-    Tools::GetConsole()->AddLog(buffer);
+    Tools::console->AddLog(buffer);
 }
 
 void dropFile() 
@@ -52,13 +52,13 @@ void dropFile()
     if (droppedFiles.count > 0)
     {
         char* firstFilePath = droppedFiles.paths[0];
-        Tools::GetConsole()->AddLog("[WARN] Dropped file: %s\n", firstFilePath);
+        Tools::console->AddLog("[WARN] Dropped file: %s\n", firstFilePath);
     }
 }
 
 int main(int argc, char *argv[]){
 
-    Tools::GetConsole()->AddLog("Welcolme to %s", Tools::GetEngineName());
+    Tools::console->AddLog("Welcolme to %s", Tools::GetEngineName());
     SetTraceLogCallback(CustomLog);
 
     std::stringstream ss;
@@ -103,30 +103,30 @@ int main(int argc, char *argv[]){
     {
         fw->update([bios, postProcessing] (std::string path_to_watch, FileStatus status) -> void {
                 if(!std::filesystem::is_regular_file(std::filesystem::path(path_to_watch)) && status != FileStatus::erased) {
-            Tools::GetConsole()->AddLog("NO REGULAR: %s", path_to_watch.c_str());
+            Tools::console->AddLog("NO REGULAR: %s", path_to_watch.c_str());
             return;
         }
 
         switch(status) {
             case FileStatus::created:
-                Tools::GetConsole()->AddLog("File created: %s", path_to_watch.c_str());
+                Tools::console->AddLog("File created: %s", path_to_watch.c_str());
                 break;
             case FileStatus::modified:
-                Tools::GetConsole()->AddLog("File modified: %s",path_to_watch.c_str());
+                Tools::console->AddLog("File modified: %s",path_to_watch.c_str());
                 if (IsFileExtension(path_to_watch.c_str(),".bas")) {
                     bios->SetFile(path_to_watch);
                     bios->ShouldRun = true;
                     postProcessing->ReloadShaders();
                 }
                 else{
-                    Tools::GetConsole()->AddLog("Is not a .bas");
+                    Tools::console->AddLog("Is not a .bas");
                 }
                 break;
             case FileStatus::erased:
-                Tools::GetConsole()->AddLog("File erased: %s", path_to_watch.c_str());
+                Tools::console->AddLog("File erased: %s", path_to_watch.c_str());
                 break;
             default:
-                Tools::GetConsole()->AddLog("Error! Unknown file status.");
+                Tools::console->AddLog("Error! Unknown file status.");
         }
         });
 
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]){
                 basic->init();
                 currentState = Running;
             }else{
-                Tools::GetConsole()->AddLog("%s not found.\n", bios->GetFile().c_str());
+                Tools::console->AddLog("%s not found.\n", bios->GetFile().c_str());
             }
         }
         if (IsKeyReleased(KEY_ESCAPE)){
@@ -193,7 +193,7 @@ int main(int argc, char *argv[]){
             if(GetFrameTime()>10.0f) {
                 //currentState = Off;
                 //basic->CloseBas();
-                Tools::GetConsole()->AddLog("Bad framerate!\n");
+                Tools::console->AddLog("Bad framerate!\n");
             }
         }
         
