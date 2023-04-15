@@ -15,16 +15,6 @@
 #include "console.h"
 #include "editor.h"
 
-#define GAME_SCREEN_W       320
-#define GAME_SCREEN_H       200
-#define GAME_FPS            60
-#define GAME_RATIO          1.6
-#define ASSETS_FOLDER       "assets"
-#define PROGRAM_EXTENSION   ".bas"
-#define BOOT_FILE           "assets/boot.txt"
-
-#define PE_VERSION          257
-
 struct Vector2i {
 	int x;
 	int y;
@@ -33,12 +23,6 @@ struct Vector2i {
 struct Command {
     std::string command;
     std::string args[10];
-};
-
-enum GameState{
-    Off,
-    Running,
-    Paused
 };
 
 typedef struct DataBytes{
