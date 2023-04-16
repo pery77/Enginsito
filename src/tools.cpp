@@ -397,8 +397,3 @@ unsigned char Tools::ToUnsigned(int8_t value){
     if (value<0) result = value + 256;
     return result;
 }
-
-const char* Tools::GetEngineName()
-{
-    return TextFormat("peryEngine v: %.3f", PE_VERSION / 1000.0f);
-}

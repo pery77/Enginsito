@@ -6,7 +6,7 @@
 #include <assert.h>
 #include "tools.h"
 
-class PostProcessing;
+class Engine;
 
 class MBManager{
 
@@ -15,7 +15,7 @@ class MBManager{
         void* context = NULL;
         const char* basFile;
 
-        MBManager(PostProcessing* _postProcessing);
+        MBManager(Engine* _engine);
         ~MBManager();
 
         void init();

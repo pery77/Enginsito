@@ -9,9 +9,6 @@
 #include "tools.h"
 #include "imgui/imgui.h"
 
-#include "postProcessing.h"
-#include "mb_manager.h"
-
 class Engine;
 
 class Bios {

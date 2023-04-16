@@ -32,11 +32,16 @@ class Engine
         Engine();
         ~Engine();
 
+        void Init();
+
         void DropFileUpdate();
 
         MBManager* basicIntepreter;
         PostProcessing* postProcessing;
         Bios* bios;
+
+        static const char *GetEngineName();
+        void UpdateFileWatcher();
 
     private:
 

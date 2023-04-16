@@ -1,6 +1,7 @@
 #include "bios.h"
 #include "TextEditor.h"
 #include "engine.h"
+#include "postProcessing.h"
 
 TextEditor editor;
 auto lang = TextEditor::LanguageDefinition::Basic();
@@ -370,7 +371,7 @@ void Bios::DrawImGui()
     ImGui::SetNextWindowPos(ImVec2(20, 20),ImGuiCond_FirstUseEver);
 
 
-    ImGui::Begin(Tools::GetEngineName());
+    ImGui::Begin(biosEngineRef->GetEngineName());
     ShowFontSelector("Font");
     
     static bool showConsole = true;
