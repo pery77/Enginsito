@@ -6,6 +6,7 @@
 #include "tools.h"
 
 
+
 #define GAME_SCREEN_W       320
 #define GAME_SCREEN_H       200
 #define GAME_FPS            60
@@ -16,19 +17,28 @@
 
 #define PE_VERSION          257
 
-
-
 enum GameState{
     Off,
     Running,
     Paused
 };
 
+class MBManager;
+class PostProcessing;
+
 class Engine
 {
     public:
+
         Engine();
         ~Engine();
+
+        MBManager* basicIntepreter;
+        PostProcessing* postProcessing;
+
+        void DropFileUpdate();
+
+        
 
     private:
 

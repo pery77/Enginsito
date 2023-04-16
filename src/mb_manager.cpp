@@ -2,13 +2,14 @@
 #include <assert.h>
 
 AudioManager* audioR;
-PostProcessing* postProcessingR;
+//PostProcessing* postProcessingR;
+
+Engine* engineRef;
 
 
-MBManager::MBManager(PostProcessing* postProcessing){
+MBManager::MBManager(){
 	nullArg[0].type = MB_DT_NIL;
 	audioR = new AudioManager();
-	postProcessingR = postProcessing;
 }
 
 MBManager::~MBManager(){

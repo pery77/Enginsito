@@ -11,9 +11,6 @@
 
 
 
-
-
-
 #include "mb_manager.h"
 #include "wren_manager.h"
 #include "postProcessing.h"
@@ -23,10 +20,7 @@
 #include <iostream>
 #include "FileWatcher.h"
 
-
-FilePathList droppedFiles = { 0 };
-
-void CustomLog(int msgType, const char *text, va_list args) 
+void RaylibLog(int msgType, const char *text, va_list args) 
 {
     std::string prefix;
     switch (msgType)
@@ -44,28 +38,12 @@ void CustomLog(int msgType, const char *text, va_list args)
     Tools::console->AddLog(buffer);
 }
 
-void dropFile() 
+int main(int argc, char *argv[])
 {
-    if (IsFileDropped()) 
-    {
-        // Is some files have been previously loaded, unload them
-        if (droppedFiles.count > 0) UnloadDroppedFiles(droppedFiles);
-        
-        // Load new dropped files
-        droppedFiles = LoadDroppedFiles();
-    }
-
-    if (droppedFiles.count > 0)
-    {
-        char* firstFilePath = droppedFiles.paths[0];
-        Tools::console->AddLog("[WARN] Dropped file: %s\n", firstFilePath);
-    }
-}
-
-int main(int argc, char *argv[]){
+    Engine* engine = new Engine();
 
     Tools::console->AddLog("Welcolme to %s", Tools::GetEngineName());
-    SetTraceLogCallback(CustomLog);
+    SetTraceLogCallback(RaylibLog);
 
     std::stringstream ss;
     ss << "./" << ASSETS_FOLDER << "/";
@@ -89,10 +67,9 @@ int main(int argc, char *argv[]){
     SetExitKey(KEY_NULL);
 
     Bios* bios = new Bios();
-    PostProcessing* postProcessing = new PostProcessing();
-    MBManager* basic = new MBManager(postProcessing);
-    bios->postProcessingRef = postProcessing;
-    bios->mbManagerRef = basic;
+
+    bios->postProcessingRef = engine->postProcessing;
+    bios->mbManagerRef = engine->basicIntepreter;
 
     //DISABLED WREN AT MOMENT
     //WrenManager* wren = new WrenManager();
@@ -107,7 +84,7 @@ int main(int argc, char *argv[]){
     // Game Loop
     while (!(bios->ShouldClose || WindowShouldClose()))
     {
-        fw->update([bios, postProcessing] (std::string path_to_watch, FileStatus status) -> void {
+        fw->update([bios] (std::string path_to_watch, FileStatus status) -> void {
                 if(!std::filesystem::is_regular_file(std::filesystem::path(path_to_watch)) && status != FileStatus::erased) {
             Tools::console->AddLog("NO REGULAR: %s", path_to_watch.c_str());
             return;
@@ -122,7 +99,6 @@ int main(int argc, char *argv[]){
                 if (IsFileExtension(path_to_watch.c_str(),".bas")) {
                     bios->SetFile(path_to_watch);
                     bios->ShouldRun = true;
-                    postProcessing->ReloadShaders();
                 }
                 else{
                     Tools::console->AddLog("Is not a .bas");
@@ -142,30 +118,30 @@ int main(int argc, char *argv[]){
         }
 
         if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER))){
-		    postProcessing->FullScreen();
+		    engine->postProcessing->FullScreen();
 	    }
 
         if(IsKeyReleased(KEY_F10)){
-		    postProcessing->ReloadShaders();
+		    engine->postProcessing->ReloadShaders();
 	    }
 
         if(IsWindowResized()) {
-            postProcessing->UpdateGameScreenRects();
+            engine->postProcessing->UpdateGameScreenRects();
         }
 
-        postProcessing->uTime = GetTime();
+        engine->postProcessing->uTime = GetTime();
         
         //Interpreter
         if (IsKeyReleased(KEY_F5) || bios->ShouldRun){ 
             bios->ShouldRun = false;
 
             if (currentState == Running){
-                basic->end();
+                engine->basicIntepreter->end();
             }
 
-            if (basic->OpenBas(bios->GetFile().c_str()) == MB_FUNC_OK){
-                basic->Run();
-                basic->init();
+            if (engine->basicIntepreter->OpenBas(bios->GetFile().c_str()) == MB_FUNC_OK){
+                engine->basicIntepreter->Run();
+                engine->basicIntepreter->init();
                 currentState = Running;
             }else{
                 Tools::console->AddLog("%s not found.\n", bios->GetFile().c_str());
@@ -177,9 +153,9 @@ int main(int argc, char *argv[]){
                 currentState = Paused;
                 break;
             case Paused:
-                basic->end();
+                engine->basicIntepreter->end();
                 currentState = Off;
-                basic->CloseBas();
+                engine->basicIntepreter->CloseBas();
                 break;
             default:
                 break;
@@ -192,10 +168,10 @@ int main(int argc, char *argv[]){
         }
 
         // Update
-        basic->UpdateAudio();
+        engine->basicIntepreter->UpdateAudio();
 
         if (currentState == Running){
-            basic->tick();
+            engine->basicIntepreter->tick();
             if(GetFrameTime()>10.0f) {
                 //currentState = Off;
                 //basic->CloseBas();
@@ -203,13 +179,13 @@ int main(int argc, char *argv[]){
             }
         }
         
-        dropFile();
+        engine->DropFileUpdate();
 
         // Draw
         BeginDrawing();
 
             //Draw game to texture.
-            BeginTextureMode(postProcessing->mainRender);
+            BeginTextureMode(engine->postProcessing->mainRender);
                 switch (currentState)
                 {
                 case Off:
@@ -219,7 +195,7 @@ int main(int argc, char *argv[]){
                     }
                     break;
                 case Running:
-                    basic->draw();
+                    engine->basicIntepreter->draw();
                     break;
                 case Paused:
                     DrawRectangle(0,88,320,12,Tools::GetBiosColor(2));
@@ -234,13 +210,13 @@ int main(int argc, char *argv[]){
 
             // Main draw
             BeginBlendMode(0); // 0 Alpha (blur) 1 Additive (glow)
-                postProcessing->RenderMain();
-                postProcessing->RenderBlur();
+                engine->postProcessing->RenderMain();
+                engine->postProcessing->RenderBlur();
             EndBlendMode();
    
             // Final Draw
             ClearBackground(BLACK);
-            postProcessing->RenderFinal();
+            engine->postProcessing->RenderFinal();
 
             // Engine over draw
             if(showImgui) {
@@ -264,10 +240,9 @@ int main(int argc, char *argv[]){
     rlImGuiShutdown();
     CloseWindow();
 
-    basic->CloseBas();
+    engine->basicIntepreter->CloseBas();
 
-    delete basic;
-    delete postProcessing;
+    delete engine;
 
     return 0;
 }

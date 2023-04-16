@@ -7,6 +7,8 @@
 #include "tools.h"
 #include "postProcessing.h"
 
+#include "engine.h"
+
 class MBManager{
 
     public:
@@ -14,7 +16,10 @@ class MBManager{
         void* context = NULL;
         const char* basFile;
 
-        MBManager(PostProcessing* postProcessing);
+        Engine* engineRef;
+        static PostProcessing* postProcessingR;
+
+        MBManager();
         ~MBManager();
 
         void init();
