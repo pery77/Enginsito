@@ -11,9 +11,9 @@
 
 
 
-#include "mb_manager.h"
-#include "wren_manager.h"
-#include "postProcessing.h"
+//#include "mb_manager.h"
+//#include "wren_manager.h"
+//#include "postProcessing.h"
 
 #include "bios.h"
 
@@ -40,7 +40,7 @@ void RaylibLog(int msgType, const char *text, va_list args)
 
 int main(int argc, char *argv[])
 {
-    Engine* engine = new Engine();
+
 
     Tools::console->AddLog("Welcolme to %s", Tools::GetEngineName());
     SetTraceLogCallback(RaylibLog);
@@ -66,11 +66,8 @@ int main(int argc, char *argv[])
     HideCursor();
     SetExitKey(KEY_NULL);
 
-    Bios* bios = new Bios();
-
-    bios->postProcessingRef = engine->postProcessing;
-    bios->mbManagerRef = engine->basicIntepreter;
-
+    Engine* engine = new Engine();
+    
     //DISABLED WREN AT MOMENT
     //WrenManager* wren = new WrenManager();
 
@@ -79,12 +76,12 @@ int main(int argc, char *argv[])
     const char * pauseMessage = "Paused, press ESC again to exit.";
     int pauseMessageSize = MeasureTextEx(Tools::GetFont(),"Paused, press ESC again to exit.", 8,0).x * 0.5f;
 
-    bios->LoadBoot();
-
+    engine->bios->LoadBoot();
     // Game Loop
-    while (!(bios->ShouldClose || WindowShouldClose()))
+    while (!(engine->bios->ShouldClose || WindowShouldClose()))
     {
-        fw->update([bios] (std::string path_to_watch, FileStatus status) -> void {
+/*
+        fw->update([engine->bios] (std::string path_to_watch, FileStatus status) -> void {
                 if(!std::filesystem::is_regular_file(std::filesystem::path(path_to_watch)) && status != FileStatus::erased) {
             Tools::console->AddLog("NO REGULAR: %s", path_to_watch.c_str());
             return;
@@ -111,7 +108,7 @@ int main(int argc, char *argv[])
                 Tools::console->AddLog("Error! Unknown file status.");
         }
         });
-
+*/
         // Engine keys
         if(IsKeyReleased(KEY_F1)){
             showImgui = !showImgui;
@@ -132,19 +129,19 @@ int main(int argc, char *argv[])
         engine->postProcessing->uTime = GetTime();
         
         //Interpreter
-        if (IsKeyReleased(KEY_F5) || bios->ShouldRun){ 
-            bios->ShouldRun = false;
+        if (IsKeyReleased(KEY_F5) || engine->bios->ShouldRun){ 
+            engine->bios->ShouldRun = false;
 
             if (currentState == Running){
                 engine->basicIntepreter->end();
             }
 
-            if (engine->basicIntepreter->OpenBas(bios->GetFile().c_str()) == MB_FUNC_OK){
+            if (engine->basicIntepreter->OpenBas(engine->bios->GetFile().c_str()) == MB_FUNC_OK){
                 engine->basicIntepreter->Run();
                 engine->basicIntepreter->init();
                 currentState = Running;
             }else{
-                Tools::console->AddLog("%s not found.\n", bios->GetFile().c_str());
+                Tools::console->AddLog("%s not found.\n", engine->bios->GetFile().c_str());
             }
         }
         if (IsKeyReleased(KEY_ESCAPE)){
@@ -191,7 +188,7 @@ int main(int argc, char *argv[])
                 case Off:
                     if (!showImgui)
                     {
-                        bios->Update();
+                        engine->bios->Update();
                     }
                     break;
                 case Running:
@@ -224,7 +221,7 @@ int main(int argc, char *argv[])
                 bool open = true;
                 ImGui::ShowDemoWindow(&open);
 
-                bios->DrawImGui();
+                engine->bios->DrawImGui();
                 rlImGuiEnd();
 
                 ShowCursor();

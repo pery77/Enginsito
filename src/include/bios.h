@@ -12,17 +12,15 @@
 #include "postProcessing.h"
 #include "mb_manager.h"
 
+class Engine;
 
 class Bios {
 
     public:
-        Bios();
+
+        Bios(Engine* _engine);
         ~Bios();
         
-        PostProcessing* postProcessingRef;
-        MBManager* mbManagerRef;
-
-
         void Update();
         void ProcessCommand();
 

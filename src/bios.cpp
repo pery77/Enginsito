@@ -1,10 +1,13 @@
 #include "bios.h"
 #include "TextEditor.h"
+#include "engine.h"
 
 TextEditor editor;
 auto lang = TextEditor::LanguageDefinition::Basic();
 
-Bios::Bios()
+Engine* biosEngineRef;
+
+Bios::Bios(Engine* _engine)
 {
     std::stringstream ss;
     ss << ASSETS_FOLDER << "/default.mem";
@@ -13,6 +16,8 @@ Bios::Bios()
 
     editor.SetLanguageDefinition(lang);
     editor.SetPalette(TextEditor::GetBasicPalette());
+
+   biosEngineRef = _engine;
 }
 
 Bios::~Bios(){}
@@ -409,9 +414,9 @@ void Bios::DrawImGui()
     }
     if (ImGui::CollapsingHeader("CRT filter"))
     {
-        bool ppState = postProcessingRef->enabled;
+        bool ppState = biosEngineRef->postProcessing->enabled;
         ImGui::Checkbox("Enabled", &ppState);
-        postProcessingRef->SetState(ppState);
+        biosEngineRef->postProcessing->SetState(ppState);
     }
     if (ImGui::CollapsingHeader("SFX synth"))
     {

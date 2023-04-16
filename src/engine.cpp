@@ -2,14 +2,19 @@
 
 #include "mb_manager.h"
 #include "postProcessing.h"
+#include "bios.h"
 
 FilePathList droppedFiles = { 0 };
 
-MBManager* basicIntepreter = new MBManager();
-PostProcessing* postProcessing = new PostProcessing();
+MBManager* basicIntepreter;
+PostProcessing* postProcessing;
+Bios* bios;
 
 Engine::Engine()
 {
+    postProcessing = new PostProcessing();
+    basicIntepreter = new MBManager(postProcessing);
+    bios = new Bios(this);
 }
 
 Engine::~Engine()

@@ -5,8 +5,6 @@
 
 #include "tools.h"
 
-
-
 #define GAME_SCREEN_W       320
 #define GAME_SCREEN_H       200
 #define GAME_FPS            60
@@ -25,6 +23,7 @@ enum GameState{
 
 class MBManager;
 class PostProcessing;
+class Bios;
 
 class Engine
 {
@@ -33,12 +32,11 @@ class Engine
         Engine();
         ~Engine();
 
-        MBManager* basicIntepreter;
-        PostProcessing* postProcessing;
-
         void DropFileUpdate();
 
-        
+        MBManager* basicIntepreter;
+        PostProcessing* postProcessing;
+        Bios* bios;
 
     private:
 
