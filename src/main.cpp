@@ -9,13 +9,12 @@
 #define RFXGEN_IMPLEMENTATION
 #include "engine.h"
 
-//#include "wren_manager.h"
+#include "wren_manager.h"
 #include "mb_manager.h"
 #include "postProcessing.h"
 #include "bios.h"
 
 #include <iostream>
-//#include "FileWatcher.h"
 
 void RaylibLog(int msgType, const char *text, va_list args) 
 {
@@ -67,6 +66,7 @@ int main(int argc, char *argv[])
     int pauseMessageSize = MeasureTextEx(Tools::GetFont(),"Paused, press ESC again to exit.", 8,0).x * 0.5f;
 
     engine->bios->LoadBoot();
+    
     // Game Loop
     while (!(engine->bios->ShouldClose || WindowShouldClose()))
     {
