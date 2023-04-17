@@ -54,6 +54,8 @@ void Engine::DropFileUpdate()
 
 void Engine::UpdateFileWatcher()
 {
+    if (!FileWatcherEnabled) return;
+
     fw->update([this] (std::string path_to_watch, FileStatus status) -> void 
     {
         if(!std::filesystem::is_regular_file(std::filesystem::path(path_to_watch)) && status != FileStatus::erased) 

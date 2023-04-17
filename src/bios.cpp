@@ -134,7 +134,8 @@ void Bios::ProcessCommand()
     currentLine.clear();
 
     if(checkCommand(lastCommand.command,"HELP")){
-        screenLines += HelpInfo;
+        //screenLines += HelpInfo;
+        screenLines += helpText;
         return;
     }
 
@@ -227,6 +228,27 @@ void Bios::ProcessCommand()
         }
 
         return;
+    }
+
+    if (checkCommand(lastCommand.command,"FILEWATCHER"))
+    {
+        if (lastCommand.args[0] != "" )
+        {
+            biosEngineRef->FileWatcherEnabled = (lastCommand.args[0] != "0");
+            if (biosEngineRef->FileWatcherEnabled )
+            {
+                screenLines += "FileWatcher is enabled.\n";
+            }
+            else
+            {
+                screenLines += "FileWatcher is disabled.\n";
+            }
+        }
+        else 
+        {
+            std::string temp = (biosEngineRef->FileWatcherEnabled) ? "enabled." : "disabled.";
+            screenLines += "FileWatcher is " + temp + "\n";
+        }
     }
 }
 

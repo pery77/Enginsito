@@ -1,4 +1,0 @@
-/cd games
-/load invaders
-/run
-cls

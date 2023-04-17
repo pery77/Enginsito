@@ -24,7 +24,7 @@
 #define PROGRAM_EXTENSION   ".bas"
 #define BOOT_FILE           "assets/boot.txt"
 
-#define PE_VERSION          257
+#define PE_VERSION          258
 
 struct Vector2i {
 	int x;

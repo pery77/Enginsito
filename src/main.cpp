@@ -1,11 +1,5 @@
 #include "raylib.h"
-#define RAYGUI_IMPLEMENTATION
-#include "raygui.h"
-#include "my_basic.h"
 
-#include <vector>
-
-#define TSF_IMPLEMENTATION
 #define RFXGEN_IMPLEMENTATION
 #include "engine.h"
 
@@ -14,17 +8,15 @@
 #include "postProcessing.h"
 #include "bios.h"
 
-#include <iostream>
-
-void RaylibLog(int msgType, const char *text, va_list args) 
+void raylibLog(int msgType, const char *text, va_list args) 
 {
     std::string prefix;
     switch (msgType)
     {
-        case LOG_INFO: prefix = "[INFO] : "; break;
-        case LOG_ERROR: prefix = "[ERROR]: "; break;
+        case LOG_INFO: prefix    = "[INFO] : "; break;
+        case LOG_ERROR: prefix   = "[ERROR]: "; break;
         case LOG_WARNING: prefix = "[WARN] : "; break;
-        case LOG_DEBUG: prefix = "[DEBUG]: "; break;
+        case LOG_DEBUG: prefix   = "[DEBUG]: "; break;
         default: break;
     }
     std::string str = prefix + text;
@@ -39,15 +31,13 @@ int main(int argc, char *argv[])
     Engine* engine = new Engine();
 
     Tools::console->AddLog("Welcolme to %s", engine->GetEngineName());
-    SetTraceLogCallback(RaylibLog);
+    SetTraceLogCallback(raylibLog);
 
     const int windowWidth = GAME_SCREEN_W * 3;
     const int windowHeight = GAME_SCREEN_H * 3;
 
-	//Set Vsync and make the window resizeable
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 
-	//Create window
 	InitWindow(windowWidth, windowHeight, engine->GetEngineName());
 	SetWindowMinSize(GAME_SCREEN_W, GAME_SCREEN_H);
 	SetTargetFPS(GAME_FPS);
@@ -73,56 +63,64 @@ int main(int argc, char *argv[])
         engine->UpdateFileWatcher();
 
         // Engine keys
-        if(IsKeyReleased(KEY_F1)){
+        if(IsKeyReleased(KEY_F1))
+        {
             showImgui = !showImgui;
         }
 
-        if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER))){
+        if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER)))
+        {
 		    engine->postProcessing->FullScreen();
 	    }
 
-        if(IsKeyReleased(KEY_F10)){
-		    engine->postProcessing->ReloadShaders();
-	    }
-
-        if(IsWindowResized()) {
+        if(IsWindowResized() && !showImgui) 
+        {
             engine->postProcessing->UpdateGameScreenRects();
         }
 
         engine->postProcessing->uTime = GetTime();
         
         //Interpreter
-        if (IsKeyReleased(KEY_F5) || engine->bios->ShouldRun){ 
+        if (IsKeyReleased(KEY_F5) || engine->bios->ShouldRun)
+        { 
             engine->bios->ShouldRun = false;
 
-            if (currentState == Running){
+            if (currentState == Running)
+            {
                 engine->basicIntepreter->end();
             }
 
-            if (engine->basicIntepreter->OpenBas(engine->bios->GetFile().c_str()) == MB_FUNC_OK){
+            if (engine->basicIntepreter->OpenBas(engine->bios->GetFile().c_str()) == MB_FUNC_OK)
+            {
+                engine->postProcessing->UpdateGameScreenRects();
                 engine->basicIntepreter->Run();
                 engine->basicIntepreter->init();
                 currentState = Running;
-            }else{
+            }
+            else
+            {
                 Tools::console->AddLog("%s not found.\n", engine->bios->GetFile().c_str());
             }
         }
-        if (IsKeyReleased(KEY_ESCAPE)){
-            switch (currentState){
-            case Running:
-                currentState = Paused;
-                break;
-            case Paused:
-                engine->basicIntepreter->end();
-                currentState = Off;
-                engine->basicIntepreter->CloseBas();
-                break;
-            default:
-                break;
+        if (IsKeyReleased(KEY_ESCAPE))
+        {
+            switch (currentState)
+            {
+                case Running:
+                    currentState = Paused;
+                    break;
+                case Paused:
+                    engine->basicIntepreter->end();
+                    currentState = Off;
+                    engine->basicIntepreter->CloseBas();
+                    break;
+                default:
+                    break;
             }
         }
 
-        if (currentState == Paused){
+        if (currentState == Paused)
+        {
             int anyKey = GetKeyPressed();
             if (anyKey != 0 && anyKey != 256) currentState = Running; // key 256 is Escape key
         }
@@ -130,13 +128,9 @@ int main(int argc, char *argv[])
         // Update
         engine->basicIntepreter->UpdateAudio();
 
-        if (currentState == Running){
+        if (currentState == Running)
+        {
             engine->basicIntepreter->tick();
-            if(GetFrameTime()>10.0f) {
-                //currentState = Off;
-                //basic->CloseBas();
-                Tools::console->AddLog("Bad framerate!\n");
-            }
         }
         
         engine->DropFileUpdate();
@@ -148,22 +142,22 @@ int main(int argc, char *argv[])
             BeginTextureMode(engine->postProcessing->mainRender);
                 switch (currentState)
                 {
-                case Off:
-                    if (!showImgui)
-                    {
-                        engine->bios->Update();
-                    }
-                    break;
-                case Running:
-                    engine->basicIntepreter->draw();
-                    break;
-                case Paused:
-                    DrawRectangle(0,88,320,12,Tools::GetBiosColor(2));
-                    DrawRectangle(0,89,320,10,Tools::GetBiosColor(1));
-                    DrawTextEx(Tools::GetFont(), pauseMessage,(Vector2){160 - pauseMessageSize, 90},8,0,Tools::GetBiosColor(3));
-                    break;    
-                default:
-                    break;
+                    case Off:
+                        if (!showImgui)
+                        {
+                            engine->bios->Update();
+                        }
+                        break;
+                    case Running:
+                        engine->basicIntepreter->draw();
+                        break;
+                    case Paused:
+                        DrawRectangle(0,88,320,12,Tools::GetBiosColor(2));
+                        DrawRectangle(0,89,320,10,Tools::GetBiosColor(1));
+                        DrawTextEx(Tools::GetFont(), pauseMessage,(Vector2){160 - pauseMessageSize, 90},8,0,Tools::GetBiosColor(3));
+                        break;    
+                    default:
+                        break;
                 }
 
             EndTextureMode();
@@ -179,7 +173,8 @@ int main(int argc, char *argv[])
             engine->postProcessing->RenderFinal();
 
             // Engine over draw
-            if(showImgui) {
+            if(showImgui) 
+            {
                 rlImGuiBegin();
                 bool open = true;
                 ImGui::ShowDemoWindow(&open);

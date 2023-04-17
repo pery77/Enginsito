@@ -11,7 +11,7 @@ def draw()
     'if frame > 255 then frame = 0 endif
     draw.meta(0,100,100)
     draw.meta(1,160,130)
-    
+
     'draw.rect(20,20,MOUSE.x(),mouse.y,101,rnd(0,15))
     draw.text("stress test",20 + rnd(-3,3),34,3,3)
     draw.text("Press space for the party",50,84,1,3)

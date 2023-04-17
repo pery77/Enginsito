@@ -28,7 +28,7 @@ class Bios {
         void SetFile(std::string file);
         void LoadBoot();
 
-        std::string HelpInfo = "CLS - clear screen.\nEXIT - close program.\nCOLOR b f - change console colors.\nRUN - run current program.\nDIR - list current directory.\nCD - change directory\n";
+        
         std::string CurrentPath = "";
         std::string CurrentProgram = "";
 
@@ -38,7 +38,13 @@ class Bios {
     private:
         float delta;
         std::string currentLine = "";
-        std::string screenLines = "Wecolome to PeryEngine\nPress F1 to open tools or Type HELP\n";
+        std::string screenLines = 
+R"|(
+****************************************
+*  Wecolome to PeryEngine              *
+*  Press F1 to open tools or Type HELP *
+****************************************
+)|";
 
         int backColor = 0;
         int frontColor = 3;
@@ -49,5 +55,21 @@ class Bios {
         void removeSubPath();
         bool checkCommand(std::string command, std::string value);
         std::string editorFile = "";
+
+        const char* helpText = 
+R"|(
+HELP - show this. 
+CLS  - clear screen.
+EXIT - close program.
+COLOR b f - change console colors.
+RUN - run current program.
+DIR - list current directory.
+CD  - change directory.
+CD. - directory up.
+PRINT p - print p in screen.
+MEM  - print loaded program in memory.
+LOAD - load program in memory.
+FILEWATCHER 0|1 - on off filewatcher system.
+)|";
 
 };
