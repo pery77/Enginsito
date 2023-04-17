@@ -14,6 +14,7 @@ enum GameState{
 class MBManager;
 class PostProcessing;
 class Bios;
+class Editor;
 
 class Engine
 {
@@ -29,6 +30,7 @@ class Engine
         MBManager* basicIntepreter;
         PostProcessing* postProcessing;
         Bios* bios;
+        Editor* editor;
 
         static const char *GetEngineName();
         void UpdateFileWatcher();

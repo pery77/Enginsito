@@ -4,6 +4,7 @@
 #include "postProcessing.h"
 #include "bios.h"
 #include "FileWatcher.h"
+#include "editor.h"
 
 FilePathList droppedFiles = { 0 };
 
@@ -11,6 +12,7 @@ MBManager* basicIntepreter;
 PostProcessing* postProcessing;
 Bios* bios;
 FileWatcher* fw;
+Editor* editor;
 
 Engine::Engine()
 {
@@ -32,6 +34,7 @@ void Engine::Init()
     postProcessing = new PostProcessing();
     basicIntepreter = new MBManager(this);
     bios = new Bios(this);
+    editor = new Editor(this);
 
     //DISABLED WREN AT MOMENT
     //WrenManager* wren = new WrenManager();

@@ -35,6 +35,9 @@ class Bios {
         void DrawExplorer();
         void DrawImGui();
 
+        void AddSubPath(std::string current);
+        void RemoveSubPath();
+
     private:
         float delta;
         std::string currentLine = "";
@@ -51,10 +54,7 @@ R"|(
         const char* cursor = "";
         
         Command lastCommand;
-        void addSubPath(std::string current);
-        void removeSubPath();
         bool checkCommand(std::string command, std::string value);
-        std::string editorFile = "";
 
         const char* helpText = 
 R"|(

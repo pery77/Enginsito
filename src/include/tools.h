@@ -13,8 +13,6 @@
 #include <sys/types.h>
 #include <array>
 #include "console.h"
-#include "editor.h"
-
 
 #define GAME_SCREEN_W       320
 #define GAME_SCREEN_H       200
@@ -103,5 +101,4 @@ class Tools{
         static unsigned char ToUnsigned(int8_t value);
 
         static Console* console;
-        static Editor* editor;
 };

@@ -19,7 +19,7 @@ Image imgSprite;
 float fontSpacing = 0;
 
 Console* Tools::console = new Console();
-Editor* Tools::editor = new Editor();
+
 
 void Tools::SetFontSpacing(int spacing){
     fontSpacing = spacing;

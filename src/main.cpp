@@ -7,6 +7,7 @@
 #include "mb_manager.h"
 #include "postProcessing.h"
 #include "bios.h"
+#include "editor.h"
 
 void raylibLog(int msgType, const char *text, va_list args) 
 {
@@ -179,7 +180,7 @@ int main(int argc, char *argv[])
                 bool open = true;
                 ImGui::ShowDemoWindow(&open);
 
-                engine->bios->DrawImGui();
+                engine->editor->DrawImGui();
                 rlImGuiEnd();
 
                 ShowCursor();
