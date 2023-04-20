@@ -1,6 +1,6 @@
 time = 0
 pi = 3.1415
-input "What is your name: ", n$
+
 
 def draw()
 
@@ -17,6 +17,8 @@ def draw()
 	time = time + 1
 
 enddef
+
+
 
 
 

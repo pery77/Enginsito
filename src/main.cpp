@@ -181,10 +181,8 @@ int main(int argc, char *argv[])
             if(showImgui) 
             {
                 rlImGuiBegin();
-                //bool open = true;
-                //ImGui::ShowDemoWindow(&open);
-
-                engine->editor->Draw();
+                //engine->editor->Draw();
+                engine->editor->DrawImGui();
                 rlImGuiEnd();
 
                 ShowCursor();
