@@ -26,9 +26,36 @@ struct Editor
     }
 
     void Draw()
-    {
+    {   
+        bool open = true;
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+
         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-        ImGui::Begin("XXX");
+        ImGui::Begin("xxx", &open, window_flags);
+
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::BeginMenu("Options"))
+            {
+                ImGui::MenuItem("Fullscreen");
+                ImGui::MenuItem("Padding");
+                ImGui::Separator();
+
+                ImGui::Separator();
+
+                ImGui::MenuItem("Close");
+                ImGui::EndMenu();
+            }
+        }
+
+        ImGui::EndMenuBar();
+
         ImGui::End();
     }
 

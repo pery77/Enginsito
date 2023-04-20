@@ -67,6 +67,10 @@ int main(int argc, char *argv[])
         if(IsKeyReleased(KEY_F1))
         {
             showImgui = !showImgui;
+            if (!showImgui)
+            {
+                engine->postProcessing->UpdateGameScreenRects();
+            }
         }
 
         if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER)))
@@ -177,10 +181,10 @@ int main(int argc, char *argv[])
             if(showImgui) 
             {
                 rlImGuiBegin();
-                bool open = true;
-                ImGui::ShowDemoWindow(&open);
+                //bool open = true;
+                //ImGui::ShowDemoWindow(&open);
 
-                engine->editor->DrawImGui();
+                engine->editor->Draw();
                 rlImGuiEnd();
 
                 ShowCursor();
