@@ -3,12 +3,13 @@
 #include "imgui/rlImGui.h"
 
 #include "engine.h"
+#include "bios.h"
 #include "TextEditor.h"
 
 struct Editor
 {
     Engine* editorEngineRef;
-    TextEditor editor;
+    TextEditor codeEditor;
     TextEditor::LanguageDefinition lang = TextEditor::LanguageDefinition::Basic();
     std::string editorFile = "";
 
@@ -16,8 +17,8 @@ struct Editor
     {
         editorEngineRef = _engine;
 
-        editor.SetLanguageDefinition(lang);
-        editor.SetPalette(TextEditor::GetBasicPalette());
+        codeEditor.SetLanguageDefinition(lang);
+        codeEditor.SetPalette(TextEditor::GetBasicPalette());
     }
 
     ~Editor()
@@ -25,119 +26,7 @@ struct Editor
 
     }
 
-    void Draw()
-    {   
-
-        static bool p_open = true;
- // If you strip some features of, this demo is pretty much equivalent to calling DockSpaceOverViewport()!
-    // In most cases you should be able to just call DockSpaceOverViewport() and ignore all the code below!
-    // In this specific demo, we are not using DockSpaceOverViewport() because:
-    // - we allow the host window to be floating/moveable instead of filling the viewport (when opt_fullscreen == false)
-    // - we allow the host window to have padding (when opt_padding == true)
-    // - we have a local menu bar in the host window (vs. you could use BeginMainMenuBar() + DockSpaceOverViewport() in your code!)
-    // TL;DR; this demo is more complicated than what you would normally use.
-    // If we removed all the options we are showcasing, this demo would become:
-    //     void ShowExampleAppDockSpace()
-    //     {
-    //         ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-    //     }
-
-    static bool opt_fullscreen = true;
-    static bool opt_padding = true;
-    bool demo_open = true;
-
-    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-
-    // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-    // because it would be confusing to have two docking targets within each others.
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
-    if (opt_fullscreen)
-    {
-        const ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->WorkPos);
-        ImGui::SetNextWindowSize(viewport->WorkSize);
-        ImGui::SetNextWindowViewport(viewport->ID);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-    }
-    else
-    {
-        dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
-    }
-
-    // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
-    // and handle the pass-thru hole, so we ask Begin() to not render a background.
-    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-        window_flags |= ImGuiWindowFlags_NoBackground;
-
-    // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
-    // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
-    // all active windows docked into it will lose their parent and become undocked.
-    // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
-    // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
-    if (!opt_padding)
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-    ImGui::Begin("Main", &p_open, window_flags);
-    if (!opt_padding)
-        ImGui::PopStyleVar();
-
-    if (opt_fullscreen)
-        ImGui::PopStyleVar(2);
-
-    // Submit the DockSpace
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-    ImGuiID dockspace_id = ImGui::GetID("DockId");
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-
-
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::SmallButton("enable docking"))
-
-
-        if (ImGui::BeginMenu("Options"))
-        {
-            // Disabling fullscreen would allow the window to be moved to the front of other windows,
-            // which we can't undo at the moment without finer window depth/z control.
-            ImGui::MenuItem("Fullscreen", NULL, &opt_fullscreen);
-            ImGui::MenuItem("Padding", NULL, &opt_padding);
-            ImGui::Separator();
-
-            if (ImGui::MenuItem("Flag: NoSplit",                "", (dockspace_flags & ImGuiDockNodeFlags_NoSplit) != 0))                 { dockspace_flags ^= ImGuiDockNodeFlags_NoSplit; }
-            if (ImGui::MenuItem("Flag: NoResize",               "", (dockspace_flags & ImGuiDockNodeFlags_NoResize) != 0))                { dockspace_flags ^= ImGuiDockNodeFlags_NoResize; }
-            if (ImGui::MenuItem("Flag: NoDockingInCentralNode", "", (dockspace_flags & ImGuiDockNodeFlags_NoDockingInCentralNode) != 0))  { dockspace_flags ^= ImGuiDockNodeFlags_NoDockingInCentralNode; }
-            if (ImGui::MenuItem("Flag: AutoHideTabBar",         "", (dockspace_flags & ImGuiDockNodeFlags_AutoHideTabBar) != 0))          { dockspace_flags ^= ImGuiDockNodeFlags_AutoHideTabBar; }
-            if (ImGui::MenuItem("Flag: PassthruCentralNode",    "", (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode) != 0, opt_fullscreen)) { dockspace_flags ^= ImGuiDockNodeFlags_PassthruCentralNode; }
-            ImGui::Separator();
-
-            if (ImGui::MenuItem("Close", NULL, false, p_open != NULL))
-                p_open = false;
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("View"))
-        {
-           // if (ImGui::MenuItem("DemoOpen", NULL, &demo_open)) { ImGui::ShowDemoWindow(&demo_open); }
-            ImGui::MenuItem("DemoOpen", NULL, &demo_open);
-            ImGui::EndMenu();
-        }
-
-
-        ImGui::EndMenuBar();
-    }
-
-    ImGui::End();
-    }
-
-
-//ImGui
-
-void inline drawFPS()
+void inline DrawFPS()
 {
     ImGui::PushStyleColor(ImGuiCol_PlotLines, IM_COL32(40,255,0,255));
     static float values[90] = {};
@@ -158,7 +47,7 @@ void inline drawFPS()
         average += values[n];
     average /= (float)IM_ARRAYSIZE(values);
     char overlay[32];
-    sprintf(overlay, "average framerate: %.3f fps", average);
+    sprintf(overlay, "average: %.2f fps", average);
     ImGui::PlotLines("FPS", values, IM_ARRAYSIZE(values), values_offset,overlay ,0.0f, 60.0f, ImVec2(0, 80.0f));
     ImGui::PopStyleColor();    
 }
@@ -181,11 +70,9 @@ void ShowFontSelector(const char* label)
     }
 }
 
-void DrawExplorer()
+void DrawshowFileBrowser(bool * show)
 {
-        ImGui::SeparatorText("Program");
-        ImGui::Text("Current Paht:[ %s ]\n", editorEngineRef->bios->CurrentPath.c_str());
-        ImGui::Text("Current Program: [ %s ]\n", editorEngineRef->bios->CurrentProgram.c_str());
+    /*
         if(ImGui::Button("RUN"))
         {
             editorEngineRef->bios->ShouldRun = true;
@@ -195,25 +82,80 @@ void DrawExplorer()
         {
             editorEngineRef->bios->CurrentProgram = "new";
         }
-        if(ImGui::Button("Up"))
-        {
-            editorEngineRef->bios->RemoveSubPath();
-        }
 
-        std::stringstream ss = Tools::GetFolders(editorEngineRef->bios->CurrentPath.c_str());
-        std::string temp;
-        while (std::getline(ss, temp)){
-            if(ImGui::Button(temp.c_str())){
-                editorEngineRef->bios->AddSubPath(temp);
-            }
-        }
-        ss = Tools::GetFiles(editorEngineRef->bios->CurrentPath.c_str());
-        while (std::getline(ss, temp)){
-            if(ImGui::Button(temp.c_str())){
-                editorEngineRef->bios->CurrentProgram=temp;
-            }
-        }
+    */
+        ImGuiIO& io = ImGui::GetIO();
+        ImVec2 max_size;
+        ImVec2 min_size = ImVec2(500,300);
+        max_size.x = io.DisplaySize.x;
+        max_size.y = io.DisplaySize.y;
+        ImGui::SetNextWindowSizeConstraints(min_size, max_size);
+        ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Appearing, ImVec2(0.5f,0.5f));
+        ImGui::SetNextWindowSize(ImVec2(std::max<float>(600, min_size.x), std::max<float>(400, min_size.y)), ImGuiCond_Appearing);
+
+
+        ImGui::Begin("File browser", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoDocking);
+            
+            ImGuiStyle& style = ImGui::GetStyle();
+            ImVec2 pw_size = ImGui::GetWindowSize();
+            float list_item_height = ImGui::CalcTextSize("").y + (style.ItemSpacing.y * 2.5f);
+            float input_bar_ypos = pw_size.y - ImGui::GetFrameHeightWithSpacing() * 2.5f - style.WindowPadding.y;
+            float window_height = input_bar_ypos - ImGui::GetCursorPosY() - style.ItemSpacing.y;
+            float window_content_height = window_height - style.WindowPadding.y * 2.0f;
+            float min_content_size = pw_size.x - style.WindowPadding.x * 4.0f;
+
+            ImGui::BeginChild("#Head",ImVec2(0, list_item_height), true, ImGuiWindowFlags_NoScrollWithMouse);
+                ImGui::Text("Current path: %s", editorEngineRef->bios->CurrentPath.c_str());
+            ImGui::EndChild();
+
+            ImGui::BeginChild("#Files", ImVec2(0, window_content_height), true);
+
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.882f, 0.745f, 0.078f, 1.0f));
+
+                std::stringstream ss = Tools::GetFolders(editorEngineRef->bios->CurrentPath.c_str());
+                std::string temp;
+
+                if(editorEngineRef->bios->CurrentPath.length() != 0)
+                {
+                    if(ImGui::Selectable("..", false))
+                    {
+                        editorEngineRef->bios->RemoveSubPath();  
+                    }   
+                }
+                while (std::getline(ss, temp))
+                {
+                    if(ImGui::Selectable(temp.c_str(), false))
+                    {
+                        editorEngineRef->bios->AddSubPath(temp);
+                        break;
+                    }
+                }
+                ImGui::PopStyleColor(1);
+
+                ss = Tools::GetFiles(editorEngineRef->bios->CurrentPath.c_str());
+                while (std::getline(ss, temp))
+                {
+                    if(ImGui::Selectable(temp.c_str(), false))
+                    {
+                        editorEngineRef->bios->CurrentProgram = temp;
+                    }
+                }
+            
+            ImGui::EndChild();
+
+            ImGui::BeginChild("#Foot",ImVec2(0, list_item_height), true, ImGuiWindowFlags_NoScrollWithMouse);
+                ImGui::Text("Current program: %s", editorEngineRef->bios->CurrentProgram.c_str());
+                ImGui::SameLine();
+                if (ImGui::Button("Close"))
+                {
+                    *show = false;
+                }
+            ImGui::EndChild();
+
+        ImGui::End();
+        
 }
+
 void DrawImGui()
 {
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
@@ -222,11 +164,17 @@ void DrawImGui()
     ImGui::SetNextWindowSize(viewport->WorkSize);
     ImGui::SetNextWindowViewport(viewport->ID);
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |ImGuiWindowFlags_NoBackground ;
 
     bool p_open = true;
-    ImGui::Begin(editorEngineRef->GetEngineName(),&p_open, window_flags);
+    
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin(editorEngineRef->GetEngineName(), NULL, window_flags);
+    ImGui::PopStyleVar();
+
     static bool showConsole = true;
+    static bool showDemo = false;
+    static bool showFileBrowser = false;
 
     ImGuiID dockspace_id = ImGui::GetID("DockId");
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), 0);
@@ -236,7 +184,7 @@ void DrawImGui()
         if (ImGui::BeginMenu("File"))
         {
             ImGui::MenuItem("New");
-            ImGui::MenuItem("Open");
+            if (ImGui::MenuItem("Open", "", &showFileBrowser));
             ImGui::MenuItem("Save");
             ImGui::MenuItem("Save as");
             ImGui::MenuItem("Run");
@@ -245,7 +193,7 @@ void DrawImGui()
     
         if (ImGui::BeginMenu("View"))
         {
-            ImGui::MenuItem("DemoOpen");
+            ImGui::MenuItem("DemoOpen", "", &showDemo);
             ImGui::MenuItem("Console", "", &showConsole);
             ImGui::EndMenu();
         }
@@ -253,40 +201,33 @@ void DrawImGui()
         ImGui::EndMenuBar();
     }
 
-    if (showConsole){
-        Tools::console->Draw("Console", &showConsole);
-    }
- ImGui::Begin("Info");
-         ImGui::SeparatorText("FPS");
-        drawFPS();
-        ImGui::SeparatorText("Program");
-        ImGui::Text("Current Program: [ %s ]\n", editorEngineRef->bios->CurrentProgram.c_str());
-        ImGui::SeparatorText("Memory");
-        ImGui::Text("Current Memory:");
-ImGui::End();
-   /*
-    ShowFontSelector("Font");
-    
-    static bool showConsole = true;
-    ImGui::Checkbox("Console", &showConsole);
-
-    if (showConsole){
-        Tools::console->Draw("Console", &showConsole);
-    }    
-
-    if (ImGui::CollapsingHeader("Explorer"))
+    if (showConsole)
     {
-        DrawExplorer();
+        Tools::console->Draw("Console", &showConsole);
     }
 
-    if (ImGui::CollapsingHeader("Info")){
-        ImGui::SeparatorText("FPS");
-        drawFPS();
-        ImGui::SeparatorText("Program");
-        ImGui::Text("Current Program: [ %s ]\n", editorEngineRef->bios->CurrentProgram.c_str());
-        ImGui::SeparatorText("Memory");
-        ImGui::Text("Current Memory:");
+    if (showDemo)
+    {
+        ImGui::ShowDemoWindow(&showDemo);
     }
+
+    if (showFileBrowser)
+    {
+        DrawshowFileBrowser(&showFileBrowser);
+    }
+     
+
+    ImGui::Begin("Info", NULL, ImGuiWindowFlags_NoCollapse);
+            ImGui::SeparatorText("FPS");
+            DrawFPS();
+            ImGui::SeparatorText("Program");
+            ImGui::Text("Current Program: [ %s ]\n", editorEngineRef->bios->CurrentProgram.c_str());
+            ImGui::SeparatorText("Memory");
+            ImGui::Text("Current Memory:");
+    ImGui::End();
+
+   /*
+    
 
     if (ImGui::CollapsingHeader("Palette"))
     {
@@ -300,28 +241,13 @@ ImGui::End();
             Tools::SetColor(c, color.x * 255, color.y * 255, color.z * 255);
         }
     }
-    if (ImGui::CollapsingHeader("Graphics"))
-    {
-    }
-    if (ImGui::CollapsingHeader("Inputs"))
-    {
-    }
     if (ImGui::CollapsingHeader("CRT filter"))
     {
         bool ppState = editorEngineRef->postProcessing->enabled;
         ImGui::Checkbox("Enabled", &ppState);
         editorEngineRef->postProcessing->SetState(ppState);
     }
-    if (ImGui::CollapsingHeader("SFX synth"))
-    {
-    }
-    if (ImGui::CollapsingHeader("Music"))
-    {
-    }
-    if (ImGui::CollapsingHeader("Online"))
-    {
-    }
-
+    
 */  
     //if (ImGui::CollapsingHeader("Editor"))
     {
@@ -336,15 +262,13 @@ ImGui::End();
             std::string str = strStream.str();
 
             std::cout << str << "\n";
-            editor.SetText(str);
+            codeEditor.SetText(str);
             editorFile = editorEngineRef->bios->CurrentProgram;
             
         }
 
-		auto cpos = editor.GetCursorPosition();
+		auto cpos = codeEditor.GetCursorPosition();
 
-        //ImGui::SetNextWindowSize(ImVec2(400, 500),ImGuiCond_FirstUseEver);
-        //ImGui::SetNextWindowPos(ImVec2(80, 80),ImGuiCond_FirstUseEver);
 		ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
 
 		if (ImGui::BeginMenuBar())
@@ -356,50 +280,47 @@ ImGui::End();
 					TextEditor::ErrorMarkers markers;
                     markers.insert(std::make_pair<int, std::string>(6, "Example error here:\nInclude file not found: \"TextEditor.h\""));
                     markers.insert(std::make_pair<int, std::string>(41, "Another example error"));
-                    editor.SetErrorMarkers(markers);
+                    codeEditor.SetErrorMarkers(markers);
                     TextEditor::Coordinates coord;
                     coord.mLine = 6;
                     coord.mColumn = 0;
-                    editor.SetCursorPosition(coord);
+                    codeEditor.SetCursorPosition(coord);
 				}
 				if (ImGui::MenuItem("Save"))
 				{
-					auto textToSave = editor.GetText();
+					auto textToSave = codeEditor.GetText();
                     SaveFileText(editorEngineRef->bios->GetFile().c_str(), (char *)textToSave.c_str());
 				}
-				if (ImGui::MenuItem("pushFont"))
-				{
-					
-				}
+
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Edit"))
 			{
-				bool ro = editor.IsReadOnly();
+				bool ro = codeEditor.IsReadOnly();
 				if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
-					editor.SetReadOnly(ro);
+					codeEditor.SetReadOnly(ro);
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Undo", "ALT-Backspace", nullptr, !ro && editor.CanUndo()))
-					editor.Undo();
-				if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && editor.CanRedo()))
-					editor.Redo();
+				if (ImGui::MenuItem("Undo", "ALT-Backspace", nullptr, !ro && codeEditor.CanUndo()))
+					codeEditor.Undo();
+				if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && codeEditor.CanRedo()))
+					codeEditor.Redo();
 
 				ImGui::Separator();
 
-				if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, editor.HasSelection()))
-					editor.Copy();
-				if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && editor.HasSelection()))
-					editor.Cut();
-				if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && editor.HasSelection()))
-					editor.Delete();
+				if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, codeEditor.HasSelection()))
+					codeEditor.Copy();
+				if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && codeEditor.HasSelection()))
+					codeEditor.Cut();
+				if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && codeEditor.HasSelection()))
+					codeEditor.Delete();
 				if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
-					editor.Paste();
+					codeEditor.Paste();
 
 				ImGui::Separator();
 
 				if (ImGui::MenuItem("Select all", nullptr, nullptr))
-					editor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(editor.GetTotalLines(), 0));
+					codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
 
 				ImGui::EndMenu();
 			}
@@ -407,25 +328,25 @@ ImGui::End();
 			if (ImGui::BeginMenu("View"))
 			{
 				if (ImGui::MenuItem("Dark palette"))
-					editor.SetPalette(TextEditor::GetDarkPalette());
+					codeEditor.SetPalette(TextEditor::GetDarkPalette());
 				if (ImGui::MenuItem("Light palette"))
-					editor.SetPalette(TextEditor::GetLightPalette());
+					codeEditor.SetPalette(TextEditor::GetLightPalette());
 				if (ImGui::MenuItem("Retro blue palette"))
-					editor.SetPalette(TextEditor::GetRetroBluePalette());
+					codeEditor.SetPalette(TextEditor::GetRetroBluePalette());
                 if (ImGui::MenuItem("Basic palette"))
-					editor.SetPalette(TextEditor::GetBasicPalette());
+					codeEditor.SetPalette(TextEditor::GetBasicPalette());
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
 		}
 
-		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s  | %s", cpos.mLine + 1, cpos.mColumn + 1, editor.GetTotalLines(),
-			editor.IsOverwrite() ? "Ovr" : "Ins",
-			editor.CanUndo() ? "*" : " ",
-			editor.GetLanguageDefinition().mName.c_str(),
+		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s  | %s", cpos.mLine + 1, cpos.mColumn + 1, codeEditor.GetTotalLines(),
+			codeEditor.IsOverwrite() ? "Ovr" : "Ins",
+			codeEditor.CanUndo() ? "*" : " ",
+			codeEditor.GetLanguageDefinition().mName.c_str(),
             editorEngineRef->bios->CurrentProgram.c_str());
 
-        editor.Render("TextEditor");
+        codeEditor.Render("TextEditor");
 
         ImGui::End();
     }

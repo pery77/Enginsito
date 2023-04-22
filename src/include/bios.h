@@ -28,12 +28,8 @@ class Bios {
         void SetFile(std::string file);
         void LoadBoot();
 
-        
         std::string CurrentPath = "";
         std::string CurrentProgram = "";
-
-        void DrawExplorer();
-        void DrawImGui();
 
         void AddSubPath(std::string current);
         void RemoveSubPath();
@@ -44,8 +40,8 @@ class Bios {
         std::string screenLines = 
 R"|(
 ****************************************
-*  Wecolome to PeryEngine              *
-*  Press F1 to open tools or Type HELP *
+*       Wecolome to PeryEngine         *
+* Press F1 to open editor or type HELP *
 ****************************************
 )|";
 
