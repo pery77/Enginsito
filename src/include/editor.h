@@ -214,7 +214,7 @@ void Draw()
 static float scale = 1.0f;
 ImGui::Begin("Screen");
     ImGui::DragFloat("scale", &scale, 0.01f, -0.5f, 4.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-    rlImGuiImageRect(&editorEngineRef->postProcessing->mainRender.texture, 320 * scale, 20 * scale, (Rectangle){0,200,320,200});
+    rlImGuiImageRect(&editorEngineRef->postProcessing->mainRender.texture, 320 * scale, 200 * scale, (Rectangle){0,200,320,200});
 ImGui::End();
 
    /*
