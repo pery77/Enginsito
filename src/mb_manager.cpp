@@ -2,6 +2,7 @@
 #include <assert.h>
 #include "postProcessing.h"
 #include "engine.h"
+#include "editor.h"
 
 AudioManager* audioR;
 
@@ -25,7 +26,12 @@ void MBManager::managerError(int state){
 	const char* errorDes = mb_get_error_desc(error);
     if(state > 0){
         Tools::console->AddLog("[ERROR] [%i]:%s\nline: %i, col: %i, pos; %i\n",error, errorDes, row, col, pos);
-    }
+
+		char buffer[256];
+		sprintf(buffer, "ERROR [%i]\n:%s\n", error, errorDes); 
+		std::string s = buffer;
+		basicEngineRef->editor->SetError(row, col, s); 
+	}
 }
 
 void MBManager::UpdateAudio(){
@@ -188,11 +194,15 @@ int MBManager::OpenBas(const char *file){
 	return loadState;
 }    
 
-void MBManager::Run(){
+void MBManager::Run()
+{
 	int run = mb_run(bas, true);
+	basicEngineRef->editor->ClearError(); 
 	managerError(run);
 }
-void MBManager::CloseBas(){
+
+void MBManager::CloseBas()
+{
 	mb_close(&bas);
 	mb_dispose();
 }

@@ -147,7 +147,17 @@ int main(int argc, char *argv[])
                 switch (currentState)
                 {
                     case Off:
-                        engine->bios->Update();
+                        if (showImgui)
+                        {
+                            if (engine->editor->HasFocus)
+                            {
+                                engine->bios->Update();
+                            }
+                        }
+                        else
+                        {
+                            engine->bios->Update();
+                        }
                         break;
                     case Running:
                         engine->basicIntepreter->draw();
