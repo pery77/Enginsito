@@ -63,8 +63,7 @@ void inline DrawFPS(bool * showInfo)
     ImGui::End();
 }
 
-
-void DrawshowFileBrowser(bool * show)
+void CenterWindow()
 {
         ImGuiIO& io = ImGui::GetIO();
         ImVec2 max_size;
@@ -74,7 +73,11 @@ void DrawshowFileBrowser(bool * show)
         ImGui::SetNextWindowSizeConstraints(min_size, max_size);
         ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Appearing, ImVec2(0.5f,0.5f));
         ImGui::SetNextWindowSize(ImVec2(std::max<float>(600, min_size.x), std::max<float>(400, min_size.y)), ImGuiCond_Appearing);
+}
 
+void DrawshowFileBrowser(bool * show)
+{
+        //CenterWindow();
         ImGui::Begin("File browser", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
             
             ImGuiStyle& style = ImGui::GetStyle();
@@ -143,14 +146,13 @@ void Draw()
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |ImGuiWindowFlags_NoBackground ;
 
-
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin(editorEngineRef->GetEngineName(), NULL, window_flags);
     ImGui::PopStyleVar();
 
     static bool showConsole = true;
-    static bool showDemo = false;
-    static bool showFileBrowser = false;
+    static bool showDemo = true;
+    static bool showFileBrowser = true;
     static bool showInfo = true;
     static bool showPalette = true;
     static bool showCode = true;
@@ -186,7 +188,7 @@ void Draw()
             editorEngineRef->bios->ShouldRun = true;
         }
 
-        ImGui::DragFloat("font scale", &io.FontGlobalScale, 0.01f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp); // Scale everything
+        ImGui::DragFloat("Font scale", &io.FontGlobalScale, 0.01f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 
         ImGui::EndMenuBar();
     }
@@ -211,35 +213,32 @@ void Draw()
         DrawFPS(&showInfo);
     }
 
-static float scale = 1.0f;
+ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 ImGui::Begin("Screen");
-    ImGui::DragFloat("scale", &scale, 0.01f, -0.5f, 4.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-    rlImGuiImageRect(&editorEngineRef->postProcessing->mainRender.texture, 320 * scale, 200 * scale, (Rectangle){0,200,320,200});
+ImGui::PopStyleVar();
+    ImVec2 windowSize = ImGui::GetWindowSize();
+    float scale = (windowSize.x/windowSize.y < 1.6f) ? windowSize.x/320.0f : windowSize.y/200.0f;
+    rlImGuiImageRect(&editorEngineRef->postProcessing->mainRender.texture, 320 * scale, 200 * scale, (Rectangle){0, 200, 320, 200});
 ImGui::End();
 
-   /*
-    
+ImGui::Begin("Palette");
+    for (char c = 0; c<16; c++)
+    {
+        char buffer [50];
+        sprintf (buffer, "[%i]", c);
+        Color col = Tools::GetColor(c);
+        ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
+        ImGui::ColorEdit3(buffer, (float*)&color, 0);
+        Tools::SetColor(c, color.x * 255, color.y * 255, color.z * 255);
+    }
+ImGui::End();
 
-    if (ImGui::CollapsingHeader("Palette"))
-    {
-        for (char c = 0; c<16; c++)
-        {
-            char buffer [50];
-            sprintf (buffer, "[%i]", c);
-            Color col = Tools::GetColor(c);
-            ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
-            ImGui::ColorEdit3(buffer, (float*)&color, 0);
-            Tools::SetColor(c, color.x * 255, color.y * 255, color.z * 255);
-        }
-    }
-    if (ImGui::CollapsingHeader("CRT filter"))
-    {
-        bool ppState = editorEngineRef->postProcessing->enabled;
-        ImGui::Checkbox("Enabled", &ppState);
-        editorEngineRef->postProcessing->SetState(ppState);
-    }
-    
-*/  
+ImGui::Begin("CRT");
+    bool ppState = editorEngineRef->postProcessing->enabled;
+    ImGui::Checkbox("Enabled", &ppState);
+    editorEngineRef->postProcessing->SetState(ppState);
+ImGui::End();
+
     //if (ImGui::CollapsingHeader("Editor"))
     {
         if (editorEngineRef->bios->CurrentProgram != editorFile)

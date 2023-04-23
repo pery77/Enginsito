@@ -1,12 +1,11 @@
 time = 0
 pi = 3.1415
 
-
 def draw()
 
 	cls(0)
 	r=30
-	n = 12
+	n = mouse.x()/32
 	for a = 0 to n
 		an = 2 * pi * a / n + sin(time*0.01)
 		x = r * cos(an)+160
@@ -14,16 +13,7 @@ def draw()
 		draw.circle(x,y,sin(time*0.01)*5+11,1,a)
 	next
 	
-	time = time + 1
+	time = time + 10
 
 enddef
-
-
-
-
-
-
-
-
-
 

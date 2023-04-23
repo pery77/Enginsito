@@ -10,7 +10,7 @@ aliensBullets = list()
 ' hiScore = readed from invader_data.dat
 score = nil ' overwrited in startGame()
 lives = nil ' overwrited in startGame()
-maxbullets = 1
+maxbullets = 10
 maxAlienBullets = 3
 
 alienTick = 0

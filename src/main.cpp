@@ -97,7 +97,6 @@ int main(int argc, char *argv[])
 
             if (engine->basicIntepreter->OpenBas(engine->bios->GetFile().c_str()) == MB_FUNC_OK)
             {
-                engine->postProcessing->UpdateGameScreenRects();
                 engine->basicIntepreter->Run();
                 engine->basicIntepreter->init();
                 currentState = Running;
@@ -148,10 +147,7 @@ int main(int argc, char *argv[])
                 switch (currentState)
                 {
                     case Off:
-                        if (!showImgui)
-                        {
-                            engine->bios->Update();
-                        }
+                        engine->bios->Update();
                         break;
                     case Running:
                         engine->basicIntepreter->draw();
