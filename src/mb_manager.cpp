@@ -284,10 +284,10 @@ int MBManager::drawCircle(struct mb_interpreter_t* s, void** l){
 
 	switch (style){
 		case 0:
-			DrawCircleLines(x, y, r, Tools::GetColor(col));
+			DrawCircle(x, y, r, Tools::GetColor(col));
 			break;
 		default:
-			DrawCircle(x, y, r, Tools::GetColor(col));
+			DrawCircleLines(x, y, r, Tools::GetColor(col));
 			break;
 	}
 
@@ -323,10 +323,10 @@ int MBManager::drawRing(struct mb_interpreter_t* s, void** l){
 
 	switch (style){
 		case 0:
-			DrawRingLines((Vector2){x, y}, rIn,rOut,startAngle,endAngle,segment,Tools::GetColor(col));
+			DrawRing((Vector2){x, y}, rIn,rOut,startAngle,endAngle,segment,Tools::GetColor(col));
 			break;
 		default:
-			DrawRing((Vector2){x, y}, rIn,rOut,startAngle,endAngle,segment,Tools::GetColor(col));
+			DrawRingLines((Vector2){x, y}, rIn,rOut,startAngle,endAngle,segment,Tools::GetColor(col));
 			break;
 	}
 
@@ -356,10 +356,10 @@ int MBManager::drawEllipse(struct mb_interpreter_t* s, void** l){
 
 	switch (style){
 		case 0:
-			DrawEllipseLines(x, y, rh, rv, Tools::GetColor(col));
+			DrawEllipse(x, y, rh, rv, Tools::GetColor(col));
 			break;
 		default:
-			DrawEllipse(x, y, rh, rv, Tools::GetColor(col));
+			DrawEllipseLines(x, y, rh, rv, Tools::GetColor(col));
 			break;
 	}
 
@@ -393,10 +393,10 @@ int MBManager::drawTriangle(struct mb_interpreter_t* s, void** l){
 
 	switch (style){
 		case 0:
-			DrawTriangleLines((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, Tools::GetColor(col));
+			DrawTriangle((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, Tools::GetColor(col));
 			break;
 		default:
-			DrawTriangle((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, Tools::GetColor(col));
+			DrawTriangleLines((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, Tools::GetColor(col));
 			break;
 	}
 
