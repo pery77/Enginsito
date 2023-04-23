@@ -26,64 +26,46 @@ struct Editor
 
     }
 
-void inline DrawFPS()
+void inline DrawFPS(bool * showInfo)
 {
-    ImGui::PushStyleColor(ImGuiCol_PlotLines, IM_COL32(40,255,0,255));
-    static float values[90] = {};
-    static int values_offset = 0;
-    static double refresh_time = 0.0;
-    if (refresh_time == 0.0)
-        refresh_time = ImGui::GetTime();
-    while (refresh_time < ImGui::GetTime()) // Create data at fixed 60 Hz rate for the demo
-    {
-        static float phase = 0.0f;
-        values[values_offset] = GetFPS();
-        values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
-        phase += 0.10f * values_offset;
-        refresh_time += 1.0f / 60.0f;
-    }
-    float average = 0.0f;
-    for (int n = 0; n < IM_ARRAYSIZE(values); n++)
-        average += values[n];
-    average /= (float)IM_ARRAYSIZE(values);
-    char overlay[32];
-    sprintf(overlay, "average: %.2f fps", average);
-    ImGui::PlotLines("FPS", values, IM_ARRAYSIZE(values), values_offset,overlay ,0.0f, 60.0f, ImVec2(0, 80.0f));
-    ImGui::PopStyleColor();    
+    
+    ImGui::Begin("Info", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
+        ImGui::SeparatorText("FPS");
+
+        ImGui::PushStyleColor(ImGuiCol_PlotLines, IM_COL32(40,255,0,255));
+        static float values[90] = {};
+        static int values_offset = 0;
+        static double refresh_time = 0.0;
+        if (refresh_time == 0.0)
+            refresh_time = ImGui::GetTime();
+        while (refresh_time < ImGui::GetTime()) // Create data at fixed 60 Hz rate for the demo
+        {
+            static float phase = 0.0f;
+            values[values_offset] = GetFPS();
+            values_offset = (values_offset + 1) % IM_ARRAYSIZE(values);
+            phase += 0.10f * values_offset;
+            refresh_time += 1.0f / 60.0f;
+        }
+        float average = 0.0f;
+        for (int n = 0; n < IM_ARRAYSIZE(values); n++)
+            average += values[n];
+        average /= (float)IM_ARRAYSIZE(values);
+        char overlay[32];
+        sprintf(overlay, "avg: %.2f fps", average);
+        ImGui::PlotLines("FPS", values, IM_ARRAYSIZE(values), values_offset,overlay ,0.0f, 60.0f, ImVec2(0, 80.0f));
+        ImGui::PopStyleColor();  
+
+        ImGui::SeparatorText("Program");
+        ImGui::Text("Current Program: [ %s ]\n", editorEngineRef->bios->CurrentProgram.c_str());
+        ImGui::SeparatorText("Memory");
+        ImGui::Text("Current Memory:");
+
+    ImGui::End();
 }
 
-void ShowFontSelector(const char* label)
-{
-    ImGuiIO& io = ImGui::GetIO();
-    ImFont* font_current = ImGui::GetFont();
-    if (ImGui::BeginCombo(label, font_current->GetDebugName()))
-    {
-        for (int n = 0; n < io.Fonts->Fonts.Size; n++)
-        {
-            ImFont* font = io.Fonts->Fonts[n];
-            ImGui::PushID((void*)font);
-            if (ImGui::Selectable(font->GetDebugName(), font == font_current))
-                io.FontDefault = font;
-            ImGui::PopID();
-        }
-        ImGui::EndCombo();
-    }
-}
 
 void DrawshowFileBrowser(bool * show)
 {
-    /*
-        if(ImGui::Button("RUN"))
-        {
-            editorEngineRef->bios->ShouldRun = true;
-        }
-        ImGui::SameLine();
-        if(ImGui::Button("NEW"))
-        {
-            editorEngineRef->bios->CurrentProgram = "new";
-        }
-
-    */
         ImGuiIO& io = ImGui::GetIO();
         ImVec2 max_size;
         ImVec2 min_size = ImVec2(500,300);
@@ -93,12 +75,11 @@ void DrawshowFileBrowser(bool * show)
         ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Appearing, ImVec2(0.5f,0.5f));
         ImGui::SetNextWindowSize(ImVec2(std::max<float>(600, min_size.x), std::max<float>(400, min_size.y)), ImGuiCond_Appearing);
 
-
-        ImGui::Begin("File browser", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoDocking);
+        ImGui::Begin("File browser", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
             
             ImGuiStyle& style = ImGui::GetStyle();
             ImVec2 pw_size = ImGui::GetWindowSize();
-            float list_item_height = ImGui::CalcTextSize("").y + (style.ItemSpacing.y * 2.5f);
+            float list_item_height = ImGui::CalcTextSize("").y + (style.ItemSpacing.y * 4.0f);
             float input_bar_ypos = pw_size.y - ImGui::GetFrameHeightWithSpacing() * 2.5f - style.WindowPadding.y;
             float window_height = input_bar_ypos - ImGui::GetCursorPosY() - style.ItemSpacing.y;
             float window_content_height = window_height - style.WindowPadding.y * 2.0f;
@@ -145,19 +126,15 @@ void DrawshowFileBrowser(bool * show)
 
             ImGui::BeginChild("#Foot",ImVec2(0, list_item_height), true, ImGuiWindowFlags_NoScrollWithMouse);
                 ImGui::Text("Current program: %s", editorEngineRef->bios->CurrentProgram.c_str());
-                ImGui::SameLine();
-                if (ImGui::Button("Close"))
-                {
-                    *show = false;
-                }
             ImGui::EndChild();
 
         ImGui::End();
         
 }
 
-void DrawImGui()
+void Draw()
 {
+    ImGuiIO& io = ImGui::GetIO();
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowPos(viewport->WorkPos);
@@ -166,8 +143,7 @@ void DrawImGui()
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus |ImGuiWindowFlags_NoBackground ;
 
-    bool p_open = true;
-    
+
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin(editorEngineRef->GetEngineName(), NULL, window_flags);
     ImGui::PopStyleVar();
@@ -175,6 +151,9 @@ void DrawImGui()
     static bool showConsole = true;
     static bool showDemo = false;
     static bool showFileBrowser = false;
+    static bool showInfo = true;
+    static bool showPalette = true;
+    static bool showCode = true;
 
     ImGuiID dockspace_id = ImGui::GetID("DockId");
     ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), 0);
@@ -183,20 +162,31 @@ void DrawImGui()
     {
         if (ImGui::BeginMenu("File"))
         {
-            ImGui::MenuItem("New");
-            if (ImGui::MenuItem("Open", "", &showFileBrowser));
+            if (ImGui::MenuItem("New"))
+            {
+                editorEngineRef->bios->CurrentProgram = "new";
+            }
+
             ImGui::MenuItem("Save");
             ImGui::MenuItem("Save as");
-            ImGui::MenuItem("Run");
             ImGui::EndMenu();
         }
     
         if (ImGui::BeginMenu("View"))
         {
             ImGui::MenuItem("DemoOpen", "", &showDemo);
+            if (ImGui::MenuItem("FileBrowser", "", &showFileBrowser));
+            if (ImGui::MenuItem("Info", "", &showInfo));
             ImGui::MenuItem("Console", "", &showConsole);
             ImGui::EndMenu();
         }
+
+        if(ImGui::SmallButton("RUN"))
+        {
+            editorEngineRef->bios->ShouldRun = true;
+        }
+
+        ImGui::DragFloat("font scale", &io.FontGlobalScale, 0.01f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp); // Scale everything
 
         ImGui::EndMenuBar();
     }
@@ -216,15 +206,16 @@ void DrawImGui()
         DrawshowFileBrowser(&showFileBrowser);
     }
      
+    if (showInfo)
+    {
+        DrawFPS(&showInfo);
+    }
 
-    ImGui::Begin("Info", NULL, ImGuiWindowFlags_NoCollapse);
-            ImGui::SeparatorText("FPS");
-            DrawFPS();
-            ImGui::SeparatorText("Program");
-            ImGui::Text("Current Program: [ %s ]\n", editorEngineRef->bios->CurrentProgram.c_str());
-            ImGui::SeparatorText("Memory");
-            ImGui::Text("Current Memory:");
-    ImGui::End();
+static float scale = 1.0f;
+ImGui::Begin("Screen");
+    ImGui::DragFloat("scale", &scale, 0.01f, -0.5f, 4.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+    rlImGuiImageRect(&editorEngineRef->postProcessing->mainRender.texture, 320 * scale, 20 * scale, (Rectangle){0,200,320,200});
+ImGui::End();
 
    /*
     
