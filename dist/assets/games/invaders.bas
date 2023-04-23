@@ -10,7 +10,7 @@ aliensBullets = list()
 ' hiScore = readed from invader_data.dat
 score = nil ' overwrited in startGame()
 lives = nil ' overwrited in startGame()
-maxbullets = 10
+maxbullets = 1
 maxAlienBullets = 3
 
 alienTick = 0
@@ -508,7 +508,7 @@ enddef
 
 'UI
 def drawUI()
-    draw.rect(0,0,320,13,0,7)
+    draw.rect(0,0,320,13,0,11)
     draw.line(0,12,320,12,1,4)
     draw.line(0,196,320,196,2,15)
     draw.text(intToText("SCORE %06i",score), 3,3,1,3)
@@ -802,3 +802,9 @@ def draw()
     endif
 
 enddef
+
+
+
+
+
+
