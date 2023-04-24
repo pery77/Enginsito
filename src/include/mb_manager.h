@@ -65,6 +65,7 @@ class MBManager{
         static int intToText(struct mb_interpreter_t* s, void** l);
         static int floatToText(struct mb_interpreter_t* s, void** l);
         static int delta(struct mb_interpreter_t* s, void** l);
+        static int frame(struct mb_interpreter_t* s, void** l);
         static int setColor(struct mb_interpreter_t* s, void** l);
         static int getColor(struct mb_interpreter_t* s, void** l);
         static int getFiles(struct mb_interpreter_t* s, void** l);

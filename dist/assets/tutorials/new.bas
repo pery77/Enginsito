@@ -1,6 +1,11 @@
 time = 0
 pi = 3.1415
 
+def tick()
+	time = time + 10
+	print time
+enddef
+
 def draw()
 
 	cls(0)
@@ -13,7 +18,13 @@ def draw()
 		draw.circle(x,y,sin(time*0.01)*5+11,1,a)
 	next
 	
-	time = time + 10
+	
 
 enddef
+
+
+
+
+
+
 

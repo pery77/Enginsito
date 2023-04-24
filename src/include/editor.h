@@ -5,6 +5,7 @@
 #include "engine.h"
 #include "bios.h"
 #include "TextEditor.h"
+#include "postprocessing.h"
 
 struct Editor
 {
@@ -14,6 +15,8 @@ struct Editor
     std::string editorFile = "";
 
     bool HasFocus = false;
+    bool Paused = false;
+    bool DoStep = false;
 
     Editor(Engine* _engine)
     {
@@ -83,6 +86,8 @@ struct Editor
         std::cout << str << "\n";
         codeEditor.SetText(str);
         editorFile = editorEngineRef->bios->CurrentProgram;
+        Paused = false;
+        DoStep = false;
     }
 
     void DrawshowFileBrowser(bool* show)
@@ -179,14 +184,6 @@ struct Editor
 
 	    if (ImGui::BeginMenuBar())
 	    {
-
-            if(ImGui::SmallButton("RUN"))
-            {
-                auto textToSave = codeEditor.GetText();
-                SaveFileText(editorEngineRef->bios->GetFile().c_str(), (char *)textToSave.c_str());
-                editorEngineRef->bios->ShouldRun = true;
-            }
-
 	    	if (ImGui::BeginMenu("Edit"))
 	    	{
 	    		bool ro = codeEditor.IsReadOnly();
@@ -211,7 +208,7 @@ struct Editor
 	    			codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
 	    		ImGui::EndMenu();
 	    	}
-/*  
+ 
 	    		if (ImGui::BeginMenu("View"))
 	    		{
 	    			if (ImGui::MenuItem("Dark palette"))
@@ -222,9 +219,10 @@ struct Editor
 	    				codeEditor.SetPalette(TextEditor::GetRetroBluePalette());
                     if (ImGui::MenuItem("Basic palette"))
 	    				codeEditor.SetPalette(TextEditor::GetBasicPalette());
+                                           
 	    			ImGui::EndMenu();
 	    		}
- */              
+             
 	    	ImGui::EndMenuBar();
 	    	}
 
@@ -241,7 +239,7 @@ struct Editor
     void Draw()
     {
         ImGuiIO& io = ImGui::GetIO();
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+        ImGuiWindowFlags window_flags;// = ImGuiWindowFlags_MenuBar;
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->WorkPos);
         ImGui::SetNextWindowSize(viewport->WorkSize);
@@ -263,21 +261,11 @@ struct Editor
             static bool showCode = true;
 
             ImGuiID dockspace_id = ImGui::GetID("DockId");
-            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), 0);
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
 
+/*
             if (ImGui::BeginMenuBar())
             {
-                if (ImGui::BeginMenu("File"))
-                {
-                    if (ImGui::MenuItem("New"))
-                    {
-                        editorEngineRef->bios->CurrentProgram = "new";
-                    }
-
-                    //ImGui::MenuItem("Save");
-                    //ImGui::MenuItem("Save as");
-                    ImGui::EndMenu();
-                }
 
                 if (ImGui::BeginMenu("View"))
                 {
@@ -292,7 +280,7 @@ struct Editor
 
                 ImGui::EndMenuBar();
             }
-
+*/
             if (showConsole)
             {
                 Tools::console->Draw("Console", &showConsole);
@@ -339,6 +327,46 @@ struct Editor
                 bool ppState = editorEngineRef->postProcessing->enabled;
                 ImGui::Checkbox("Enabled", &ppState);
                 editorEngineRef->postProcessing->SetState(ppState);
+            ImGui::End();
+
+            ImVec2 minHeight(60, 60);
+            ImVec2 maxHeight(2000, 70);
+            ImGui::SetNextWindowSizeConstraints(minHeight, maxHeight);
+            ImGui::Begin("Player", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+
+                ImVec2 playerSize = ImGui::GetWindowSize();
+                ImVec2 buttonSize(30, 30);
+
+                float buttonPosX = (playerSize.x - buttonSize.x * 3) / 2;
+                float buttonPosY = (playerSize.y - buttonSize.y) / 2;
+
+                ImGui::SetCursorPosX(buttonPosX);
+
+                if(ImGui::Button(">", buttonSize))
+                {
+                    if (!Paused)
+                    {
+                        auto textToSave = codeEditor.GetText();
+                        SaveFileText(editorEngineRef->bios->GetFile().c_str(), (char *)textToSave.c_str());
+                        editorEngineRef->bios->ShouldRun = true;
+                    }
+
+                    Paused = false;
+                    DoStep = false;
+                }
+                ImGui::SameLine();
+                if(ImGui::Button("||", buttonSize))
+                {
+                    Paused = !Paused;
+                }
+                ImGui::SameLine();
+                if(ImGui::Button("|>", buttonSize))
+                {
+                    Paused = true;
+                    DoStep = true;
+                }
+
+
             ImGui::End();
 
             DrawCode();

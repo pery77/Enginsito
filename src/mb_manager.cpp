@@ -5,8 +5,8 @@
 #include "editor.h"
 
 AudioManager* audioR;
-
 Engine* basicEngineRef;
+uint32_t currentframe = 0;
 
 MBManager::MBManager(Engine* _engine){
 	nullArg[0].type = MB_DT_NIL;
@@ -47,6 +47,7 @@ void MBManager::init(){
 	doRoutine("INIT", MBManager::initRoutine);
 }
 void MBManager::tick(){
+	currentframe++;
 	doRoutine("TICK", MBManager::tickRoutine);
 }
 void MBManager::draw(){
@@ -103,6 +104,7 @@ int MBManager::OpenBas(const char *file){
 	mb_reg_fun(bas, intToText);
 	mb_reg_fun(bas, floatToText);
 	mb_reg_fun(bas, delta);
+	mb_reg_fun(bas, frame);
 	mb_reg_fun(bas, getChar);
 	mb_reg_fun(bas, setFontSpacing);
 	mb_reg_fun(bas, updateFont);
@@ -196,6 +198,7 @@ int MBManager::OpenBas(const char *file){
 
 void MBManager::Run()
 {
+	currentframe = 0;
 	int run = mb_run(bas, true);
 	basicEngineRef->editor->ClearError(); 
 	managerError(run);
@@ -653,6 +656,22 @@ int MBManager::delta(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     ret.value.integer = (int)(GetFrameTime()*1000);
+
+
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+int MBManager::frame(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = currentframe;
 
 
     mb_check(mb_push_value(s, l, ret));

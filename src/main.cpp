@@ -134,7 +134,14 @@ int main(int argc, char *argv[])
 
         if (currentState == Running)
         {
-            engine->basicIntepreter->tick();
+            if (!engine->editor->Paused)
+            {
+                engine->basicIntepreter->tick();
+            }
+            if (engine->editor->DoStep)
+            {
+                engine->basicIntepreter->tick();
+            }
         }
         
         engine->DropFileUpdate();
@@ -160,7 +167,15 @@ int main(int argc, char *argv[])
                         }
                         break;
                     case Running:
-                        engine->basicIntepreter->draw();
+                        if (!engine->editor->Paused)
+                        {
+                            engine->basicIntepreter->draw();
+                        }
+                        if (engine->editor->DoStep)
+                        {
+                            engine->basicIntepreter->draw();
+                            engine->editor->DoStep = false;
+                        }
                         break;
                     case Paused:
                         DrawRectangle(0,88,320,12,Tools::GetBiosColor(2));

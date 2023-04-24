@@ -1,4 +1,3 @@
-frame = 0 
 setColor(0,3,3,3)
 setColor(3,250,250,250)
 def draw()
@@ -24,3 +23,4 @@ def draw()
         next
     endif
 enddef
+
