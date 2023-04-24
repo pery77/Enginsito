@@ -241,14 +241,16 @@ void PostProcessing::SetCRTFloat(CRTProperty property, float value){
     Tools::Poke(dir,v);
 }
 
- void PostProcessing::SetGrilleTexture(int newTextureId){
+ void PostProcessing::SetGrilleTexture(int newTextureId)
+ {
     if (newTextureId<0) newTextureId = 0;
     if (newTextureId>2) newTextureId = 2;
     Tools::Poke(4090, newTextureId);
     currentGrilleTexture = newTextureId;
  }
 
- Texture PostProcessing::textureFromCode(int format, int height, int width, void* data){
+ Texture PostProcessing::textureFromCode(int format, int height, int width, void* data)
+ {
     
     Image img = {0};
     img.format = format;

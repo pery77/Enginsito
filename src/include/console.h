@@ -62,26 +62,17 @@ struct Console
         Items.push_back(Strdup(buf));
     }
 
-    void    Draw(const char* title, bool* p_open)
+    void    Draw()
     {
 
         ImGui::SetNextWindowSize(ImVec2(670, 500),ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowPos(ImVec2(280, 20),ImGuiCond_FirstUseEver);
-        if (!ImGui::Begin(title, p_open))
+        if (!ImGui::Begin("Console", NULL))
         {
             ImGui::End();
             return;
         }
 
-        // As a specific feature guaranteed by the library, after calling Begin() the last Item represent the title bar.
-        // So e.g. IsItemHovered() will return true when hovering the title bar.
-        // Here we create a context menu only available from the title bar.
-        if (ImGui::BeginPopupContextItem())
-        {
-            if (ImGui::MenuItem("Close Console"))
-                *p_open = false;
-            ImGui::EndPopup();
-        }
 /*
         ImGui::TextWrapped(
             "This example implements a console with basic coloring, completion (TAB key) and history (Up/Down keys). A more elaborate "
