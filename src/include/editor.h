@@ -300,14 +300,41 @@ struct Editor
                 ImGui::Checkbox("Enabled", &ppState);
                 editorEngineRef->postProcessing->SetState(ppState);
                 
-                static int blurPower = Tools::Peek(4080);
-                static int blurFactor = Tools::Peek(4081);
+                static int blurPower    = Tools::Peek(4080);
+                static int blurFactor   = Tools::Peek(4081);
+                static int chromatic    = Tools::Peek(4082);
+                static int curvature    = Tools::Peek(4083);
+                static int vignetting   = Tools::Peek(4084);
+                static int scanLine     = Tools::Peek(4085);
+                static int verticalLine = Tools::Peek(4086);
+                static int grilleForce  = Tools::Peek(4087);
+                static int noise        = Tools::Peek(4088);
+                static int fliker       = Tools::Peek(4089);
+                static int grille       = Tools::Peek(4090);
 
                 ImGui::DragInt("Blur Power", &blurPower, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
                 ImGui::DragInt("Blur Factor", &blurFactor, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::DragInt("Chromatic", &chromatic, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::DragInt("Curvature", &curvature, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::DragInt("Vignetting", &vignetting, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::DragInt("Scanline", &scanLine, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::DragInt("Vertical Line", &verticalLine, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::DragInt("Grille Force", &grilleForce, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::DragInt("Noise", &noise, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::DragInt("Flicker", &fliker, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::DragInt("Grille", &grille, 1, 0, 2, "%1i", ImGuiSliderFlags_AlwaysClamp);
 
                 editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::BlurPower, blurPower);
                 editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::BlurFactor, blurFactor);
+                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Chromatic, chromatic);
+                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Curvature, curvature);
+                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Vignetting, vignetting);
+                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::ScanLine, scanLine);
+                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::VerticalLine, verticalLine);
+                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::GrilleForce, grilleForce);
+                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Noise, noise);
+                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Fliker, fliker);
+                editorEngineRef->postProcessing->SetGrilleTexture(grille);
 
             ImGui::End();
 
