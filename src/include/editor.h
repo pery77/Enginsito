@@ -384,7 +384,7 @@ struct Editor
                 {
                     Paused = false;
                     DoStep = false;
-                    editorEngineRef->basicIntepreter->end();
+                    editorEngineRef->basicIntepreter->close();
                     editorEngineRef->currentState = Off;
                     editorEngineRef->basicIntepreter->CloseBas();
                 }

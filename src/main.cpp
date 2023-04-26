@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
             if ( engine->currentState == Running)
             {
-                engine->basicIntepreter->end();
+                engine->basicIntepreter->close();
             }
 
             if (engine->basicIntepreter->OpenBas(engine->bios->GetFile().c_str()) == MB_FUNC_OK)
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
                     engine->currentState = Paused;
                     break;
                 case Paused:
-                    engine->basicIntepreter->end();
+                    engine->basicIntepreter->close();
                     engine->currentState = Off;
                     engine->basicIntepreter->CloseBas();
                     break;
@@ -128,6 +128,7 @@ int main(int argc, char *argv[])
         {
             int anyKey = GetKeyPressed();
             if (anyKey != 0 && anyKey != 256) engine->currentState = Running; // key 256 is Escape key
+            engine->basicIntepreter->pause();
         }
 
         // Update
@@ -179,9 +180,10 @@ int main(int argc, char *argv[])
                         }
                         break;
                     case Paused:
-                        DrawRectangle(0,88,320,12,Tools::GetBiosColor(2));
-                        DrawRectangle(0,89,320,10,Tools::GetBiosColor(1));
-                        DrawTextEx(Tools::GetFont(), pauseMessage,(Vector2){160 - pauseMessageSize, 90},8,0,Tools::GetBiosColor(3));
+                        engine->basicIntepreter->pause();
+                        //DrawRectangle(0,88,320,12,Tools::GetBiosColor(2));
+                        //DrawRectangle(0,89,320,10,Tools::GetBiosColor(1));
+                        //DrawTextEx(Tools::GetFont(), pauseMessage,(Vector2){160 - pauseMessageSize, 90},8,0,Tools::GetBiosColor(3));
                         break;    
                     default:
                         break;

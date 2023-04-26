@@ -50,11 +50,15 @@ void MBManager::tick(){
 	currentframe++;
 	doRoutine("TICK", MBManager::tickRoutine);
 }
+void MBManager::pause(){
+	currentframe++;
+	doRoutine("PAUSE", MBManager::pauseRoutine);
+}
 void MBManager::draw(){
 	doRoutine("DRAW", MBManager::drawRoutine);
 }
-void MBManager::end(){
-	doRoutine("END", MBManager::endRoutine);
+void MBManager::close(){
+	doRoutine("CLOSE", MBManager::closeRoutine);
 	CloseBas();
 }
 

@@ -20,8 +20,9 @@ class MBManager{
 
         void init();
         void tick();
+        void pause();
         void draw();
-        void end();
+        void close();
 
         int OpenBas(const char *file);
         void Run();
@@ -33,8 +34,9 @@ class MBManager{
         mb_value_t nullArg[1];
         mb_value_t initRoutine;
         mb_value_t tickRoutine;
+        mb_value_t pauseRoutine;
         mb_value_t drawRoutine;
-        mb_value_t endRoutine;
+        mb_value_t closeRoutine;
 
         void managerError(int state);
 
