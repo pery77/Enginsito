@@ -33,7 +33,6 @@ struct Editor
 
     void inline DrawFPS()
     {
-        ImGui::SeparatorText("FPS");
         ImGui::PushStyleColor(ImGuiCol_PlotLines, IM_COL32(40,255,0,255));
         static float values[90] = {};
         static int values_offset = 0;
@@ -95,11 +94,17 @@ struct Editor
         float window_content_height = window_height - style.WindowPadding.y * 6.0f;
         float min_content_size = pw_size.x - style.WindowPadding.x * 4.0f;
 
+        static bool memoryMode = false;
+
         ImGui::BeginChild("#Head",ImVec2(0, list_item_height), true, ImGuiWindowFlags_NoScrollWithMouse);
             ImGui::Text("Current path: %s", editorEngineRef->bios->CurrentPath.c_str());
+            ImGui::SameLine();
+            ImGui::Checkbox("Memory", &memoryMode);
         ImGui::EndChild();
 
+        if(memoryMode) ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.192f, 0.106, 0.216f, 1.0f));
         ImGui::BeginChild("#Files", ImVec2(0, window_content_height), true);
+        if(memoryMode) ImGui::PopStyleColor();
 
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.882f, 0.745f, 0.078f, 1.0f));
 
@@ -140,7 +145,7 @@ struct Editor
             ImGui::Text("Current program: %s", editorEngineRef->bios->CurrentProgram.c_str());
         ImGui::EndChild();
 
-        ImGui::BeginChild("#Foot2",ImVec2(0, list_item_height), true, ImGuiWindowFlags_NoScrollWithMouse);
+        ImGui::BeginChild("#Foot2",ImVec2(0, list_item_height*2), true, ImGuiWindowFlags_NoScrollWithMouse);
             static char str0[128] = "new";
             if(ImGui::SmallButton("New file"))
             {
@@ -278,7 +283,7 @@ struct Editor
                 DrawshowFileBrowser();
             ImGui::End();    
 
-            ImGui::Begin("Info", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
+            ImGui::Begin("FPS", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
                 DrawFPS();
             ImGui::End();
 
@@ -346,7 +351,7 @@ struct Editor
                 ImVec2 playerSize = ImGui::GetWindowSize();
                 ImVec2 buttonSize(30, 30);
 
-                float buttonPosX = (playerSize.x - buttonSize.x * 3) / 2;
+                float buttonPosX = (playerSize.x - buttonSize.x * 4) / 2;
                 float buttonPosY = (playerSize.y - buttonSize.y) / 2;
 
                 ImGui::SetCursorPosX(buttonPosX);
@@ -373,6 +378,15 @@ struct Editor
                 {
                     Paused = true;
                     DoStep = true;
+                }
+                ImGui::SameLine();
+                if(ImGui::Button("[]", buttonSize))
+                {
+                    Paused = false;
+                    DoStep = false;
+                    editorEngineRef->basicIntepreter->end();
+                    editorEngineRef->currentState = Off;
+                    editorEngineRef->basicIntepreter->CloseBas();
                 }
 
 

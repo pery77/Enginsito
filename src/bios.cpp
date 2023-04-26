@@ -7,7 +7,7 @@ Engine* biosEngineRef;
 Bios::Bios(Engine* _engine)
 {
     std::stringstream ss;
-    ss << ASSETS_FOLDER << "/default.mem";
+    ss << CONFIG_FOLDER << "/default" << MEM_EXTENSION;
     Tools::LoadMemory(ss.str().c_str());
     Tools::InitFont();
 

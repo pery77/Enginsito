@@ -34,10 +34,10 @@
 
 #include "imgui.h"
 
-#define NO_FONT_AWESOME
+//#define NO_FONT_AWESOME
 #ifndef NO_FONT_AWESOME
 #include "extras/IconsFontAwesome6.h"
-#define FONT_AWESOME_ICON_SIZE 11
+#define FONT_AWESOME_ICON_SIZE 24
 #endif
 
 #ifdef __cplusplus
@@ -61,10 +61,6 @@ bool rlImGuiImageButton(const char* name, const Texture *image);
 bool rlImGuiImageButtonSize(const char* name, const Texture* image, ImVec2 size);
 void rlImGuiImageSize(const Texture *image, int width, int height);
 void rlImGuiImageRect(const Texture* image, int destWidth, int destHeight, Rectangle sourceRect);
-
-extern ImFont* pFont;
-void rlPushFont();
-void rlPopFont();
 
 #ifdef __cplusplus
 }

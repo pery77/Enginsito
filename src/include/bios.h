@@ -65,7 +65,8 @@ CD. - directory up.
 PRINT p - print p in screen.
 MEM  - print loaded program in memory.
 LOAD - load program in memory.
-FILEWATCHER 0|1 - on off filewatcher system.
+FILEWATCHER 0|1 - on off filewatcher 
+system.
 )|";
 
 };

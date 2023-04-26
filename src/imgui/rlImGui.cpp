@@ -44,6 +44,8 @@
 #include "extras/FA6FreeSolidFontData.h"
 #endif
 
+#include "../include/tools.h"
+
 static Texture2D FontTexture;
 
 static ImGuiMouseCursor CurrentMouseCursor = ImGuiMouseCursor_COUNT;
@@ -461,6 +463,12 @@ void rlImGuiSetup(bool dark)
 
 	//io.Fonts->AddFontDefault();
 
+	io.IniFilename = "config/editor.ini";
+
+	std::stringstream ss;
+	ss << CONFIG_FOLDER << "/font.ttf";
+    io.Fonts->AddFontFromFileTTF(ss.str().c_str(), 24.0f);
+
 #ifndef NO_FONT_AWESOME
 	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
 	ImFontConfig icons_config;
@@ -470,23 +478,9 @@ void rlImGuiSetup(bool dark)
 	io.Fonts->AddFontFromMemoryCompressedTTF((void*)fa_solid_900_compressed_data, fa_solid_900_compressed_size, FONT_AWESOME_ICON_SIZE, &icons_config, icons_ranges);
 #endif
 
-    //pFont = io.Fonts->AddFontFromFileTTF("font.ttf", 16.0f);
-    //pFont = io.Fonts->AddFontFromFileTTF("font.ttf", 20.0f);
-    pFont = io.Fonts->AddFontFromFileTTF("font.ttf", 24.0f);
-
 	rlImGuiEndInitImGui();
 }
 
-ImFont* pFont;
-
-void rlPushFont()
-{
-	ImGui::PushFont(pFont);
-}
-void rlPopFont()
-{
-	ImGui::PopFont();
-}
 
 void rlImGuiReloadFonts()
 {

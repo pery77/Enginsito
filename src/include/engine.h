@@ -36,6 +36,7 @@ class Engine
         void UpdateFileWatcher();
 
         bool FileWatcherEnabled = false;
+        GameState currentState = Off;
 
     private:
 

@@ -19,8 +19,10 @@
 #define GAME_FPS            60
 #define GAME_RATIO          1.6
 #define ASSETS_FOLDER       "assets"
+#define CONFIG_FOLDER       "config"
+#define BOOT_FILE           "config/boot.txt"
 #define PROGRAM_EXTENSION   ".bas"
-#define BOOT_FILE           "assets/boot.txt"
+#define MEM_EXTENSION       ".mem"
 
 #define PE_VERSION          258
 

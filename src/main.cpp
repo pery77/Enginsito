@@ -27,6 +27,8 @@ void raylibLog(int msgType, const char *text, va_list args)
     Tools::console->AddLog(buffer);
 }
 
+
+
 int main(int argc, char *argv[])
 {
     Engine* engine = new Engine();
@@ -50,8 +52,7 @@ int main(int argc, char *argv[])
     SetExitKey(KEY_NULL);
 
     engine->Init();
-
-    GameState currentState = Off;
+    
     bool showImgui = false;
     const char * pauseMessage = "Paused, press ESC again to exit.";
     int pauseMessageSize = MeasureTextEx(Tools::GetFont(),"Paused, press ESC again to exit.", 8,0).x * 0.5f;
@@ -90,7 +91,7 @@ int main(int argc, char *argv[])
         { 
             engine->bios->ShouldRun = false;
 
-            if (currentState == Running)
+            if ( engine->currentState == Running)
             {
                 engine->basicIntepreter->end();
             }
@@ -99,7 +100,7 @@ int main(int argc, char *argv[])
             {
                 engine->basicIntepreter->Run();
                 engine->basicIntepreter->init();
-                currentState = Running;
+                engine->currentState = Running;
             }
             else
             {
@@ -108,14 +109,14 @@ int main(int argc, char *argv[])
         }
         if (IsKeyReleased(KEY_ESCAPE))
         {
-            switch (currentState)
+            switch (engine->currentState)
             {
                 case Running:
-                    currentState = Paused;
+                    engine->currentState = Paused;
                     break;
                 case Paused:
                     engine->basicIntepreter->end();
-                    currentState = Off;
+                    engine->currentState = Off;
                     engine->basicIntepreter->CloseBas();
                     break;
                 default:
@@ -123,16 +124,16 @@ int main(int argc, char *argv[])
             }
         }
 
-        if (currentState == Paused)
+        if (engine->currentState == Paused)
         {
             int anyKey = GetKeyPressed();
-            if (anyKey != 0 && anyKey != 256) currentState = Running; // key 256 is Escape key
+            if (anyKey != 0 && anyKey != 256) engine->currentState = Running; // key 256 is Escape key
         }
 
         // Update
         engine->basicIntepreter->UpdateAudio();
 
-        if (currentState == Running)
+        if (engine->currentState == Running)
         {
             if (!engine->editor->Paused)
             {
@@ -151,7 +152,7 @@ int main(int argc, char *argv[])
 
             //Draw game to texture.
             BeginTextureMode(engine->postProcessing->mainRender);
-                switch (currentState)
+                switch (engine->currentState)
                 {
                     case Off:
                         if (showImgui)
