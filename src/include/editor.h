@@ -99,7 +99,7 @@ struct Editor
         ImGui::BeginChild("#Head",ImVec2(0, list_item_height), true, ImGuiWindowFlags_NoScrollWithMouse);
             ImGui::Text("Current path: %s", editorEngineRef->bios->CurrentPath.c_str());
             ImGui::SameLine();
-            ImGui::Checkbox("Memory", &memoryMode);
+            ImGui::Checkbox("Memory mode", &memoryMode);
         ImGui::EndChild();
 
         if(memoryMode) ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.192f, 0.106, 0.216f, 1.0f));
@@ -129,15 +129,23 @@ struct Editor
             ImGui::PopStyleColor(1);
 
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.827f, 0.871f, 0.98f, 1.0f));
-            ss = Tools::GetFiles(editorEngineRef->bios->CurrentPath.c_str());
-            while (std::getline(ss, temp))
+            if (!memoryMode)
             {
-                if(ImGui::Selectable(temp.c_str(), false))
+                ss = Tools::GetFiles(editorEngineRef->bios->CurrentPath.c_str());
+                while (std::getline(ss, temp))
                 {
-                    editorEngineRef->bios->CurrentProgram = temp;
-                    OpenFile();
+                    if(ImGui::Selectable(temp.c_str(), false))
+                    {
+                        editorEngineRef->bios->CurrentProgram = temp;
+                        OpenFile();
+                    }
                 }
             }
+            else
+            {
+                //memory mode
+            }
+
         ImGui::PopStyleColor(1);
         ImGui::EndChild();
 
@@ -343,8 +351,8 @@ struct Editor
 
             ImGui::End();
 
-            ImVec2 minHeight(60, 60);
-            ImVec2 maxHeight(2000, 70);
+            ImVec2 minHeight(60, 100);
+            ImVec2 maxHeight(2000, 100);
             ImGui::SetNextWindowSizeConstraints(minHeight, maxHeight);
             ImGui::Begin("Player", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 
@@ -355,8 +363,9 @@ struct Editor
                 float buttonPosY = (playerSize.y - buttonSize.y) / 2;
 
                 ImGui::SetCursorPosX(buttonPosX);
+                ImGui::SetCursorPosY(buttonPosY);
 
-                if(ImGui::Button(">", buttonSize))
+                if(ImGui::Button(ICON_FA_PLAY, buttonSize))
                 {
                     if (!Paused)
                     {
@@ -369,18 +378,18 @@ struct Editor
                     DoStep = false;
                 }
                 ImGui::SameLine();
-                if(ImGui::Button("||", buttonSize))
+                if(ImGui::Button(ICON_FA_PAUSE, buttonSize))
                 {
                     Paused = !Paused;
                 }
                 ImGui::SameLine();
-                if(ImGui::Button("|>", buttonSize))
+                if(ImGui::Button(ICON_FA_FORWARD_STEP, buttonSize))
                 {
                     Paused = true;
                     DoStep = true;
                 }
                 ImGui::SameLine();
-                if(ImGui::Button("[]", buttonSize))
+                if(ImGui::Button(ICON_FA_STOP, buttonSize))
                 {
                     Paused = false;
                     DoStep = false;
