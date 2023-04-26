@@ -271,7 +271,7 @@ std::vector<std::string> Tools::Split(const std::string& str, const char sep) {
     
     return tokens;
 }
-std::stringstream Tools::GetFiles(const char *path) {
+std::stringstream Tools::GetFiles(const char *path, bool memoryFiles) {
     
     namespace fs = std::filesystem;
     const fs::path current_path = fs::current_path() / ASSETS_FOLDER / path;
@@ -286,7 +286,7 @@ std::stringstream Tools::GetFiles(const char *path) {
     for(auto& p : std::filesystem::directory_iterator(current_path)){
         if (p.is_regular_file()) {
             std::string file = p.path().stem().string();   
-            if (IsFileExtension(p.path().filename().string().c_str(), PROGRAM_EXTENSION))
+            if (IsFileExtension(p.path().filename().string().c_str(), memoryFiles ? MEM_EXTENSION : PROGRAM_EXTENSION))
                 result  << file << "\n";
         }
     }
@@ -342,26 +342,26 @@ bool Tools::FileExist(std::string path, std::string file) {
     return result;
 }
 
-float Tools::Min(float a, float b) {
+float Tools::Min(float a, float b) 
+{
     return a<b ? a : b;
 }
 
-void Tools::DumpMemory(const char *path) {
-
+void Tools::DumpMemory(const char *path) 
+{
     FILE *f = fopen(path, "wb");
     if (f) {
         SetVersion();
         size_t r = fwrite(MainMemory, sizeof(MainMemory[0]), 4096, f);
-        printf("Wrote %zu elements\n", r);
         fclose(f);
     }
 }
 
-void Tools::LoadMemory(const char *path) {
+void Tools::LoadMemory(const char *path) 
+{
     FILE *f = fopen(path, "rb");
     if (f) {
         size_t r = fread(MainMemory, sizeof(MainMemory), 1, f);
-        printf("Readed %zu elements\n", r);
         fclose(f);
     }
 }

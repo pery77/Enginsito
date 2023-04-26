@@ -34,6 +34,8 @@ class Bios {
         void AddSubPath(std::string current);
         void RemoveSubPath();
 
+        void LoadDefaultMemory();
+
     private:
         float delta;
         std::string currentLine = "";

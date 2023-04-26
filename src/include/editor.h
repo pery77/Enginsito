@@ -6,6 +6,7 @@
 #include "bios.h"
 #include "TextEditor.h"
 #include "postprocessing.h"
+#include "mb_manager.h"
 
 struct Editor
 {
@@ -129,23 +130,28 @@ struct Editor
             ImGui::PopStyleColor(1);
 
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.827f, 0.871f, 0.98f, 1.0f));
-            if (!memoryMode)
+   
+        ss = Tools::GetFiles(editorEngineRef->bios->CurrentPath.c_str(), memoryMode);
+        while (std::getline(ss, temp))
+        {
+            if(ImGui::Selectable(temp.c_str(), false))
             {
-                ss = Tools::GetFiles(editorEngineRef->bios->CurrentPath.c_str());
-                while (std::getline(ss, temp))
+                if (memoryMode)
                 {
-                    if(ImGui::Selectable(temp.c_str(), false))
-                    {
-                        editorEngineRef->bios->CurrentProgram = temp;
-                        OpenFile();
-                    }
+                    std::stringstream m;
+                    m << ASSETS_FOLDER << "/" << editorEngineRef->bios->CurrentPath << "/" << temp << MEM_EXTENSION;
+                    Tools::console->AddLog(m.str().c_str());
+                    Tools::LoadMemory(m.str().c_str());
+                    
+                }
+                else
+                {
+                    editorEngineRef->bios->CurrentProgram = temp;
+                    OpenFile();
                 }
             }
-            else
-            {
-                //memory mode
-            }
-
+        }
+            
         ImGui::PopStyleColor(1);
         ImGui::EndChild();
 
@@ -160,7 +166,7 @@ struct Editor
                 editorEngineRef->bios->CurrentProgram = str0;
             }
             ImGui::SameLine();
-            ImGui::InputText("NewFile", str0, IM_ARRAYSIZE(str0));
+            ImGui::InputText("New File", str0, IM_ARRAYSIZE(str0));
         ImGui::EndChild(); 
     }
 
@@ -252,6 +258,112 @@ struct Editor
         }
     }
 
+    void DrawCRT()
+    {
+        bool ppState = editorEngineRef->postProcessing->enabled;
+        ImGui::Checkbox("Enabled", &ppState);
+        editorEngineRef->postProcessing->SetState(ppState);
+        
+        static int blurPower    = Tools::Peek(4080);
+        static int blurFactor   = Tools::Peek(4081);
+        static int chromatic    = Tools::Peek(4082);
+        static int curvature    = Tools::Peek(4083);
+        static int vignetting   = Tools::Peek(4084);
+        static int scanLine     = Tools::Peek(4085);
+        static int verticalLine = Tools::Peek(4086);
+        static int grilleForce  = Tools::Peek(4087);
+        static int noise        = Tools::Peek(4088);
+        static int fliker       = Tools::Peek(4089);
+        static int grille       = Tools::Peek(4090);
+
+        ImGui::DragInt("Blur Power", &blurPower, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::DragInt("Blur Factor", &blurFactor, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::DragInt("Chromatic", &chromatic, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::DragInt("Curvature", &curvature, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::DragInt("Vignetting", &vignetting, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::DragInt("Scanline", &scanLine, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::DragInt("Vertical Line", &verticalLine, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::DragInt("Grille Force", &grilleForce, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::DragInt("Noise", &noise, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::DragInt("Flicker", &fliker, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::DragInt("Grille", &grille, 1, 0, 2, "%1i", ImGuiSliderFlags_AlwaysClamp);
+
+        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::BlurPower, blurPower);
+        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::BlurFactor, blurFactor);
+        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Chromatic, chromatic);
+        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Curvature, curvature);
+        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Vignetting, vignetting);
+        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::ScanLine, scanLine);
+        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::VerticalLine, verticalLine);
+        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::GrilleForce, grilleForce);
+        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Noise, noise);
+        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Fliker, fliker);
+        editorEngineRef->postProcessing->SetGrilleTexture(grille);
+    }
+
+    void DrawPlayer()
+    {
+        ImVec2 playerSize = ImGui::GetWindowSize();
+        ImVec2 buttonSize(30, 30);
+
+        float buttonPosX = (playerSize.x - buttonSize.x * 4) / 2;
+        float buttonPosY = (playerSize.y - buttonSize.y) / 2;
+
+        ImGui::SetCursorPosX(buttonPosX);
+        ImGui::SetCursorPosY(buttonPosY);
+
+        if(ImGui::Button(ICON_FA_PLAY, buttonSize))
+        {
+            if (!Paused)
+            {
+                auto textToSave = codeEditor.GetText();
+                SaveFileText(editorEngineRef->bios->GetFile().c_str(), (char *)textToSave.c_str());
+                editorEngineRef->bios->ShouldRun = true;
+            }
+
+            Paused = false;
+            DoStep = false;
+        }
+        ImGui::SameLine();
+        if(ImGui::Button(ICON_FA_PAUSE, buttonSize))
+        {
+            Paused = !Paused;
+        }
+        ImGui::SameLine();
+        if(ImGui::Button(ICON_FA_FORWARD_STEP, buttonSize))
+        {
+            Paused = true;
+            DoStep = true;
+        }
+        ImGui::SameLine();
+        if(ImGui::Button(ICON_FA_STOP, buttonSize))
+        {
+            Paused = false;
+            DoStep = false;
+            editorEngineRef->basicIntepreter->close();
+            editorEngineRef->currentState = Off;
+            editorEngineRef->basicIntepreter->CloseBas();
+        }
+    }
+
+    void DrawMemory()
+    {
+        static char str0[128] = "memory";
+        if (ImGui::Button("Load default"))
+        {
+            editorEngineRef->bios->LoadDefaultMemory();
+        }
+        ImGui::InputText("New", str0, IM_ARRAYSIZE(str0));
+        if (ImGui::Button("Save"))
+        {
+            std::stringstream ss;
+            ss << ASSETS_FOLDER << "/" << editorEngineRef->bios->CurrentPath << "/" << str0 << MEM_EXTENSION;
+            Tools::console->AddLog("[MEMORY] Saved:");
+            Tools::console->AddLog(ss.str().c_str());
+            Tools::DumpMemory(ss.str().c_str());
+        }
+    }
+
     void Draw()
     {
         ImGuiIO& io = ImGui::GetIO();
@@ -309,96 +421,18 @@ struct Editor
             ImGui::End();
 
             ImGui::Begin("CRT", NULL, ImGuiWindowFlags_NoCollapse);
-                bool ppState = editorEngineRef->postProcessing->enabled;
-                ImGui::Checkbox("Enabled", &ppState);
-                editorEngineRef->postProcessing->SetState(ppState);
-                
-                static int blurPower    = Tools::Peek(4080);
-                static int blurFactor   = Tools::Peek(4081);
-                static int chromatic    = Tools::Peek(4082);
-                static int curvature    = Tools::Peek(4083);
-                static int vignetting   = Tools::Peek(4084);
-                static int scanLine     = Tools::Peek(4085);
-                static int verticalLine = Tools::Peek(4086);
-                static int grilleForce  = Tools::Peek(4087);
-                static int noise        = Tools::Peek(4088);
-                static int fliker       = Tools::Peek(4089);
-                static int grille       = Tools::Peek(4090);
-
-                ImGui::DragInt("Blur Power", &blurPower, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::DragInt("Blur Factor", &blurFactor, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::DragInt("Chromatic", &chromatic, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::DragInt("Curvature", &curvature, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::DragInt("Vignetting", &vignetting, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::DragInt("Scanline", &scanLine, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::DragInt("Vertical Line", &verticalLine, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::DragInt("Grille Force", &grilleForce, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::DragInt("Noise", &noise, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::DragInt("Flicker", &fliker, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::DragInt("Grille", &grille, 1, 0, 2, "%1i", ImGuiSliderFlags_AlwaysClamp);
-
-                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::BlurPower, blurPower);
-                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::BlurFactor, blurFactor);
-                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Chromatic, chromatic);
-                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Curvature, curvature);
-                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Vignetting, vignetting);
-                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::ScanLine, scanLine);
-                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::VerticalLine, verticalLine);
-                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::GrilleForce, grilleForce);
-                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Noise, noise);
-                editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Fliker, fliker);
-                editorEngineRef->postProcessing->SetGrilleTexture(grille);
-
+                DrawCRT();
             ImGui::End();
 
             ImVec2 minHeight(60, 100);
             ImVec2 maxHeight(2000, 100);
             ImGui::SetNextWindowSizeConstraints(minHeight, maxHeight);
             ImGui::Begin("Player", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+                DrawPlayer();
+            ImGui::End();
 
-                ImVec2 playerSize = ImGui::GetWindowSize();
-                ImVec2 buttonSize(30, 30);
-
-                float buttonPosX = (playerSize.x - buttonSize.x * 4) / 2;
-                float buttonPosY = (playerSize.y - buttonSize.y) / 2;
-
-                ImGui::SetCursorPosX(buttonPosX);
-                ImGui::SetCursorPosY(buttonPosY);
-
-                if(ImGui::Button(ICON_FA_PLAY, buttonSize))
-                {
-                    if (!Paused)
-                    {
-                        auto textToSave = codeEditor.GetText();
-                        SaveFileText(editorEngineRef->bios->GetFile().c_str(), (char *)textToSave.c_str());
-                        editorEngineRef->bios->ShouldRun = true;
-                    }
-
-                    Paused = false;
-                    DoStep = false;
-                }
-                ImGui::SameLine();
-                if(ImGui::Button(ICON_FA_PAUSE, buttonSize))
-                {
-                    Paused = !Paused;
-                }
-                ImGui::SameLine();
-                if(ImGui::Button(ICON_FA_FORWARD_STEP, buttonSize))
-                {
-                    Paused = true;
-                    DoStep = true;
-                }
-                ImGui::SameLine();
-                if(ImGui::Button(ICON_FA_STOP, buttonSize))
-                {
-                    Paused = false;
-                    DoStep = false;
-                    editorEngineRef->basicIntepreter->close();
-                    editorEngineRef->currentState = Off;
-                    editorEngineRef->basicIntepreter->CloseBas();
-                }
-
-
+            ImGui::Begin("Memory", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+                DrawMemory();
             ImGui::End();
 
             DrawCode();

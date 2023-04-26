@@ -6,15 +6,20 @@ Engine* biosEngineRef;
 
 Bios::Bios(Engine* _engine)
 {
-    std::stringstream ss;
-    ss << CONFIG_FOLDER << "/default" << MEM_EXTENSION;
-    Tools::LoadMemory(ss.str().c_str());
+    LoadDefaultMemory();
     Tools::InitFont();
 
    biosEngineRef = _engine;
 }
 
 Bios::~Bios(){}
+
+void Bios::LoadDefaultMemory()
+{
+    std::stringstream ss;
+    ss << CONFIG_FOLDER << "/default" << MEM_EXTENSION;
+    Tools::LoadMemory(ss.str().c_str());
+}
 
 void Bios::LoadBoot()
 {

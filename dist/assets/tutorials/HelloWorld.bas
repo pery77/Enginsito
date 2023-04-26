@@ -17,4 +17,10 @@ def draw()
     draw.text("ESCAPE",55 + 6*8,55,1,4)
 enddef
 
+def pause()
+	cls(8)
+	draw.text("Paused!",65,30,2,3
+enddef
+
+
 

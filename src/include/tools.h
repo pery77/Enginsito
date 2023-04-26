@@ -80,7 +80,7 @@ class Tools{
         static char* ToUpper(char* s);
         static std::string GetCharFromCodepoint(int ch);
         static std::vector<std::string> Split(const std::string& str, const char sep);
-        static std::stringstream GetFiles(const char *path);
+        static std::stringstream GetFiles(const char *path, bool memoryMode = false);
         static std::stringstream GetFolders(const char *path);
         static std::stringstream GetDir(const char *path);
         static bool DirExist(std::string path);
