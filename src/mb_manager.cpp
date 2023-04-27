@@ -3,6 +3,7 @@
 #include "postProcessing.h"
 #include "engine.h"
 #include "editor.h"
+#include "sprite_manager.h"
 
 AudioManager* audioR;
 Engine* basicEngineRef;
@@ -10,7 +11,7 @@ uint32_t currentframe = 0;
 
 MBManager::MBManager(Engine* _engine){
 	nullArg[0].type = MB_DT_NIL;
-	audioR = new AudioManager();
+	audioR = new AudioManager(_engine);
 	basicEngineRef = _engine;
 }
 
@@ -228,7 +229,7 @@ int MBManager::cls(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ClearBackground(Tools::GetColor(col));
+    ClearBackground(basicEngineRef->spriteManager->GetColor(col));
 
 	return result;
 }
@@ -249,7 +250,7 @@ int MBManager::drawPixel(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	DrawPixel(x, y, Tools::GetColor(col));
+	DrawPixel(x, y, basicEngineRef->spriteManager->GetColor(col));
 
 	return result;
 }
@@ -275,7 +276,7 @@ int MBManager::drawLine(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	DrawLineEx((Vector2){x1,y1}, (Vector2){x2,y2}, thick, Tools::GetColor(col));
+	DrawLineEx((Vector2){x1,y1}, (Vector2){x2,y2}, thick, basicEngineRef->spriteManager->GetColor(col));
 
 	return result;
 }
@@ -301,10 +302,10 @@ int MBManager::drawCircle(struct mb_interpreter_t* s, void** l){
 
 	switch (style){
 		case 0:
-			DrawCircle(x, y, r, Tools::GetColor(col));
+			DrawCircle(x, y, r, basicEngineRef->spriteManager->GetColor(col));
 			break;
 		default:
-			DrawCircleLines(x, y, r, Tools::GetColor(col));
+			DrawCircleLines(x, y, r, basicEngineRef->spriteManager->GetColor(col));
 			break;
 	}
 
@@ -340,10 +341,10 @@ int MBManager::drawRing(struct mb_interpreter_t* s, void** l){
 
 	switch (style){
 		case 0:
-			DrawRing((Vector2){x, y}, rIn,rOut,startAngle,endAngle,segment,Tools::GetColor(col));
+			DrawRing((Vector2){x, y}, rIn,rOut,startAngle,endAngle,segment,basicEngineRef->spriteManager->GetColor(col));
 			break;
 		default:
-			DrawRingLines((Vector2){x, y}, rIn,rOut,startAngle,endAngle,segment,Tools::GetColor(col));
+			DrawRingLines((Vector2){x, y}, rIn,rOut,startAngle,endAngle,segment,basicEngineRef->spriteManager->GetColor(col));
 			break;
 	}
 
@@ -373,10 +374,10 @@ int MBManager::drawEllipse(struct mb_interpreter_t* s, void** l){
 
 	switch (style){
 		case 0:
-			DrawEllipse(x, y, rh, rv, Tools::GetColor(col));
+			DrawEllipse(x, y, rh, rv, basicEngineRef->spriteManager->GetColor(col));
 			break;
 		default:
-			DrawEllipseLines(x, y, rh, rv, Tools::GetColor(col));
+			DrawEllipseLines(x, y, rh, rv, basicEngineRef->spriteManager->GetColor(col));
 			break;
 	}
 
@@ -410,10 +411,10 @@ int MBManager::drawTriangle(struct mb_interpreter_t* s, void** l){
 
 	switch (style){
 		case 0:
-			DrawTriangle((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, Tools::GetColor(col));
+			DrawTriangle((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, basicEngineRef->spriteManager->GetColor(col));
 			break;
 		default:
-			DrawTriangleLines((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, Tools::GetColor(col));
+			DrawTriangleLines((Vector2){x1,y1}, (Vector2){x2,y2}, (Vector2){x3,y3}, basicEngineRef->spriteManager->GetColor(col));
 			break;
 	}
 
@@ -444,10 +445,10 @@ int MBManager::drawRect(struct mb_interpreter_t* s, void** l){
 	switch (lineThick)
 	{
 		case 0:
-			DrawRectangle(x, y, w, h, Tools::GetColor(col));
+			DrawRectangle(x, y, w, h, basicEngineRef->spriteManager->GetColor(col));
 			break;
 		default:
-			DrawRectangleLinesEx((Rectangle){x, y, w, h}, lineThick, Tools::GetColor(col));
+			DrawRectangleLinesEx((Rectangle){x, y, w, h}, lineThick, basicEngineRef->spriteManager->GetColor(col));
 			break;
 	}
 
@@ -484,10 +485,10 @@ int MBManager::drawRectRound(struct mb_interpreter_t* s, void** l){
 	switch (lineThick)
 	{
 		case 0:
-			DrawRectangleRounded((Rectangle){x, y, w, h}, fRound, segments, Tools::GetColor(col));
+			DrawRectangleRounded((Rectangle){x, y, w, h}, fRound, segments, basicEngineRef->spriteManager->GetColor(col));
 			break;
 		default:
-			DrawRectangleRoundedLines((Rectangle){x, y, w, h}, fRound, segments, lineThick, Tools::GetColor(col));
+			DrawRectangleRoundedLines((Rectangle){x, y, w, h}, fRound, segments, lineThick, basicEngineRef->spriteManager->GetColor(col));
 			break;
 	}
 
@@ -519,13 +520,13 @@ int MBManager::drawPoly(struct mb_interpreter_t* s, void** l){
 
 	switch (lineThick){
 		case 0:
-			DrawPoly((Vector2){x, y},sides,radius,rotation,Tools::GetColor(col));
+			DrawPoly((Vector2){x, y},sides,radius,rotation,basicEngineRef->spriteManager->GetColor(col));
 			break;
 		case 1:
-			DrawPolyLines((Vector2){x, y},sides,radius,rotation,Tools::GetColor(col));
+			DrawPolyLines((Vector2){x, y},sides,radius,rotation,basicEngineRef->spriteManager->GetColor(col));
 			break;
 		default:
-			DrawPolyLinesEx((Vector2){x, y},sides,radius,rotation,lineThick,Tools::GetColor(col));
+			DrawPolyLinesEx((Vector2){x, y},sides,radius,rotation,lineThick,basicEngineRef->spriteManager->GetColor(col));
 			break;
 	}
 
@@ -553,7 +554,7 @@ int MBManager::drawText(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 	if (size < 1) size = 1;
 	if (size > 4) size = 4;
-    DrawTextEx(Tools::GetFont(),arg, (Vector2){x, y}, size * 8, Tools::GetFontSpacing(), Tools::GetColor(col));
+    DrawTextEx(basicEngineRef->spriteManager->GetFont(),arg, (Vector2){x, y}, size * 8, basicEngineRef->spriteManager->GetFontSpacing(), basicEngineRef->spriteManager->GetColor(col));
 
 	return result;
 }
@@ -575,7 +576,7 @@ int MBManager::measureText(struct mb_interpreter_t* s, void** l){
 	if (size < 1) size = 1;
 	if (size > 4) size = 4;
 
-    ret.value.integer = MeasureTextEx(Tools::GetFont(), arg, (float)size * 8, 0.0).x;
+    ret.value.integer = MeasureTextEx(basicEngineRef->spriteManager->GetFont(), arg, (float)size * 8, 0.0).x;
 
     mb_check(mb_push_value(s, l, ret));
 	return result;
@@ -712,7 +713,7 @@ int MBManager::setFontSpacing(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	Tools::SetFontSpacing(spacing);
+   	basicEngineRef->spriteManager->SetFontSpacing(spacing);
 
 	return result;
 }
@@ -723,7 +724,7 @@ int MBManager::updateFont(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 	
-	Tools::InitFont();
+	basicEngineRef->spriteManager->InitFont();
 
 	return result;
 }
@@ -748,7 +749,7 @@ int MBManager::setSprite(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	Tools::SetSprite(id,b0,b1,b2,b3,b4,b5,b6,b7);
+   	basicEngineRef->spriteManager->SetSprite(id,b0,b1,b2,b3,b4,b5,b6,b7);
 
 	return result;
 }
@@ -759,7 +760,7 @@ int MBManager::renderSprites(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 	
-	Tools::RenderSprites();
+	basicEngineRef->spriteManager->RenderSprites();
 
 	return result;
 }
@@ -778,7 +779,7 @@ int MBManager::getSpriteByte(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	ret = Tools::GetSpriteByte(id, byte);
+   	ret = basicEngineRef->spriteManager->GetSpriteByte(id, byte);
 	mb_check(mb_push_int(s, l, ret));
 	return result;
 }
@@ -800,7 +801,7 @@ int MBManager::setColor(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	Tools::SetColor(color,r,g,b);
+	basicEngineRef->spriteManager->SetColor(color,r,g,b);
 
 	return result;
 }
@@ -819,7 +820,7 @@ int MBManager::getColor(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	Color retColor = Tools::GetColor(color);
+	Color retColor = basicEngineRef->spriteManager->GetColor(color);
 	
 	switch (channel){
 		case 1:
@@ -1754,7 +1755,7 @@ int MBManager::drawSprite(struct mb_interpreter_t* s, void** l){
 		}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	Tools::DrawSprite(id, x, y, col, flag);
+	basicEngineRef->spriteManager->DrawSprite(id, x, y, col, flag);
 
 	return result;
 }
@@ -1774,7 +1775,7 @@ int MBManager::drawMetaSprite(struct mb_interpreter_t* s, void** l){
 		}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	Tools::DrawMetaSprite(id, x, y);
+	basicEngineRef->spriteManager->DrawMetaSprite(id, x, y);
 	
 	return result;
 }
@@ -1798,7 +1799,7 @@ int MBManager::addMetaSprite(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	Tools::AddMetaSprite(id,pos,spriteId,x,y,col,flag);
+   	basicEngineRef->spriteManager->AddMetaSprite(id,pos,spriteId,x,y,col,flag);
 
 	return result;
 }
@@ -1821,7 +1822,7 @@ int MBManager::getMetaSprite(struct mb_interpreter_t* s, void** l){
 	d[0] = 20;
 	mb_init_array(s, l, MB_DT_REAL, d, 1, &arr);
 
-	std::array<int,20> r = Tools::GetMetaSprite(id);
+	std::array<int,20> r = basicEngineRef->spriteManager->GetMetaSprite(id);
     for(int i=0;i<20;i++)
     {
 		val.type = MB_DT_INT;
@@ -1849,7 +1850,7 @@ int MBManager::peek(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	mb_check(mb_push_int(s, l, Tools::Peek(dir)));
+   	mb_check(mb_push_int(s, l, basicEngineRef->Peek(dir)));
 
 	return result;
 }
@@ -1866,7 +1867,7 @@ int MBManager::poke(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	Tools::Poke(dir,value);
+   	basicEngineRef->Poke(dir,value);
 
 	return result;
 }
@@ -1896,7 +1897,7 @@ int MBManager::dumpMemory(struct mb_interpreter_t* s, void** l) {
 		mb_check(mb_pop_string(s, l, &path));
 	mb_check(mb_attempt_close_bracket(s, l));
 	
-	Tools::DumpMemory(path);
+	basicEngineRef->DumpMemory(path);
 	
 	return result;
 }
@@ -1910,7 +1911,7 @@ int MBManager::loadMemory(struct mb_interpreter_t* s, void** l) {
 		mb_check(mb_pop_string(s, l, &path));
 	mb_check(mb_attempt_close_bracket(s, l));
 	
-	Tools::LoadMemory(path);
+	basicEngineRef->LoadMemory(path);
 	
 	return result;
 }

@@ -1,6 +1,11 @@
 #include "postProcessing.h"
+#include "engine.h"
 
-PostProcessing::PostProcessing(){
+Engine* postProEngineRef;
+
+PostProcessing::PostProcessing(Engine* _engine)
+{
+    postProEngineRef = _engine;
     setUpShaders();
 }
 PostProcessing::~PostProcessing(){}
@@ -238,14 +243,14 @@ void PostProcessing::SetCRTFloat(CRTProperty property, float value){
         default:
             break;
     }
-    Tools::Poke(dir,v);
+    postProEngineRef->Poke(dir,v);
 }
 
  void PostProcessing::SetGrilleTexture(int newTextureId)
  {
     if (newTextureId<0) newTextureId = 0;
     if (newTextureId>2) newTextureId = 2;
-    Tools::Poke(4090, newTextureId);
+    postProEngineRef->Poke(4090, newTextureId);
     currentGrilleTexture = newTextureId;
  }
 

@@ -15,6 +15,7 @@ class MBManager;
 class PostProcessing;
 class Bios;
 class Editor;
+class SpriteManager;
 
 class Engine
 {
@@ -31,12 +32,25 @@ class Engine
         PostProcessing* postProcessing;
         Bios* bios;
         Editor* editor;
+        SpriteManager* spriteManager;
 
         static const char *GetEngineName();
         void UpdateFileWatcher();
 
         bool FileWatcherEnabled = false;
         GameState currentState = Off;
+
+        unsigned char MainMemory[4096]{};
+        unsigned char *GetMemory();
+        void DumpMemory(const char *path);
+        void LoadMemory(const char *path);
+        void LoadDefaultMemory();
+
+        unsigned char Peek(unsigned short dir);
+        void Poke(unsigned short dir,unsigned char value);
+
+        int GetVersion();
+        void SetVersion();
 
     private:
 

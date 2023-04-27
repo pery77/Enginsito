@@ -49,27 +49,8 @@ typedef struct MetaSprites{
 }MetaSprites;
 
 class Tools{
+    
     public:
-
-        static Color GetColor(int color);
-        static Color GetBiosColor(int color);
-        static Color SetColor(int color, int r, int g, int b);
-
-        static void InitFont();
-        static Font GetFont();
-
-        static void SetSprite(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
-                                unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
-                                unsigned char b7);
-        static void DrawSprite(int id, int x, int y, int col, int flag);
-        static void DrawMetaSprite(int id, int x, int y);
-        static void RenderSprites();
-        static Texture GetSpriteTexture();
-        static unsigned char GetSpriteByte(unsigned int id, unsigned char byte);
-
-        static void AddMetaSprite(unsigned char id, unsigned char postition, unsigned char sprite_id, unsigned char offset_x, unsigned char offset_y, 
-                                    unsigned char color, unsigned char flags);
-        static std::array<int,20> GetMetaSprite(unsigned char id);
 
         static int GetVirtualMouse(bool isXAxis);
         static void SetVirtualMouse(int x,int y);
@@ -88,20 +69,8 @@ class Tools{
 
         static float Min(float a, float b);
 
-        static void SetFontSpacing(int spacing);
-        static float GetFontSpacing();
-
-        static void DumpMemory(const char *path);
-        static void LoadMemory(const char *path);
-        static unsigned char Peek(unsigned short dir);
-        static void Poke(unsigned short dir,unsigned char value);
-
-        static int GetVersion();
-        static void SetVersion();
-
         static int8_t ToSigned(unsigned char value);
         static unsigned char ToUnsigned(int8_t value);
 
         static Console* console;
-        static unsigned char *GetMemory();
 };

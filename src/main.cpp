@@ -8,6 +8,7 @@
 #include "postProcessing.h"
 #include "bios.h"
 #include "editor.h"
+#include "sprite_manager.h"
 
 void raylibLog(int msgType, const char *text, va_list args) 
 {
@@ -55,7 +56,7 @@ int main(int argc, char *argv[])
     
     bool showImgui = false;
     const char * pauseMessage = "Paused, press ESC again to exit.";
-    int pauseMessageSize = MeasureTextEx(Tools::GetFont(),"Paused, press ESC again to exit.", 8,0).x * 0.5f;
+    int pauseMessageSize = MeasureTextEx(engine->spriteManager->GetFont(),"Paused, press ESC again to exit.", 8,0).x * 0.5f;
 
     engine->bios->LoadBoot();
     

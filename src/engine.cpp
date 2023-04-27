@@ -5,6 +5,19 @@
 #include "bios.h"
 #include "FileWatcher.h"
 #include "editor.h"
+#include "sprite_manager.h"
+
+//Memory map
+//0    - 47     Palette (Color C -> R G B) (Color 0 -> 0 1 2) (Color 1 -> 3 4 5)
+//48   - 2088   Graphics (8 bytes per sprite, 256 sprites)
+//2096 - 3375   MetaSprites   (20 bytes per meta, 64 metas)
+//3376 - 3727   Sfx (22 bytes per sfx, 16 sfx)
+//3728 - 4079   Unused
+//4080 - 4090   CRT 4080 Blur, 4081 BlurFactor, 4082 Chromatic, 4083 Curvature, 
+//                  4084 Vignetting, 4085 ScanLine, 4086 VerticalLine, 4087 GrilleForce
+//                  4088 Noise, 4089 Fliker, 4090 Grille
+//4091-4093 not used at moment.
+//4094-4095 version (2 bytes)
 
 FilePathList droppedFiles = { 0 };
 
@@ -13,6 +26,7 @@ PostProcessing* postProcessing;
 Bios* bios;
 FileWatcher* fw;
 Editor* editor;
+SpriteManager* spriteManager;
 
 Engine::Engine()
 {
@@ -27,17 +41,30 @@ Engine::~Engine()
     delete postProcessing;
     delete basicIntepreter;
     delete bios;
+    delete spriteManager;
 }
 
 void Engine::Init()
 {
-    postProcessing = new PostProcessing();
+    LoadDefaultMemory();
+
+    postProcessing = new PostProcessing(this);
     basicIntepreter = new MBManager(this);
     bios = new Bios(this);
     editor = new Editor(this);
 
+    spriteManager = new SpriteManager(this);
+    spriteManager->InitFont();
+
     //DISABLED WREN AT MOMENT
     //WrenManager* wren = new WrenManager();
+}
+
+void Engine::LoadDefaultMemory()
+{
+    std::stringstream ss;
+    ss << CONFIG_FOLDER << "/default" << MEM_EXTENSION;
+    LoadMemory(ss.str().c_str());
 }
 
 void Engine::DropFileUpdate()
@@ -95,3 +122,46 @@ const char* Engine::GetEngineName()
     return TextFormat("peryEngine v: %.3f", PE_VERSION / 1000.0f);
 }
 
+unsigned char* Engine::GetMemory()
+{
+    return MainMemory;
+}
+
+void Engine::DumpMemory(const char *path) 
+{
+    FILE *f = fopen(path, "wb");
+    if (f) {
+        SetVersion();
+        size_t r = fwrite(MainMemory, sizeof(MainMemory[0]), 4096, f);
+        fclose(f);
+    }
+}
+
+void Engine::LoadMemory(const char *path) 
+{
+    FILE *f = fopen(path, "rb");
+    if (f) {
+        size_t r = fread(MainMemory, sizeof(MainMemory), 1, f);
+        fclose(f);
+    }
+}
+
+unsigned char Engine::Peek(unsigned short dir) {
+    dir = Tools::IntClamp(dir, 0, 4096);
+    return (MainMemory)[dir];
+}
+
+void Engine::Poke(unsigned short dir, unsigned char value) {
+    dir = Tools::IntClamp(dir, 0, 4096);
+    value = Tools::IntClamp(value, 0, 255);
+    MainMemory[dir] = value;
+}
+
+int Engine::GetVersion(){
+    return (Peek(4094)*256) + Peek(4095);
+}
+
+void Engine::SetVersion(){
+    Poke(4094, PE_VERSION / 256);
+    Poke(4095, PE_VERSION % 256);
+}

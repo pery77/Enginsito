@@ -24,10 +24,12 @@ enum CRTProperty{
     Fliker
 };
 
+class Engine;
+
 class PostProcessing{
 
     public:
-    PostProcessing();
+    PostProcessing(Engine* _engine);
     ~PostProcessing();
 
     Vector2i resolution16_10[6] = {

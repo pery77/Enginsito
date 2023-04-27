@@ -8,6 +8,7 @@
 #include "TextEditor.h"
 #include "postprocessing.h"
 #include "mb_manager.h"
+#include "sprite_manager.h"
 
 struct Editor
 {
@@ -145,7 +146,7 @@ struct Editor
                     m << ASSETS_FOLDER << "/" << editorEngineRef->bios->CurrentPath << "/" << temp << MEM_EXTENSION;
                     Tools::console->AddLog("[MEMORY] Loaded:");
                     Tools::console->AddLog(m.str().c_str());
-                    Tools::LoadMemory(m.str().c_str());
+                    editorEngineRef->LoadMemory(m.str().c_str());
                 }
                 else
                 {
@@ -254,10 +255,10 @@ struct Editor
         {
            char buffer [50];
            sprintf (buffer, "[%i]", c);
-           Color col = Tools::GetColor(c);
+           Color col = editorEngineRef->spriteManager->GetColor(c);
            ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
            ImGui::ColorEdit3(buffer, (float*)&color, 0);
-           Tools::SetColor(c, color.x * 255, color.y * 255, color.z * 255);
+           editorEngineRef->spriteManager->SetColor(c, color.x * 255, color.y * 255, color.z * 255);
         }
     }
 
@@ -267,17 +268,17 @@ struct Editor
         ImGui::Checkbox("Enabled", &ppState);
         editorEngineRef->postProcessing->SetState(ppState);
         
-        static int blurPower    = Tools::Peek(4080);
-        static int blurFactor   = Tools::Peek(4081);
-        static int chromatic    = Tools::Peek(4082);
-        static int curvature    = Tools::Peek(4083);
-        static int vignetting   = Tools::Peek(4084);
-        static int scanLine     = Tools::Peek(4085);
-        static int verticalLine = Tools::Peek(4086);
-        static int grilleForce  = Tools::Peek(4087);
-        static int noise        = Tools::Peek(4088);
-        static int fliker       = Tools::Peek(4089);
-        static int grille       = Tools::Peek(4090);
+        static int blurPower    = editorEngineRef->Peek(4080);
+        static int blurFactor   = editorEngineRef->Peek(4081);
+        static int chromatic    = editorEngineRef->Peek(4082);
+        static int curvature    = editorEngineRef->Peek(4083);
+        static int vignetting   = editorEngineRef->Peek(4084);
+        static int scanLine     = editorEngineRef->Peek(4085);
+        static int verticalLine = editorEngineRef->Peek(4086);
+        static int grilleForce  = editorEngineRef->Peek(4087);
+        static int noise        = editorEngineRef->Peek(4088);
+        static int fliker       = editorEngineRef->Peek(4089);
+        static int grille       = editorEngineRef->Peek(4090);
 
         ImGui::DragInt("Blur Power", &blurPower, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
         ImGui::DragInt("Blur Factor", &blurFactor, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
@@ -354,7 +355,7 @@ struct Editor
         static char str0[128] = "memory";
         if (ImGui::Button("Load default"))
         {
-            editorEngineRef->bios->LoadDefaultMemory();
+            editorEngineRef->LoadDefaultMemory();
         }
         ImGui::InputText("New", str0, IM_ARRAYSIZE(str0));
         if (ImGui::Button("Save"))
@@ -363,10 +364,10 @@ struct Editor
             ss << ASSETS_FOLDER << "/" << editorEngineRef->bios->CurrentPath << "/" << str0 << MEM_EXTENSION;
             Tools::console->AddLog("[MEMORY] Saved:");
             Tools::console->AddLog(ss.str().c_str());
-            Tools::DumpMemory(ss.str().c_str());
+            editorEngineRef->DumpMemory(ss.str().c_str());
         }
         
-        mem_edit.DrawContents(Tools::GetMemory(), 4096);
+        mem_edit.DrawContents(editorEngineRef->GetMemory(), 4096);
     }
 
     void Draw()

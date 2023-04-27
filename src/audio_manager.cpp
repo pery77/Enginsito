@@ -1,4 +1,6 @@
 #include "audio_manager.h"
+#include "engine.h"
+
 #include <stdio.h>
 #include <cstring>
 #include <cmath>
@@ -7,6 +9,7 @@ MMLParser* mml[TRACK_COUNT + 1];
 RetroSynth* synth;
 
 AudioStream stream;
+Engine* audioEngineRef;
 
 float steps = 1.0f / (float)SAMPLE_RATE;
 double musicTime = 0.0;
@@ -71,9 +74,12 @@ void mmlCallback(MMLEvent event, int channel, int program, int note, int volume,
     }
 }
 
-AudioManager::AudioManager(){
+AudioManager::AudioManager(Engine* _engine)
+{
+    audioEngineRef = _engine;
 
-    for (int i = 0; i < MAX_WAVE_SLOTS; i++){
+    for (int i = 0; i < MAX_WAVE_SLOTS; i++)
+    {
         LoadSoundData(i);
 
         // Default wave values
@@ -201,13 +207,13 @@ void AudioManager::SFXRender(uint8_t id, uint8_t note){
     sound[id] = LoadSoundFromWave(wave[id]);
 
     unsigned short dir = GetSoundDir(id);
-    Tools::Poke(dir + 21, note);
+    audioEngineRef->Poke(dir + 21, note);
 }
 void AudioManager::SFXWave(uint8_t id, uint8_t waveType){
 
     params[id].waveTypeValue = waveType;
     unsigned short dir = GetSoundDir(id);
-    Tools::Poke(dir, waveType);
+    audioEngineRef->Poke(dir, waveType);
 }
 void AudioManager::SFXEnv(uint8_t id, uint8_t att, uint8_t susT, uint8_t susP, uint8_t dec){
 
@@ -217,10 +223,10 @@ void AudioManager::SFXEnv(uint8_t id, uint8_t att, uint8_t susT, uint8_t susP, u
     params[id].decayTimeValue    = (float) (dec * AUDIO_STEP);
     
     unsigned short dir = GetSoundDir(id);
-    Tools::Poke(dir + 1, att);
-    Tools::Poke(dir + 2, susT);
-    Tools::Poke(dir + 3, susP);
-    Tools::Poke(dir + 4, dec);
+    audioEngineRef->Poke(dir + 1, att);
+    audioEngineRef->Poke(dir + 2, susT);
+    audioEngineRef->Poke(dir + 3, susP);
+    audioEngineRef->Poke(dir + 4, dec);
 }
 void AudioManager::SFXFreq(uint8_t id, uint8_t slide, uint8_t delta, uint8_t vibratoD, uint8_t vibratoS){
 
@@ -230,10 +236,10 @@ void AudioManager::SFXFreq(uint8_t id, uint8_t slide, uint8_t delta, uint8_t vib
     params[id].vibratoSpeedValue = (float) (vibratoS * AUDIO_STEP);
 
     unsigned short dir = GetSoundDir(id);
-    Tools::Poke(dir + 5, slide);
-    Tools::Poke(dir + 6, delta);
-    Tools::Poke(dir + 7, vibratoD);
-    Tools::Poke(dir + 8, vibratoS);
+    audioEngineRef->Poke(dir + 5, slide);
+    audioEngineRef->Poke(dir + 6, delta);
+    audioEngineRef->Poke(dir + 7, vibratoD);
+    audioEngineRef->Poke(dir + 8, vibratoS);
   
 }
 void AudioManager::SFXTone(uint8_t id, uint8_t amount, uint8_t speed, uint8_t square, uint8_t duty){
@@ -244,10 +250,10 @@ void AudioManager::SFXTone(uint8_t id, uint8_t amount, uint8_t speed, uint8_t sq
     params[id].dutySweepValue    = (float) (Tools::ToSigned(duty) * AUDIO_STEP) * 2;
     
     unsigned short dir = GetSoundDir(id);
-    Tools::Poke(dir + 9,  amount);
-    Tools::Poke(dir + 10, speed);
-    Tools::Poke(dir + 11, square);
-    Tools::Poke(dir + 12, duty);
+    audioEngineRef->Poke(dir + 9,  amount);
+    audioEngineRef->Poke(dir + 10, speed);
+    audioEngineRef->Poke(dir + 11, square);
+    audioEngineRef->Poke(dir + 12, duty);
 
 }
 void AudioManager::SFXRepeat(uint8_t id, uint8_t speed, uint8_t offset, uint8_t sweep){
@@ -257,9 +263,9 @@ void AudioManager::SFXRepeat(uint8_t id, uint8_t speed, uint8_t offset, uint8_t 
     params[id].phaserSweepValue = (float) (Tools::ToSigned(sweep) * AUDIO_STEP) * 2;
 
     unsigned short dir = GetSoundDir(id);
-    Tools::Poke(dir + 13, speed);
-    Tools::Poke(dir + 14, offset);
-    Tools::Poke(dir + 15, sweep);
+    audioEngineRef->Poke(dir + 13, speed);
+    audioEngineRef->Poke(dir + 14, offset);
+    audioEngineRef->Poke(dir + 15, sweep);
    
 }
 void AudioManager::SFXFilter(uint8_t id, uint8_t lpfCutoff, uint8_t lpfSweep, 
@@ -272,11 +278,11 @@ void AudioManager::SFXFilter(uint8_t id, uint8_t lpfCutoff, uint8_t lpfSweep,
     params[id].hpfCutoffSweepValue = (float) (Tools::ToSigned(hpfSweep) * AUDIO_STEP) * 2;
 
     unsigned short dir = GetSoundDir(id);
-    Tools::Poke(dir + 16, lpfCutoff);
-    Tools::Poke(dir + 17, lpfSweep);
-    Tools::Poke(dir + 18, lpfRes);
-    Tools::Poke(dir + 19, hpfCutoff);
-    Tools::Poke(dir + 20, hpfSweep);
+    audioEngineRef->Poke(dir + 16, lpfCutoff);
+    audioEngineRef->Poke(dir + 17, lpfSweep);
+    audioEngineRef->Poke(dir + 18, lpfRes);
+    audioEngineRef->Poke(dir + 19, hpfCutoff);
+    audioEngineRef->Poke(dir + 20, hpfSweep);
    
 }
 
@@ -293,14 +299,14 @@ void AudioManager::LoadSoundData(uint8_t id){
     id = Tools::IntClamp(id, 0, MAX_WAVE_SLOTS - 1);
     unsigned int dir = 3376 + (id * 22);
     
-    SFXWave(id, Tools::Peek(dir));
-    SFXEnv(id, Tools::Peek(dir + 1), Tools::Peek(dir + 2), Tools::Peek(dir + 3), Tools::Peek(dir + 4));
-    SFXFreq(id, Tools::Peek(dir + 5), Tools::Peek(dir + 6), Tools::Peek(dir + 7), Tools::Peek(dir + 8));
-    SFXTone(id, Tools::Peek(dir + 9), Tools::Peek(dir + 10), Tools::Peek(dir + 11), Tools::Peek(dir + 12));
-    SFXRepeat(id, Tools::Peek(dir + 13), Tools::Peek(dir + 14), Tools::Peek(dir + 15));
-    SFXFilter(id, Tools::Peek(dir + 16), Tools::Peek(dir + 17), Tools::Peek(dir + 18), Tools::Peek(dir + 19), Tools::Peek(dir + 20));
+    SFXWave(id, audioEngineRef->Peek(dir));
+    SFXEnv(id,  audioEngineRef->Peek(dir + 1), audioEngineRef->Peek(dir + 2),  audioEngineRef->Peek(dir + 3),  audioEngineRef->Peek(dir + 4));
+    SFXFreq(id, audioEngineRef->Peek(dir + 5), audioEngineRef->Peek(dir + 6),  audioEngineRef->Peek(dir + 7),  audioEngineRef->Peek(dir + 8));
+    SFXTone(id, audioEngineRef->Peek(dir + 9), audioEngineRef->Peek(dir + 10), audioEngineRef->Peek(dir + 11), audioEngineRef->Peek(dir + 12));
+    SFXRepeat(id, audioEngineRef->Peek(dir + 13), audioEngineRef->Peek(dir + 14), audioEngineRef->Peek(dir + 15));
+    SFXFilter(id, audioEngineRef->Peek(dir + 16), audioEngineRef->Peek(dir + 17), audioEngineRef->Peek(dir + 18), audioEngineRef->Peek(dir + 19), audioEngineRef->Peek(dir + 20));
 
-    setNote(id, Tools::Peek(dir + 21));
+    setNote(id, audioEngineRef->Peek(dir + 21));
     
 }
 void AudioManager::setNote(uint8_t id, uint8_t note){

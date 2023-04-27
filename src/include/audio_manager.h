@@ -17,10 +17,13 @@
 #define AUDIO_STEP                0.00390625 // 1. / 256.
 #define TRACK_COUNT               4
 
-class AudioManager {
+class Engine;
+
+class AudioManager 
+{
     
     public:
-    AudioManager();
+    AudioManager(Engine* _engine);
     ~AudioManager();
 
     WaveParams params[MAX_WAVE_SLOTS] = { 0 }; // Wave parameters for generation

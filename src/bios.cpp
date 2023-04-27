@@ -1,25 +1,16 @@
 #include "bios.h"
 #include "engine.h"
 #include "postProcessing.h"
+#include "sprite_manager.h"
 
 Engine* biosEngineRef;
 
 Bios::Bios(Engine* _engine)
 {
-    LoadDefaultMemory();
-    Tools::InitFont();
-
-   biosEngineRef = _engine;
+    biosEngineRef = _engine;
 }
 
 Bios::~Bios(){}
-
-void Bios::LoadDefaultMemory()
-{
-    std::stringstream ss;
-    ss << CONFIG_FOLDER << "/default" << MEM_EXTENSION;
-    Tools::LoadMemory(ss.str().c_str());
-}
 
 void Bios::LoadBoot()
 {
@@ -38,7 +29,7 @@ void Bios::LoadBoot()
 }
 
 void Bios::Update(){
-    ClearBackground(Tools::GetColor(backColor));
+    ClearBackground(biosEngineRef->spriteManager->GetColor(backColor));
 
     delta += GetFrameTime();
     cursor = (delta > 0.5) == 0 ? "_" : "";
@@ -50,7 +41,7 @@ void Bios::Update(){
     bool overLine = false;
 
     while (std::getline(ss, temp)){
-        DrawTextEx(Tools::GetFont(), temp.c_str(), (Vector2){0, lineY}, 8, 0, Tools::GetColor(frontColor));
+        DrawTextEx(biosEngineRef->spriteManager->GetFont(), temp.c_str(), (Vector2){0, lineY}, 8, 0, biosEngineRef->spriteManager->GetColor(frontColor));
         lineY += 9;
         if (lineY > 184){   
             overLine = true;
@@ -62,7 +53,7 @@ void Bios::Update(){
     int key = GetKeyPressed();
 
     if (!overLine){
-        DrawTextEx(Tools::GetFont(),TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor), (Vector2){0, lineY}, 8, 0,Tools::GetColor(frontColor));
+        DrawTextEx(biosEngineRef->spriteManager->GetFont(),TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor), (Vector2){0, lineY}, 8, 0,biosEngineRef->spriteManager->GetColor(frontColor));
 
         if (key != 0){
             if (key == 257) { //Enter
@@ -75,12 +66,12 @@ void Bios::Update(){
             //https://www.barcodefaq.com/ascii-chart-char-set/
 
         }
-        if (ch != 0 && MeasureTextEx(Tools::GetFont(), currentLine.c_str(),8,0).x < 312){
+        if (ch != 0 && MeasureTextEx(biosEngineRef->spriteManager->GetFont(), currentLine.c_str(),8,0).x < 312){
             currentLine += Tools::GetCharFromCodepoint(ch);
         }
     }
     else{
-        DrawTextEx(Tools::GetFont(),"Press Enter to continue.",(Vector2){0,lineY},8,0,Tools::GetBiosColor(frontColor));
+        DrawTextEx(biosEngineRef->spriteManager->GetFont(),"Press Enter to continue.",(Vector2){0,lineY},8,0,biosEngineRef->spriteManager->GetBiosColor(frontColor));
         if (IsKeyReleased(KEY_ENTER))
             screenLines.erase(0, screenLines.find("\n") + 1);
     }
