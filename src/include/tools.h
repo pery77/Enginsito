@@ -103,4 +103,5 @@ class Tools{
         static unsigned char ToUnsigned(int8_t value);
 
         static Console* console;
+        static unsigned char *GetMemory();
 };

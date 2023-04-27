@@ -10,7 +10,13 @@
 //                  4088 Noise, 4089 Fliker, 4090 Grille
 //4091-4093 not used at moment.
 //4094-4095 version (2 bytes)
+
 unsigned char MainMemory[4096]{};
+
+unsigned char* Tools::GetMemory()
+{
+    return MainMemory;
+}
 
 Font font = {0};
 Texture spriteTexture;

@@ -1,6 +1,7 @@
 #pragma once
 #include "imgui/imgui.h"
 #include "imgui/rlImGui.h"
+#include "imgui/imgui_memory_editor.h"
 
 #include "engine.h"
 #include "bios.h"
@@ -14,6 +15,8 @@ struct Editor
     TextEditor codeEditor;
     TextEditor::LanguageDefinition lang = TextEditor::LanguageDefinition::Basic();
     std::string editorFile = "";
+
+    MemoryEditor mem_edit; 
 
     bool HasFocus = false;
     bool Paused = false;
@@ -140,9 +143,9 @@ struct Editor
                 {
                     std::stringstream m;
                     m << ASSETS_FOLDER << "/" << editorEngineRef->bios->CurrentPath << "/" << temp << MEM_EXTENSION;
+                    Tools::console->AddLog("[MEMORY] Loaded:");
                     Tools::console->AddLog(m.str().c_str());
                     Tools::LoadMemory(m.str().c_str());
-                    
                 }
                 else
                 {
@@ -362,6 +365,8 @@ struct Editor
             Tools::console->AddLog(ss.str().c_str());
             Tools::DumpMemory(ss.str().c_str());
         }
+        
+        mem_edit.DrawContents(Tools::GetMemory(), 4096);
     }
 
     void Draw()
