@@ -21,23 +21,24 @@ class SpriteManager
     Color GetBiosColor(int color);
     Color SetColor(int color, int r, int g, int b);
     
-    void SetSprite(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
-                     unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
-                     unsigned char b7);
+    void SetSprite(unsigned int id, uint8_t b0, uint8_t b1, uint8_t b2, 
+                     uint8_t b3, uint8_t b4, uint8_t b5, uint8_t b6,
+                     uint8_t b7);
     void DrawSprite(int id, int x, int y, int col, int flag);
     void DrawMetaSprite(int id, int x, int y);
-    unsigned char GetSpriteByte(unsigned int id, unsigned char byte);
+    uint8_t GetSpriteByte(unsigned int id, uint8_t byte);
 
-    void AddMetaSprite(unsigned char id, unsigned char postition, unsigned char sprite_id, unsigned char offset_x, unsigned char offset_y, 
-                         unsigned char color, unsigned char flags);
-    std::array<int,20> GetMetaSprite(unsigned char id);
+    void AddMetaSprite(uint8_t id, uint8_t postition, uint8_t sprite_id, uint8_t offset_x, uint8_t offset_y, 
+                         uint8_t color, uint8_t flags);
+    std::array<int,20> GetMetaSprite(uint8_t id);
 
-    void SetPixels(uint8_t id);
+    void UpdateSpritesFromMemroy();
 
     private:
 
     void InitSprites();
     void InitFont();
+    void SetPixels(uint8_t id);
 
 
 };

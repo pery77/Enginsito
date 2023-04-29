@@ -134,6 +134,7 @@ int main(int argc, char *argv[])
 
         // Update
         engine->basicIntepreter->UpdateAudio();
+        engine->spriteManager->UpdateSpritesFromMemroy();
 
         if (engine->currentState == Running)
         {

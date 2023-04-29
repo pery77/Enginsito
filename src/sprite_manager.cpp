@@ -81,9 +81,9 @@ Color SpriteManager::SetColor(int color, int r, int g, int b)
     spriteEngineRef->Poke(color * 3 + 2, b);
 }
 
-void SpriteManager::SetSprite(unsigned int id, unsigned char b0, unsigned char b1, unsigned char b2, 
-                                unsigned char b3, unsigned char b4, unsigned char b5, unsigned char b6,
-                                unsigned char b7)
+void SpriteManager::SetSprite(unsigned int id, uint8_t b0, uint8_t b1, uint8_t b2, 
+                                uint8_t b3, uint8_t b4, uint8_t b5, uint8_t b6,
+                                uint8_t b7)
 {
     id = Tools::IntClamp(id, 0, 255);
     unsigned int dir = (id * 8) + 48;
@@ -99,14 +99,14 @@ void SpriteManager::SetSprite(unsigned int id, unsigned char b0, unsigned char b
 
 }
 
-unsigned char SpriteManager::GetSpriteByte(unsigned int id, unsigned char byte) 
+uint8_t SpriteManager::GetSpriteByte(unsigned int id, uint8_t byte) 
 {
     id = Tools::IntClamp(id, 0, 255);
     return spriteEngineRef->Peek((id * 8) + 48 + byte);
 }
 
-void SpriteManager::AddMetaSprite(unsigned char id,unsigned char postition, unsigned char sprite_id, unsigned char offset_x, unsigned char offset_y, 
-                                            unsigned char color, unsigned char flags)
+void SpriteManager::AddMetaSprite(uint8_t id, uint8_t postition, uint8_t sprite_id, uint8_t offset_x, uint8_t offset_y, 
+                                            uint8_t color, uint8_t flags)
 {
     id = Tools::IntClamp(id, 0, 63);
     postition = Tools::IntClamp(postition, 0, 3);
@@ -119,13 +119,13 @@ void SpriteManager::AddMetaSprite(unsigned char id,unsigned char postition, unsi
     spriteEngineRef->Poke(dir + 4, flags);
 }
 
-std::array<int,20> SpriteManager::GetMetaSprite(unsigned char id) 
+std::array<int,20> SpriteManager::GetMetaSprite(uint8_t id) 
 {
     id = Tools::IntClamp(id, 0, 63);
     unsigned int dir = 2096 + (id * 20);
     std::array<int,20> r;
     int c = 0;
-    for (unsigned char i=0; i<20; i++) {
+    for (uint8_t i=0; i<20; i++) {
         r[c++] = (int) spriteEngineRef->Peek(dir + i);
     }
     return r;
@@ -135,7 +135,7 @@ void SpriteManager::DrawMetaSprite(int id, int x, int y)
 {
     id = Tools::IntClamp(id, 0, 63);
     unsigned int dir = (id * 20) + 2096;
-    for ( unsigned char i=0; i<=3; i++) 
+    for ( uint8_t i=0; i<=3; i++) 
     {
         if (spriteEngineRef->Peek(dir + 4) == 255) continue;
         DrawSprite(spriteEngineRef->Peek(dir + i * 5), spriteEngineRef->Peek(dir + 1 + i * 5) + x, spriteEngineRef->Peek(dir + 2 + i * 5) + y,
@@ -147,7 +147,7 @@ void SpriteManager::InitSprites()
 {
     #define BIT_CHECK(a,b) ((a) & (1 << (b)))
 
-    unsigned char id = 0;
+    uint8_t id = 0;
     for (int y = 0; y < 16; y++) {
         for (int x = 0; x < 16; x++) {
             for(int l = 0; l < 8; l++) {
@@ -214,4 +214,10 @@ void SpriteManager::SetPixels(uint8_t id)
     }
  
     UpdateTextureRec(spriteTexture, (Rectangle){(id%16)*8,(id/16)*8, 8, 8}, &pixels);
+}
+
+void SpriteManager::UpdateSpritesFromMemroy()
+{
+    for (int i = 0; i<256; i++)
+        SetPixels(i);
 }

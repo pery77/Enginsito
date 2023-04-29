@@ -366,19 +366,12 @@ struct Editor
             Tools::console->AddLog(ss.str().c_str());
             editorEngineRef->DumpMemory(ss.str().c_str());
         }
-        if (ImGui::Button("SpriteTest"))
-        {
-            editorEngineRef->spriteManager->SetPixels(0);
-        }
         
         mem_edit.DrawContents(editorEngineRef->GetMemory(), 4096);
     }
 
     void Draw()
     {
-        for (int i = 0; i<256; i++)
-            editorEngineRef->spriteManager->SetPixels(i);
-
         ImGuiIO& io = ImGui::GetIO();
         ImGuiWindowFlags window_flags;
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
