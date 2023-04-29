@@ -366,12 +366,19 @@ struct Editor
             Tools::console->AddLog(ss.str().c_str());
             editorEngineRef->DumpMemory(ss.str().c_str());
         }
+        if (ImGui::Button("SpriteTest"))
+        {
+            editorEngineRef->spriteManager->SetPixels(0);
+        }
         
         mem_edit.DrawContents(editorEngineRef->GetMemory(), 4096);
     }
 
     void Draw()
     {
+        for (int i = 0; i<256; i++)
+            editorEngineRef->spriteManager->SetPixels(i);
+
         ImGuiIO& io = ImGui::GetIO();
         ImGuiWindowFlags window_flags;
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -437,8 +444,16 @@ struct Editor
                 DrawPlayer();
             ImGui::End();
 
-            ImGui::Begin("Memory", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+            ImGui::Begin("Memory", NULL, ImGuiWindowFlags_NoCollapse);
                 DrawMemory();
+            ImGui::End();
+
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            ImGui::Begin("Graphics", NULL, ImGuiWindowFlags_NoCollapse);
+            ImGui::PopStyleVar();
+                windowSize = ImGui::GetWindowSize();
+                scale = (windowSize.x/windowSize.y < 1.0f) ? windowSize.x/128.0f : windowSize.y/128.0f;
+                rlImGuiImageRect(&editorEngineRef->spriteManager->spriteTexture, 128 * scale, 128 * scale, (Rectangle){0, 0, 128, 128});
             ImGui::End();
 
             DrawCode();

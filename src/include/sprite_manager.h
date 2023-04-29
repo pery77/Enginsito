@@ -30,11 +30,12 @@ class SpriteManager
     void DrawSprite(int id, int x, int y, int col, int flag);
     void DrawMetaSprite(int id, int x, int y);
     void RenderSprites();
-    Texture GetSpriteTexture();
     unsigned char GetSpriteByte(unsigned int id, unsigned char byte);
 
     void AddMetaSprite(unsigned char id, unsigned char postition, unsigned char sprite_id, unsigned char offset_x, unsigned char offset_y, 
                          unsigned char color, unsigned char flags);
     std::array<int,20> GetMetaSprite(unsigned char id);
+
+    void SetPixels(uint8_t id);
 
 };

@@ -18,7 +18,13 @@ SpriteManager::SpriteManager(Engine* _engine)
             .mipmaps = 1,
             .format = PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA
         };
+
+    //for (int i = 0; i < 128*128; i++)
+    //   ((unsigned short *)imgSprite.data)[i] = 0x00ff;
+
+    spriteTexture = LoadTextureFromImage(imgSprite); 
 }
+
 SpriteManager::~SpriteManager()
 {
 
@@ -150,6 +156,11 @@ void SpriteManager::DrawMetaSprite(int id, int x, int y)
 
 void SpriteManager::RenderSprites()
 {
+    //for (uint8_t id = 0; id<256; id++)
+    //{
+    //    SetPixels(id);
+    //}
+
     #define BIT_CHECK(a,b) ((a) & (1 << (b)))
 
     unsigned char id = 0;
@@ -170,11 +181,6 @@ void SpriteManager::RenderSprites()
 
     UnloadTexture(spriteTexture);
     spriteTexture = LoadTextureFromImage(imgSprite);
-}
-
-Texture SpriteManager::GetSpriteTexture() 
-{
-    return spriteTexture;
 }
 
 void SpriteManager::DrawSprite(int id, int x, int y, int col, int flag) 
@@ -206,6 +212,22 @@ void SpriteManager::DrawSprite(int id, int x, int y, int col, int flag)
 	if(flag & (1 << 3)) h = -8;
 	if(flag & (1 << 4)) v = -8;
 
-    DrawTexturePro(GetSpriteTexture(), (Rectangle){(id%16)*8,(id/16)*8,h,v}, 
+    DrawTexturePro(spriteTexture, (Rectangle){(id%16)*8,(id/16)*8,h,v}, 
 	(Rectangle){x,y,8,8}, pivot, rot, GetColor(col));
+}
+
+void SpriteManager::SetPixels(uint8_t id)
+{
+    unsigned short  pixels[64] = { };
+    int pixelIndex = 0;
+    for (int l = 0; l < 8; l++)
+    {
+        uint8_t byte = spriteEngineRef->Peek((id * 8) + l + 48);
+        for (int b = 7; b >= 0; b--)
+        {
+            pixels[pixelIndex++] = (byte & (1 << b)) ? 0xFFFF : 0x00FF;
+        }
+    }
+ 
+    UpdateTextureRec(spriteTexture, (Rectangle){(id%16)*8,(id/16)*8, 8, 8}, &pixels);
 }
