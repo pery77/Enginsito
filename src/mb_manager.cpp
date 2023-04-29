@@ -112,17 +112,14 @@ int MBManager::OpenBas(const char *file){
 	mb_reg_fun(bas, frame);
 	mb_reg_fun(bas, getChar);
 	mb_reg_fun(bas, setFontSpacing);
-	mb_reg_fun(bas, updateFont);
 
 	mb_reg_fun(bas, setSprite);
-	mb_reg_fun(bas, renderSprites);
 	mb_reg_fun(bas, getSpriteByte);
 	mb_reg_fun(bas, peek);
 	mb_reg_fun(bas, poke);
 	mb_reg_fun(bas, toSigned);
 	mb_reg_fun(bas, dumpMemory);
 	mb_reg_fun(bas, loadMemory);
-
 
 	mb_begin_module(bas, "KEY");
 		mb_register_func(bas, "PRESSED", keyPressed);
@@ -554,7 +551,7 @@ int MBManager::drawText(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 	if (size < 1) size = 1;
 	if (size > 4) size = 4;
-    DrawTextEx(basicEngineRef->spriteManager->GetFont(),arg, (Vector2){x, y}, size * 8, basicEngineRef->spriteManager->GetFontSpacing(), basicEngineRef->spriteManager->GetColor(col));
+    DrawTextEx(basicEngineRef->spriteManager->font,arg, (Vector2){x, y}, size * 8, basicEngineRef->spriteManager->fontSpacing, basicEngineRef->spriteManager->GetColor(col));
 
 	return result;
 }
@@ -576,7 +573,7 @@ int MBManager::measureText(struct mb_interpreter_t* s, void** l){
 	if (size < 1) size = 1;
 	if (size > 4) size = 4;
 
-    ret.value.integer = MeasureTextEx(basicEngineRef->spriteManager->GetFont(), arg, (float)size * 8, 0.0).x;
+    ret.value.integer = MeasureTextEx(basicEngineRef->spriteManager->font, arg, (float)size * 8, 0.0).x;
 
     mb_check(mb_push_value(s, l, ret));
 	return result;
@@ -717,17 +714,7 @@ int MBManager::setFontSpacing(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
-int MBManager::updateFont(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
 
-	mb_check(mb_attempt_open_bracket(s, l));
-	mb_check(mb_attempt_close_bracket(s, l));
-	
-	basicEngineRef->spriteManager->InitFont();
-
-	return result;
-}
 int MBManager::setSprite(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -753,17 +740,7 @@ int MBManager::setSprite(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
-int MBManager::renderSprites(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
 
-	mb_check(mb_attempt_open_bracket(s, l));
-	mb_check(mb_attempt_close_bracket(s, l));
-	
-	basicEngineRef->spriteManager->RenderSprites();
-
-	return result;
-}
 int MBManager::getSpriteByte(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);

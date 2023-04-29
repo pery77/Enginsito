@@ -54,7 +54,6 @@ void Engine::Init()
     editor = new Editor(this);
 
     spriteManager = new SpriteManager(this);
-    spriteManager->InitFont();
 
     //DISABLED WREN AT MOMENT
     //WrenManager* wren = new WrenManager();

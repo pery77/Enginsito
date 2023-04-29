@@ -109,7 +109,6 @@ setSprite(16,16,9,0,84,0,9,16,0)         'explosion
 setSprite(17,128,128,64,64,128,128,64,64)     'alien bullet
 setSprite(18,0,7,31,63,109,255,59,16)         'alien ship
 
-renderSprites()
 
 'Tools
 'Collision
@@ -802,6 +801,7 @@ def draw()
     endif
 
 enddef
+
 
 
 

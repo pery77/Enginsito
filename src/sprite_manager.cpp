@@ -19,10 +19,8 @@ SpriteManager::SpriteManager(Engine* _engine)
             .format = PIXELFORMAT_UNCOMPRESSED_GRAY_ALPHA
         };
 
-    //for (int i = 0; i < 128*128; i++)
-    //   ((unsigned short *)imgSprite.data)[i] = 0x00ff;
-
-    spriteTexture = LoadTextureFromImage(imgSprite); 
+    InitSprites();
+    InitFont();
 }
 
 SpriteManager::~SpriteManager()
@@ -35,14 +33,9 @@ void SpriteManager::SetFontSpacing(int spacing)
     fontSpacing = spacing;
 }
 
-float SpriteManager::GetFontSpacing()
-{
-    return fontSpacing;
-}
 void SpriteManager::InitFont() {
 
     UnloadFont(font);
-    RenderSprites();
 
     font.glyphCount = 255;   // Number of chars included in our default font
     font.glyphPadding = 0;   // Characters padding
@@ -70,10 +63,6 @@ void SpriteManager::InitFont() {
     font.baseSize = (int)font.recs[0].height;
 }
 
-Font SpriteManager::GetFont()
-{
-    return font;
-}
 Color SpriteManager::GetColor(int color)
 {
     color = Tools::IntClamp(color, 0, 15);
@@ -154,13 +143,8 @@ void SpriteManager::DrawMetaSprite(int id, int x, int y)
     }
 }
 
-void SpriteManager::RenderSprites()
+void SpriteManager::InitSprites()
 {
-    //for (uint8_t id = 0; id<256; id++)
-    //{
-    //    SetPixels(id);
-    //}
-
     #define BIT_CHECK(a,b) ((a) & (1 << (b)))
 
     unsigned char id = 0;

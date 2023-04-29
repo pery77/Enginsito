@@ -61,7 +61,6 @@ class MBManager{
         static int measureText(struct mb_interpreter_t* s, void** l);
         static int getChar(struct mb_interpreter_t* s, void** l);
         static int setFontSpacing(struct mb_interpreter_t* s, void** l);
-        static int updateFont(struct mb_interpreter_t* s, void** l);
 
         //Tools
         static int intToText(struct mb_interpreter_t* s, void** l);
@@ -144,7 +143,6 @@ class MBManager{
         static int addMetaSprite(struct mb_interpreter_t* s, void** l);
         static int getMetaSprite(struct mb_interpreter_t* s, void** l);
         static int setSprite(struct mb_interpreter_t* s, void** l);
-        static int renderSprites(struct mb_interpreter_t* s, void** l);
         static int getSpriteByte(struct mb_interpreter_t* s, void** l);
 
         //CRT

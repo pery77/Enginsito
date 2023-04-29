@@ -41,7 +41,7 @@ void Bios::Update(){
     bool overLine = false;
 
     while (std::getline(ss, temp)){
-        DrawTextEx(biosEngineRef->spriteManager->GetFont(), temp.c_str(), (Vector2){0, lineY}, 8, 0, biosEngineRef->spriteManager->GetColor(frontColor));
+        DrawTextEx(biosEngineRef->spriteManager->font, temp.c_str(), (Vector2){0, lineY}, 8, 0, biosEngineRef->spriteManager->GetColor(frontColor));
         lineY += 9;
         if (lineY > 184){   
             overLine = true;
@@ -53,7 +53,7 @@ void Bios::Update(){
     int key = GetKeyPressed();
 
     if (!overLine){
-        DrawTextEx(biosEngineRef->spriteManager->GetFont(),TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor), (Vector2){0, lineY}, 8, 0,biosEngineRef->spriteManager->GetColor(frontColor));
+        DrawTextEx(biosEngineRef->spriteManager->font,TextFormat("%s:>%s%s",CurrentPath.c_str(), currentLine.c_str(), cursor), (Vector2){0, lineY}, 8, 0,biosEngineRef->spriteManager->GetColor(frontColor));
 
         if (key != 0){
             if (key == 257) { //Enter
@@ -66,12 +66,12 @@ void Bios::Update(){
             //https://www.barcodefaq.com/ascii-chart-char-set/
 
         }
-        if (ch != 0 && MeasureTextEx(biosEngineRef->spriteManager->GetFont(), currentLine.c_str(),8,0).x < 312){
+        if (ch != 0 && MeasureTextEx(biosEngineRef->spriteManager->font, currentLine.c_str(),8,0).x < 312){
             currentLine += Tools::GetCharFromCodepoint(ch);
         }
     }
     else{
-        DrawTextEx(biosEngineRef->spriteManager->GetFont(),"Press Enter to continue.",(Vector2){0,lineY},8,0,biosEngineRef->spriteManager->GetBiosColor(frontColor));
+        DrawTextEx(biosEngineRef->spriteManager->font,"Press Enter to continue.",(Vector2){0,lineY},8,0,biosEngineRef->spriteManager->GetBiosColor(frontColor));
         if (IsKeyReleased(KEY_ENTER))
             screenLines.erase(0, screenLines.find("\n") + 1);
     }
