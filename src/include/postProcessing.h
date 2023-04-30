@@ -6,12 +6,14 @@
 #include "grille2.h"
 #include "grille3.h"
 
-struct BlurPass{
+struct BlurPass
+{
 	int passType; //Pass 0 downScale, other upScale
 	float offset;
 };
 
-enum CRTProperty{
+enum CRTProperty
+{
     BlurPower,
     BlurFactor,
     Chromatic,
@@ -26,19 +28,20 @@ enum CRTProperty{
 
 class Engine;
 
-class PostProcessing{
-
+class PostProcessing
+{
     public:
     PostProcessing(Engine* _engine);
     ~PostProcessing();
 
-    Vector2i resolution16_10[6] = {
-    {3840,2400}, 
-    {2560,1600},
-    {1920,1200},
-    {1680,1050},
-    {1440,900},
-    {1280,800}
+    Vector2i resolution16_10[6] 
+    {
+        {3840,2400}, 
+        {2560,1600},
+        {1920,1200},
+        {1680,1050},
+        {1440,900},
+        {1280,800}
     };
 
     void RenderMain();
@@ -48,6 +51,8 @@ class PostProcessing{
     bool enabled = true;
 
     RenderTexture2D mainRender;
+    RenderTexture2D editorRender;
+
     float uTime;
     float uTest;
 
@@ -73,20 +78,27 @@ class PostProcessing{
 	float previusWindowsWidth;
 	float previusWindowsHeight;
 	float currentAspectRatio;
+    float editorImageFactor;
 
     void SetCRTFloat(CRTProperty location, float value);
     void SetGrilleTexture(int newTextureId);
 
     private:
+
+    Rectangle gameRect  { 0, 0, (float)(GAME_SCREEN_W), -(float)(GAME_SCREEN_H)};
+    Rectangle gameScaledRect { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
+
     void setUpShaders();
 
+
     RenderTexture2D bufferTexture;
+
     Texture grilleTextures[3];
     int currentGrilleTexture = 0;
     Shader crtShader;
     Shader blurShader;
 
-	BlurPass blurPasses[5] = {{0,2},{0,3},{0,8},{1,2},{1,3}};
+	BlurPass blurPasses[5] {{0,2},{0,3},{0,8},{1,2},{1,3}};
 
     // Blur shader locations
     int pass;
@@ -112,9 +124,8 @@ class PostProcessing{
     int noiseLoc;
     int flikerLoc;
 
-    Rectangle gameRect = { 0, 0, (float)(320), -(float)(200)};
-    Rectangle gameScaledRect { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
-    Vector2 resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
+
+    Vector2 resolution {(float)GetScreenWidth(), (float)GetScreenHeight()};
     Texture textureFromCode(int format, int height, int width, void* data);
 
     const char* blurShaderCode = R"|(

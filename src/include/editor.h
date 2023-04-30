@@ -418,8 +418,14 @@ struct Editor
             ImGui::PopStyleVar();
                 HasFocus = ImGui::IsWindowFocused();
                 ImVec2 windowSize = ImGui::GetWindowSize();
-                float scale = (windowSize.x/windowSize.y < 1.6f) ? windowSize.x/320.0f : windowSize.y/200.0f;
-                rlImGuiImageRect(&editorEngineRef->postProcessing->mainRender.texture, 320 * scale, 200 * scale, (Rectangle){0, 200, 320, 200});
+                float scale = (windowSize.x/windowSize.y < 1.6f) ? windowSize.x/(float)GAME_SCREEN_W : windowSize.y/(float)GAME_SCREEN_H;
+                ImVec2 imageSize = ImVec2(GAME_SCREEN_W * scale, GAME_SCREEN_H * scale); 
+                ImVec2 imagePos = ImVec2((windowSize.x - imageSize.x) / 2, (windowSize.y - imageSize.y) / 2);
+
+                ImGui::SetCursorPos(imagePos);
+
+                ImGui::Image(&editorEngineRef->postProcessing->editorRender.texture, imageSize, ImVec2(0,0),
+                                ImVec2(editorEngineRef->postProcessing->editorImageFactor,-editorEngineRef->postProcessing->editorImageFactor));
             ImGui::End();
 
             ImGui::Begin("Palette", NULL, ImGuiWindowFlags_NoCollapse);

@@ -21,6 +21,7 @@ SpriteManager::SpriteManager(Engine* _engine)
 
     InitSprites();
     InitFont();
+
 }
 
 SpriteManager::~SpriteManager()
@@ -33,10 +34,8 @@ void SpriteManager::SetFontSpacing(int spacing)
     fontSpacing = spacing;
 }
 
-void SpriteManager::InitFont() {
-
-    UnloadFont(font);
-
+void SpriteManager::InitFont()
+{
     font.glyphCount = 255;   // Number of chars included in our default font
     font.glyphPadding = 0;   // Characters padding
     int charsHeight = 8;
@@ -163,7 +162,6 @@ void SpriteManager::InitSprites()
         }
     }
 
-    UnloadTexture(spriteTexture);
     spriteTexture = LoadTextureFromImage(imgSprite);
 }
 

@@ -10,7 +10,11 @@ PostProcessing::PostProcessing(Engine* _engine)
 }
 PostProcessing::~PostProcessing(){}
 
-void PostProcessing::setUpShaders(){
+void PostProcessing::setUpShaders()
+{
+	editorRender = LoadRenderTexture(GAME_SCREEN_W * 8, GAME_SCREEN_H * 8);
+	SetTextureFilter(editorRender.texture, TEXTURE_FILTER_BILINEAR);
+	SetTextureWrap(editorRender.texture,TEXTURE_WRAP_REPEAT);
 
 	mainRender = LoadRenderTexture(GAME_SCREEN_W, GAME_SCREEN_H);
 	SetTextureFilter(mainRender.texture, TEXTURE_FILTER_BILINEAR);
@@ -23,6 +27,8 @@ void PostProcessing::setUpShaders(){
     grilleTextures[0] = textureFromCode(GRILLE1_FORMAT, GRILLE1_HEIGHT, GRILLE1_HEIGHT, GRILLE1_DATA);
     grilleTextures[1] = textureFromCode(GRILLE2_FORMAT, GRILLE2_HEIGHT, GRILLE2_HEIGHT, GRILLE2_DATA);
     grilleTextures[2] = textureFromCode(GRILLE3_FORMAT, GRILLE3_HEIGHT, GRILLE3_HEIGHT, GRILLE3_DATA);
+
+    editorImageFactor = (float)GetScreenWidth() / (float)editorRender.texture.width; 
 
 /* //Image to Code
     Image i1 = LoadImage("assets/grille1.png");
@@ -76,45 +82,57 @@ void PostProcessing::setUpShaders(){
     flikerLoc = GetShaderLocation(crtShader, "uFliker");
 }
 
-void PostProcessing::RenderMain(){
+void PostProcessing::RenderMain()
+{
     if (enabled)
         BeginTextureMode(bufferTexture);
-    
-    ClearBackground(BLACK);
+            
+        ClearBackground(BLACK);
         DrawTexturePro(mainRender.texture, gameRect, 
-                        (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height},
-                        { 0, 0 }, 0.0f, WHITE); 
-    if (enabled)
+                            (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height},
+                            { 0, 0 }, 0.0f, WHITE);
+
+
+    
+     if (enabled)
         EndTextureMode();
+
+    //BeginTextureMode(editorRender);
+    //    DrawTexturePro(mainRender.texture, gameRect, 
+    //            (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height},
+    //            { 0, 0 }, 0.0f, WHITE);
+    //EndTextureMode();
+
 }
 
-void PostProcessing::RenderBlur(){
-
-    if (enabled){
-        BeginShaderMode(blurShader);
-            SetShaderValue(blurShader, resolutionLoc, &resolution, SHADER_UNIFORM_VEC2);
-            for (auto blur : blurPasses){
-                SetShaderValue(blurShader, pass, &blur.passType, SHADER_UNIFORM_INT);
-                SetShaderValue(blurShader, offsetLoc, &blur.offset, SHADER_UNIFORM_FLOAT);
-                BeginTextureMode(bufferTexture);
-                    DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
-                                                (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height}, 
-                                                { 0, 0 }, 0.0f, WHITE);   
-                EndTextureMode();
-            }
-        EndShaderMode();
-    }
+void PostProcessing::RenderBlur()
+{
+    if (!enabled) return;
+    
+    BeginShaderMode(blurShader);
+        SetShaderValue(blurShader, resolutionLoc, &resolution, SHADER_UNIFORM_VEC2);
+        for (auto blur : blurPasses){
+            SetShaderValue(blurShader, pass, &blur.passType, SHADER_UNIFORM_INT);
+            SetShaderValue(blurShader, offsetLoc, &blur.offset, SHADER_UNIFORM_FLOAT);
+            BeginTextureMode(bufferTexture);
+                DrawTexturePro(bufferTexture.texture, (Rectangle){0,0,bufferTexture.texture.width, -bufferTexture.texture.height},
+                                            (Rectangle){0,0,bufferTexture.texture.width, bufferTexture.texture.height}, 
+                                            { 0, 0 }, 0.0f, WHITE);   
+            EndTextureMode();
+        }
+    EndShaderMode();
 }
 
-void PostProcessing::RenderFinal(){
-    if (enabled){
-
+void PostProcessing::RenderFinal()
+{
+    if (enabled)
+    {
         BeginShaderMode(crtShader);
             SetShaderValueTexture(crtShader, grilleLoc, grilleTextures[currentGrilleTexture]);
             SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
             SetShaderValue(crtShader, resolutionCRTLoc, &resolution, SHADER_UNIFORM_VEC2);
             SetShaderValue(crtShader, timeLoc, &uTime, SHADER_UNIFORM_FLOAT);
-            
+
             SetShaderValue(crtShader, blurPowerLoc, &uBlurPower, SHADER_UNIFORM_FLOAT);
             SetShaderValue(crtShader, blurFactorLoc, &uBlurFactor, SHADER_UNIFORM_FLOAT);
             SetShaderValue(crtShader, chromaticLoc, &uChromatic, SHADER_UNIFORM_FLOAT);
@@ -126,15 +144,19 @@ void PostProcessing::RenderFinal(){
             SetShaderValue(crtShader, noiseLoc, &uNoise, SHADER_UNIFORM_FLOAT);
             SetShaderValue(crtShader, flikerLoc, &uFliker, SHADER_UNIFORM_FLOAT);
 
-    }
-        DrawTexturePro(mainRender.texture, gameRect, gameScaledRect,
-                                { 0, 0 }, 0.0f, WHITE); 
-    if(enabled)
+            DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0, 0 }, 0.0f, WHITE);
+
         EndShaderMode();
+
+    }
+    else
+    {
+        DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0, 0 }, 0.0f, WHITE); 
+    }
 }
 
-void PostProcessing::ReloadShaders(){
-
+void PostProcessing::ReloadShaders()
+{
     UnloadRenderTexture(mainRender);
     UnloadRenderTexture(bufferTexture);
     for (int gt = 0; gt<3; gt++){
@@ -147,8 +169,8 @@ void PostProcessing::ReloadShaders(){
     setUpShaders();
 }
 
-void PostProcessing::UpdateGameScreenRects(){
-
+void PostProcessing::UpdateGameScreenRects()
+{
 	screenScale = Tools::Min((float)GetScreenWidth()/(float)GAME_SCREEN_W,(float)GetScreenHeight()/(float)GAME_SCREEN_H);
 	gameRect = { 0, 0, (float)(GAME_SCREEN_W), -(float)(GAME_SCREEN_H)};
 	gameScaledRect = { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
@@ -157,6 +179,8 @@ void PostProcessing::UpdateGameScreenRects(){
 	currentAspectRatio = (float)GetScreenWidth()/(float)GetScreenHeight();
     bool aspectRatioOk = Tools::CompareFloats(currentAspectRatio , GAME_RATIO, 0.05);
 
+    editorImageFactor = (float)GetScreenWidth() / (float)editorRender.texture.width; 
+
 	if (!aspectRatioOk) {
 		SetWindowSize((currentAspectRatio > GAME_RATIO) ? GAME_SCREEN_W * screenScale : GetScreenWidth(), 
 					  (currentAspectRatio > GAME_RATIO) ? GetScreenHeight() : GAME_SCREEN_H * screenScale);
@@ -164,7 +188,8 @@ void PostProcessing::UpdateGameScreenRects(){
 	}
 }
 
-void PostProcessing::FullScreen(){
+void PostProcessing::FullScreen()
+{
     if (!IsWindowFullscreen())
 	{
 		previusWindowsWidth = GetScreenWidth();
@@ -187,14 +212,17 @@ void PostProcessing::FullScreen(){
 	}
 }
 
-void PostProcessing::SetState(bool newState){
+void PostProcessing::SetState(bool newState)
+{
     if (newState == enabled)
         return;
     enabled = newState;
     SetTextureFilter(mainRender.texture, enabled ? TEXTURE_FILTER_BILINEAR : TEXTURE_FILTER_POINT);
+    SetTextureFilter(editorRender.texture, enabled ? TEXTURE_FILTER_BILINEAR : TEXTURE_FILTER_POINT);
 }
 
-void PostProcessing::SetCRTFloat(CRTProperty property, float value){
+void PostProcessing::SetCRTFloat(CRTProperty property, float value)
+{
     value = Clamp(value, 0.0, 255.0);
     unsigned char v = (unsigned char)value;
     unsigned short dir = 4080;

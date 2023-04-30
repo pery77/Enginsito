@@ -201,7 +201,17 @@ int main(int argc, char *argv[])
    
             // Final Draw
             ClearBackground(BLACK);
-            engine->postProcessing->RenderFinal();
+
+            if(showImgui)
+            {
+                BeginTextureMode(engine->postProcessing->editorRender);
+                    engine->postProcessing->RenderFinal();
+                EndTextureMode();
+            }
+            else
+            {
+                engine->postProcessing->RenderFinal();
+            }
 
             // Engine over draw
             if(showImgui) 
