@@ -382,15 +382,13 @@ struct Editor
         window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus ;
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.02f, 0.02f, 0.02f, 0.02f));
         ImGui::Begin(editorEngineRef->GetEngineName(), NULL, window_flags);
-        ImGui::PopStyleColor();
         ImGui::PopStyleVar();
 
             static bool showDemo = false;
 
             ImGuiID dockspace_id = ImGui::GetID("DockId");
-            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
 
             ImGui::Begin("Tools", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
                 ImGui::DragFloat("Font", &io.FontGlobalScale, 0.01f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);

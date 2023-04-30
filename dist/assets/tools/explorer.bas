@@ -7,7 +7,7 @@ setColor(15,56,212,248)
 
 setSprite(0,8,12,242,129,242,12,8,0) 'arrow
 setSprite(1,120,142,191,193,193,130,254,0) 'folder
-renderSprites()
+
 
 def drawFile(name, x, y)
     col = 14
@@ -18,7 +18,7 @@ def drawFile(name, x, y)
         colSprite = 0
         draw.rect(x,y-1,100,10,0,13)
     endif
-    draw.sprite(0,x+1,y+1,colSprite,0)
+    draw.sprite(1,x+1,y+1,colSprite,0)
     draw.text(name,x+10,y,1,col)
 enddef
 
@@ -50,3 +50,5 @@ def draw()
     ui.drawmouse()
 
 enddef
+
+
