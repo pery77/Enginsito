@@ -2,6 +2,7 @@
 #include "imgui/imgui.h"
 #include "imgui/rlImGui.h"
 #include "imgui/imgui_memory_editor.h"
+#include "imgui-knobs.h"
 
 #include "engine.h"
 #include "bios.h"
@@ -10,8 +11,14 @@
 #include "mb_manager.h"
 #include "sprite_manager.h"
 
+
 struct Editor
 {
+    #define WHITE_KEY_WIDTH 40
+    #define WHITE_KEY_HEIGHT 120
+    #define BLACK_KEY_WIDTH 30
+    #define BLACK_KEY_HEIGHT 80
+
     Engine* editorEngineRef;
     TextEditor codeEditor;
     TextEditor::LanguageDefinition lang = TextEditor::LanguageDefinition::Basic();
@@ -371,6 +378,106 @@ struct Editor
         mem_edit.DrawContents(editorEngineRef->GetMemory(), 4096);
     }
 
+    void PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack) 
+    {
+        ImVec4 color = ImVec4(.9f, .9f, .9f, 1.0f);
+        ImVec4 colorText = ImVec4(.1f, .1f, .1f, 1.0f);
+        const char* formatText = "\n\n\n%d";
+
+        if (isBlack)
+        {
+            color =ImVec4(.1f, .1f, .1f, 1.0f);
+            colorText = ImVec4(.9f, .9f, .9f, 1.0f);
+            formatText = "\n\n%d";
+        }
+
+        char button_label[32];
+        sprintf(button_label, formatText , note);
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+        draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y),IM_COL32(255, 255, 255, 255));
+        draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y),IM_COL32(40, 20, 20, 255),0,0,3);
+        ImGui::SetCursorScreenPos(pos);
+
+        ImGui::SetItemAllowOverlap();
+
+        ImGui::PushStyleColor(ImGuiCol_Button, color);
+        ImGui::PushStyleColor(ImGuiCol_Text, colorText);
+        ImGui::Button(button_label, size);
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
+
+        if (ImGui::IsItemClicked()) {
+                editorEngineRef->audioManager->LoadSoundData(0);
+                editorEngineRef->audioManager->SFXRender(0,note);
+                editorEngineRef->audioManager->SFXPlay(0,255);
+        }
+    }
+
+
+    bool IsBlack(int note)
+    {
+        int n = note % 12;
+        return (n == 1 || n == 3 || n == 6 || n == 8 || n == 10);
+    }
+
+    void DrawSFX()
+    {
+        uint8_t id = 0;
+        unsigned int dir = 3376 + (id * 22);
+        int attackTimeValue   = editorEngineRef->Peek(dir+1);
+        int sustainTimeValue  = editorEngineRef->Peek(dir+2);
+        int sustainPunchValue = editorEngineRef->Peek(dir+3);
+        int decayTimeValue    = editorEngineRef->Peek(dir+4);
+        
+        ImVec2 white_key_pos = ImGui::GetCursorScreenPos();
+        ImVec2 black_key_pos = white_key_pos;
+
+        for (int i = 48; i <= 84; i++) 
+        {
+            if (!IsBlack(i))
+            {
+                PianoKey(white_key_pos, ImVec2(WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT), i, false);
+                white_key_pos.x += WHITE_KEY_WIDTH;
+            } 
+        }
+        
+        for (int i = 48; i <= 84; i++) 
+        {
+            if (IsBlack(i))
+            {
+                PianoKey(ImVec2(black_key_pos.x - BLACK_KEY_WIDTH / 2, black_key_pos.y), 
+                ImVec2(BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT), i, true);
+                black_key_pos.x -= WHITE_KEY_WIDTH;
+            }
+
+            black_key_pos.x += WHITE_KEY_WIDTH;
+        }
+
+        ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
+
+        ImGui::Text("Envelope");
+        if (ImGuiKnobs::KnobInt("Attack", &attackTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper)) 
+        {
+            editorEngineRef->Poke(dir+1, attackTimeValue);
+        }
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("Sustain", &sustainTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper)) 
+        {
+            editorEngineRef->Poke(dir+2, sustainTimeValue);
+        }
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("Punch", &sustainPunchValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper)) 
+        {
+            editorEngineRef->Poke(dir+3, sustainPunchValue);
+        }
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("Decay", &decayTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper)) 
+        {
+            editorEngineRef->Poke(dir+4, decayTimeValue);
+        }
+        
+    }
+
     void Draw()
     {
         ImGuiIO& io = ImGui::GetIO();
@@ -452,6 +559,10 @@ struct Editor
                 windowSize = ImGui::GetWindowSize();
                 scale = (windowSize.x/windowSize.y < 1.0f) ? windowSize.x/128.0f : windowSize.y/128.0f;
                 rlImGuiImageRect(&editorEngineRef->spriteManager->spriteTexture, 128 * scale, 128 * scale, (Rectangle){0, 0, 128, 128});
+            ImGui::End();
+
+            ImGui::Begin("SFX", NULL, ImGuiWindowFlags_NoCollapse);
+                DrawSFX();
             ImGui::End();
 
             DrawCode();
