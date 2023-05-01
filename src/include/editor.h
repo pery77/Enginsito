@@ -383,22 +383,27 @@ struct Editor
         ImVec4 color = ImVec4(.9f, .9f, .9f, 1.0f);
         ImVec4 colorText = ImVec4(.1f, .1f, .1f, 1.0f);
         const char* formatText = "\n\n\n%d";
+        bool focused = false;
 
         if (isBlack)
         {
             color =ImVec4(.1f, .1f, .1f, 1.0f);
             colorText = ImVec4(.9f, .9f, .9f, 1.0f);
             formatText = "\n\n%d";
+            focused = ImGui::IsItemFocused();
+        }
+        else
+        {
+            if (!focused) ImGui::SetItemAllowOverlap();
         }
 
         char button_label[32];
         sprintf(button_label, formatText , note);
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
-        draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y),IM_COL32(255, 255, 255, 255));
-        draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y),IM_COL32(40, 20, 20, 255),0,0,3);
-        ImGui::SetCursorScreenPos(pos);
+        draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32(255, 255, 255, 255), 2.0f);
+        draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32(40, 20, 20, 255), 2.0f, 0, 5);
 
-        ImGui::SetItemAllowOverlap();
+        ImGui::SetCursorScreenPos(pos);
 
         ImGui::PushStyleColor(ImGuiCol_Button, color);
         ImGui::PushStyleColor(ImGuiCol_Text, colorText);
@@ -432,6 +437,7 @@ struct Editor
         ImVec2 white_key_pos = ImGui::GetCursorScreenPos();
         ImVec2 black_key_pos = white_key_pos;
 
+        ImGui::BeginGroup();
         for (int i = 48; i <= 84; i++) 
         {
             if (!IsBlack(i))
@@ -440,7 +446,9 @@ struct Editor
                 white_key_pos.x += WHITE_KEY_WIDTH;
             } 
         }
-        
+        ImGui::EndGroup();        
+     
+        ImGui::BeginGroup();
         for (int i = 48; i <= 84; i++) 
         {
             if (IsBlack(i))
@@ -452,6 +460,7 @@ struct Editor
 
             black_key_pos.x += WHITE_KEY_WIDTH;
         }
+        ImGui::EndGroup();
 
         ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
 
