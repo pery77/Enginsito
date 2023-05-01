@@ -1921,7 +1921,7 @@ int MBManager::crtBlurPower(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	basicEngineRef->postProcessing->SetCRTFloat(CRTProperty::BlurPower, value);
+   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurPower, value);
 	return result;
 }
 int MBManager::crtBlurFactor(struct mb_interpreter_t* s, void** l){
@@ -1936,7 +1936,7 @@ int MBManager::crtBlurFactor(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	basicEngineRef->postProcessing->SetCRTFloat(CRTProperty::BlurFactor, value);
+   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurFactor, value);
 	return result;
 }
 int MBManager::crtChromatic(struct mb_interpreter_t* s, void** l){
@@ -1951,7 +1951,7 @@ int MBManager::crtChromatic(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	basicEngineRef->postProcessing->SetCRTFloat(CRTProperty::Chromatic, value);
+   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::Chromatic, value);
 	return result;
 }
 int MBManager::crtCurvature(struct mb_interpreter_t* s, void** l){
@@ -1966,7 +1966,7 @@ int MBManager::crtCurvature(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	basicEngineRef->postProcessing->SetCRTFloat(CRTProperty::Curvature, value);
+   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::Curvature, value);
 	return result;
 }
 int MBManager::crtVignetting(struct mb_interpreter_t* s, void** l){
@@ -1981,7 +1981,7 @@ int MBManager::crtVignetting(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	basicEngineRef->postProcessing->SetCRTFloat(CRTProperty::Vignetting, value);
+   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::Vignetting, value);
 	return result;
 }
 int MBManager::crtScanline(struct mb_interpreter_t* s, void** l){
@@ -1996,7 +1996,7 @@ int MBManager::crtScanline(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	basicEngineRef->postProcessing->SetCRTFloat(CRTProperty::ScanLine, value);
+   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::ScanLine, value);
 	return result;
 }
 int MBManager::crtSetGrille(struct mb_interpreter_t* s, void** l){
@@ -2026,7 +2026,7 @@ int MBManager::crtVerticalLine(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	basicEngineRef->postProcessing->SetCRTFloat(CRTProperty::VerticalLine, value);
+   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::VerticalLine, value);
 	return result;
 }
 int MBManager::crtGrilleForce(struct mb_interpreter_t* s, void** l){
@@ -2041,7 +2041,7 @@ int MBManager::crtGrilleForce(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	basicEngineRef->postProcessing->SetCRTFloat(CRTProperty::GrilleForce, value);
+   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::GrilleForce, value);
 	return result;
 }
 int MBManager::crtNoise(struct mb_interpreter_t* s, void** l){
@@ -2056,7 +2056,7 @@ int MBManager::crtNoise(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	basicEngineRef->postProcessing->SetCRTFloat(CRTProperty::Noise, value);
+   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::Noise, value);
 	return result;
 }
 int MBManager::crtFliker(struct mb_interpreter_t* s, void** l){
@@ -2071,7 +2071,7 @@ int MBManager::crtFliker(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-   	basicEngineRef->postProcessing->SetCRTFloat(CRTProperty::Fliker, value);
+   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::Fliker, value);
 	return result;
 }
 

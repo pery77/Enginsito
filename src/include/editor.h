@@ -268,17 +268,17 @@ struct Editor
         ImGui::Checkbox("Enabled", &ppState);
         editorEngineRef->postProcessing->SetState(ppState);
         
-        static int blurPower    = editorEngineRef->Peek(4080);
-        static int blurFactor   = editorEngineRef->Peek(4081);
-        static int chromatic    = editorEngineRef->Peek(4082);
-        static int curvature    = editorEngineRef->Peek(4083);
-        static int vignetting   = editorEngineRef->Peek(4084);
-        static int scanLine     = editorEngineRef->Peek(4085);
-        static int verticalLine = editorEngineRef->Peek(4086);
-        static int grilleForce  = editorEngineRef->Peek(4087);
-        static int noise        = editorEngineRef->Peek(4088);
-        static int fliker       = editorEngineRef->Peek(4089);
-        static int grille       = editorEngineRef->Peek(4090);
+        int blurPower    = editorEngineRef->Peek(4080);
+        int blurFactor   = editorEngineRef->Peek(4081);
+        int chromatic    = editorEngineRef->Peek(4082);
+        int curvature    = editorEngineRef->Peek(4083);
+        int vignetting   = editorEngineRef->Peek(4084);
+        int scanLine     = editorEngineRef->Peek(4085);
+        int verticalLine = editorEngineRef->Peek(4086);
+        int grilleForce  = editorEngineRef->Peek(4087);
+        int noise        = editorEngineRef->Peek(4088);
+        int fliker       = editorEngineRef->Peek(4089);
+        int grille       = editorEngineRef->Peek(4090);
 
         ImGui::DragInt("Blur Power", &blurPower, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
         ImGui::DragInt("Blur Factor", &blurFactor, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
@@ -292,16 +292,16 @@ struct Editor
         ImGui::DragInt("Flicker", &fliker, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
         ImGui::DragInt("Grille", &grille, 1, 0, 2, "%1i", ImGuiSliderFlags_AlwaysClamp);
 
-        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::BlurPower, blurPower);
-        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::BlurFactor, blurFactor);
-        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Chromatic, chromatic);
-        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Curvature, curvature);
-        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Vignetting, vignetting);
-        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::ScanLine, scanLine);
-        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::VerticalLine, verticalLine);
-        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::GrilleForce, grilleForce);
-        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Noise, noise);
-        editorEngineRef->postProcessing->SetCRTFloat(CRTProperty::Fliker, fliker);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurPower, blurPower);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurFactor, blurFactor);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Chromatic, chromatic);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Curvature, curvature);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Vignetting, vignetting);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::ScanLine, scanLine);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::VerticalLine, verticalLine);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::GrilleForce, grilleForce);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Noise, noise);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Fliker, fliker);
         editorEngineRef->postProcessing->SetGrilleTexture(grille);
     }
 
@@ -430,10 +430,10 @@ struct Editor
                 DrawPalette();
             ImGui::End();
 
-            ImGui::Begin("CRT", NULL, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("CRT", NULL, ImGuiWindowFlags_NoCollapse); 
                 DrawCRT();
             ImGui::End();
-
+            
             ImVec2 minHeight(60, 100);
             ImVec2 maxHeight(2000, 100);
             ImGui::SetNextWindowSizeConstraints(minHeight, maxHeight);

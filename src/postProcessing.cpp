@@ -127,6 +127,17 @@ void PostProcessing::RenderFinal()
 {
     if (enabled)
     {
+        uBlurPower         = GetCRTFloat(CRTProperty::BlurPower);
+        uBlurFactor        = GetCRTFloat(CRTProperty::BlurFactor);
+        uChromatic         = GetCRTFloat(CRTProperty::Chromatic);
+        uCurvature         = GetCRTFloat(CRTProperty::Curvature);
+        uVignetteIntensity = GetCRTFloat(CRTProperty::Vignetting);
+        uScanline          = GetCRTFloat(CRTProperty::ScanLine);
+        uVerticalLine      = GetCRTFloat(CRTProperty::VerticalLine);
+        uGrilleForce       = GetCRTFloat(CRTProperty::GrilleForce);
+        uNoise             = GetCRTFloat(CRTProperty::Noise);
+        uFliker            = GetCRTFloat(CRTProperty::Fliker);
+
         BeginShaderMode(crtShader);
             SetShaderValueTexture(crtShader, grilleLoc, grilleTextures[currentGrilleTexture]);
             SetShaderValueTexture(crtShader, blurTextureLoc, bufferTexture.texture);
@@ -221,57 +232,15 @@ void PostProcessing::SetState(bool newState)
     SetTextureFilter(editorRender.texture, enabled ? TEXTURE_FILTER_BILINEAR : TEXTURE_FILTER_POINT);
 }
 
-void PostProcessing::SetCRTFloat(CRTProperty property, float value)
+void PostProcessing::SetCRTValue(CRTProperty property, uint8_t value)
 {
-    value = Clamp(value, 0.0, 255.0);
-    unsigned char v = (unsigned char)value;
     unsigned short dir = 4080;
-    value *= 0.003921; // byte to float normalized 1/255
-
-    switch (property){
-        case CRTProperty::BlurPower:
-                uBlurPower = value;
-            break;
-        case CRTProperty::BlurFactor:
-                uBlurFactor = value;
-                dir += 1;
-            break;
-        case CRTProperty::Chromatic:
-                uChromatic = value;
-                dir += 2;
-            break;
-        case CRTProperty::Curvature:
-                uCurvature = value;
-                dir += 3;
-            break;
-        case CRTProperty::Vignetting:
-                uVignetteIntensity = value;
-                dir += 4;
-            break;
-        case CRTProperty::ScanLine:
-                uScanline = value;
-                dir += 5;
-            break;
-        case CRTProperty::VerticalLine:
-                uVerticalLine = value;
-                dir += 6;
-            break;  
-        case CRTProperty::GrilleForce:
-                uGrilleForce = value;
-                dir += 7;
-            break;                   
-         case CRTProperty::Noise:
-                uNoise = value;
-                dir += 8;
-            break;       
-        case CRTProperty::Fliker:
-                uFliker = value;
-                dir += 9;
-            break;        
-        default:
-            break;
-    }
-    postProEngineRef->Poke(dir,v);
+    postProEngineRef->Poke(dir + property, value);
+}
+float PostProcessing::GetCRTFloat(CRTProperty property)
+{
+    unsigned short dir = 4080;
+    return postProEngineRef->MainMemory[dir + property] * 0.003921f;
 }
 
  void PostProcessing::SetGrilleTexture(int newTextureId)

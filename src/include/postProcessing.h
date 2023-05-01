@@ -80,7 +80,7 @@ class PostProcessing
 	float currentAspectRatio;
     float editorImageFactor;
 
-    void SetCRTFloat(CRTProperty location, float value);
+    void SetCRTValue(CRTProperty property, uint8_t value);
     void SetGrilleTexture(int newTextureId);
 
     private:
@@ -89,7 +89,7 @@ class PostProcessing
     Rectangle gameScaledRect { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
 
     void setUpShaders();
-
+    float GetCRTFloat(CRTProperty property);
 
     RenderTexture2D bufferTexture;
 
