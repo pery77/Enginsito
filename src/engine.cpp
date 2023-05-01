@@ -49,6 +49,7 @@ void Engine::Init()
     LoadDefaultMemory();
 
     postProcessing = new PostProcessing(this);
+    audioManager = new AudioManager(this);
     basicIntepreter = new MBManager(this);
     bios = new Bios(this);
     editor = new Editor(this);

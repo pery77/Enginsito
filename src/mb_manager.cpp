@@ -4,14 +4,14 @@
 #include "engine.h"
 #include "editor.h"
 #include "sprite_manager.h"
+#include <stdarg.h>
+#include <cstring>
 
-AudioManager* audioR;
 Engine* basicEngineRef;
 uint32_t currentframe = 0;
 
 MBManager::MBManager(Engine* _engine){
 	nullArg[0].type = MB_DT_NIL;
-	audioR = new AudioManager(_engine);
 	basicEngineRef = _engine;
 }
 
@@ -36,7 +36,7 @@ void MBManager::managerError(int state){
 }
 
 void MBManager::UpdateAudio(){
-	audioR->Update();
+	basicEngineRef->audioManager->Update();
 }
 void MBManager::doRoutine(char* routineName, mb_value_t routine){
 	mb_get_routine(bas, &context, routineName, &routine);
@@ -1357,7 +1357,7 @@ int MBManager::setSequence(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SetSequence(id, arg);
+    basicEngineRef->audioManager->SetSequence(id, arg);
 	return result;
 }
 int MBManager::playNote(struct mb_interpreter_t* s, void** l){
@@ -1374,7 +1374,7 @@ int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->PlayNote(channel, note, volume);
+    basicEngineRef->audioManager->PlayNote(channel, note, volume);
 
 	return result;
 }
@@ -1391,7 +1391,7 @@ int MBManager::stopNote(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->StopNote(channel);
+    basicEngineRef->audioManager->StopNote(channel);
 
 	return result;
 }
@@ -1405,7 +1405,7 @@ int MBManager::musicPlay(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->MusicPlay();
+    basicEngineRef->audioManager->MusicPlay();
 
 	return result;
 }
@@ -1419,7 +1419,7 @@ int MBManager::musicStop(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->MusicStop();
+    basicEngineRef->audioManager->MusicStop();
 
 	return result;
 }
@@ -1438,7 +1438,7 @@ int MBManager::getMusicPosition(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ret.value.integer = audioR->GetMusicPosition(channel);
+    ret.value.integer = basicEngineRef->audioManager->GetMusicPosition(channel);
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
@@ -1457,7 +1457,7 @@ int MBManager::getMusicSize(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ret.value.integer = audioR->GetMusicSize(channel);
+    ret.value.integer = basicEngineRef->audioManager->GetMusicSize(channel);
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
@@ -1472,7 +1472,7 @@ int MBManager::getMusicTick(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ret.value.integer = audioR->AudioTick;
+    ret.value.integer = basicEngineRef->audioManager->AudioTick;
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
@@ -1493,7 +1493,7 @@ int MBManager::setEnv(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SetEnv(channel, attk, dec, sus, rel, amp);
+    basicEngineRef->audioManager->SetEnv(channel, attk, dec, sus, rel, amp);
 
 	return result;
 }
@@ -1512,7 +1512,7 @@ int MBManager::setLFO(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SetLFO(channel, note, amp);
+    basicEngineRef->audioManager->SetLFO(channel, note, amp);
 
 	return result;
 }
@@ -1529,7 +1529,7 @@ int MBManager::setOsc(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SetOSC(channel, osc);
+    basicEngineRef->audioManager->SetOSC(channel, osc);
 
 	return result;
 }
@@ -1548,7 +1548,7 @@ int MBManager::sfxRender(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXRender(id, note);
+    basicEngineRef->audioManager->SFXRender(id, note);
 
 	return result;
 }
@@ -1566,7 +1566,7 @@ int MBManager::sfxWave(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXWave(id, wave);
+    basicEngineRef->audioManager->SFXWave(id, wave);
 
 	return result;
 }
@@ -1587,7 +1587,7 @@ int MBManager::sfxEnv(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXEnv(id, att, susT, susP, dec);
+    basicEngineRef->audioManager->SFXEnv(id, att, susT, susP, dec);
 
 	return result;
 }
@@ -1608,7 +1608,7 @@ int MBManager::sfxFreq(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXFreq(id, slide, delta, vibratoD, vibratoS);
+    basicEngineRef->audioManager->SFXFreq(id, slide, delta, vibratoD, vibratoS);
 
 	return result;
 
@@ -1630,7 +1630,7 @@ int MBManager::sfxTone(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXTone(id, ammount, speed, square, duty);
+    basicEngineRef->audioManager->SFXTone(id, ammount, speed, square, duty);
 
 	return result;
 }
@@ -1650,7 +1650,7 @@ int MBManager::sfxRepeat(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXRepeat(id, speed, offset, sweep);
+    basicEngineRef->audioManager->SFXRepeat(id, speed, offset, sweep);
 
 	return result;
 }
@@ -1672,7 +1672,7 @@ int MBManager::sfxFilter(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXFilter(id, lpfCuttoff, lpfSweep, lpfRes, hpfCuttoff, hpfSweep);
+    basicEngineRef->audioManager->SFXFilter(id, lpfCuttoff, lpfSweep, lpfRes, hpfCuttoff, hpfSweep);
 
 	return result;
 }
@@ -1689,7 +1689,7 @@ int MBManager::sfxPlay(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXPlay(id, vol);
+    basicEngineRef->audioManager->SFXPlay(id, vol);
 
 	return result;
 }
@@ -1705,7 +1705,7 @@ int MBManager::sfxStop(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    audioR->SFXStop(id);
+    basicEngineRef->audioManager->SFXStop(id);
 
 	return result;
 }
@@ -2105,13 +2105,19 @@ int MBManager::my_input(struct mb_interpreter_t* s, const char* pmt, char* buf, 
 	int result = 0;
 	mb_unrefvar(s);
 
-	if(fgets(buf, n, stdin) == 0) { /* Change me */
-		fprintf(stderr, "Error reading.\n");
-		exit(1);
+	const char* input_str = Tools::console->InputBuf;
+	int input_len = strlen(input_str);
+
+	if (input_len >= n) {
+		fprintf(stderr, "Error: input too long.\n");
+		return 0;
 	}
-	result = (int)strlen(buf);
-	if(buf[result - 1] == '\n')
+
+	strcpy(buf, input_str);
+	result = input_len;
+	if (buf[result - 1] == '\n') {
 		buf[result - 1] = '\0';
+	}
 
 	return result;
 }

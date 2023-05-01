@@ -16,6 +16,7 @@ class PostProcessing;
 class Bios;
 class Editor;
 class SpriteManager;
+class AudioManager;
 
 class Engine
 {
@@ -33,6 +34,7 @@ class Engine
         Bios* bios;
         Editor* editor;
         SpriteManager* spriteManager;
+        AudioManager* audioManager;
 
         static const char *GetEngineName();
         void UpdateFileWatcher();
