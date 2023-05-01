@@ -104,7 +104,7 @@ std::string TextEditor::GetText(const Coordinates & aStart, const Coordinates & 
 		{
 			istart = 0;
 			++lstart;
-			result += '\n';
+			if(lstart < lend) result += '\n';
 		}
 	}
 
@@ -2116,7 +2116,7 @@ const TextEditor::Palette & TextEditor::GetBasicPalette()
 }
 std::string TextEditor::GetText() const
 {
-	return GetText(Coordinates(), Coordinates((int)mLines.size(), 0));
+    return GetText(Coordinates(), Coordinates((int)mLines.size(), 0));
 }
 
 std::vector<std::string> TextEditor::GetTextLines() const

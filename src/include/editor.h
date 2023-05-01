@@ -322,6 +322,7 @@ struct Editor
             {
                 auto textToSave = codeEditor.GetText();
                 SaveFileText(editorEngineRef->bios->GetFile().c_str(), (char *)textToSave.c_str());
+
                 editorEngineRef->bios->ShouldRun = true;
             }
 
