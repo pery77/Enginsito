@@ -56,6 +56,13 @@ class AudioManager
     void SFXTone(uint8_t id, uint8_t amount, uint8_t speed, uint8_t square, uint8_t duty);
     void SFXRepeat(uint8_t id, uint8_t speed, uint8_t offset, uint8_t sweep);
     void SFXFilter(uint8_t id, uint8_t lpfCutoff, uint8_t lpfSweep, uint8_t lpfRes, uint8_t hpfCutoff, uint8_t hpfSweep);
+     
+    void StoreWave(uint8_t id);
+    void StoreEnv(uint8_t id);
+    void StoreFreq(uint8_t id);
+    void StoreTone(uint8_t id);
+    void StoreRepeat(uint8_t id);
+    void StoreFilter(uint8_t id);
     
     void LoadSoundData(uint8_t id);
 

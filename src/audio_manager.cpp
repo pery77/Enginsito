@@ -199,8 +199,8 @@ void AudioManager::SetOSC(uint8_t channel, uint8_t osc){
 }
 
 //Effects
-void AudioManager::SFXRender(uint8_t id, uint8_t note){
-
+void AudioManager::SFXRender(uint8_t id, uint8_t note)
+{
     setNote(id, note);
 
     wave[id].data = GenerateWave(params[id], &wave[id].frameCount);
@@ -209,113 +209,152 @@ void AudioManager::SFXRender(uint8_t id, uint8_t note){
     unsigned short dir = GetSoundDir(id);
     audioEngineRef->Poke(dir + 21, note);
 }
-void AudioManager::SFXWave(uint8_t id, uint8_t waveType){
 
-    params[id].waveTypeValue = waveType;
+void AudioManager::SFXWave(uint8_t id, uint8_t waveType)
+{
     unsigned short dir = GetSoundDir(id);
     audioEngineRef->Poke(dir, waveType);
+    StoreWave(id);
 }
-void AudioManager::SFXEnv(uint8_t id, uint8_t att, uint8_t susT, uint8_t susP, uint8_t dec){
 
-    params[id].attackTimeValue   = (float) (att * AUDIO_STEP);
-    params[id].sustainTimeValue  = (float) (susT * AUDIO_STEP);
-    params[id].sustainPunchValue = (float) (susP * AUDIO_STEP);
-    params[id].decayTimeValue    = (float) (dec * AUDIO_STEP);
-    
+void AudioManager::StoreWave(uint8_t id)
+{
+    unsigned short dir = GetSoundDir(id);
+    params[id].waveTypeValue = audioEngineRef->Peek(dir);
+}
+
+void AudioManager::SFXEnv(uint8_t id, uint8_t att, uint8_t susT, uint8_t susP, uint8_t dec)
+{
     unsigned short dir = GetSoundDir(id);
     audioEngineRef->Poke(dir + 1, att);
     audioEngineRef->Poke(dir + 2, susT);
     audioEngineRef->Poke(dir + 3, susP);
     audioEngineRef->Poke(dir + 4, dec);
+    StoreEnv(id);
 }
-void AudioManager::SFXFreq(uint8_t id, uint8_t slide, uint8_t delta, uint8_t vibratoD, uint8_t vibratoS){
+void AudioManager::StoreEnv(uint8_t id)
+{  
+    unsigned short dir = GetSoundDir(id);
+    params[id].attackTimeValue   = (float) (audioEngineRef->Peek(dir + 1) * AUDIO_STEP);
+    params[id].sustainTimeValue  = (float) (audioEngineRef->Peek(dir + 2) * AUDIO_STEP);
+    params[id].sustainPunchValue = (float) (audioEngineRef->Peek(dir + 3) * AUDIO_STEP);
+    params[id].decayTimeValue    = (float) (audioEngineRef->Peek(dir + 4) * AUDIO_STEP);
+}
 
-    params[id].slideValue        = (float) (Tools::ToSigned(slide) * AUDIO_STEP) * 2;
-    params[id].deltaSlideValue   = (float) (Tools::ToSigned(delta) * AUDIO_STEP) * 2;
-    params[id].vibratoDepthValue = (float) (vibratoD * AUDIO_STEP);
-    params[id].vibratoSpeedValue = (float) (vibratoS * AUDIO_STEP);
-
+void AudioManager::SFXFreq(uint8_t id, uint8_t slide, uint8_t delta, uint8_t vibratoD, uint8_t vibratoS)
+{
     unsigned short dir = GetSoundDir(id);
     audioEngineRef->Poke(dir + 5, slide);
     audioEngineRef->Poke(dir + 6, delta);
     audioEngineRef->Poke(dir + 7, vibratoD);
     audioEngineRef->Poke(dir + 8, vibratoS);
-  
+    StoreFreq(id);
 }
-void AudioManager::SFXTone(uint8_t id, uint8_t amount, uint8_t speed, uint8_t square, uint8_t duty){
 
-    params[id].changeAmountValue = (float) (Tools::ToSigned(amount) * AUDIO_STEP) * 2;
-    params[id].changeSpeedValue  = (float) (speed * AUDIO_STEP);
-    params[id].squareDutyValue   = (float) (square * AUDIO_STEP);
-    params[id].dutySweepValue    = (float) (Tools::ToSigned(duty) * AUDIO_STEP) * 2;
-    
+void AudioManager::StoreFreq(uint8_t id)
+{
+    unsigned short dir = GetSoundDir(id);
+    params[id].slideValue        = (float) (Tools::ToSigned(audioEngineRef->Peek(dir + 5)) * AUDIO_STEP) * 2;
+    params[id].deltaSlideValue   = (float) (Tools::ToSigned(audioEngineRef->Peek(dir + 6)) * AUDIO_STEP) * 2;
+    params[id].vibratoDepthValue = (float) (audioEngineRef->Peek(dir + 7) * AUDIO_STEP);
+    params[id].vibratoSpeedValue = (float) (audioEngineRef->Peek(dir + 8) * AUDIO_STEP);
+}
+
+void AudioManager::SFXTone(uint8_t id, uint8_t amount, uint8_t speed, uint8_t square, uint8_t duty)
+{
     unsigned short dir = GetSoundDir(id);
     audioEngineRef->Poke(dir + 9,  amount);
     audioEngineRef->Poke(dir + 10, speed);
     audioEngineRef->Poke(dir + 11, square);
     audioEngineRef->Poke(dir + 12, duty);
-
+    StoreTone(id);
 }
-void AudioManager::SFXRepeat(uint8_t id, uint8_t speed, uint8_t offset, uint8_t sweep){
 
-    params[id].repeatSpeedValue = (float) (speed * AUDIO_STEP);
-    params[id].phaserOffsetValue = (float) (Tools::ToSigned(offset) * AUDIO_STEP) * 2;
-    params[id].phaserSweepValue = (float) (Tools::ToSigned(sweep) * AUDIO_STEP) * 2;
+void AudioManager::StoreTone(uint8_t id)
+{
+    unsigned short dir = GetSoundDir(id);
+    params[id].changeAmountValue = (float) (Tools::ToSigned(audioEngineRef->Peek(dir + 9)) * AUDIO_STEP) * 2;
+    params[id].changeSpeedValue  = (float) (audioEngineRef->Peek(dir + 10) * AUDIO_STEP);
+    params[id].squareDutyValue   = (float) (audioEngineRef->Peek(dir + 11) * AUDIO_STEP);
+    params[id].dutySweepValue    = (float) (Tools::ToSigned(audioEngineRef->Peek(dir + 12)) * AUDIO_STEP) * 2;
+}
 
+void AudioManager::SFXRepeat(uint8_t id, uint8_t speed, uint8_t offset, uint8_t sweep)
+{
     unsigned short dir = GetSoundDir(id);
     audioEngineRef->Poke(dir + 13, speed);
     audioEngineRef->Poke(dir + 14, offset);
     audioEngineRef->Poke(dir + 15, sweep);
-   
+    StoreRepeat(id);
 }
+
+void AudioManager::StoreRepeat(uint8_t id)
+{
+    unsigned short dir = GetSoundDir(id);
+    params[id].repeatSpeedValue = (float) (audioEngineRef->Peek(dir + 13) * AUDIO_STEP);
+    params[id].phaserOffsetValue = (float) (Tools::ToSigned(audioEngineRef->Peek(dir + 14)) * AUDIO_STEP) * 2;
+    params[id].phaserSweepValue = (float) (Tools::ToSigned(audioEngineRef->Peek(dir + 15)) * AUDIO_STEP) * 2;
+}
+
 void AudioManager::SFXFilter(uint8_t id, uint8_t lpfCutoff, uint8_t lpfSweep, 
-        uint8_t lpfRes, uint8_t hpfCutoff, uint8_t hpfSweep){
-
-    params[id].lpfCutoffValue = (float) (lpfCutoff * AUDIO_STEP);
-    params[id].lpfCutoffSweepValue = (float) (Tools::ToSigned(lpfSweep) * AUDIO_STEP) * 2;
-    params[id].lpfResonanceValue = (float) (lpfRes * AUDIO_STEP);
-    params[id].hpfCutoffValue = (float) (hpfCutoff * AUDIO_STEP);
-    params[id].hpfCutoffSweepValue = (float) (Tools::ToSigned(hpfSweep) * AUDIO_STEP) * 2;
-
+        uint8_t lpfRes, uint8_t hpfCutoff, uint8_t hpfSweep)
+{
     unsigned short dir = GetSoundDir(id);
     audioEngineRef->Poke(dir + 16, lpfCutoff);
     audioEngineRef->Poke(dir + 17, lpfSweep);
     audioEngineRef->Poke(dir + 18, lpfRes);
     audioEngineRef->Poke(dir + 19, hpfCutoff);
     audioEngineRef->Poke(dir + 20, hpfSweep);
-   
+    StoreFilter(id);
 }
 
-void AudioManager::SFXPlay(uint8_t id, uint8_t vol){
+void AudioManager::StoreFilter(uint8_t id)
+{
+    unsigned short dir = GetSoundDir(id);
+    params[id].lpfCutoffValue = (float) (audioEngineRef->Peek(dir + 16) * AUDIO_STEP);
+    params[id].lpfCutoffSweepValue = (float) (Tools::ToSigned(audioEngineRef->Peek(dir + 17)) * AUDIO_STEP) * 2;
+    params[id].lpfResonanceValue = (float) (audioEngineRef->Peek(dir + 18) * AUDIO_STEP);
+    params[id].hpfCutoffValue = (float) (audioEngineRef->Peek(dir + 19) * AUDIO_STEP);
+    params[id].hpfCutoffSweepValue = (float) (Tools::ToSigned(audioEngineRef->Peek(dir + 20)) * AUDIO_STEP) * 2;
+}
+
+void AudioManager::SFXPlay(uint8_t id, uint8_t vol)
+{
     id = Tools::IntClamp(id, 0, MAX_WAVE_SLOTS - 1);
     SetSoundVolume(sound[id], (float)(vol * AUDIO_STEP)); // 1/256
     PlaySound(sound[id]);
 }
-void AudioManager::SFXStop(uint8_t id){
+
+void AudioManager::SFXStop(uint8_t id)
+{
     id = Tools::IntClamp(id, 0, MAX_WAVE_SLOTS - 1);
     StopSound(sound[id]);
 }
-void AudioManager::LoadSoundData(uint8_t id){
+
+void AudioManager::LoadSoundData(uint8_t id)
+{
     id = Tools::IntClamp(id, 0, MAX_WAVE_SLOTS - 1);
     unsigned int dir = 3376 + (id * 22);
     
-    SFXWave(id, audioEngineRef->Peek(dir));
-    SFXEnv(id,  audioEngineRef->Peek(dir + 1), audioEngineRef->Peek(dir + 2),  audioEngineRef->Peek(dir + 3),  audioEngineRef->Peek(dir + 4));
-    SFXFreq(id, audioEngineRef->Peek(dir + 5), audioEngineRef->Peek(dir + 6),  audioEngineRef->Peek(dir + 7),  audioEngineRef->Peek(dir + 8));
-    SFXTone(id, audioEngineRef->Peek(dir + 9), audioEngineRef->Peek(dir + 10), audioEngineRef->Peek(dir + 11), audioEngineRef->Peek(dir + 12));
-    SFXRepeat(id, audioEngineRef->Peek(dir + 13), audioEngineRef->Peek(dir + 14), audioEngineRef->Peek(dir + 15));
-    SFXFilter(id, audioEngineRef->Peek(dir + 16), audioEngineRef->Peek(dir + 17), audioEngineRef->Peek(dir + 18), audioEngineRef->Peek(dir + 19), audioEngineRef->Peek(dir + 20));
+    StoreWave(id);
+    StoreEnv(id);
+    StoreFreq(id);
+    StoreTone(id);
+    StoreRepeat(id);
+    StoreFilter(id);
 
     setNote(id, audioEngineRef->Peek(dir + 21));
-    
 }
-void AudioManager::setNote(uint8_t id, uint8_t note){
 
+void AudioManager::setNote(uint8_t id, uint8_t note)
+{
     float n = ((note - 21)/12.0);
     float f =  0.087875 * (sqrt(pow(2, n)));
 
     params[id].startFrequencyValue = f;
 }
-unsigned short AudioManager::GetSoundDir(uint8_t id){
+
+unsigned short AudioManager::GetSoundDir(uint8_t id)
+{
     return (3376 + (id * 22));
 }
