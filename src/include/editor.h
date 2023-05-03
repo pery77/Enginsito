@@ -1,4 +1,8 @@
 #pragma once
+
+#include <iostream>
+#include <map>
+
 #include "imgui/imgui.h"
 #include "imgui/rlImGui.h"
 #include "imgui/imgui_memory_editor.h"
@@ -15,9 +19,49 @@
 struct Editor
 {
     #define WHITE_KEY_WIDTH 40
-    #define WHITE_KEY_HEIGHT 90
+    #define WHITE_KEY_HEIGHT 120
     #define BLACK_KEY_WIDTH 30
-    #define BLACK_KEY_HEIGHT 50
+    #define BLACK_KEY_HEIGHT 60
+
+    int keyboardOctave = 4;
+    int keyboardBaseKey = 96;
+
+    std::map<char, int> keyCharToKey {
+	{'Z', 0},
+	{'S', 1},
+	{'X', 2},
+	{'D', 3},
+	{'C', 4},
+	{'V', 5},
+	{'G', 6},
+	{'B', 7},
+	{'H', 8},
+	{'N', 9},
+	{'J', 10},
+	{'M', 11},
+	{',', 12},
+	{'L', 13},
+	{'.', 14},
+	{';', 15},
+	{'/', 16},
+	{'Q', 12},
+	{'2', 13},
+	{'W', 14},
+	{'3', 15},
+	{'E', 16},
+	{'R', 17},
+	{'5', 18},
+	{'T', 19},
+	{'6', 20},
+	{'Y', 21},
+	{'7', 22},
+	{'U', 23},
+	{'I', 24},
+	{'9', 25},
+	{'O', 26},
+	{'0', 27},
+	{'P', 28}
+};
 
     Engine* editorEngineRef;
     TextEditor codeEditor;
@@ -30,12 +74,13 @@ struct Editor
     bool Paused = false;
     bool DoStep = false;
 
+
     Editor(Engine* _engine)
     {
         editorEngineRef = _engine;
 
         codeEditor.SetLanguageDefinition(lang);
-        codeEditor.SetPalette(TextEditor::GetBasicPalette());
+        codeEditor.SetPalette(TextEditor::GetBasicPalette()); 
     }
 
     ~Editor()
@@ -378,11 +423,11 @@ struct Editor
         mem_edit.DrawContents(editorEngineRef->GetMemory(), 4096);
     }
 
-    void PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack) 
+    void PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack, bool pressed) 
     {
         ImVec4 color = ImVec4(.9f, .9f, .9f, 1.0f);
         ImVec4 colorText = ImVec4(.1f, .1f, .1f, 1.0f);
-        const char* formatText = "\n%d";
+        const char* formatText = "\n\n\n%d";
 
         if (isBlack)
         {
@@ -396,27 +441,24 @@ struct Editor
         }
 
         char button_label[32];
-        sprintf(button_label, formatText , note);
+        sprintf(button_label, formatText , note + ((keyboardOctave - 4) * 12));
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
-        draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32(255, 255, 255, 255), 2.0f);
-        draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32(40, 20, 20, 255), 2.0f, 0, 5);
+        draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), pressed ? IM_COL32(255, 20, 20, 255) : IM_COL32(255, 255, 255, 255), 2.0f);
+        draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32(40, 20, 20, 255), 2.0f, 0, 10);
 
         ImGui::SetCursorScreenPos(pos);
 
         ImGui::PushStyleColor(ImGuiCol_Button, color);
         ImGui::PushStyleColor(ImGuiCol_Text, colorText);
-        ImGui::Button(button_label, size);
-        ImGui::PopStyleColor();
-        ImGui::PopStyleColor();
-
-        if (ImGui::IsItemClicked()) 
+        if (ImGui::Button(button_label, size)) 
         {
-                editorEngineRef->audioManager->LoadSoundData(0);
-                editorEngineRef->audioManager->SFXRender(0,note);
-                editorEngineRef->audioManager->SFXPlay(0,255);
+            editorEngineRef->audioManager->LoadSoundData(0);
+            editorEngineRef->audioManager->SFXRender(0,note);
+            editorEngineRef->audioManager->SFXPlay(0,255);
         }
+        ImGui::PopStyleColor();
+        ImGui::PopStyleColor();
     }
-
 
     bool IsBlack(int note)
     {
@@ -426,8 +468,10 @@ struct Editor
 
     void DrawSFX()
     {
-        uint8_t id = 0;
+        static int id = 0;
         unsigned int dir = 3376 + (id * 22);
+
+        int waveType = editorEngineRef->Peek(dir);
 
         int attackTimeValue   = editorEngineRef->Peek(dir+1);
         int sustainTimeValue  = editorEngineRef->Peek(dir+2);
@@ -444,38 +488,71 @@ struct Editor
         int squareDutyValue   = editorEngineRef->Peek(dir+11);
         int dutySweepValue    = editorEngineRef->Peek(dir+12);
 
-        int repeatSpeedValue  = Tools::ToSigned(editorEngineRef->Peek(dir+13));
+        int repeatSpeedValue  = editorEngineRef->Peek(dir+13);
         int phaserOffsetValue = Tools::ToSigned(editorEngineRef->Peek(dir+14));
-        int phaserSweepValue  = editorEngineRef->Peek(dir+15);    
+        int phaserSweepValue  = Tools::ToSigned(editorEngineRef->Peek(dir+15));;    
 
         int lpfCutoffValue      = editorEngineRef->Peek(dir+16);
         int lpfCutoffSweepValue = Tools::ToSigned(editorEngineRef->Peek(dir+17));
         int lpfResonanceValue   = editorEngineRef->Peek(dir+18);
         int hpfCutoffValue      = editorEngineRef->Peek(dir+19);
         int hpfCutoffSweepValue = Tools::ToSigned(editorEngineRef->Peek(dir+20));
-        
+
+        int pressedKey = -1;
+
+        if (ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
+        {
+                for (auto& key : keyCharToKey)
+                {
+                    char thisChar = key.first;
+                    int thisKey = key.second + keyboardOctave * 12;
+
+                    if (IsKeyPressed(thisChar)) 
+                    {
+                        editorEngineRef->audioManager->LoadSoundData(id);
+                        editorEngineRef->audioManager->SFXRender(id, thisKey);
+                        editorEngineRef->audioManager->SFXPlay(id, 255);
+                        pressedKey = thisKey;
+
+                    }
+                    if (IsKeyReleased(thisChar)) 
+                    {
+                        editorEngineRef->audioManager->SFXStop(id);
+                        pressedKey = -1;
+                    }
+                }
+                
+                // key input - octave control
+                if (IsKeyPressed('=') && keyboardOctave < 8) 
+                {
+                    keyboardOctave++;
+                } 
+                else if (IsKeyPressed('-') && keyboardOctave > 0) 
+                {
+                    keyboardOctave--;
+                }
+        }      
         ImVec2 white_key_pos = ImGui::GetCursorScreenPos();
         ImVec2 black_key_pos = white_key_pos;
-        white_key_pos.y += BLACK_KEY_HEIGHT / 2;
-
+       
         ImGui::BeginGroup();
             for (int i = 48; i <= 84; i++) 
             {
                 if (!IsBlack(i))
                 {
-                    PianoKey(white_key_pos, ImVec2(WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT -  (BLACK_KEY_HEIGHT / 2)), i, false);
+                    PianoKey(white_key_pos, ImVec2(WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT), i, false, i == pressedKey);
                     white_key_pos.x += WHITE_KEY_WIDTH;
                 } 
             }
         ImGui::EndGroup();        
-     
+ 
         ImGui::BeginGroup();
             for (int i = 48; i <= 84; i++) 
             {
                 if (IsBlack(i))
                 {
                     PianoKey(ImVec2(black_key_pos.x - BLACK_KEY_WIDTH / 2, black_key_pos.y), 
-                    ImVec2(BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT), i, true);
+                    ImVec2(BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT), i, true, i == pressedKey);
                     black_key_pos.x -= WHITE_KEY_WIDTH;
                 }
 
@@ -485,29 +562,33 @@ struct Editor
 
         ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
 
+ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
+
         ImGui::BeginGroup();
             ImGui::Text("Envelope");
-            if (ImGuiKnobs::KnobInt("Attack", &attackTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Dot)) 
+            if (ImGuiKnobs::KnobInt("Attack", &attackTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+1, attackTimeValue);
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Sustain", &sustainTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Dot)) 
+            if (ImGuiKnobs::KnobInt("Sustain", &sustainTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+2, sustainTimeValue);
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Punch", &sustainPunchValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Dot)) 
+            if (ImGuiKnobs::KnobInt("Punch", &sustainPunchValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+3, sustainPunchValue);
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Decay", &decayTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Dot)) 
+            if (ImGuiKnobs::KnobInt("Decay", &decayTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+4, decayTimeValue);
             }
         ImGui::EndGroup();
-
+        ImGui::SameLine();
+        ImGui::Text("  ");
+        ImGui::SameLine();
         ImGui::BeginGroup();
             ImGui::Text("Frequence");
             if (ImGuiKnobs::KnobInt("Slide", &slideValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
@@ -520,17 +601,17 @@ struct Editor
                 editorEngineRef->Poke(dir+6, Tools::ToSigned(deltaSlideValue));
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Vibrato Depht", &vibratoDepthValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Dot)) 
+            if (ImGuiKnobs::KnobInt("V.Depht", &vibratoDepthValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+7, vibratoDepthValue);
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Vibrato Speed", &vibratoSpeedValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Dot)) 
+            if (ImGuiKnobs::KnobInt("V.Speed", &vibratoSpeedValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+8, vibratoSpeedValue);
             }
         ImGui::EndGroup();
-
+        ImGui::Text("  ");
         ImGui::BeginGroup();
             ImGui::Text("Tone");
             if (ImGuiKnobs::KnobInt("Amount", &changeAmountValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
@@ -538,69 +619,82 @@ struct Editor
                 editorEngineRef->Poke(dir+9, Tools::ToSigned(changeAmountValue));
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Change Speed", &changeSpeedValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("C.Speed", &changeSpeedValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+10, Tools::ToSigned(changeSpeedValue));
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Square Duty", &squareDutyValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper)) 
+            if (ImGuiKnobs::KnobInt("S.Duty", &squareDutyValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+11, squareDutyValue);
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Duty Sweep", &dutySweepValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper)) 
+            if (ImGuiKnobs::KnobInt("D.Sweep", &dutySweepValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+12, dutySweepValue);
             }
         ImGui::EndGroup();
-
+        ImGui::SameLine();
+        ImGui::Text("  ");
+        ImGui::SameLine();
         ImGui::BeginGroup();
             ImGui::Text("Repeat");
-            if (ImGuiKnobs::KnobInt("R Speed", &repeatSpeedValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper)) 
+            if (ImGuiKnobs::KnobInt("R.Speed", &repeatSpeedValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+13, repeatSpeedValue);
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("R Offset", &phaserOffsetValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("R.Offset", &phaserOffsetValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+14, Tools::ToSigned(phaserOffsetValue));
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("R Sweep", &phaserSweepValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("R.Sweep", &phaserSweepValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+15, Tools::ToSigned(phaserSweepValue));
             }
         ImGui::EndGroup();
-
+        ImGui::Text("  ");
         ImGui::BeginGroup();
             ImGui::Text("Filter");
-            if (ImGuiKnobs::KnobInt("LPF Cutoff", &lpfCutoffValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper)) 
+            if (ImGuiKnobs::KnobInt("LPF Cut", &lpfCutoffValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+16, lpfCutoffValue);
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("LPF Sweep", &lpfCutoffSweepValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("LPF Swp", &lpfCutoffSweepValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+17, Tools::ToSigned(lpfCutoffSweepValue));
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Resonance", &lpfResonanceValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper)) 
+            if (ImGuiKnobs::KnobInt("Reso", &lpfResonanceValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+18, lpfResonanceValue);
             }
-
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("HPF Cutoff", &hpfCutoffValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper)) 
+            if (ImGuiKnobs::KnobInt("HPF Cut", &hpfCutoffValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+19, hpfCutoffValue);
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("HPF Sweep", &hpfCutoffSweepValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("HPF Swp", &hpfCutoffSweepValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+20, Tools::ToSigned(hpfCutoffSweepValue));
             }
         ImGui::EndGroup();
-
+        ImGui::SameLine();
+        ImGui::Text("  ");
+        ImGui::SameLine();
+        ImGui::BeginGroup();
+            ImGui::Text("Wave Type");
+            if (ImGui::RadioButton("Sqr", waveType == 0)) { waveType = 0; editorEngineRef->Poke(dir, waveType);} ImGui::SameLine();
+            if (ImGui::RadioButton("Saw", waveType == 1)) { waveType = 1; editorEngineRef->Poke(dir, waveType);} ImGui::SameLine();
+            if (ImGui::RadioButton("Sin", waveType == 2)) { waveType = 2; editorEngineRef->Poke(dir, waveType);} ImGui::SameLine();
+            if (ImGui::RadioButton("RND", waveType == 3)) { waveType = 3; editorEngineRef->Poke(dir, waveType);}
+            ImGui::Text("  ");
+            ImGui::DragInt("Sound Id", &id, 1, 0, 15, "%2i", ImGuiSliderFlags_AlwaysClamp);
+        ImGui::EndGroup();
+ImGui::EndChild();
     }
 
     void Draw()
