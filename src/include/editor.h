@@ -25,6 +25,7 @@ struct Editor
 
     int keyboardOctave = 4;
     int keyboardBaseKey = 96;
+    int pressedKey = -1;
 
     std::map<char, int> keyCharToKey {
 	{'Z', 0},
@@ -425,13 +426,13 @@ struct Editor
 
     void PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack, bool pressed) 
     {
-        ImVec4 color = ImVec4(.9f, .9f, .9f, 1.0f);
+        ImVec4 color = pressed ? ImVec4(.9f, .2f, .2f, 1.0f) : ImVec4(.9f, .9f, .9f, 1.0f);
         ImVec4 colorText = ImVec4(.1f, .1f, .1f, 1.0f);
         const char* formatText = "\n\n\n%d";
 
         if (isBlack)
         {
-            color =ImVec4(.1f, .1f, .1f, 1.0f);
+            color = pressed ? ImVec4(.6f, .2f, .2f, 1.0f) : ImVec4(.1f, .1f, .1f, 1.0f);
             colorText = ImVec4(.9f, .9f, .9f, 1.0f);
             formatText = "\n%d";
         }
@@ -443,8 +444,8 @@ struct Editor
         char button_label[32];
         sprintf(button_label, formatText , note + ((keyboardOctave - 4) * 12));
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
-        draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), pressed ? IM_COL32(255, 20, 20, 255) : IM_COL32(255, 255, 255, 255), 2.0f);
-        draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32(40, 20, 20, 255), 2.0f, 0, 10);
+        //draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), pressed ? IM_COL32(255, 20, 20, 255) : IM_COL32(255, 255, 255, 255), 2.0f);
+        draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), ImGui::IsItemHovered() ?  IM_COL32(50, 40, 40, 255) : IM_COL32(40, 20, 20, 255), 2.0f, 0, 10);
 
         ImGui::SetCursorScreenPos(pos);
 
@@ -498,7 +499,7 @@ struct Editor
         int hpfCutoffValue      = editorEngineRef->Peek(dir+19);
         int hpfCutoffSweepValue = Tools::ToSigned(editorEngineRef->Peek(dir+20));
 
-        int pressedKey = -1;
+       
 
         if (ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
         {
