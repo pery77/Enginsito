@@ -171,7 +171,7 @@ void main()
         texel /= 12.0;
     }
 
-    finalColor = texel;
+    finalColor = clamp(texel, 0.0, 1.0);
 }
 )|";
 const char* crtShaderCode = R"|(
@@ -297,9 +297,11 @@ void main(){
     vec3 blur = gamma(blurColor * (5 * uBlurPower + 0.05), 5 * (uBlurFactor * uBlurFactor) + 0.05);
  	float scanlineF = (lines(uv.y, textureSize.y, uScanline));
  	float verticalLineF = (lines(uv.x, textureSize.x, uVerticalLine));
-	
+    
     vec3 blur2 = blur * blur * blur;
-	vec3 scanline = mix(blur2 ,vec3(1.0), scanlineF);
+	blur2 = clamp(blur2, 0.0, 100.0);
+	
+    vec3 scanline = mix(blur2 ,vec3(1.0), scanlineF);
 	vec3 verticalLine = mix(blur2 ,vec3(1.0), verticalLineF);
 	
 	texelColor += blur2;

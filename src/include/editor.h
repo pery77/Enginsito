@@ -82,6 +82,7 @@ struct Editor
 
         codeEditor.SetLanguageDefinition(lang);
         codeEditor.SetPalette(TextEditor::GetBasicPalette()); 
+        mem_edit.HighlightColor = IM_COL32(22, 110, 162, 255);
     }
 
     ~Editor()
@@ -308,10 +309,22 @@ struct Editor
         {
            char buffer [50];
            sprintf (buffer, "[%i]", c);
+
            Color col = editorEngineRef->spriteManager->GetColor(c);
            ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
            ImGui::ColorEdit3(buffer, (float*)&color, 0);
+
            editorEngineRef->spriteManager->SetColor(c, color.x * 255, color.y * 255, color.z * 255);
+
+           if (ImGui::IsItemHovered())
+           {
+                mem_edit.HighlightMin = c*3;
+                mem_edit.HighlightMax = c*3+3;
+                mem_edit.GotoAddr = c*3;
+                mem_edit.DataEditingTakeFocus = false;
+                mem_edit.DataEditingAddr = -1;
+                mem_edit.DataPreviewAddr = -1;
+           }
         }
     }
 
@@ -333,29 +346,57 @@ struct Editor
         int fliker       = editorEngineRef->Peek(4089);
         int grille       = editorEngineRef->Peek(4090);
 
-        ImGui::DragInt("Blur Power", &blurPower, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::DragInt("Blur Factor", &blurFactor, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::DragInt("Chromatic", &chromatic, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::DragInt("Curvature", &curvature, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::DragInt("Vignetting", &vignetting, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::DragInt("Scanline", &scanLine, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::DragInt("Vertical Line", &verticalLine, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::DragInt("Grille Force", &grilleForce, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::DragInt("Noise", &noise, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::DragInt("Flicker", &fliker, 1, 0, 255, "%3i", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::DragInt("Grille", &grille, 1, 0, 2, "%1i", ImGuiSliderFlags_AlwaysClamp);
+        ImGuiKnobs::KnobInt("Blur", &blurPower, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+        ImGui::SameLine();
+        ImGuiKnobs::KnobInt("Factor", &blurFactor, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+        ImGui::SameLine();
+        ImGui::Text("  ");
+        ImGui::SameLine();
+        ImGuiKnobs::KnobInt("Chromatic", &chromatic, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+        ImGui::SameLine();
+        ImGuiKnobs::KnobInt("Curvature", &curvature, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+        ImGui::SameLine();
+        ImGuiKnobs::KnobInt("Vignetting", &vignetting, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+        ImGui::Text("  ");
+        ImGuiKnobs::KnobInt("Scanline", &scanLine, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+        ImGui::SameLine();
+        ImGuiKnobs::KnobInt("Vertical", &verticalLine, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+        ImGui::SameLine();
+        ImGuiKnobs::KnobInt("Grille F", &grilleForce, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+        ImGui::SameLine();
+        ImGui::Text("  ");
+        ImGui::SameLine();
+        ImGuiKnobs::KnobInt("Noise", &noise, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+        ImGui::SameLine();
+        ImGuiKnobs::KnobInt("Flicker", &fliker, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+        ImGui::SameLine();
+        ImGui::BeginGroup();
+        ImGui::Text("Grille Mode");
+        const char* items[] = { "Dots", "TV", "LCD"};
+        ImGui::Combo("#grillemode", &grille, items, IM_ARRAYSIZE(items));
+        ImGui::EndGroup();
 
-        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurPower, blurPower);
-        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurFactor, blurFactor);
-        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Chromatic, chromatic);
-        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Curvature, curvature);
-        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Vignetting, vignetting);
-        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::ScanLine, scanLine);
-        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::VerticalLine, verticalLine);
-        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::GrilleForce, grilleForce);
-        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Noise, noise);
-        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Fliker, fliker);
-        editorEngineRef->postProcessing->SetGrilleTexture(grille);
+        if(ImGui::IsWindowFocused())
+        {
+            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurPower, blurPower);
+            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurFactor, blurFactor);
+            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Chromatic, chromatic);
+            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Curvature, curvature);
+            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Vignetting, vignetting);
+            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::ScanLine, scanLine);
+            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::VerticalLine, verticalLine);
+            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::GrilleForce, grilleForce);
+            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Noise, noise);
+            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Fliker, fliker);
+            editorEngineRef->postProcessing->SetGrilleTexture(grille);
+
+            mem_edit.HighlightMin = 4080;
+            mem_edit.HighlightMax = 4091;
+            mem_edit.GotoAddr = 4080;
+            mem_edit.DataEditingTakeFocus = false;
+            mem_edit.DataEditingAddr = -1;
+            mem_edit.DataPreviewAddr = -1;
+        }
     }
 
     void DrawPlayer()
@@ -445,7 +486,7 @@ struct Editor
         sprintf(button_label, formatText , note + ((keyboardOctave - 4) * 12));
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
         //draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), pressed ? IM_COL32(255, 20, 20, 255) : IM_COL32(255, 255, 255, 255), 2.0f);
-        draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), ImGui::IsItemHovered() ?  IM_COL32(50, 40, 40, 255) : IM_COL32(40, 20, 20, 255), 2.0f, 0, 10);
+        draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y - 2), ImGui::IsItemHovered() ?  IM_COL32(100, 100, 100, 255) : IM_COL32(20, 20, 20, 255), 2.0f, 0, 10);
 
         ImGui::SetCursorScreenPos(pos);
 
