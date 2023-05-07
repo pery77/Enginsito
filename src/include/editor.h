@@ -90,6 +90,16 @@ struct Editor
 
     }
 
+    void HighLightMemory(uint16_t address, uint16_t size)
+    {
+        mem_edit.HighlightMin = address;
+        mem_edit.HighlightMax = address + size;
+        mem_edit.GotoAddr = address;
+        mem_edit.DataEditingTakeFocus = false;
+        mem_edit.DataEditingAddr = -1;
+        mem_edit.DataPreviewAddr = -1;
+    }
+
     void inline DrawFPS()
     {
         ImGui::PushStyleColor(ImGuiCol_PlotLines, IM_COL32(40,255,0,255));
@@ -318,13 +328,36 @@ struct Editor
 
            if (ImGui::IsItemHovered())
            {
-                mem_edit.HighlightMin = c*3;
-                mem_edit.HighlightMax = c*3+3;
-                mem_edit.GotoAddr = c*3;
-                mem_edit.DataEditingTakeFocus = false;
-                mem_edit.DataEditingAddr = -1;
-                mem_edit.DataPreviewAddr = -1;
+                HighLightMemory(c*3,3);
            }
+        }
+    }
+
+    void DrawGraphics()
+    {
+        ImTextureID my_tex_id = &editorEngineRef->spriteManager->spriteTexture.id;
+        ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);             
+        ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+        ImVec2 size = ImVec2(32.0f, 32.0f);
+        
+        for (int j = 0; j < 16; j++)
+        {
+            for (int i = 0; i < 16; i++)
+            {
+                int id = i + j * 16;
+                ImGui::PushID(id);
+
+                ImVec2 uv0 = ImVec2(i * 0.0625f, j * 0.0625f);
+                ImVec2 uv1 = ImVec2(i * 0.0625f + 0.0625f, j * 0.0625f + 0.0625f);
+                if (ImGui::ImageButton("", my_tex_id, size, uv0, uv1, bg_col, tint_col))
+                {
+                    HighLightMemory(id*8+48,8);
+                }
+
+                ImGui::PopID();
+                ImGui::SameLine();
+            }
+            ImGui::NewLine();
         }
     }
 
@@ -390,12 +423,7 @@ struct Editor
             editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Fliker, fliker);
             editorEngineRef->postProcessing->SetGrilleTexture(grille);
 
-            mem_edit.HighlightMin = 4080;
-            mem_edit.HighlightMax = 4091;
-            mem_edit.GotoAddr = 4080;
-            mem_edit.DataEditingTakeFocus = false;
-            mem_edit.DataEditingAddr = -1;
-            mem_edit.DataPreviewAddr = -1;
+            HighLightMemory(4080,11);
         }
     }
 
@@ -814,9 +842,10 @@ ImGui::EndChild();
                 DrawMemory();
             ImGui::End();
 
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
             ImGui::Begin("Graphics", NULL, ImGuiWindowFlags_NoCollapse);
-            ImGui::PopStyleVar();
+                ImGui::BeginGroup();
+                    DrawGraphics();
+                ImGui::EndGroup();
                 windowSize = ImGui::GetWindowSize();
                 scale = (windowSize.x/windowSize.y < 1.0f) ? windowSize.x/128.0f : windowSize.y/128.0f;
                 rlImGuiImageRect(&editorEngineRef->spriteManager->spriteTexture, 128 * scale, 128 * scale, (Rectangle){0, 0, 128, 128});
