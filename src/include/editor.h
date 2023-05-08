@@ -27,6 +27,8 @@ struct Editor
     int keyboardBaseKey = 96;
     int pressedKey = -1;
 
+    Texture hackTexture;
+
     std::map<char, int> keyCharToKey {
 	{'Z', 0},
 	{'S', 1},
@@ -83,6 +85,9 @@ struct Editor
         codeEditor.SetLanguageDefinition(lang);
         codeEditor.SetPalette(TextEditor::GetBasicPalette()); 
         mem_edit.HighlightColor = IM_COL32(22, 110, 162, 255);
+
+        Image hackImage = GenImageColor(1,1,(Color){0,0,0,0});
+        hackTexture = LoadTextureFromImage(hackImage);
     }
 
     ~Editor()
@@ -770,17 +775,30 @@ ImGui::EndChild();
     void Draw()
     {
         ImGuiIO& io = ImGui::GetIO();
-        ImGuiWindowFlags window_flags;
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->WorkPos);
         ImGui::SetNextWindowSize(viewport->WorkSize);
         ImGui::SetNextWindowViewport(viewport->ID);
-        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus ;
+
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+        //window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        //window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::Begin(editorEngineRef->GetEngineName(), NULL, window_flags);
         ImGui::PopStyleVar();
+
+            if (ImGui::BeginMenuBar())
+            {
+                if (ImGui::BeginMenu("View"))
+                {
+                    if (ImGui::MenuItem("XX")) 
+                        Tools::console->AddLog("FFF");
+                    ImGui::EndMenu();
+                }
+
+                ImGui::EndMenuBar();
+            }
 
             static bool showDemo = false;
 
@@ -808,7 +826,7 @@ ImGui::EndChild();
                 DrawFPS();
             ImGui::End();
 
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
             ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse);
             ImGui::PopStyleVar();
                 HasFocus = ImGui::IsWindowFocused();
@@ -846,9 +864,9 @@ ImGui::EndChild();
                 ImGui::BeginGroup();
                     DrawGraphics();
                 ImGui::EndGroup();
-                windowSize = ImGui::GetWindowSize();
-                scale = (windowSize.x/windowSize.y < 1.0f) ? windowSize.x/128.0f : windowSize.y/128.0f;
-                rlImGuiImageRect(&editorEngineRef->spriteManager->spriteTexture, 128 * scale, 128 * scale, (Rectangle){0, 0, 128, 128});
+                //windowSize = ImGui::GetWindowSize();
+                //scale = (windowSize.x/windowSize.y < 1.0f) ? windowSize.x/128.0f : windowSize.y/128.0f;
+                //rlImGuiImageRect(&editorEngineRef->spriteManager->spriteTexture, 128 * scale, 128 * scale, (Rectangle){0, 0, 128, 128});
             ImGui::End();
 
             ImGui::Begin("SFX", NULL, ImGuiWindowFlags_NoCollapse);
@@ -857,7 +875,11 @@ ImGui::EndChild();
 
             DrawCode();
 
-        ImGui::End();
+            //Hack ¿?¿?¿?, if you remove this, ImGui fails. ¯\_(ツ)_/¯
+            rlImGuiImageRect(&hackTexture, 1, 1, (Rectangle){0, 0, 1, 1});
+            //rlImGuiImage(&hackTexture);
+
+       ImGui::End();
     }
 
 };
