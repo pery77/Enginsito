@@ -340,10 +340,11 @@ struct Editor
 
     void DrawGraphics()
     {
+        ImGuiIO& io = ImGui::GetIO();
         ImTextureID my_tex_id = &editorEngineRef->spriteManager->spriteTexture.id;
         ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);             
         ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-        ImVec2 size = ImVec2(32.0f, 32.0f);
+        ImVec2 size = ImVec2(32.0f * io.FontGlobalScale, 32.0f * io.FontGlobalScale);
         
         for (int j = 0; j < 16; j++)
         {
@@ -781,8 +782,8 @@ ImGui::EndChild();
         ImGui::SetNextWindowViewport(viewport->ID);
 
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
-        //window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        //window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::Begin(editorEngineRef->GetEngineName(), NULL, window_flags);
@@ -806,7 +807,7 @@ ImGui::EndChild();
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
 
             ImGui::Begin("Tools", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
-                ImGui::DragFloat("Font", &io.FontGlobalScale, 0.01f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::DragFloat("Font", &io.FontGlobalScale, 0.05f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
                 ImGui::SameLine();
                 ImGui::Checkbox("Demo", &showDemo);
                 if (showDemo)
@@ -826,7 +827,7 @@ ImGui::EndChild();
                 DrawFPS();
             ImGui::End();
 
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 10.0f));
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
             ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse);
             ImGui::PopStyleVar();
                 HasFocus = ImGui::IsWindowFocused();
@@ -877,7 +878,6 @@ ImGui::EndChild();
 
             //Hack ¿?¿?¿?, if you remove this, ImGui fails. ¯\_(ツ)_/¯
             rlImGuiImageRect(&hackTexture, 1, 1, (Rectangle){0, 0, 1, 1});
-            //rlImGuiImage(&hackTexture);
 
        ImGui::End();
     }
