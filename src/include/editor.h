@@ -861,7 +861,7 @@ ImGui::EndChild();
                 DrawMemory();
             ImGui::End();
 
-            ImGui::Begin("Graphics", NULL, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Sprites", NULL, ImGuiWindowFlags_NoCollapse);
                 ImGui::BeginGroup();
                     DrawGraphics();
                 ImGui::EndGroup();
