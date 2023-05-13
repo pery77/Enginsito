@@ -74,6 +74,30 @@
         "program": "${workspaceFolder}/dist/peryEngine.exe",
         "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
       }
+    },
+    {
+      "name": "DEBUG-MULTI",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/peryEngine.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/dist",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "gdb",
+      "preLaunchTask": "task-make-debug",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "windows": {
+        "program": "${workspaceFolder}/dist/peryEngine.exe",
+        "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
+      }
     }
   ]
 }

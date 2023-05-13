@@ -91,6 +91,16 @@
             "command": "del ${workspaceFolder}/dist/*.exe ; del ${workspaceFolder}/src/*.o",
             "type": "shell",
             "group": "build"
+        },
+        {
+            "label": "task-make-debug",
+            "command": "mingw32-make -j",
+            "type": "shell",
+            "group": {
+                "kind": "all",
+                "isDefault": true
+            }
         }
+
     ]
 }

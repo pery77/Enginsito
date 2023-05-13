@@ -786,7 +786,7 @@ ImGui::EndChild();
         window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::Begin(editorEngineRef->GetEngineName(), NULL, window_flags);
+        ImGui::Begin("Main", NULL, window_flags);
         ImGui::PopStyleVar();
 
             if (ImGui::BeginMenuBar())
