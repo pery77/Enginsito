@@ -15,7 +15,7 @@
         },
         {
             "label": "task-clean-all",
-            "command": "del ${workspaceFolder}/dist/*.exe ; del ${workspaceFolder}/obj/*.o ; del ${workspaceFolder}/obj/imgui/*.o ; del ${workspaceFolder}/obj/vm/*.o" ,
+            "command": "del ${workspaceFolder}/dist/*.exe; del ${workspaceFolder}/obj/*.o; del ${workspaceFolder}/obj/imgui/*.o; del ${workspaceFolder}/obj/vm/*.o; del ${workspaceFolder}/obj/mybasic/*.o" ,
             "type": "shell",
             "group": "build"
         },
@@ -67,6 +67,5 @@
             },
             "problemMatcher": "$gcc"
         }
-
     ]
 }
