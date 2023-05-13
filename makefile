@@ -1,5 +1,12 @@
 CC = g++
-CFLAGS = -g -w -std=c++17 -m64 -O0 -Wno-missing-braces -Wall
+
+ifeq ($(MODE),debug)
+    CFLAGS = -g -w -std=c++17 -m64 -O0 -Wno-missing-braces -Wall
+else
+    CFLAGS = -std=c++17 -m64 -O0 -mwindows -Wno-missing-braces -Wall
+endif
+
+
 LDFLAGS = -static-libgcc -static-libstdc++ --static -L./libs/raylib/lib -lraylib -lopengl32 -lgdi32 -lwinmm
 
 SRC_DIR = src

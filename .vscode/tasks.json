@@ -2,85 +2,6 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "task-build-debug",
-            "command": "g++",
-            "args": [
-                "-g",
-                "-w", //disable warnigs
-                "-std=c++17",
-                "-m64",
-                "-O0",
-                "-Wno-missing-braces", 
-                "-Wall",
-                "${workspaceFolder}/src/*.cpp",
-                "${workspaceFolder}/src/*.c",
-                "${workspaceFolder}/src/vm/*.c",
-                "${workspaceFolder}/src/imgui/*.cpp",
-                "-o",
-                "${workspaceFolder}/dist/peryEngine.exe",
-                "-I./src",
-                "-I./src/include",
-                "-I${workspaceFolder}/libs/raylib/include",                
-                "-static-libgcc",
-                "-static-libstdc++",
-                "--static",
-                "-L${workspaceFolder}/libs/raylib/lib",
-                "-lraylib",
-                "-lopengl32",
-                "-lgdi32",
-                "-lwinmm"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "type": "shell",
-            "group": "build",
-            "problemMatcher": [],
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "task-clean"
-            ]
-        },
-        {
-            "label": "task-build-release",
-            "command": "g++",
-            "args": [
-                "-std=c++17",
-                "-m64",
-                "-O0",
-                "-mwindows",
-                "${workspaceFolder}/src/*.cpp",
-                "${workspaceFolder}/src/*.c",
-                "${workspaceFolder}/src/vm/*.c",
-                "${workspaceFolder}/src/imgui/*.cpp",
-                "${workspaceFolder}/src/my.o",
-                "-o",
-                "${workspaceFolder}/dist/peryEngine.exe",
-                "-I./src",
-                "-I./src/include",
-                "-I${workspaceFolder}/libs/raylib/include",    
-                "-static-libgcc",
-                "-static-libstdc++",
-                "--static",
-                "-L${workspaceFolder}/libs/raylib/lib",
-                "-lraylib",
-                "-lopengl32",
-                "-lgdi32",
-                "-lwinmm"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "type": "shell",
-            "group": "build",
-            "problemMatcher": [],
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "task-clean",
-                "task-my-rc-build"         
-            ]
-        },
-        {
             "label": "task-my-rc-build",
             "command": "windres ${workspaceFolder}/src/my.rc ${workspaceFolder}/src/my.o",
             "type": "shell",
@@ -88,18 +9,63 @@
         },
         {
             "label": "task-clean",
-            "command": "del ${workspaceFolder}/dist/*.exe ; del ${workspaceFolder}/src/*.o",
+            "command": "del ${workspaceFolder}/dist/*.exe ; del ${workspaceFolder}/obj/*.o",
+            "type": "shell",
+            "group": "build"
+        },
+        {
+            "label": "task-clean-all",
+            "command": "del ${workspaceFolder}/dist/*.exe ; del ${workspaceFolder}/obj/*.o ; del ${workspaceFolder}/obj/imgui/*.o ; del ${workspaceFolder}/obj/vm/*.o" ,
             "type": "shell",
             "group": "build"
         },
         {
             "label": "task-make-debug",
-            "command": "mingw32-make -j",
+            "command": "mingw32-make -j MODE=debug",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "type": "shell",
             "group": {
                 "kind": "all",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": "$gcc",        
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "task-clean"
+            ]
+        },
+        {
+            "label": "task-make-release",
+            "command": "mingw32-make -j MODE=release",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "type": "shell",
+            "group": {
+                "kind": "all",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc",        
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "task-clean-all",
+                "task-my-rc-build"  
+            ]
+        },
+        {
+            "label": "task-make-fast",
+            "command": "mingw32-make -j MODE=debug",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "type": "shell",
+            "group": {
+                "kind": "all",
+                "isDefault": true
+            },
+            "problemMatcher": "$gcc"
         }
 
     ]

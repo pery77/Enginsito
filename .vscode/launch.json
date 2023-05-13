@@ -4,7 +4,7 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    {
+   /* {
       "name": "DEBUG-RUN",
       "type": "cppdbg",
       "request": "launch",
@@ -52,7 +52,7 @@
         "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
       }
     },
-    {
+    */{
       "name": "RUN LAST",
       "type": "cppdbg",
       "request": "launch",
@@ -98,6 +98,55 @@
         "program": "${workspaceFolder}/dist/peryEngine.exe",
         "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
       }
-    }
+    },
+    {
+      "name": "RELEASE-MULTI",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/peryEngine.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/dist",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "gdb",
+      "preLaunchTask": "task-make-release",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "windows": {
+        "program": "${workspaceFolder}/dist/peryEngine.exe",
+        "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
+      }
+    },
+    {
+      "name": "FAST",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/dist/peryEngine.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/dist",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "gdb",
+      "preLaunchTask": "task-make-fast",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing",
+          "ignoreFailures": true
+        }
+      ],
+      "windows": {
+        "program": "${workspaceFolder}/dist/peryEngine.exe",
+        "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
+      }
+    },
+
   ]
 }
