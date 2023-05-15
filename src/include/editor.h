@@ -95,8 +95,10 @@ class Editor
 
     void DrawCode();
     void DrawPalette();
+    void SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id);
     void DrawSprites();
     void MakeSprite(int spriteId);
+    void PixelRect(int dir, ImVec2 pos, ImVec2 size, bool state);
     void DrawCRT();
     
     void DrawPlayer();

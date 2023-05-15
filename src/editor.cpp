@@ -30,6 +30,8 @@ void Editor::HighLightMemory(uint16_t address, uint16_t size)
 
 void Editor::DrawFPS()
 {
+    ImVec2 pw_size = ImGui::GetWindowSize();
+    int frameH = ImGui::GetFrameHeight() + 5;
     ImGui::PushStyleColor(ImGuiCol_PlotLines, IM_COL32(40,255,0,255));
     static float values[90] = {};
     static int values_offset = 0;
@@ -50,7 +52,7 @@ void Editor::DrawFPS()
     average /= (float)IM_ARRAYSIZE(values);
     char overlay[32];
     sprintf(overlay, "avg: %.2f fps", average);
-    ImGui::PlotLines("FPS", values, IM_ARRAYSIZE(values), values_offset,overlay ,0.0f, 60.0f, ImVec2(0, 80.0f));
+    ImGui::PlotLines("", values, IM_ARRAYSIZE(values), values_offset,overlay ,0.0f, 60.0f, ImVec2(pw_size.x, pw_size.y - frameH));
     ImGui::PopStyleColor();  
 }
 
@@ -171,8 +173,8 @@ void Editor::ClearError()
     codeEditor.SetErrorMarkers(markers);
 }
 
-    void Editor::DrawCode()
-    {
+void Editor::DrawCode()
+{
         auto cpos = codeEditor.GetCursorPosition();
 
         ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
@@ -231,190 +233,215 @@ void Editor::ClearError()
         ImGui::End();
     }
 
-    void Editor::DrawPalette()
+void Editor::DrawPalette()
+{
+    for (char c = 0; c<16; c++)
     {
-        for (char c = 0; c<16; c++)
+        char buffer [50];
+        sprintf (buffer, "[%i]", c);
+
+        Color col = editorEngineRef->spriteManager->GetColor(c);
+        ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
+        ImGui::ColorEdit3(buffer, (float*)&color, 0);
+
+        editorEngineRef->spriteManager->SetColor(c, color.x * 255, color.y * 255, color.z * 255);
+
+        if (ImGui::IsItemHovered())
         {
-           char buffer [50];
-           sprintf (buffer, "[%i]", c);
-
-           Color col = editorEngineRef->spriteManager->GetColor(c);
-           ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
-           ImGui::ColorEdit3(buffer, (float*)&color, 0);
-
-           editorEngineRef->spriteManager->SetColor(c, color.x * 255, color.y * 255, color.z * 255);
-
-           if (ImGui::IsItemHovered())
-           {
-                HighLightMemory(c*3,3);
-           }
+            HighLightMemory(c*3,3);
         }
     }
+}
 
-    void Editor::DrawSprites()
+void Editor::SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id) 
+{
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    ImVec4 bg_col = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
+    ImVec4 bg_col_selected = ImVec4(0.1f, 0.5f, 0.9f, 1.0f);       
+
+    ImVec2 uv0 = ImVec2(x * 0.0625f, y * 0.0625f);
+    ImVec2 uv1 = ImVec2(x * 0.0625f + 0.0625f, y * 0.0625f + 0.0625f);
+    ImVec4 col = currentSprite == id ? bg_col_selected : bg_col;
+
+    draw_list->AddImage(my_tex_id, pos, ImVec2(pos.x + size.x, pos.y + size.y), uv0, uv1);
+    draw_list->AddRect(pos, ImVec2(pos.x + size.x + 2, pos.y + size.y + 2),IM_COL32(20, 20, 20, 255), 0, 0, 4);
+
+    ImGui::SetCursorScreenPos(pos);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
+    if (ImGui::ImageButton("###", my_tex_id, size, uv0, uv1, col))
     {
-        ImGuiIO& io = ImGui::GetIO();
-        ImTextureID my_tex_id = &editorEngineRef->spriteManager->spriteTexture.id;
-        ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);             
-        ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-        ImVec2 size = ImVec2(32.0f * io.FontGlobalScale, 32.0f * io.FontGlobalScale);
+        HighLightMemory(id * 8 + 48, 8);
+        currentSprite = id;
+    }
+    ImGui::PopStyleVar();
+}
+
+void Editor::DrawSprites()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    ImTextureID my_tex_id = &editorEngineRef->spriteManager->spriteTexture.id;
+    ImVec2 size = ImVec2(32.0f * io.FontGlobalScale, 32.0f * io.FontGlobalScale);
+    
+    ImVec2 pos = ImGui::GetCursorScreenPos();
+    ImVec2 p = pos;
+    
+    float my_tex_w = 128;
+    float my_tex_h = 128;
+
+    for (int y = 0; y < 16; y++)
+    {
+        for (int x = 0; x < 16; x++)
+        {
+            int id = x + y * 16;
+            ImGui::PushID(id);
+            SpriteRect(id, pos, size, x, y, my_tex_id);
+            pos.x += size.x + 4; 
+            ImGui::PopID();
+        }
+        pos.x = p.x;
+        pos.y += size.y + 4; 
+    }
+    
+}
+
+void Editor::DrawCRT()
+{
+    bool ppState = editorEngineRef->postProcessing->enabled;
+    ImGui::Checkbox("Enabled", &ppState);
+    editorEngineRef->postProcessing->SetState(ppState);
         
-        for (int j = 0; j < 16; j++)
+    int blurPower    = editorEngineRef->Peek(4080);
+    int blurFactor   = editorEngineRef->Peek(4081);
+    int chromatic    = editorEngineRef->Peek(4082);
+    int curvature    = editorEngineRef->Peek(4083);
+    int vignetting   = editorEngineRef->Peek(4084);
+    int scanLine     = editorEngineRef->Peek(4085);
+    int verticalLine = editorEngineRef->Peek(4086);
+    int grilleForce  = editorEngineRef->Peek(4087);
+    int noise        = editorEngineRef->Peek(4088);
+    int fliker       = editorEngineRef->Peek(4089);
+    int grille       = editorEngineRef->Peek(4090);
+
+    ImGuiKnobs::KnobInt("Blur", &blurPower, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+    ImGui::SameLine();
+    ImGuiKnobs::KnobInt("Factor", &blurFactor, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+    ImGui::SameLine();
+    ImGui::Text("  ");
+    ImGui::SameLine();
+    ImGuiKnobs::KnobInt("Chromatic", &chromatic, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+    ImGui::SameLine();
+    ImGuiKnobs::KnobInt("Curvature", &curvature, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+    ImGui::SameLine();
+    ImGuiKnobs::KnobInt("Vignetting", &vignetting, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+    ImGui::Text("  ");
+    ImGuiKnobs::KnobInt("Scanline", &scanLine, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+    ImGui::SameLine();
+    ImGuiKnobs::KnobInt("Vertical", &verticalLine, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+    ImGui::SameLine();
+    ImGuiKnobs::KnobInt("Grille F", &grilleForce, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+    ImGui::SameLine();
+    ImGui::Text("  ");
+    ImGui::SameLine();
+    ImGuiKnobs::KnobInt("Noise", &noise, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+    ImGui::SameLine();
+    ImGuiKnobs::KnobInt("Flicker", &fliker, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
+    ImGui::SameLine();
+    ImGui::BeginGroup();
+    ImGui::Text("Grille Mode");
+    const char* items[] = { "Dots", "TV", "LCD"};
+    ImGui::Combo("#grillemode", &grille, items, IM_ARRAYSIZE(items));
+    ImGui::EndGroup();
+
+    if(ImGui::IsWindowFocused())
+    {
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurPower, blurPower);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurFactor, blurFactor);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Chromatic, chromatic);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Curvature, curvature);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Vignetting, vignetting);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::ScanLine, scanLine);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::VerticalLine, verticalLine);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::GrilleForce, grilleForce);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Noise, noise);
+        editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Fliker, fliker);
+        editorEngineRef->postProcessing->SetGrilleTexture(grille);
+
+        HighLightMemory(4080,11);
+    }
+}
+
+void Editor::DrawPlayer()
+{
+    ImVec2 playerSize = ImGui::GetWindowSize();
+    ImVec2 buttonSize(30, 30);
+
+    float buttonPosX = (playerSize.x - buttonSize.x * 4) / 2;
+    float buttonPosY = (playerSize.y - buttonSize.y) / 2;
+
+    ImGui::SetCursorPosX(buttonPosX);
+    ImGui::SetCursorPosY(buttonPosY);
+
+    if(ImGui::Button(ICON_FA_PLAY, buttonSize))
+    {
+        if (!Paused)
         {
-            for (int i = 0; i < 16; i++)
-            {
-                int id = i + j * 16;
-                ImGui::PushID(id);
+            auto textToSave = codeEditor.GetText();
+            SaveFileText(editorEngineRef->bios->GetFile().c_str(), (char *)textToSave.c_str());
 
-                ImVec2 uv0 = ImVec2(i * 0.0625f, j * 0.0625f);
-                ImVec2 uv1 = ImVec2(i * 0.0625f + 0.0625f, j * 0.0625f + 0.0625f);
-                if (ImGui::ImageButton("", my_tex_id, size, uv0, uv1, bg_col, tint_col))
-                {
-                    HighLightMemory(id*8+48,8);
-                    currentSprite = id;
-                }
-
-                ImGui::PopID();
-                ImGui::SameLine();
-            }
-            ImGui::NewLine();
+            editorEngineRef->bios->ShouldRun = true;
         }
+
+        Paused = false;
+        DoStep = false;
     }
 
-    void Editor::DrawCRT()
+    ImGui::SameLine();
+    if(ImGui::Button(ICON_FA_PAUSE, buttonSize))
     {
-        bool ppState = editorEngineRef->postProcessing->enabled;
-        ImGui::Checkbox("Enabled", &ppState);
-        editorEngineRef->postProcessing->SetState(ppState);
+        Paused = !Paused;
+    }
+    ImGui::SameLine();
+    if(ImGui::Button(ICON_FA_FORWARD_STEP, buttonSize))
+    {
+        Paused = true;
+         DoStep = true;
+    }
+    ImGui::SameLine();
+    if(ImGui::Button(ICON_FA_STOP, buttonSize))
+    {
+        Paused = false;
+        DoStep = false;
+        editorEngineRef->basicIntepreter->close();
+        editorEngineRef->currentState = Off;
+        editorEngineRef->basicIntepreter->CloseBas();
+    }
+}
+
+void Editor::DrawMemory()
+{
+    static char str0[128] = "memory";
+    if (ImGui::Button("Load default"))
+    {
+        editorEngineRef->LoadDefaultMemory();
+    }
+
+    ImGui::InputText("New", str0, IM_ARRAYSIZE(str0));
+
+    if (ImGui::Button("Save"))
+    {
+        std::stringstream ss;
+        ss << ASSETS_FOLDER << "/" << editorEngineRef->bios->CurrentPath << "/" << str0 << MEM_EXTENSION;
+        Tools::console->AddLog("[MEMORY] Saved:");
+        Tools::console->AddLog(ss.str().c_str());
+        editorEngineRef->DumpMemory(ss.str().c_str());
+    }
         
-        int blurPower    = editorEngineRef->Peek(4080);
-        int blurFactor   = editorEngineRef->Peek(4081);
-        int chromatic    = editorEngineRef->Peek(4082);
-        int curvature    = editorEngineRef->Peek(4083);
-        int vignetting   = editorEngineRef->Peek(4084);
-        int scanLine     = editorEngineRef->Peek(4085);
-        int verticalLine = editorEngineRef->Peek(4086);
-        int grilleForce  = editorEngineRef->Peek(4087);
-        int noise        = editorEngineRef->Peek(4088);
-        int fliker       = editorEngineRef->Peek(4089);
-        int grille       = editorEngineRef->Peek(4090);
+    mem_edit.DrawContents(editorEngineRef->GetMemory(), 4096);
+}
 
-        ImGuiKnobs::KnobInt("Blur", &blurPower, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
-        ImGui::SameLine();
-        ImGuiKnobs::KnobInt("Factor", &blurFactor, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
-        ImGui::SameLine();
-        ImGui::Text("  ");
-        ImGui::SameLine();
-        ImGuiKnobs::KnobInt("Chromatic", &chromatic, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
-        ImGui::SameLine();
-        ImGuiKnobs::KnobInt("Curvature", &curvature, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
-        ImGui::SameLine();
-        ImGuiKnobs::KnobInt("Vignetting", &vignetting, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
-        ImGui::Text("  ");
-        ImGuiKnobs::KnobInt("Scanline", &scanLine, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
-        ImGui::SameLine();
-        ImGuiKnobs::KnobInt("Vertical", &verticalLine, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
-        ImGui::SameLine();
-        ImGuiKnobs::KnobInt("Grille F", &grilleForce, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
-        ImGui::SameLine();
-        ImGui::Text("  ");
-        ImGui::SameLine();
-        ImGuiKnobs::KnobInt("Noise", &noise, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
-        ImGui::SameLine();
-        ImGuiKnobs::KnobInt("Flicker", &fliker, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
-        ImGui::SameLine();
-        ImGui::BeginGroup();
-        ImGui::Text("Grille Mode");
-        const char* items[] = { "Dots", "TV", "LCD"};
-        ImGui::Combo("#grillemode", &grille, items, IM_ARRAYSIZE(items));
-        ImGui::EndGroup();
-
-        if(ImGui::IsWindowFocused())
-        {
-            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurPower, blurPower);
-            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurFactor, blurFactor);
-            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Chromatic, chromatic);
-            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Curvature, curvature);
-            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Vignetting, vignetting);
-            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::ScanLine, scanLine);
-            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::VerticalLine, verticalLine);
-            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::GrilleForce, grilleForce);
-            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Noise, noise);
-            editorEngineRef->postProcessing->SetCRTValue(CRTProperty::Fliker, fliker);
-            editorEngineRef->postProcessing->SetGrilleTexture(grille);
-
-            HighLightMemory(4080,11);
-        }
-    }
-
-    void Editor::DrawPlayer()
-    {
-        ImVec2 playerSize = ImGui::GetWindowSize();
-        ImVec2 buttonSize(30, 30);
-
-        float buttonPosX = (playerSize.x - buttonSize.x * 4) / 2;
-        float buttonPosY = (playerSize.y - buttonSize.y) / 2;
-
-        ImGui::SetCursorPosX(buttonPosX);
-        ImGui::SetCursorPosY(buttonPosY);
-
-        if(ImGui::Button(ICON_FA_PLAY, buttonSize))
-        {
-            if (!Paused)
-            {
-                auto textToSave = codeEditor.GetText();
-                SaveFileText(editorEngineRef->bios->GetFile().c_str(), (char *)textToSave.c_str());
-
-                editorEngineRef->bios->ShouldRun = true;
-            }
-
-            Paused = false;
-            DoStep = false;
-        }
-        ImGui::SameLine();
-        if(ImGui::Button(ICON_FA_PAUSE, buttonSize))
-        {
-            Paused = !Paused;
-        }
-        ImGui::SameLine();
-        if(ImGui::Button(ICON_FA_FORWARD_STEP, buttonSize))
-        {
-            Paused = true;
-            DoStep = true;
-        }
-        ImGui::SameLine();
-        if(ImGui::Button(ICON_FA_STOP, buttonSize))
-        {
-            Paused = false;
-            DoStep = false;
-            editorEngineRef->basicIntepreter->close();
-            editorEngineRef->currentState = Off;
-            editorEngineRef->basicIntepreter->CloseBas();
-        }
-    }
-
-    void Editor::DrawMemory()
-    {
-        static char str0[128] = "memory";
-        if (ImGui::Button("Load default"))
-        {
-            editorEngineRef->LoadDefaultMemory();
-        }
-        ImGui::InputText("New", str0, IM_ARRAYSIZE(str0));
-        if (ImGui::Button("Save"))
-        {
-            std::stringstream ss;
-            ss << ASSETS_FOLDER << "/" << editorEngineRef->bios->CurrentPath << "/" << str0 << MEM_EXTENSION;
-            Tools::console->AddLog("[MEMORY] Saved:");
-            Tools::console->AddLog(ss.str().c_str());
-            editorEngineRef->DumpMemory(ss.str().c_str());
-        }
-        
-        mem_edit.DrawContents(editorEngineRef->GetMemory(), 4096);
-    }
-
-    void Editor::PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack, bool pressed) 
-    {
+void Editor::PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack, bool pressed) 
+{
         ImVec4 color = pressed ? ImVec4(.9f, .2f, .2f, 1.0f) : ImVec4(.9f, .9f, .9f, 1.0f);
         ImVec4 colorText = ImVec4(.1f, .1f, .1f, 1.0f);
         const char* formatText = "\n\n\n%d";
@@ -448,7 +475,7 @@ void Editor::ClearError()
         }
         ImGui::PopStyleColor();
         ImGui::PopStyleColor();
-    }
+}
 
     bool Editor::IsBlack(int note)
     {
@@ -687,40 +714,58 @@ ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | 
 ImGui::EndChild();
     }
 
+void Editor::PixelRect(int dir, ImVec2 pos, ImVec2 size, bool state) 
+{
+    ImVec4 color = state ? ImVec4(.9f, .9f, .9f, 1.0f) : ImVec4(.1f, .1f, .1f, 1.0f);
+
+    ImGui::SetCursorScreenPos(pos);
+
+    ImGui::PushStyleColor(ImGuiCol_Button, color);
+
+    if (ImGui::Button("###", size)) 
+    {
+        HighLightMemory(dir, 1);
+    }
+    ImGui::PopStyleColor();
+}
+
     void Editor::MakeSprite(int spriteId)
     {
         ImGuiIO& io = ImGui::GetIO();
         ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);             
         ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+        ImVec2 size = ImVec2(32.0f,32.0f);
+        uint8_t byte = 0;
+
+        ImGui::Text("Sprite direction: %.3X", currentSprite * 8 + 48);
+
         ImVec2 pos = ImGui::GetCursorScreenPos();
         ImVec2 p = pos;
-        ImVec2 size = ImVec2(32.0f,32.0f);
 
-        ImDrawList* draw_list = ImGui::GetWindowDrawList();
-        
+        ImGui::BeginGroup();
         for (int y = 0; y < 8; y++)
         {
             for (int x = 0; x < 8; x++)
             {
                 int id = x + y * 8;
+                byte = editorEngineRef->Peek((currentSprite * 8 + 48) + y);
+
                 ImGui::PushID(id);
 
-                //pos = ImVec2(j*16,i*16);
+                unsigned char mascara = 1 << 7-x;
 
-
-                draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), ImGui::IsItemHovered() ?  IM_COL32(200, 200, 200, 255) : IM_COL32(120, 120, 120, 255));
-
-                pos.x += x + size.x; 
-                
-                //HighLightMemory(id*8+48,8);
+                PixelRect((currentSprite * 8 + 48) + y, pos, size, (byte & mascara) != 0);
+                pos.x += size.x + 1; 
                 
                 ImGui::PopID();
-
             }
-            pos.x = p.x;
-            pos.y += y + size.y; 
 
+            ImGui::SameLine();
+            ImGui::Text("%.2X", byte);
+            pos.x = p.x;
+            pos.y += size.y + 1; 
         }
+        ImGui::EndGroup();
     }
 
     void Editor::Draw()
