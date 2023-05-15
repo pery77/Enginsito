@@ -714,7 +714,20 @@ ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | 
 ImGui::EndChild();
     }
 
-void Editor::PixelRect(int dir, ImVec2 pos, ImVec2 size, bool state) 
+
+unsigned char cambiarBit(unsigned char byte, int posicion, bool nuevoEstado) {
+    unsigned char mascara = 1 << posicion;
+    
+    if (nuevoEstado) {
+        byte |= mascara; // Establecer el bit en 1
+    } else {
+        byte &= ~mascara; // Establecer el bit en 0
+    }
+    
+    return byte;
+}
+
+void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state) 
 {
     ImVec4 color = state ? ImVec4(.9f, .9f, .9f, 1.0f) : ImVec4(.1f, .1f, .1f, 1.0f);
 
@@ -725,9 +738,12 @@ void Editor::PixelRect(int dir, ImVec2 pos, ImVec2 size, bool state)
     if (ImGui::Button("###", size)) 
     {
         HighLightMemory(dir, 1);
+        editorEngineRef->Poke(dir,cambiarBit(editorEngineRef->Peek(dir), bit, !state));
     }
     ImGui::PopStyleColor();
 }
+
+
 
     void Editor::MakeSprite(int spriteId)
     {
@@ -754,7 +770,7 @@ void Editor::PixelRect(int dir, ImVec2 pos, ImVec2 size, bool state)
 
                 unsigned char mascara = 1 << 7-x;
 
-                PixelRect((currentSprite * 8 + 48) + y, pos, size, (byte & mascara) != 0);
+                PixelRect((currentSprite * 8 + 48) + y, 7-x, pos, size, (byte & mascara) != 0);
                 pos.x += size.x + 1; 
                 
                 ImGui::PopID();
