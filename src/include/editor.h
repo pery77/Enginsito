@@ -15,7 +15,6 @@
 #include "mb_manager.h"
 #include "sprite_manager.h"
 
-
 class Editor
 {
     #define WHITE_KEY_WIDTH 40
@@ -97,6 +96,7 @@ class Editor
     void DrawCode();
     void DrawPalette();
     void DrawSprites();
+    void MakeSprite(int spriteId);
     void DrawCRT();
     
     void DrawPlayer();

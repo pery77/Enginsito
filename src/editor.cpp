@@ -2,6 +2,7 @@
 
 static bool show_tools = false;
 static bool show_demo = false;
+int currentSprite = 0;
 
 Editor::Editor(Engine* _engine)
 {
@@ -270,6 +271,7 @@ void Editor::ClearError()
                 if (ImGui::ImageButton("", my_tex_id, size, uv0, uv1, bg_col, tint_col))
                 {
                     HighLightMemory(id*8+48,8);
+                    currentSprite = id;
                 }
 
                 ImGui::PopID();
@@ -430,8 +432,8 @@ void Editor::ClearError()
 
         char button_label[32];
         sprintf(button_label, formatText , note + ((keyboardOctave - 4) * 12));
+
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
-        //draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), pressed ? IM_COL32(255, 20, 20, 255) : IM_COL32(255, 255, 255, 255), 2.0f);
         draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y - 2), ImGui::IsItemHovered() ?  IM_COL32(100, 100, 100, 255) : IM_COL32(20, 20, 20, 255), 2.0f, 0, 10);
 
         ImGui::SetCursorScreenPos(pos);
@@ -685,6 +687,42 @@ ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | 
 ImGui::EndChild();
     }
 
+    void Editor::MakeSprite(int spriteId)
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);             
+        ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+        ImVec2 pos = ImGui::GetCursorScreenPos();
+        ImVec2 p = pos;
+        ImVec2 size = ImVec2(32.0f,32.0f);
+
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+        
+        for (int y = 0; y < 8; y++)
+        {
+            for (int x = 0; x < 8; x++)
+            {
+                int id = x + y * 8;
+                ImGui::PushID(id);
+
+                //pos = ImVec2(j*16,i*16);
+
+
+                draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), ImGui::IsItemHovered() ?  IM_COL32(200, 200, 200, 255) : IM_COL32(120, 120, 120, 255));
+
+                pos.x += x + size.x; 
+                
+                //HighLightMemory(id*8+48,8);
+                
+                ImGui::PopID();
+
+            }
+            pos.x = p.x;
+            pos.y += y + size.y; 
+
+        }
+    }
+
     void Editor::Draw()
     {
         ImGuiIO& io = ImGui::GetIO();
@@ -707,8 +745,6 @@ ImGui::EndChild();
                 if (ImGui::BeginMenu("Windows"))
                 {
                     ImGui::MenuItem("Tools", NULL, &show_tools);
-
-
                     ImGui::EndMenu();
                 }
 
@@ -716,7 +752,6 @@ ImGui::EndChild();
             }
 
             
-
             ImGuiID dockspace_id = ImGui::GetID("DockId");
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
 
@@ -786,6 +821,10 @@ ImGui::EndChild();
                 //scale = (windowSize.x/windowSize.y < 1.0f) ? windowSize.x/128.0f : windowSize.y/128.0f;
                 //rlImGuiImageRect(&editorEngineRef->spriteManager->spriteTexture, 128 * scale, 128 * scale, (Rectangle){0, 0, 128, 128});
             ImGui::End();
+
+            ImGui::Begin("Make Sprite", NULL, ImGuiWindowFlags_NoCollapse);
+                MakeSprite(currentSprite);
+            ImGui::End(); 
 
             ImGui::Begin("SFX", NULL, ImGuiWindowFlags_NoCollapse);
                 DrawSFX();
