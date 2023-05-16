@@ -1,8 +1,23 @@
 #include "editor.h"
+#include "nlohmann/json.hpp"
 
 static bool show_tools = false;
 static bool show_demo = false;
+static bool show_FPS = false;
+static bool show_filebrowser = false;
+static bool show_code = false;
+static bool show_palette = false;
+static bool show_crt = false;
+static bool show_console = false;
+static bool show_sfx = false;
+static bool show_sprites = false;
+static bool show_makeSprite = false;
+static bool show_screen = false;
+static bool show_player = false;
+static bool show_memory = false;
+
 int currentSprite = 0;
+nlohmann::json data;
 
 Editor::Editor(Engine* _engine)
 {
@@ -12,10 +27,28 @@ Editor::Editor(Engine* _engine)
     mem_edit.HighlightColor = IM_COL32(22, 110, 162, 255);
     Image hackImage = GenImageColor(1,1,(Color){0,0,0,0});
     hackTexture = LoadTextureFromImage(hackImage);
+
+	std::stringstream ss;
+	ss << CONFIG_FOLDER << "/ui.json";
+
+    std::ifstream f(ss.str().c_str());
+    data = nlohmann::json::parse(f);
+    show_player = data["show_player"].get<bool>();
+    show_FPS = data["show_fps"].get<bool>();
+    show_tools = data["show_tools"].get<bool>();
 }
 
 Editor::~Editor()
 {
+    std::stringstream ss;
+	ss << CONFIG_FOLDER << "/ui.json";
+
+    data["show_player"] = show_player;
+    data["show_fps"] = show_FPS;
+    data["show_tools"] = show_tools;
+
+    std::ofstream o(ss.str().c_str());
+    o << std::setw(4) << data << std::endl;
 }
 
 void Editor::HighLightMemory(uint16_t address, uint16_t size)
@@ -376,11 +409,11 @@ void Editor::DrawPlayer()
     ImVec2 playerSize = ImGui::GetWindowSize();
     ImVec2 buttonSize(30, 30);
 
-    float buttonPosX = (playerSize.x - buttonSize.x * 4) / 2;
+    float buttonPosX = (playerSize.x - buttonSize.x * 5) / 2;
     float buttonPosY = (playerSize.y - buttonSize.y) / 2;
 
     ImGui::SetCursorPosX(buttonPosX);
-    ImGui::SetCursorPosY(buttonPosY);
+    //ImGui::SetCursorPosY(buttonPosY);
 
     if(ImGui::Button(ICON_FA_PLAY, buttonSize))
     {
@@ -794,9 +827,10 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
 
         ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
         window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-
-
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoScrollbar;
+        
+        ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_AutoHideTabBar;
+        
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         ImGui::Begin("Main", NULL, window_flags);
         ImGui::PopStyleVar();
@@ -806,92 +840,131 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
                 if (ImGui::BeginMenu("Windows"))
                 {
                     ImGui::MenuItem("Tools", NULL, &show_tools);
+                    ImGui::MenuItem("FPS", NULL, &show_FPS);
+                    ImGui::MenuItem("Player", NULL, &show_player);
                     ImGui::EndMenu();
                 }
 
                 ImGui::EndMenuBar();
             }
-
-            
+        
             ImGuiID dockspace_id = ImGui::GetID("DockId");
-            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f));
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f),dockspace_flags);
 
-           
-            ImGui::Begin("Tools", NULL, ImGuiWindowFlags_NoCollapse);
-                ImGui::DragFloat("Font", &io.FontGlobalScale, 0.05f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::SameLine();
-                ImGui::Checkbox("Demo", &show_demo);
-                if (show_demo)
-                {
-                    ImGui::ShowDemoWindow(&show_demo);
-                }
-            ImGui::End(); 
+            if(show_tools)
+            {
+                ImGui::Begin("Tools", &show_tools, ImGuiWindowFlags_NoCollapse);
+                    ImGui::DragFloat("Font", &io.FontGlobalScale, 0.05f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+                    ImGui::SameLine();
+                    ImGui::Checkbox("Demo", &show_demo);
+                    if (show_demo)
+                    {
+                        ImGui::ShowDemoWindow(&show_demo);
+                    }
+                ImGui::End(); 
+            }
             
 
                 
             //Console
-            Tools::console->Draw();
+            if (show_console)
+            {
+                Tools::console->Draw();
+            }
+
+            if (show_filebrowser)
+            {
+                ImGui::Begin("File browser", &show_filebrowser, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
+                    DrawshowFileBrowser();
+                ImGui::End();    
+            }
+
+            if (show_FPS)
+            {
+                ImGui::Begin("FPS", &show_FPS, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
+                    DrawFPS();
+                ImGui::End();
+            }
+
+            if (show_screen)
+            {
+                ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+                ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse);
+                ImGui::PopStyleVar();
+                    HasFocus = ImGui::IsWindowFocused();
+                    ImVec2 windowSize = ImGui::GetWindowSize();
+                    float scale = (windowSize.x/windowSize.y < 1.6f) ? windowSize.x/(float)GAME_SCREEN_W : windowSize.y/(float)GAME_SCREEN_H;
+                    ImVec2 imageSize = ImVec2(GAME_SCREEN_W * scale, GAME_SCREEN_H * scale); 
+                    ImVec2 imagePos = ImVec2((windowSize.x - imageSize.x) / 2, (windowSize.y - imageSize.y) / 2);
+
+                    ImGui::SetCursorPos(imagePos);
+
+                    ImGui::Image(&editorEngineRef->postProcessing->editorRender.texture, imageSize, ImVec2(0,0),
+                                    ImVec2(editorEngineRef->postProcessing->editorImageFactor,-editorEngineRef->postProcessing->editorImageFactor));
+                ImGui::End();
+            }
             
-            ImGui::Begin("File browser", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
-                DrawshowFileBrowser();
-            ImGui::End();    
+            if(show_palette)
+            {
+                ImGui::Begin("Palette", NULL, ImGuiWindowFlags_NoCollapse);
+                    DrawPalette();
+                ImGui::End();
+            }
 
-            ImGui::Begin("FPS", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
-                DrawFPS();
-            ImGui::End();
-
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-            ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse);
-            ImGui::PopStyleVar();
-                HasFocus = ImGui::IsWindowFocused();
-                ImVec2 windowSize = ImGui::GetWindowSize();
-                float scale = (windowSize.x/windowSize.y < 1.6f) ? windowSize.x/(float)GAME_SCREEN_W : windowSize.y/(float)GAME_SCREEN_H;
-                ImVec2 imageSize = ImVec2(GAME_SCREEN_W * scale, GAME_SCREEN_H * scale); 
-                ImVec2 imagePos = ImVec2((windowSize.x - imageSize.x) / 2, (windowSize.y - imageSize.y) / 2);
-
-                ImGui::SetCursorPos(imagePos);
-
-                ImGui::Image(&editorEngineRef->postProcessing->editorRender.texture, imageSize, ImVec2(0,0),
-                                ImVec2(editorEngineRef->postProcessing->editorImageFactor,-editorEngineRef->postProcessing->editorImageFactor));
-            ImGui::End();
-
-            ImGui::Begin("Palette", NULL, ImGuiWindowFlags_NoCollapse);
-                DrawPalette();
-            ImGui::End();
-
-            ImGui::Begin("CRT", NULL, ImGuiWindowFlags_NoCollapse); 
-                DrawCRT();
-            ImGui::End();
+            if (show_crt)
+            {
+                ImGui::Begin("CRT", NULL, ImGuiWindowFlags_NoCollapse); 
+                    DrawCRT();
+                ImGui::End();
+            }
             
-            ImVec2 minHeight(60, 100);
-            ImVec2 maxHeight(2000, 100);
-            ImGui::SetNextWindowSizeConstraints(minHeight, maxHeight);
-            ImGui::Begin("Player", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
-                DrawPlayer();
-            ImGui::End();
+            if (show_player)
+            {
+                ImVec2 minHeight(200, 100);
+                ImVec2 maxHeight(2000, 100);
+                ImGui::SetNextWindowSizeConstraints(minHeight, maxHeight);
+                ImGui::Begin("Player", &show_player, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
+                    DrawPlayer();
+                ImGui::End();
+            }
 
-            ImGui::Begin("Memory", NULL, ImGuiWindowFlags_NoCollapse);
-                DrawMemory();
-            ImGui::End();
+            if(show_memory)
+            {
+                ImGui::Begin("Memory", NULL, ImGuiWindowFlags_NoCollapse);
+                    DrawMemory();
+                ImGui::End();
+            }
 
-            ImGui::Begin("Sprites", NULL, ImGuiWindowFlags_NoCollapse);
-                ImGui::BeginGroup();
-                    DrawSprites();
-                ImGui::EndGroup();
-                //windowSize = ImGui::GetWindowSize();
-                //scale = (windowSize.x/windowSize.y < 1.0f) ? windowSize.x/128.0f : windowSize.y/128.0f;
-                //rlImGuiImageRect(&editorEngineRef->spriteManager->spriteTexture, 128 * scale, 128 * scale, (Rectangle){0, 0, 128, 128});
-            ImGui::End();
+            if (show_sprites)
+            {
+                ImGui::Begin("Sprites", NULL, ImGuiWindowFlags_NoCollapse);
+                    ImGui::BeginGroup();
+                        DrawSprites();
+                    ImGui::EndGroup();
+                    //windowSize = ImGui::GetWindowSize();
+                    //scale = (windowSize.x/windowSize.y < 1.0f) ? windowSize.x/128.0f : windowSize.y/128.0f;
+                    //rlImGuiImageRect(&editorEngineRef->spriteManager->spriteTexture, 128 * scale, 128 * scale, (Rectangle){0, 0, 128, 128});
+                ImGui::End();
+            } 
 
-            ImGui::Begin("Make Sprite", NULL, ImGuiWindowFlags_NoCollapse);
-                MakeSprite(currentSprite);
-            ImGui::End(); 
+            if (show_makeSprite)
+            {
+                ImGui::Begin("Make Sprite", NULL, ImGuiWindowFlags_NoCollapse);
+                    MakeSprite(currentSprite);
+                ImGui::End(); 
+            }
 
-            ImGui::Begin("SFX", NULL, ImGuiWindowFlags_NoCollapse);
-                DrawSFX();
-            ImGui::End();
+            if (show_sfx)
+            {
+                ImGui::Begin("SFX", NULL, ImGuiWindowFlags_NoCollapse);
+                    DrawSFX();
+                ImGui::End();
+            }
 
-            DrawCode();
+            if (show_code)
+            {
+                DrawCode();
+            }
 
             //Hack ¿?¿?¿?, if you remove this, ImGui fails. ¯\_(ツ)_/¯
             rlImGuiImageRect(&hackTexture, 1, 1, (Rectangle){0, 0, 1, 1});

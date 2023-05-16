@@ -42,6 +42,7 @@ Engine::~Engine()
     delete basicIntepreter;
     delete bios;
     delete spriteManager;
+    delete editor;
 }
 
 void Engine::Init()

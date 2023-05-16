@@ -20,8 +20,7 @@ OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(filter %.cpp,$(SOURCES)))
           $(patsubst $(SRC_DIR)/vm/%.c,$(OBJ_DIR)/vm/%.o,$(filter $(SRC_DIR)/vm/%.c,$(SOURCES))) \
 		  $(patsubst $(SRC_DIR)/imgui/%.cpp,$(OBJ_DIR)/imgui/%.o,$(filter $(SRC_DIR)/imgui/%.cpp,$(SOURCES))) \
 		  $(patsubst $(SRC_DIR)/mybasic/%.c,$(OBJ_DIR)/mybasic/%.o,$(filter $(SRC_DIR)/mybasic/%.c,$(SOURCES)))
-
-
+		  
 EXECUTABLE = $(BUILD_DIR)/peryEngine.exe
 
 .PHONY: all clean

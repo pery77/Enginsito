@@ -66,6 +66,12 @@
         "bitset": "cpp",
         "unordered_set": "cpp",
         "regex": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "any": "cpp",
+        "forward_list": "cpp",
+        "optional": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "valarray": "cpp"
     }
 }

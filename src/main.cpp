@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
             showImgui = !showImgui;
             if (!showImgui)
             {
-                engine->postProcessing->UpdateGameScreenRects();
+                //engine->postProcessing->UpdateGameScreenRects();
             }
         }
 
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
         if(IsWindowResized() && !showImgui) 
         {
-            engine->postProcessing->UpdateGameScreenRects();
+           // engine->postProcessing->UpdateGameScreenRects();
         }
 
         engine->postProcessing->uTime = GetTime();
