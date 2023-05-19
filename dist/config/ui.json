@@ -1,5 +1,10 @@
 {
-    "show_fps": false,
+    "show_fps": true,
     "show_player": true,
-    "show_tools": false
+    "show_screen": true,
+    "show_tools": false,
+    "window_height": 1001,
+    "window_position_x": 0,
+    "window_position_y": 29,
+    "window_width": 1601
 }

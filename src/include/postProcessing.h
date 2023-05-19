@@ -70,6 +70,7 @@ class PostProcessing
     void ReloadShaders();
 
     void UpdateGameScreenRects();
+    void UpdateWindowSize();
     void FullScreen();
 
     void SetState(bool newState);

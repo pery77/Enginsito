@@ -37,24 +37,27 @@ int main(int argc, char *argv[])
     Tools::console->AddLog("Welcolme to %s", engine->GetEngineName());
     SetTraceLogCallback(raylibLog);
 
-    const int windowWidth = GAME_SCREEN_W * 3;
-    const int windowHeight = GAME_SCREEN_H * 3;
-
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 
-	InitWindow(windowWidth, windowHeight, engine->GetEngineName());
+	InitWindow(GAME_SCREEN_W, GAME_SCREEN_H, engine->GetEngineName());
 	SetWindowMinSize(GAME_SCREEN_W, GAME_SCREEN_H);
 	SetTargetFPS(GAME_FPS);
+
+    HideCursor();
+    SetExitKey(KEY_NULL);
+
+    BeginDrawing();
+        ClearBackground(DARKBLUE);
+        DrawText( "Loading...",4, 4, 20, WHITE);
+    EndDrawing();
 
     rlImGuiSetup(true);
 
     InitAudioDevice();
-    HideCursor();
-    SetExitKey(KEY_NULL);
 
     engine->Init();
     
-    bool showImgui = false;
+    bool showImgui = true;
     const char * pauseMessage = "Paused, press ESC again to exit.";
     int pauseMessageSize = MeasureTextEx(engine->spriteManager->font,"Paused, press ESC again to exit.", 8,0).x * 0.5f;
 
@@ -71,7 +74,8 @@ int main(int argc, char *argv[])
             showImgui = !showImgui;
             if (!showImgui)
             {
-                //engine->postProcessing->UpdateGameScreenRects();
+                engine->postProcessing->UpdateGameScreenRects();
+                engine->postProcessing->UpdateWindowSize();
             }
         }
 
@@ -80,10 +84,14 @@ int main(int argc, char *argv[])
 		    engine->postProcessing->FullScreen();
 	    }
 
-        if(IsWindowResized() && !showImgui) 
+        //if(IsWindowResized() && !showImgui) 
+        if(IsWindowResized()) 
         {
-           // engine->postProcessing->UpdateGameScreenRects();
+           engine->postProcessing->UpdateGameScreenRects();
         }
+
+        engine->editor->window_position_x = (int)GetWindowPosition().x;
+        engine->editor->window_position_y = (int)GetWindowPosition().y;
 
         engine->postProcessing->uTime = GetTime();
         

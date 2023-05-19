@@ -78,8 +78,13 @@ class Editor
     bool Paused = false;
     bool DoStep = false;
 
+    int window_position_x;
+    int window_position_y;
+
     Editor(Engine* _engine);
     ~Editor();
+
+    void SetMainWindow();
 
     void HighLightMemory(uint16_t address, uint16_t size);
 

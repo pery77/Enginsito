@@ -37,12 +37,12 @@ Engine::Engine()
 
 Engine::~Engine()
 {
+    delete editor;
     basicIntepreter->CloseBas();
     delete postProcessing;
     delete basicIntepreter;
     delete bios;
     delete spriteManager;
-    delete editor;
 }
 
 void Engine::Init()

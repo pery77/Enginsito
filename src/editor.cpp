@@ -33,9 +33,13 @@ Editor::Editor(Engine* _engine)
 
     std::ifstream f(ss.str().c_str());
     data = nlohmann::json::parse(f);
+
     show_player = data["show_player"].get<bool>();
     show_FPS = data["show_fps"].get<bool>();
     show_tools = data["show_tools"].get<bool>();
+    show_screen = data["show_screen"].get<bool>();
+
+    SetMainWindow();
 }
 
 Editor::~Editor()
@@ -43,12 +47,27 @@ Editor::~Editor()
     std::stringstream ss;
 	ss << CONFIG_FOLDER << "/ui.json";
 
+    data["window_width"] = GetScreenWidth();
+    data["window_height"] = GetScreenHeight();
+    data["window_position_x"] = window_position_x;
+    data["window_position_y"] = window_position_y;
+
     data["show_player"] = show_player;
     data["show_fps"] = show_FPS;
     data["show_tools"] = show_tools;
+    data["show_screen"] = show_screen;
 
     std::ofstream o(ss.str().c_str());
     o << std::setw(4) << data << std::endl;
+}
+
+void Editor::SetMainWindow()
+{
+    BeginDrawing();
+        ClearBackground(BLACK);
+    EndDrawing();
+    SetWindowPosition(data["window_position_x"].get<int>(), data["window_position_y"].get<int>());
+    SetWindowSize(data["window_width"].get<int>(), data["window_height"].get<int>());
 }
 
 void Editor::HighLightMemory(uint16_t address, uint16_t size)
@@ -837,14 +856,38 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
 
             if (ImGui::BeginMenuBar())
             {
-                if (ImGui::BeginMenu("Windows"))
+                if (ImGui::BeginMenu("View"))
                 {
-                    ImGui::MenuItem("Tools", NULL, &show_tools);
-                    ImGui::MenuItem("FPS", NULL, &show_FPS);
-                    ImGui::MenuItem("Player", NULL, &show_player);
+                    if (ImGui::BeginMenu("Tools"))
+                    {
+                        ImGui::MenuItem("Tools", NULL, &show_tools);
+                        ImGui::MenuItem("FPS", NULL, &show_FPS);
+                        ImGui::MenuItem("Player", NULL, &show_player);
+                        ImGui::MenuItem("Screen", NULL, &show_screen);
+                        ImGui::EndMenu();
+                    }
+
+                    if (ImGui::BeginMenu("Graphics"))
+                    {
+                        ImGui::MenuItem("Tools", NULL, &show_tools);
+                        ImGui::MenuItem("FPS", NULL, &show_FPS);
+                        ImGui::MenuItem("Player", NULL, &show_player);
+                        ImGui::MenuItem("Screen", NULL, &show_screen);
+                        ImGui::EndMenu();
+                    }
+                    
+                    if (ImGui::BeginMenu("Audio"))
+                    {
+                        ImGui::MenuItem("Tools", NULL, &show_tools);
+                        ImGui::MenuItem("FPS", NULL, &show_FPS);
+                        ImGui::Separator();
+                        ImGui::MenuItem("Player", NULL, &show_player);
+                        ImGui::MenuItem("Screen", NULL, &show_screen);
+                        ImGui::EndMenu();
+                    }
+                    
                     ImGui::EndMenu();
                 }
-
                 ImGui::EndMenuBar();
             }
         
