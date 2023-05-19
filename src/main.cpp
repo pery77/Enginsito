@@ -79,12 +79,16 @@ int main(int argc, char *argv[])
             }
         }
 
+        if(IsKeyReleased(KEY_F2))
+        {
+            engine->postProcessing->UpdateWindowSize();
+        }
+
         if(IsKeyReleased(KEY_F11) || (IsKeyDown(KEY_LEFT_ALT) && IsKeyReleased(KEY_ENTER)))
         {
 		    engine->postProcessing->FullScreen();
 	    }
 
-        //if(IsWindowResized() && !showImgui) 
         if(IsWindowResized()) 
         {
            engine->postProcessing->UpdateGameScreenRects();

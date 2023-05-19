@@ -182,27 +182,20 @@ void PostProcessing::ReloadShaders()
 
 void PostProcessing::UpdateGameScreenRects()
 {
-	screenScale = Tools::Min((float)GetScreenWidth()/(float)GAME_SCREEN_W,(float)GetScreenHeight()/(float)GAME_SCREEN_H);
-	gameRect = { 0, 0, (float)(GAME_SCREEN_W), -(float)(GAME_SCREEN_H)};
-	gameScaledRect = { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
-	resolution = {(float)GetScreenWidth(), (float)GetScreenHeight()};
+    resolution = (Vector2){(float)GetScreenWidth(), (float)GetScreenHeight()};
+	currentAspectRatio = resolution.x/resolution.y;
 
-	currentAspectRatio = (float)GetScreenWidth()/(float)GetScreenHeight();
-    editorImageFactor = (float)GetScreenWidth() / (float)editorRender.texture.width; 
+    screenScale = (currentAspectRatio < GAME_RATIO) ? resolution.x/(float)GAME_SCREEN_W : resolution.y/(float)GAME_SCREEN_H;
 
-    bool aspectRatioOk = Tools::CompareFloats(currentAspectRatio , GAME_RATIO, 0.05);
-	if (!aspectRatioOk) 
-    {
-        SetWindowSize((currentAspectRatio > GAME_RATIO) ? GAME_SCREEN_W * screenScale : GetScreenWidth(), 
-					 (currentAspectRatio > GAME_RATIO) ? GetScreenHeight() : GAME_SCREEN_H * screenScale);
-        UpdateGameScreenRects();
-	}
+	gameScaledRect = { (resolution.x - (GAME_SCREEN_W * screenScale)) / 2, (resolution.y - (GAME_SCREEN_H * screenScale)) / 2, 
+                        GAME_SCREEN_W * screenScale, GAME_SCREEN_H * screenScale };
+    editorImageFactor = resolution.y / (float)editorRender.texture.width; 
 }
 
 void PostProcessing::UpdateWindowSize()
 {
-	
-
+	SetWindowSize((currentAspectRatio > GAME_RATIO) ? GAME_SCREEN_W * screenScale : GetScreenWidth(), 
+					 (currentAspectRatio > GAME_RATIO) ? GetScreenHeight() : GAME_SCREEN_H * screenScale);
 }
 
 void PostProcessing::FullScreen()
