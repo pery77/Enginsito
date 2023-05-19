@@ -217,12 +217,12 @@ int main(int argc, char *argv[])
             if(showImgui)
             {
                 BeginTextureMode(engine->postProcessing->editorRender);
-                    engine->postProcessing->RenderFinal();
+                    engine->postProcessing->RenderFinal(true);
                 EndTextureMode();
             }
             else
             {
-                engine->postProcessing->RenderFinal();
+                engine->postProcessing->RenderFinal(false);
             }
 
             // Engine over draw

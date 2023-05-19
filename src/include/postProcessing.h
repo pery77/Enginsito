@@ -46,7 +46,7 @@ class PostProcessing
 
     void RenderMain();
     void RenderBlur();
-    void RenderFinal();
+    void RenderFinal(bool isEditor);
 
     bool enabled = true;
 
@@ -79,7 +79,6 @@ class PostProcessing
 	float previusWindowsWidth;
 	float previusWindowsHeight;
 	float currentAspectRatio;
-    float editorImageFactor;
 
     void SetCRTValue(CRTProperty property, uint8_t value);
     void SetGrilleTexture(int newTextureId);

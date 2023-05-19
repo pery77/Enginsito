@@ -28,8 +28,6 @@ void PostProcessing::setUpShaders()
     grilleTextures[1] = textureFromCode(GRILLE2_FORMAT, GRILLE2_HEIGHT, GRILLE2_HEIGHT, GRILLE2_DATA);
     grilleTextures[2] = textureFromCode(GRILLE3_FORMAT, GRILLE3_HEIGHT, GRILLE3_HEIGHT, GRILLE3_DATA);
 
-    editorImageFactor = (float)GetScreenWidth() / (float)editorRender.texture.width; 
-
 /* //Image to Code
     Image i1 = LoadImage("assets/grille1.png");
     Image i2 = LoadImage("assets/grille2.png");
@@ -123,8 +121,11 @@ void PostProcessing::RenderBlur()
     EndShaderMode();
 }
 
-void PostProcessing::RenderFinal()
+void PostProcessing::RenderFinal(bool isEditor)
 {
+
+    Rectangle screenRect = isEditor ? (Rectangle){0,0, editorRender.texture.width, editorRender.texture.height} : gameScaledRect;
+
     if (enabled)
     {
         uBlurPower         = GetCRTFloat(CRTProperty::BlurPower);
@@ -155,14 +156,14 @@ void PostProcessing::RenderFinal()
             SetShaderValue(crtShader, noiseLoc, &uNoise, SHADER_UNIFORM_FLOAT);
             SetShaderValue(crtShader, flikerLoc, &uFliker, SHADER_UNIFORM_FLOAT);
 
-            DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0, 0 }, 0.0f, WHITE);
+            DrawTexturePro(mainRender.texture, gameRect, screenRect, { 0, 0 }, 0.0f, WHITE);
 
         EndShaderMode();
 
     }
     else
     {
-        DrawTexturePro(mainRender.texture, gameRect, gameScaledRect, { 0, 0 }, 0.0f, WHITE); 
+        DrawTexturePro(mainRender.texture, gameRect, screenRect, { 0, 0 }, 0.0f, WHITE); 
     }
 }
 
@@ -189,7 +190,6 @@ void PostProcessing::UpdateGameScreenRects()
 
 	gameScaledRect = { (resolution.x - (GAME_SCREEN_W * screenScale)) / 2, (resolution.y - (GAME_SCREEN_H * screenScale)) / 2, 
                         GAME_SCREEN_W * screenScale, GAME_SCREEN_H * screenScale };
-    editorImageFactor = resolution.y / (float)editorRender.texture.width; 
 }
 
 void PostProcessing::UpdateWindowSize()

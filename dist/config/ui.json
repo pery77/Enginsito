@@ -2,9 +2,9 @@
     "show_fps": true,
     "show_player": true,
     "show_screen": true,
-    "show_tools": false,
-    "window_height": 650,
-    "window_position_x": 494,
-    "window_position_y": 93,
-    "window_width": 1767
+    "show_tools": true,
+    "window_height": 817,
+    "window_position_x": 174,
+    "window_position_y": 106,
+    "window_width": 1783
 }

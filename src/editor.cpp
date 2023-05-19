@@ -931,9 +931,9 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
 
             if (show_screen)
             {
-                ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+                //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
                 ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse);
-                ImGui::PopStyleVar();
+                //ImGui::PopStyleVar();
                     HasFocus = ImGui::IsWindowFocused();
                     ImVec2 windowSize = ImGui::GetWindowSize();
                     float scale = (windowSize.x/windowSize.y < 1.6f) ? windowSize.x/(float)GAME_SCREEN_W : windowSize.y/(float)GAME_SCREEN_H;
@@ -941,9 +941,7 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
                     ImVec2 imagePos = ImVec2((windowSize.x - imageSize.x) / 2, (windowSize.y - imageSize.y) / 2);
 
                     ImGui::SetCursorPos(imagePos);
-
-                    ImGui::Image(&editorEngineRef->postProcessing->editorRender.texture, imageSize, ImVec2(0,0),
-                                    ImVec2(editorEngineRef->postProcessing->editorImageFactor,-editorEngineRef->postProcessing->editorImageFactor));
+                    ImGui::Image(&editorEngineRef->postProcessing->editorRender.texture, imageSize, ImVec2(0,0), ImVec2(1,-1));
                 ImGui::End();
             }
             
