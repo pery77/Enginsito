@@ -194,8 +194,22 @@ void PostProcessing::UpdateGameScreenRects()
 
 void PostProcessing::UpdateWindowSize()
 {
+    previusWindowsWidth = GetScreenWidth();
+	previusWindowsHeight = GetScreenHeight();
+
+    previusWindowsX = GetWindowPosition().x;
+    previusWindowsY = GetWindowPosition().y;
+
 	SetWindowSize((currentAspectRatio > GAME_RATIO) ? GAME_SCREEN_W * screenScale : GetScreenWidth(), 
 					 (currentAspectRatio > GAME_RATIO) ? GetScreenHeight() : GAME_SCREEN_H * screenScale);
+    int monitor = GetCurrentMonitor();
+    SetWindowPosition(GetMonitorWidth(monitor) / 2 - GetScreenWidth() / 2, GetMonitorHeight(monitor) / 2 - GetScreenHeight() / 2 );
+}
+
+void PostProcessing::RestoreWindow()
+{
+    SetWindowSize(previusWindowsWidth, previusWindowsHeight);
+    SetWindowPosition(previusWindowsX, previusWindowsY);
 }
 
 void PostProcessing::FullScreen()

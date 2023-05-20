@@ -77,6 +77,10 @@ int main(int argc, char *argv[])
                 engine->postProcessing->UpdateGameScreenRects();
                 engine->postProcessing->UpdateWindowSize();
             }
+            else
+            {
+                engine->postProcessing->RestoreWindow();
+            }
         }
 
         if(IsKeyReleased(KEY_F2))

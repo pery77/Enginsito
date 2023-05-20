@@ -71,6 +71,7 @@ class PostProcessing
 
     void UpdateGameScreenRects();
     void UpdateWindowSize();
+    void RestoreWindow();
     void FullScreen();
 
     void SetState(bool newState);
@@ -78,6 +79,8 @@ class PostProcessing
 	float screenScale;
 	float previusWindowsWidth;
 	float previusWindowsHeight;
+	float previusWindowsX;
+	float previusWindowsY;
 	float currentAspectRatio;
 
     void SetCRTValue(CRTProperty property, uint8_t value);
