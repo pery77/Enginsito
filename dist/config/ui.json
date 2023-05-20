@@ -1,10 +1,11 @@
 {
+    "show_code": true,
     "show_fps": true,
     "show_player": true,
     "show_screen": true,
     "show_tools": true,
     "window_height": 1016,
-    "window_position_x": 467,
-    "window_position_y": 32,
-    "window_width": 1627
+    "window_position_x": 447,
+    "window_position_y": 107,
+    "window_width": 1818
 }

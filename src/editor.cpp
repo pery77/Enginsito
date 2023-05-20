@@ -2,19 +2,19 @@
 #include "nlohmann/json.hpp"
 
 static bool show_tools = false;
-static bool show_demo = false;
+    static bool show_demo = false;
 static bool show_FPS = false;
-static bool show_filebrowser = false;
+    static bool show_filebrowser = false;
 static bool show_code = false;
-static bool show_palette = false;
-static bool show_crt = false;
-static bool show_console = false;
-static bool show_sfx = false;
-static bool show_sprites = false;
-static bool show_makeSprite = false;
+    static bool show_palette = false;
+    static bool show_crt = false;
+    static bool show_console = false;
+    static bool show_sfx = false;
+    static bool show_sprites = false;
+    static bool show_makeSprite = false;
 static bool show_screen = false;
 static bool show_player = false;
-static bool show_memory = false;
+    static bool show_memory = false;
 
 int currentSprite = 0;
 nlohmann::json data;
@@ -38,6 +38,7 @@ Editor::Editor(Engine* _engine)
     show_FPS = data["show_fps"].get<bool>();
     show_tools = data["show_tools"].get<bool>();
     show_screen = data["show_screen"].get<bool>();
+    show_code = data["show_code"].get<bool>();
 
     SetMainWindow();
 }
@@ -56,6 +57,7 @@ Editor::~Editor()
     data["show_fps"] = show_FPS;
     data["show_tools"] = show_tools;
     data["show_screen"] = show_screen;
+    data["show_code"] = show_code;
 
     std::ofstream o(ss.str().c_str());
     o << std::setw(4) << data << std::endl;
@@ -856,38 +858,59 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
 
             if (ImGui::BeginMenuBar())
             {
+                
+                if (ImGui::BeginMenu("File"))
+                {
+                    ImGui::MenuItem("New", NULL);
+                    ImGui::MenuItem("Open", NULL);
+                    ImGui::MenuItem("Save", NULL);
+                    ImGui::MenuItem("Save as", NULL);
+                    ImGui::EndMenu();
+                }
+
+                if (ImGui::BeginMenu("Edit"))
+                {
+                    bool ro = codeEditor.IsReadOnly();
+                    if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
+                        codeEditor.SetReadOnly(ro);
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Undo", "Ctrl-Z", nullptr, !ro && codeEditor.CanUndo()))
+                        codeEditor.Undo();
+                    if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && codeEditor.CanRedo()))
+                        codeEditor.Redo();
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, codeEditor.HasSelection()))
+                        codeEditor.Copy();
+                    if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && codeEditor.HasSelection()))
+                        codeEditor.Cut();
+                    if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && codeEditor.HasSelection()))
+                        codeEditor.Delete();
+                    if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
+                        codeEditor.Paste();
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Select all", nullptr, nullptr))
+                        codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
+                    ImGui::EndMenu();
+                }
+                
                 if (ImGui::BeginMenu("View"))
                 {
-                    if (ImGui::BeginMenu("Tools"))
-                    {
-                        ImGui::MenuItem("Tools", NULL, &show_tools);
-                        ImGui::MenuItem("FPS", NULL, &show_FPS);
-                        ImGui::MenuItem("Player", NULL, &show_player);
-                        ImGui::MenuItem("Screen", NULL, &show_screen);
-                        ImGui::EndMenu();
-                    }
+                    ImGui::MenuItem("Tools", NULL, &show_tools);
+                    ImGui::MenuItem("FPS", NULL, &show_FPS);
+                    ImGui::Separator();
+                    ImGui::MenuItem("Player", NULL, &show_player);
+                    ImGui::MenuItem("Screen", NULL, &show_screen);
+                    ImGui::Separator();
+                    ImGui::MenuItem("Code", NULL, &show_code);
 
-                    if (ImGui::BeginMenu("Graphics"))
-                    {
-                        ImGui::MenuItem("Tools", NULL, &show_tools);
-                        ImGui::MenuItem("FPS", NULL, &show_FPS);
-                        ImGui::MenuItem("Player", NULL, &show_player);
-                        ImGui::MenuItem("Screen", NULL, &show_screen);
-                        ImGui::EndMenu();
-                    }
-                    
-                    if (ImGui::BeginMenu("Audio"))
-                    {
-                        ImGui::MenuItem("Tools", NULL, &show_tools);
-                        ImGui::MenuItem("FPS", NULL, &show_FPS);
-                        ImGui::Separator();
-                        ImGui::MenuItem("Player", NULL, &show_player);
-                        ImGui::MenuItem("Screen", NULL, &show_screen);
-                        ImGui::EndMenu();
-                    }
+                    #ifdef DEBUG
+                    ImGui::MenuItem("Demo", NULL, &show_demo);
+                    #endif
                     
                     ImGui::EndMenu();
                 }
+                    
+
                 ImGui::EndMenuBar();
             }
         

@@ -6,6 +6,7 @@ else
     CFLAGS = -std=c++17 -m64 -O0 -mwindows -Wno-missing-braces -Wall
 endif
 
+CFLAGS += $(DEFINES)
 
 LDFLAGS = -static-libgcc -static-libstdc++ --static -L./libs/raylib/lib -lraylib -lopengl32 -lgdi32 -lwinmm
 
