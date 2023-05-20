@@ -2,19 +2,19 @@
 #include "nlohmann/json.hpp"
 
 static bool show_tools = false;
-    static bool show_demo = false;
+static bool show_demo = false;
 static bool show_FPS = false;
-    static bool show_filebrowser = false;
+static bool show_filebrowser = false;
 static bool show_code = false;
-    static bool show_palette = false;
-    static bool show_crt = false;
-    static bool show_console = false;
+static bool show_palette = false;
+static bool show_crt = false;
+static bool show_console = false;
     static bool show_sfx = false;
     static bool show_sprites = false;
     static bool show_makeSprite = false;
 static bool show_screen = false;
 static bool show_player = false;
-    static bool show_memory = false;
+static bool show_memory = false;
 
 int currentSprite = 0;
 nlohmann::json data;
@@ -39,6 +39,11 @@ Editor::Editor(Engine* _engine)
     show_tools = data["show_tools"].get<bool>();
     show_screen = data["show_screen"].get<bool>();
     show_code = data["show_code"].get<bool>();
+    show_console = data["show_console"].get<bool>();
+    show_palette = data["show_palette"].get<bool>();
+    show_crt = data["show_crt"].get<bool>();
+    show_memory = data["show_memory"].get<bool>();
+    show_filebrowser = data["show_filebrowser"].get<bool>();
 
     SetMainWindow();
 }
@@ -58,6 +63,11 @@ Editor::~Editor()
     data["show_tools"] = show_tools;
     data["show_screen"] = show_screen;
     data["show_code"] = show_code;
+    data["show_console"] = show_console;
+    data["show_palette"] = show_palette;
+    data["show_crt"] = show_crt;
+    data["show_memory"] = show_memory;
+    data["show_filebrowser"] = show_filebrowser;
 
     std::ofstream o(ss.str().c_str());
     o << std::setw(4) << data << std::endl;
@@ -232,7 +242,7 @@ void Editor::DrawCode()
         auto cpos = codeEditor.GetCursorPosition();
 
         ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
-
+/*
 	    if (ImGui::BeginMenuBar())
 	    {
 	    	if (ImGui::BeginMenu("Edit"))
@@ -276,7 +286,7 @@ void Editor::DrawCode()
              
 	    	ImGui::EndMenuBar();
 	    	}
-
+*/
 	    	ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, codeEditor.GetTotalLines(),
 	    		codeEditor.IsOverwrite() ? "Ovr" : "Ins",
 	    		codeEditor.CanUndo() ? "*" : " ",
@@ -858,16 +868,19 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
 
             if (ImGui::BeginMenuBar())
             {
-                
+/*
                 if (ImGui::BeginMenu("File"))
                 {
                     ImGui::MenuItem("New", NULL);
-                    ImGui::MenuItem("Open", NULL);
+                    if(ImGui::MenuItem("Open", NULL))
+                    {
+                        show_filebrowser = true;
+                    }
                     ImGui::MenuItem("Save", NULL);
                     ImGui::MenuItem("Save as", NULL);
                     ImGui::EndMenu();
                 }
-
+*/
                 if (ImGui::BeginMenu("Edit"))
                 {
                     bool ro = codeEditor.IsReadOnly();
@@ -902,11 +915,17 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
                     ImGui::MenuItem("Screen", NULL, &show_screen);
                     ImGui::Separator();
                     ImGui::MenuItem("Code", NULL, &show_code);
+                    ImGui::MenuItem("Console", NULL, &show_console);
+                    ImGui::Separator();
+                    ImGui::MenuItem("Crt", NULL, &show_crt);
+                    ImGui::MenuItem("Palette", NULL, &show_palette);
+                    ImGui::MenuItem("Memory", NULL, &show_memory);
+                    ImGui::MenuItem("File Browser", NULL, &show_filebrowser);
 
                     #ifdef DEBUG
                     ImGui::MenuItem("Demo", NULL, &show_demo);
                     #endif
-                    
+
                     ImGui::EndMenu();
                 }
                     
@@ -921,17 +940,16 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
             {
                 ImGui::Begin("Tools", &show_tools, ImGuiWindowFlags_NoCollapse);
                     ImGui::DragFloat("Font", &io.FontGlobalScale, 0.05f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-                    ImGui::SameLine();
-                    ImGui::Checkbox("Demo", &show_demo);
-                    if (show_demo)
-                    {
-                        ImGui::ShowDemoWindow(&show_demo);
-                    }
                 ImGui::End(); 
             }
-            
 
-                
+            #ifdef DEBUG
+            if(show_demo)
+            {
+                ImGui::ShowDemoWindow(&show_demo);
+            }
+            #endif
+            
             //Console
             if (show_console)
             {
