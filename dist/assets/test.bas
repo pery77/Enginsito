@@ -15,7 +15,3 @@ enddef
 for d = 0x440 to 0x820
 	poke(d,0)
 next
-
-
-
-'asdfasdfasdf222233333

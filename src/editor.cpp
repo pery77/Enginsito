@@ -9,12 +9,14 @@ static bool show_code = false;
 static bool show_palette = false;
 static bool show_crt = false;
 static bool show_console = false;
-    static bool show_sfx = false;
-    static bool show_sprites = false;
-    static bool show_makeSprite = false;
+static bool show_sfx = false;
+static bool show_sprites = false;
+static bool show_makeSprite = false;
 static bool show_screen = false;
 static bool show_player = false;
 static bool show_memory = false;
+
+static unsigned char spriteCopy[8]{};
 
 int currentSprite = 0;
 nlohmann::json data;
@@ -47,6 +49,9 @@ Editor::Editor(Engine* _engine)
     show_crt = data["show_crt"].get<bool>();
     show_memory = data["show_memory"].get<bool>();
     show_filebrowser = data["show_filebrowser"].get<bool>();
+    show_sprites = data["show_sprites"].get<bool>();
+    show_makeSprite = data["show_makeSprite"].get<bool>();
+    show_sfx = data["show_sfx"].get<bool>();
 
     SetMainWindow();
 }
@@ -71,6 +76,9 @@ Editor::~Editor()
     data["show_crt"] = show_crt;
     data["show_memory"] = show_memory;
     data["show_filebrowser"] = show_filebrowser;
+    data["show_sprites"] = show_sprites;
+    data["show_makeSprite"] = show_makeSprite;
+    data["show_sfx"] = show_sfx;
 
     std::ofstream o(ss.str().c_str());
     o << std::setw(4) << data << std::endl;
@@ -310,10 +318,10 @@ void Editor::DrawPalette()
         Color col = editorEngineRef->spriteManager->GetColor(c);
         ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
         ImGui::BeginGroup();
-        ImGui::ColorEdit3(buffer, (float*)&color, ImGuiColorEditFlags_NoInputs |ImGuiColorEditFlags_NoLabel);
+        ImGui::ColorEdit3(buffer, (float*)&color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoBorder);
         ImGui::Text(buffer);
         ImGui::EndGroup();
-        if((c+1)  % 4 != 0) ImGui::SameLine();
+        if((c+1) % 8 != 0) ImGui::SameLine();
 
         editorEngineRef->spriteManager->SetColor(c, color.x * 255, color.y * 255, color.z * 255);
 
@@ -360,6 +368,7 @@ void Editor::DrawSprites()
     float my_tex_w = 128;
     float my_tex_h = 128;
 
+    ImGui::BeginGroup();
     for (int y = 0; y < 16; y++)
     {
         for (int x = 0; x < 16; x++)
@@ -373,6 +382,21 @@ void Editor::DrawSprites()
         pos.x = p.x;
         pos.y += size.y + 4; 
     }
+    ImGui::EndGroup();
+    ImGui::SameLine();
+
+    ImGui::BeginGroup();
+    if(ImGui::Button("Copy",ImVec2(size.x*2.5,size.y)))
+    { 
+        for (int c = 0; c < 8; c++)
+            spriteCopy[c] = editorEngineRef->Peek(currentSprite * 8 + 48 + c);
+    }
+    if(ImGui::Button("Paste",ImVec2(size.x*2.5,size.y)))
+    {
+        for (int c = 0; c < 8; c++)
+             editorEngineRef->Poke(currentSprite * 8 + 48 + c, spriteCopy[c]);
+    }
+    ImGui::EndGroup();
     
 }
 
@@ -444,8 +468,9 @@ void Editor::DrawCRT()
 
 void Editor::DrawPlayer()
 {
+    ImGuiIO& io = ImGui::GetIO();
     ImVec2 playerSize = ImGui::GetWindowSize();
-    ImVec2 buttonSize(30, 30);
+    ImVec2 buttonSize = ImVec2(32.0f * io.FontGlobalScale, 32.0f * io.FontGlobalScale);
 
     float buttonPosX = (playerSize.x - buttonSize.x * 5) / 2;
     float buttonPosY = (playerSize.y - buttonSize.y) / 2;
@@ -929,6 +954,11 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
                     ImGui::MenuItem("Palette", NULL, &show_palette);
                     ImGui::MenuItem("Memory", NULL, &show_memory);
                     ImGui::MenuItem("File Browser", NULL, &show_filebrowser);
+                    ImGui::Separator();
+                    ImGui::MenuItem("Sprites", NULL, &show_sprites);
+                    ImGui::MenuItem("Make Sprite", NULL, &show_makeSprite);
+                    ImGui::Separator();
+                    ImGui::MenuItem("SFX", NULL, &show_sfx);
 
                     #ifdef DEBUG
                     ImGui::MenuItem("Demo", NULL, &show_demo);
