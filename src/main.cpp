@@ -236,7 +236,6 @@ int main(int argc, char *argv[])
                 engine->editor->Draw();
                 rlImGuiEnd();
                 engine->editor->ScreenWindowHasFocus && engine->editor->MouseInsideScreenWindow ? HideCursor() : ShowCursor();
-                            
             }
             else
             {

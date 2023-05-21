@@ -1059,20 +1059,30 @@ void Editor::DrawMetaSprites(int metaId)
                 ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse);
                     ScreenWindowHasFocus = ImGui::IsWindowFocused();
                     ImVec2 windowSize = ImGui::GetWindowSize();
-                    ImVec2 windowPosition= ImGui::GetWindowPos();
-                    float scale = (windowSize.x/windowSize.y < 1.6f) ? windowSize.x/(float)GAME_SCREEN_W : windowSize.y/(float)GAME_SCREEN_H;
+
+                    ImVec2 windowPositionTotal= ImGui::GetWindowPos();
+                    ImVec2 windowPosition= ImGui::GetCursorScreenPos();
+                    float offset = windowPosition.y - windowPositionTotal.y;
+
+                    windowSize.y -= offset;
+
+                    //ImGui::BeginTooltip();
+                    //    ImGui::Text("%f", offset);
+                    //ImGui::EndTooltip();
+
+                    float scale = (windowSize.x/windowSize.y < GAME_RATIO) ? windowSize.x/(float)GAME_SCREEN_W : windowSize.y/(float)GAME_SCREEN_H;
                     ImVec2 imageSize = ImVec2(GAME_SCREEN_W * scale, GAME_SCREEN_H * scale); 
                     ImVec2 imagePos = ImVec2((windowSize.x - imageSize.x) / 2, (windowSize.y - imageSize.y) / 2);
-
+                    imagePos.y += offset;
                     ImGui::SetCursorPos(imagePos);
                     ImGui::Image(&editorEngineRef->postProcessing->editorRender.texture, imageSize, ImVec2(0,0), ImVec2(1,-1));
                     
                     if(ScreenWindowHasFocus)
                     {
                         editorEngineRef->VirtualMouseX = (ImGui::GetMousePos().x - imagePos.x - windowPosition.x) * 1.0f / scale;
-                        editorEngineRef->VirtualMouseY = (ImGui::GetMousePos().y - imagePos.y - windowPosition.y) * 1.0f / scale;
+                        editorEngineRef->VirtualMouseY = ((ImGui::GetMousePos().y - imagePos.y - windowPosition.y) * 1.0f / scale) + offset;
                     }
-                    
+
                     MouseInsideScreenWindow = editorEngineRef->VirtualMouseX > 0 && editorEngineRef->VirtualMouseX < GAME_SCREEN_W;
                     MouseInsideScreenWindow &= editorEngineRef->VirtualMouseY > 0 && editorEngineRef->VirtualMouseY < GAME_SCREEN_H;
 

@@ -1209,7 +1209,6 @@ int MBManager::mouseX(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    //position.value.integer = Tools::GetVirtualMouse(true); 
     position.value.integer = basicEngineRef->VirtualMouseX;
 
     mb_check(mb_push_value(s, l, position));
@@ -1226,7 +1225,6 @@ int MBManager::mouseY(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    //position.value.integer = Tools::GetVirtualMouse(false);
 	position.value.integer = basicEngineRef->VirtualMouseY;
     mb_check(mb_push_value(s, l, position));
 
