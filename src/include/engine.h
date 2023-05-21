@@ -55,6 +55,6 @@ class Engine
         int GetVersion();
         void SetVersion();
 
-    private:
-
+        int VirtualMouseX;
+        int VirtualMouseY;
 };

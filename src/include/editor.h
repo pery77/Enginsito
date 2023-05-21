@@ -74,7 +74,8 @@ class Editor
 
     MemoryEditor mem_edit; 
 
-    bool HasFocus = false;
+    bool ScreenWindowHasFocus = false;
+    bool MouseInsideScreenWindow = false;
     bool Paused = false;
     bool DoStep = false;
 
@@ -103,6 +104,7 @@ class Editor
     void SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id);
     void DrawSprites();
     void MakeSprite(int spriteId);
+    void DrawMetaSprites(int metaId);
     void PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state);
     void DrawCRT();
     

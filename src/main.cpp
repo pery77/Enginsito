@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
                     case Off:
                         if (showImgui)
                         {
-                            if (engine->editor->HasFocus)
+                            if (engine->editor->ScreenWindowHasFocus)
                             {
                                 engine->bios->Update();
                             }
@@ -235,12 +235,14 @@ int main(int argc, char *argv[])
                 rlImGuiBegin();
                 engine->editor->Draw();
                 rlImGuiEnd();
-
-                ShowCursor();
+                engine->editor->ScreenWindowHasFocus && engine->editor->MouseInsideScreenWindow ? HideCursor() : ShowCursor();
+                            
             }
             else
             {
                 HideCursor();
+                engine->VirtualMouseX = Tools::GetVirtualMouse(true);
+                engine->VirtualMouseY = Tools::GetVirtualMouse(false);
             }
     
         EndDrawing();

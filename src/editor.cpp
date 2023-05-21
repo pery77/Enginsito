@@ -12,6 +12,7 @@ static bool show_console = false;
 static bool show_sfx = false;
 static bool show_sprites = false;
 static bool show_makeSprite = false;
+static bool show_metaSprite = false;
 static bool show_screen = false;
 static bool show_player = false;
 static bool show_memory = false;
@@ -19,6 +20,7 @@ static bool show_memory = false;
 static unsigned char spriteCopy[8]{};
 
 int currentSprite = 0;
+int currentMetaSprite = 0;
 nlohmann::json data;
 
 Editor::Editor(Engine* _engine)
@@ -51,6 +53,7 @@ Editor::Editor(Engine* _engine)
     show_filebrowser = data["show_filebrowser"].get<bool>();
     show_sprites = data["show_sprites"].get<bool>();
     show_makeSprite = data["show_makeSprite"].get<bool>();
+    show_metaSprite = data["show_metaSprite"].get<bool>();
     show_sfx = data["show_sfx"].get<bool>();
 
     SetMainWindow();
@@ -78,6 +81,7 @@ Editor::~Editor()
     data["show_filebrowser"] = show_filebrowser;
     data["show_sprites"] = show_sprites;
     data["show_makeSprite"] = show_makeSprite;
+    data["show_metaSprite"] = show_metaSprite;
     data["show_sfx"] = show_sfx;
 
     std::ofstream o(ss.str().c_str());
@@ -574,11 +578,11 @@ void Editor::PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack, bool pres
         ImGui::PopStyleColor();
 }
 
-    bool Editor::IsBlack(int note)
-    {
-        int n = note % 12;
-        return (n == 1 || n == 3 || n == 6 || n == 8 || n == 10);
-    }
+bool Editor::IsBlack(int note)
+{
+    int n = note % 12;
+    return (n == 1 || n == 3 || n == 6 || n == 8 || n == 10);
+}
 
     void Editor::DrawSFX()
     {
@@ -898,6 +902,31 @@ void Editor::MakeSprite(int spriteId)
     ImGui::EndGroup();
 }
 
+void Editor::DrawMetaSprites(int metaId)
+{
+    ImGui::BeginGroup();
+    for (int y = 0; y < 8; y++)
+    {
+        for (int x = 0; x < 8; x++)
+        {
+            int id = x + y * 8;
+            char button_label[5];
+            sprintf(button_label, "%02i" , id);
+            ImGui::PushID(id);
+            if(ImGui::Button(button_label))
+            {
+                currentMetaSprite = id;
+                HighLightMemory(currentMetaSprite * 20 + 2096, 20);
+            }
+            ImGui::PopID();
+            ImGui::SameLine();
+        }
+        ImGui::NewLine();
+    }
+    ImGui::EndGroup();
+    ImGui::SameLine();
+}
+
     void Editor::Draw()
     {
         ImGuiIO& io = ImGui::GetIO();
@@ -1027,17 +1056,26 @@ void Editor::MakeSprite(int spriteId)
 
             if (show_screen)
             {
-                //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
                 ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse);
-                //ImGui::PopStyleVar();
-                    HasFocus = ImGui::IsWindowFocused();
+                    ScreenWindowHasFocus = ImGui::IsWindowFocused();
                     ImVec2 windowSize = ImGui::GetWindowSize();
+                    ImVec2 windowPosition= ImGui::GetWindowPos();
                     float scale = (windowSize.x/windowSize.y < 1.6f) ? windowSize.x/(float)GAME_SCREEN_W : windowSize.y/(float)GAME_SCREEN_H;
                     ImVec2 imageSize = ImVec2(GAME_SCREEN_W * scale, GAME_SCREEN_H * scale); 
                     ImVec2 imagePos = ImVec2((windowSize.x - imageSize.x) / 2, (windowSize.y - imageSize.y) / 2);
 
                     ImGui::SetCursorPos(imagePos);
                     ImGui::Image(&editorEngineRef->postProcessing->editorRender.texture, imageSize, ImVec2(0,0), ImVec2(1,-1));
+                    
+                    if(ScreenWindowHasFocus)
+                    {
+                        editorEngineRef->VirtualMouseX = (ImGui::GetMousePos().x - imagePos.x - windowPosition.x) * 1.0f / scale;
+                        editorEngineRef->VirtualMouseY = (ImGui::GetMousePos().y - imagePos.y - windowPosition.y) * 1.0f / scale;
+                    }
+                    
+                    MouseInsideScreenWindow = editorEngineRef->VirtualMouseX > 0 && editorEngineRef->VirtualMouseX < GAME_SCREEN_W;
+                    MouseInsideScreenWindow &= editorEngineRef->VirtualMouseY > 0 && editorEngineRef->VirtualMouseY < GAME_SCREEN_H;
+
                 ImGui::End();
             }
             
@@ -1088,6 +1126,13 @@ void Editor::MakeSprite(int spriteId)
             {
                 ImGui::Begin("Make Sprite", NULL, ImGuiWindowFlags_NoCollapse);
                     MakeSprite(currentSprite);
+                ImGui::End(); 
+            }
+
+            if (show_metaSprite)
+            {
+                ImGui::Begin("Meta Sprite", NULL, ImGuiWindowFlags_NoCollapse);
+                    DrawMetaSprites(currentMetaSprite);
                 ImGui::End(); 
             }
 
