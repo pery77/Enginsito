@@ -458,7 +458,7 @@ struct MemoryEditor
         IM_UNUSED(mem_data);
         ImGuiStyle& style = ImGui::GetStyle();
         const char* format_range = OptUpperCaseHex ? "Range %0*" _PRISizeT "X..%0*" _PRISizeT "X" : "Range %0*" _PRISizeT "x..%0*" _PRISizeT "x";
-
+/*
         // Options menu
         if (ImGui::Button("Options"))
             ImGui::OpenPopup("context");
@@ -476,6 +476,7 @@ struct MemoryEditor
         }
 
         ImGui::SameLine();
+ */       
         ImGui::Text(format_range, s.AddrDigitsCount, base_display_addr, s.AddrDigitsCount, base_display_addr + mem_size - 1);
         ImGui::SameLine();
         ImGui::SetNextItemWidth((s.AddrDigitsCount + 1) * s.GlyphWidth + style.FramePadding.x * 2.0f);

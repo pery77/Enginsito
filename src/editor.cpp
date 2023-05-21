@@ -24,7 +24,10 @@ Editor::Editor(Engine* _engine)
     editorEngineRef = _engine;
     codeEditor.SetLanguageDefinition(lang);
     codeEditor.SetPalette(TextEditor::GetBasicPalette()); 
+
     mem_edit.HighlightColor = IM_COL32(22, 110, 162, 255);
+    mem_edit.OptShowAscii = false;
+
     Image hackImage = GenImageColor(1,1,(Color){0,0,0,0});
     hackTexture = LoadTextureFromImage(hackImage);
 
@@ -84,12 +87,11 @@ void Editor::SetMainWindow()
 
 void Editor::HighLightMemory(uint16_t address, uint16_t size)
 {
+    mem_edit.GotoAddr = address;
     mem_edit.HighlightMin = address;
     mem_edit.HighlightMax = address + size;
-    mem_edit.GotoAddr = address;
+    mem_edit.DataEditingAddr = mem_edit.DataPreviewAddr = -1;
     mem_edit.DataEditingTakeFocus = false;
-    mem_edit.DataEditingAddr = -1;
-    mem_edit.DataPreviewAddr = -1;
 }
 
 void Editor::DrawFPS()
@@ -241,8 +243,9 @@ void Editor::DrawCode()
 {
         auto cpos = codeEditor.GetCursorPosition();
 
-        ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
+        ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 /*
+        ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
 	    if (ImGui::BeginMenuBar())
 	    {
 	    	if (ImGui::BeginMenu("Edit"))
@@ -301,12 +304,16 @@ void Editor::DrawPalette()
 {
     for (char c = 0; c<16; c++)
     {
-        char buffer [50];
-        sprintf (buffer, "[%i]", c);
+        char buffer [5];
+        sprintf (buffer, "%i", c);
 
         Color col = editorEngineRef->spriteManager->GetColor(c);
         ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
-        ImGui::ColorEdit3(buffer, (float*)&color, 0);
+        ImGui::BeginGroup();
+        ImGui::ColorEdit3(buffer, (float*)&color, ImGuiColorEditFlags_NoInputs |ImGuiColorEditFlags_NoLabel);
+        ImGui::Text(buffer);
+        ImGui::EndGroup();
+        if((c+1)  % 4 != 0) ImGui::SameLine();
 
         editorEngineRef->spriteManager->SetColor(c, color.x * 255, color.y * 255, color.z * 255);
 
@@ -484,14 +491,15 @@ void Editor::DrawPlayer()
 
 void Editor::DrawMemory()
 {
+    /*
     static char str0[128] = "memory";
     if (ImGui::Button("Load default"))
     {
         editorEngineRef->LoadDefaultMemory();
     }
-
+    ImGui::SameLine();
     ImGui::InputText("New", str0, IM_ARRAYSIZE(str0));
-
+    ImGui::SameLine();
     if (ImGui::Button("Save"))
     {
         std::stringstream ss;
@@ -500,7 +508,7 @@ void Editor::DrawMemory()
         Tools::console->AddLog(ss.str().c_str());
         editorEngineRef->DumpMemory(ss.str().c_str());
     }
-        
+    */
     mem_edit.DrawContents(editorEngineRef->GetMemory(), 4096);
 }
 
