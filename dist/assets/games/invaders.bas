@@ -801,12 +801,3 @@ def draw()
     endif
 
 enddef
-
-
-
-
-
-
-
-
-

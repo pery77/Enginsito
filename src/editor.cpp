@@ -840,46 +840,63 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
     ImGui::PopStyleColor();
 }
 
+void Editor::MakeSprite(int spriteId)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);             
+    ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+    ImVec2 size = ImVec2(32.0f,32.0f);
+    uint8_t byte = 0;
 
+    ImGui::Text("Memory address: %.3X", currentSprite * 8 + 48);
 
-    void Editor::MakeSprite(int spriteId)
+    ImVec2 pos = ImGui::GetCursorScreenPos();
+    ImVec2 p = pos;
+
+    static unsigned char copyByte;
+
+    ImGui::BeginGroup();
+
+    for (int y = 0; y < 8; y++)
     {
-        ImGuiIO& io = ImGui::GetIO();
-        ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);             
-        ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-        ImVec2 size = ImVec2(32.0f,32.0f);
-        uint8_t byte = 0;
-
-        ImGui::Text("Sprite direction: %.3X", currentSprite * 8 + 48);
-
-        ImVec2 pos = ImGui::GetCursorScreenPos();
-        ImVec2 p = pos;
-
-        ImGui::BeginGroup();
-        for (int y = 0; y < 8; y++)
+        for (int x = 0; x < 8; x++)
         {
-            for (int x = 0; x < 8; x++)
-            {
-                int id = x + y * 8;
-                byte = editorEngineRef->Peek((currentSprite * 8 + 48) + y);
+            int id = x + y * 8;
+            byte = editorEngineRef->Peek((currentSprite * 8 + 48) + y);
 
-                ImGui::PushID(id);
+            ImGui::PushID(id);
 
-                unsigned char mascara = 1 << 7-x;
+            unsigned char mascara = 1 << 7-x;
 
-                PixelRect((currentSprite * 8 + 48) + y, 7-x, pos, size, (byte & mascara) != 0);
-                pos.x += size.x + 1; 
-                
-                ImGui::PopID();
-            }
-
-            ImGui::SameLine();
-            ImGui::Text("%.2X", byte);
-            pos.x = p.x;
-            pos.y += size.y + 1; 
+            PixelRect((currentSprite * 8 + 48) + y, 7-x, pos, size, (byte & mascara) != 0);
+            pos.x += size.x + 1; 
+            
+            ImGui::PopID();
         }
+
+        ImGui::SameLine();
+        ImGui::BeginGroup();
+        ImGui::Text("%.2X", byte);
+        ImGui::SameLine();
+        ImGui::PushID(y);
+        if(ImGui::SmallButton("Copy"))
+        {
+            copyByte = byte;
+        }
+        ImGui::PopID();
+        ImGui::SameLine();
+        ImGui::PushID(y+8);
+        if(ImGui::SmallButton("Paste"))
+        {
+            editorEngineRef->Poke((currentSprite * 8 + 48) + y, copyByte);
+        }
+        ImGui::PopID();
         ImGui::EndGroup();
+        pos.x = p.x;
+        pos.y += size.y + 1; 
     }
+    ImGui::EndGroup();
+}
 
     void Editor::Draw()
     {
