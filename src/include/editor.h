@@ -104,6 +104,7 @@ class Editor
     void SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id);
     void DrawSprites();
     void MakeSprite(int spriteId);
+    void DrawMetaLine(int id);
     void DrawMetaSprites(int metaId);
     void PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state);
     void DrawCRT();

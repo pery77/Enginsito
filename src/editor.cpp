@@ -256,6 +256,7 @@ void Editor::DrawCode()
         auto cpos = codeEditor.GetCursorPosition();
 
         ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+
 /*
         ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
 	    if (ImGui::BeginMenuBar())
@@ -902,6 +903,50 @@ void Editor::MakeSprite(int spriteId)
     ImGui::EndGroup();
 }
 
+void Editor::DrawMetaLine(int id)
+{
+    int dir = (currentMetaSprite * 20 + 2096 + id);
+    char idName[16];
+    sprintf(idName, "%i###" , dir);
+
+    int spID = editorEngineRef->Peek(dir);
+    int col = editorEngineRef->Peek(dir + 3);
+    
+    ImGui::BeginGroup();
+        ImGui::PushID(dir);
+        ImGui::PushItemWidth(40.f);
+        if(ImGui::Button(""))
+        {
+            editorEngineRef->Poke(dir, currentSprite);  
+        }
+        ImGui::PopID();
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+        if(ImGui::Button("COL"))
+            ImGui::OpenPopup("my_select_popup");
+            
+        ImGui::SameLine();
+        ImGui::TextUnformatted(selected_fish == -1 ? "<None>" : names[selected_fish]);
+        if (ImGui::BeginPopup("my_select_popup"))
+        {
+            ImGui::SeparatorText("Aquarium");
+            for (int i = 0; i < IM_ARRAYSIZE(names); i++)
+                if (ImGui::Selectable(names[i]))
+                    selected_fish = i;
+            ImGui::EndPopup();
+        }
+        
+            //editorEngineRef->Poke(dir +3,col);  
+
+        
+        //ImGui::SameLine();
+        //ImGui::Button("X");
+        //ImGui::SameLine();
+        //ImGui::Button("Y");
+        //ImGui::SameLine();
+        //ImGui::Button("FLAGS");
+    ImGui::EndGroup();
+}
 void Editor::DrawMetaSprites(int metaId)
 {
     ImGui::BeginGroup();
@@ -925,6 +970,12 @@ void Editor::DrawMetaSprites(int metaId)
     }
     ImGui::EndGroup();
     ImGui::SameLine();
+    ImGui::BeginGroup();
+    for ( int i = 0; i<4; i++)
+    {
+        DrawMetaLine(i);
+    }
+    ImGui::EndGroup();
 }
 
     void Editor::Draw()
