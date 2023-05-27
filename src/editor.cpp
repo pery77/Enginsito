@@ -145,34 +145,26 @@ void Editor::Credits()
 
     if(ImGui::BeginPopupModal("Credits", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {    
-        ImGui::Text("Programed by Pery");
+        ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), "Programed by Pery - 2023");
         ImGui::Separator();
         ImGui::Text("Credits:");
         ImGui::Text("This application utilizes the following open-source libraries:");
-        ImGui::Bullet();
-        ImGui::Text("Raylib. https://github.com/raysan5/raylib");
-        ImGui::Bullet();
-        ImGui::Text("My-Basic. https://github.com/paladin-t/my_basic/");
-        ImGui::Bullet();
-        ImGui::Text("ImGui. https://github.com/ocornut/imgui");
-        ImGui::Bullet();
-        ImGui::Text("Json. https://github.com/nlohmann/json");
-        ImGui::Bullet();
-        ImGui::Text("Memory. http://www.github.com/ocornut/imgui_club");
-        ImGui::Bullet();
-        ImGui::Text("TextEditor. https://github.com/BalazsJako/ImGuiColorTextEdit");
-        ImGui::Bullet();
-        ImGui::Text("Imgui Knobs. https://github.com/altschuler/imgui-knobs ");
-        ImGui::Bullet();
-        ImGui::Text("Font. ");
-        ImGui::Bullet();
-        ImGui::Text("FontAwesome. ");
-        ImGui::Bullet();
-        ImGui::Text("MML_Parser. ");
-        ImGui::Bullet();
-        ImGui::Text("rlImGui * basic ImGui integration");
 
+        ImGui::Spacing();
 
+        ImGui::BulletText("Raylib - https://github.com/raysan5/raylib");
+        ImGui::BulletText("My-Basic - https://github.com/paladin-t/my_basic/");
+        ImGui::BulletText("ImGui - https://github.com/ocornut/imgui");
+        ImGui::BulletText("Json - https://github.com/nlohmann/json");
+        ImGui::BulletText("Memory - http://github.com/ocornut/imgui_club");
+        ImGui::BulletText("TextEditor - https://github.com/BalazsJako/ImGuiColorTextEdit");
+        ImGui::BulletText("Imgui Knobs - https://github.com/altschuler/imgui-knobs");
+        ImGui::BulletText("Font - total FontGeek DTF https://www.fontspace.com/mozart-nbp-font-f18977");
+        ImGui::BulletText("FontAwesome - https://fontawesome.com/");
+        ImGui::BulletText("MML_Parser - https://github.com/vcraftjp/MML-Parser/");
+        ImGui::BulletText("rlImGui - https://github.com/raylib-extras/rlImGui");
+
+        ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x + ImGui::GetWindowContentRegionMin().x - 120) * 0.5f);
         if (ImGui::Button("OK", ImVec2(120, 0))) 
         { 
             ImGui::CloseCurrentPopup();
