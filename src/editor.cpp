@@ -16,6 +16,7 @@ static bool show_metaSprite = false;
 static bool show_screen = false;
 static bool show_player = false;
 static bool show_memory = false;
+static bool show_credits = false;
 
 static unsigned char spriteCopy[8]{};
 
@@ -134,16 +135,54 @@ void Editor::DrawFPS()
     ImGui::PopStyleColor();  
 }
 
-void Editor::CenterWindow()
+void Editor::Credits()
 {
-    ImGuiIO& io = ImGui::GetIO();
-    ImVec2 max_size;
-    ImVec2 min_size = ImVec2(500,300);
-    max_size.x = io.DisplaySize.x;
-    max_size.y = io.DisplaySize.y;
-    ImGui::SetNextWindowSizeConstraints(min_size, max_size);
-    ImGui::SetNextWindowPos(ImVec2(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f), ImGuiCond_Appearing, ImVec2(0.5f,0.5f));
-    ImGui::SetNextWindowSize(ImVec2(std::max<float>(600, min_size.x), std::max<float>(400, min_size.y)), ImGuiCond_Appearing);
+    ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+    ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+    if (!ImGui::IsPopupOpen("Credits"))
+        ImGui::OpenPopup("Credits");
+
+    if(ImGui::BeginPopupModal("Credits", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+    {    
+        ImGui::Text("Programed by Pery");
+        ImGui::Separator();
+        ImGui::Text("Credits:");
+        ImGui::Text("This application utilizes the following open-source libraries:");
+        ImGui::Bullet();
+        ImGui::Text("Raylib. https://github.com/raysan5/raylib");
+        ImGui::Bullet();
+        ImGui::Text("My-Basic. https://github.com/paladin-t/my_basic/");
+        ImGui::Bullet();
+        ImGui::Text("ImGui. https://github.com/ocornut/imgui");
+        ImGui::Bullet();
+        ImGui::Text("Json. https://github.com/nlohmann/json");
+        ImGui::Bullet();
+        ImGui::Text("Memory. http://www.github.com/ocornut/imgui_club");
+        ImGui::Bullet();
+        ImGui::Text("TextEditor. https://github.com/BalazsJako/ImGuiColorTextEdit");
+        ImGui::Bullet();
+        ImGui::Text("Imgui Knobs. https://github.com/altschuler/imgui-knobs ");
+        ImGui::Bullet();
+        ImGui::Text("Font. ");
+        ImGui::Bullet();
+        ImGui::Text("FontAwesome. ");
+        ImGui::Bullet();
+        ImGui::Text("MML_Parser. ");
+        ImGui::Bullet();
+        ImGui::Text("rlImGui * basic ImGui integration");
+
+
+        if (ImGui::Button("OK", ImVec2(120, 0))) 
+        { 
+            ImGui::CloseCurrentPopup();
+            show_credits = false;
+        }
+
+        ImGui::SetItemDefaultFocus();
+
+        ImGui::EndPopup();
+    }
 }
 
 void Editor::OpenFile()
@@ -905,51 +944,74 @@ void Editor::MakeSprite(int spriteId)
 
 void Editor::DrawMetaLine(int id)
 {
-    int dir = (currentMetaSprite * 20 + 2096 + id);
+    int dir = (currentMetaSprite * 20 + 2096);
+    dir += id * 5;
+
     char idName[16];
-    sprintf(idName, "%i###" , dir);
+    sprintf(idName, "%i" , dir);
 
     int spID = editorEngineRef->Peek(dir);
     int col = editorEngineRef->Peek(dir + 3);
-    
+
+    const char* spIdName = TextFormat("pop_spID_%04i", dir);
+    const char* colIdName = TextFormat("pop_col_%04i", dir + 3);
+
     ImGui::BeginGroup();
         ImGui::PushID(dir);
-        ImGui::PushItemWidth(40.f);
-        if(ImGui::Button(""))
+        if(ImGui::Button(TextFormat("%03i", spID)))
         {
-            editorEngineRef->Poke(dir, currentSprite);  
+            ImGui::OpenPopup(spIdName); 
         }
         ImGui::PopID();
-        ImGui::PopItemWidth();
-        ImGui::SameLine();
-        if(ImGui::Button("COL"))
-            ImGui::OpenPopup("my_select_popup");
-            
-        ImGui::SameLine();
-        ImGui::TextUnformatted(selected_fish == -1 ? "<None>" : names[selected_fish]);
-        if (ImGui::BeginPopup("my_select_popup"))
+        if (ImGui::BeginPopup(spIdName))
         {
-            ImGui::SeparatorText("Aquarium");
-            for (int i = 0; i < IM_ARRAYSIZE(names); i++)
-                if (ImGui::Selectable(names[i]))
-                    selected_fish = i;
+            for (int i = 0; i < 256; i++)
+            {
+                sprintf(idName, "%i" , i);
+                if (ImGui::Selectable(idName))
+                    editorEngineRef->Poke(dir, i);
+            }
             ImGui::EndPopup();
         }
-        
-            //editorEngineRef->Poke(dir +3,col);  
+        ImGui::SameLine();
 
-        
+        ImGui::PushID(dir+3);
+        if(ImGui::Button(TextFormat("%02i", col)))
+        {
+            ImGui::OpenPopup(colIdName);
+        }
+        ImGui::PopID();
+        if (ImGui::BeginPopup(colIdName))
+        {
+           for (int i = 0; i < 16; i++)
+           {
+               sprintf(idName, "%i" , i);
+               if (ImGui::Selectable(idName))
+                   editorEngineRef->Poke(dir + 3, i);
+           }
+            ImGui::EndPopup();
+        }
+        ImGui::SameLine();
+
+         
         //ImGui::SameLine();
         //ImGui::Button("X");
         //ImGui::SameLine();
         //ImGui::Button("Y");
         //ImGui::SameLine();
         //ImGui::Button("FLAGS");
+
+
+
+
+
+
     ImGui::EndGroup();
 }
 void Editor::DrawMetaSprites(int metaId)
 {
     ImGui::BeginGroup();
+
     for (int y = 0; y < 8; y++)
     {
         for (int x = 0; x < 8; x++)
@@ -1063,13 +1125,22 @@ void Editor::DrawMetaSprites(int metaId)
 
                     ImGui::EndMenu();
                 }
+                if (ImGui::BeginMenu("Help"))
+                {
+                    ImGui::MenuItem("About", NULL, &show_credits);
                     
-
+                    ImGui::EndMenu();
+                }   
                 ImGui::EndMenuBar();
             }
         
             ImGuiID dockspace_id = ImGui::GetID("DockId");
             ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f),dockspace_flags);
+            
+            if(show_credits)
+            {
+                Credits();      
+            }
 
             if(show_tools)
             {

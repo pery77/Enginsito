@@ -91,7 +91,7 @@ class Editor
 
     void inline DrawFPS();
     
-    void CenterWindow();
+    void Credits();
    
     void OpenFile();
     void DrawshowFileBrowser();
