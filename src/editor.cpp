@@ -392,6 +392,27 @@ void Editor::SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTexture
     ImGui::PopStyleVar();
 }
 
+static int metaSpriteRectSelected = -1;
+void Editor::MetaSpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id) 
+{
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    ImVec4 col = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
+  
+    ImVec2 uv0 = ImVec2(x * 0.0625f, y * 0.0625f);
+    ImVec2 uv1 = ImVec2(x * 0.0625f + 0.0625f, y * 0.0625f + 0.0625f);
+
+    draw_list->AddImage(my_tex_id, pos, ImVec2(pos.x + size.x, pos.y + size.y), uv0, uv1);
+    draw_list->AddRect(pos, ImVec2(pos.x + size.x + 2, pos.y + size.y + 2),IM_COL32(20, 20, 20, 255), 0, 0, 4);
+
+    ImGui::SetCursorScreenPos(pos);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
+    if (ImGui::ImageButton("###", my_tex_id, size, uv0, uv1, col))
+    {
+        metaSpriteRectSelected = id;
+    }
+    ImGui::PopStyleVar();
+}
 void Editor::DrawSprites()
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -848,13 +869,13 @@ ImGui::EndChild();
     }
 
 
-unsigned char cambiarBit(unsigned char byte, int posicion, bool nuevoEstado) {
-    unsigned char mascara = 1 << posicion;
+inline unsigned char setBit(unsigned char byte, int posicion, bool newState) {
+    unsigned char mask = 1 << posicion;
     
-    if (nuevoEstado) {
-        byte |= mascara; // Establecer el bit en 1
+    if (newState) {
+        byte |= mask; // set bit to 1
     } else {
-        byte &= ~mascara; // Establecer el bit en 0
+        byte &= ~mask; // set bit to 0
     }
     
     return byte;
@@ -871,7 +892,7 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
     if (ImGui::Button("###", size)) 
     {
         HighLightMemory(dir, 1);
-        editorEngineRef->Poke(dir,cambiarBit(editorEngineRef->Peek(dir), bit, !state));
+        editorEngineRef->Poke(dir,setBit(editorEngineRef->Peek(dir), bit, !state));
     }
     ImGui::PopStyleColor();
 }
@@ -934,8 +955,6 @@ void Editor::MakeSprite(int spriteId)
     ImGui::EndGroup();
 }
 
-static bool show_getcolor;
-
 int Editor::GetColorPopup()
 {
     for (char c = 0; c<16; c++)
@@ -957,6 +976,35 @@ int Editor::GetColorPopup()
         }
     }
     return -1;
+}
+
+void Editor::GetSpritePopup()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    ImTextureID my_tex_id = &editorEngineRef->spriteManager->spriteTexture.id;
+    ImVec2 size = ImVec2(16.0f * io.FontGlobalScale, 16.0f * io.FontGlobalScale);
+    
+    ImVec2 pos = ImGui::GetCursorScreenPos();
+    ImVec2 p = pos;
+    
+    float my_tex_w = 128;
+    float my_tex_h = 128;
+    static int value = -1;
+    ImGui::BeginGroup();
+    for (int y = 0; y < 16; y++)
+    {
+        for (int x = 0; x < 16; x++)
+        {
+            int id = x + y * 16;
+            ImGui::PushID(id);
+            MetaSpriteRect(id, pos, size, x, y, my_tex_id);
+            pos.x += size.x + 4; 
+            ImGui::PopID();
+        }
+        pos.x = p.x;
+        pos.y += size.y + 4; 
+    }
+    ImGui::EndGroup();
 }
 
 void Editor::DrawMetaLine(int id)
@@ -982,11 +1030,16 @@ void Editor::DrawMetaLine(int id)
 
         if (ImGui::BeginPopup(spIdName))
         {
-            for (int i = 0; i < 256; i++)
+
+            if (metaSpriteRectSelected == -1)
             {
-                sprintf(idName, "%i" , i);
-                if (ImGui::Selectable(idName))
-                    editorEngineRef->Poke(dir, i);
+                GetSpritePopup();
+            }
+            else
+            {
+                editorEngineRef->Poke(dir, metaSpriteRectSelected);
+                metaSpriteRectSelected = -1;
+                ImGui::CloseCurrentPopup();
             }
             ImGui::EndPopup();
         }
@@ -1000,11 +1053,9 @@ void Editor::DrawMetaLine(int id)
             ImGui::OpenPopup(colIdName);
         }
         ImGui::PopStyleColor(1);
-
         ImGui::SameLine();
 
         static int selected_color = -1;
-
         if (ImGui::BeginPopup(colIdName))
         {
             ImGui::SeparatorText("Select Color");
@@ -1169,11 +1220,6 @@ void Editor::Draw()
         if(show_credits)
         {
             Credits();      
-        }
-
-        if(show_getcolor)
-        {
-            GetColorPopup();
         }
 
         if(show_tools)

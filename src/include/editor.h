@@ -100,6 +100,8 @@ class Editor
     void ClearError();
 
     int GetColorPopup();
+    void GetSpritePopup();
+    void MetaSpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id);
 
     void DrawCode();
     void DrawPalette();
