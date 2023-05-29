@@ -152,17 +152,17 @@ void Editor::Credits()
 
         ImGui::Spacing();
 
-        ImGui::BulletText("Raylib - https://github.com/raysan5/raylib");
-        ImGui::BulletText("My-Basic - https://github.com/paladin-t/my_basic/");
-        ImGui::BulletText("ImGui - https://github.com/ocornut/imgui");
-        ImGui::BulletText("Json - https://github.com/nlohmann/json");
-        ImGui::BulletText("Memory - http://github.com/ocornut/imgui_club");
-        ImGui::BulletText("TextEditor - https://github.com/BalazsJako/ImGuiColorTextEdit");
-        ImGui::BulletText("Imgui Knobs - https://github.com/altschuler/imgui-knobs");
-        ImGui::BulletText("Font - total FontGeek DTF https://www.fontspace.com/mozart-nbp-font-f18977");
-        ImGui::BulletText("FontAwesome - https://fontawesome.com/");
-        ImGui::BulletText("MML_Parser - https://github.com/vcraftjp/MML-Parser/");
-        ImGui::BulletText("rlImGui - https://github.com/raylib-extras/rlImGui");
+        ImGui::BulletText("Raylib      - github.com/raysan5/raylib");
+        ImGui::BulletText("My-Basic    - github.com/paladin-t/my_basic/");
+        ImGui::BulletText("ImGui       - github.com/ocornut/imgui");
+        ImGui::BulletText("Json        - github.com/nlohmann/json");
+        ImGui::BulletText("Memory      - github.com/ocornut/imgui_club");
+        ImGui::BulletText("Text Editor - github.com/BalazsJako/ImGuiColorTextEdit");
+        ImGui::BulletText("Imgui Knobs - github.com/altschuler/imgui-knobs");
+        ImGui::BulletText("rlImGui     - github.com/raylib-extras/rlImGui");
+        ImGui::BulletText("MML_Parser  - github.com/vcraftjp/MML-Parser");
+        ImGui::BulletText("FontAwesome - fontawesome.com");
+        ImGui::BulletText("Font        - fontspace.com/mozart-nbp-font-f18977");
 
         ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x + ImGui::GetWindowContentRegionMin().x - 120) * 0.5f);
         if (ImGui::Button("OK", ImVec2(120, 0))) 
@@ -934,6 +934,31 @@ void Editor::MakeSprite(int spriteId)
     ImGui::EndGroup();
 }
 
+static bool show_getcolor;
+
+int Editor::GetColorPopup()
+{
+    for (char c = 0; c<16; c++)
+    {
+        char buffer [5];
+        sprintf (buffer, "%i", c);
+
+        Color col = editorEngineRef->spriteManager->GetColor(c);
+        ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
+        ImGui::BeginGroup();
+        ImGui::ColorEdit3(buffer, (float*)&color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoBorder);
+        ImGui::Text(buffer);
+        ImGui::EndGroup();
+        if((c+1) % 4 != 0) ImGui::SameLine();
+
+        if (ImGui::IsItemClicked())
+        {
+            return c;
+        }
+    }
+    return -1;
+}
+
 void Editor::DrawMetaLine(int id)
 {
     int dir = (currentMetaSprite * 20 + 2096);
@@ -949,12 +974,12 @@ void Editor::DrawMetaLine(int id)
     const char* colIdName = TextFormat("pop_col_%04i", dir + 3);
 
     ImGui::BeginGroup();
-        ImGui::PushID(dir);
-        if(ImGui::Button(TextFormat("%03i", spID)))
+
+        if(ImGui::Button(TextFormat("%03i###%03i", spID, dir)))
         {
             ImGui::OpenPopup(spIdName); 
         }
-        ImGui::PopID();
+
         if (ImGui::BeginPopup(spIdName))
         {
             for (int i = 0; i < 256; i++)
@@ -967,24 +992,30 @@ void Editor::DrawMetaLine(int id)
         }
         ImGui::SameLine();
 
-        ImGui::PushID(dir+3);
-        if(ImGui::Button(TextFormat("%02i", col)))
+        Color bcol = editorEngineRef->spriteManager->GetColor(editorEngineRef->Peek(dir + 3));
+        ImVec4 color = ImVec4(bcol.r / 255.0f, bcol.g / 255.0f, bcol.b / 255.0f, 1.0f);
+        ImGui::PushStyleColor(ImGuiCol_Button, color);
+        if(ImGui::Button(TextFormat("%02i###%04i", col, dir + 3)))
         {
             ImGui::OpenPopup(colIdName);
         }
-        ImGui::PopID();
-        if (ImGui::BeginPopup(colIdName))
-        {
-           for (int i = 0; i < 16; i++)
-           {
-               sprintf(idName, "%i" , i);
-               if (ImGui::Selectable(idName))
-                   editorEngineRef->Poke(dir + 3, i);
-           }
-            ImGui::EndPopup();
-        }
+        ImGui::PopStyleColor(1);
+
         ImGui::SameLine();
 
+        static int selected_color = -1;
+
+        if (ImGui::BeginPopup(colIdName))
+        {
+            ImGui::SeparatorText("Select Color");
+            selected_color = GetColorPopup();
+            if (selected_color != -1)
+            {
+                editorEngineRef->Poke(dir + 3, selected_color);
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndPopup();
+        }
          
         //ImGui::SameLine();
         //ImGui::Button("X");
@@ -993,13 +1024,9 @@ void Editor::DrawMetaLine(int id)
         //ImGui::SameLine();
         //ImGui::Button("FLAGS");
 
-
-
-
-
-
     ImGui::EndGroup();
 }
+
 void Editor::DrawMetaSprites(int metaId)
 {
     ImGui::BeginGroup();
@@ -1012,11 +1039,17 @@ void Editor::DrawMetaSprites(int metaId)
             char button_label[5];
             sprintf(button_label, "%02i" , id);
             ImGui::PushID(id);
+          
+            ImVec4 color = currentMetaSprite == id ?
+                ImVec4(0.8f, 0.8f, 0.9f, 1.0f):
+                ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+            ImGui::PushStyleColor(ImGuiCol_Button, color);
             if(ImGui::Button(button_label))
             {
                 currentMetaSprite = id;
                 HighLightMemory(currentMetaSprite * 20 + 2096, 20);
             }
+            ImGui::PopStyleColor(1);
             ImGui::PopID();
             ImGui::SameLine();
         }
@@ -1029,252 +1062,263 @@ void Editor::DrawMetaSprites(int metaId)
     {
         DrawMetaLine(i);
     }
+
     ImGui::EndGroup();
+
 }
 
-    void Editor::Draw()
+void Editor::Draw()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
+    ImGui::SetNextWindowPos(viewport->WorkPos);
+    ImGui::SetNextWindowSize(viewport->WorkSize);
+    ImGui::SetNextWindowViewport(viewport->ID);
+
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
+    window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoScrollbar;
+        
+    ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_AutoHideTabBar;
+        
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("Main", NULL, window_flags);
+    ImGui::PopStyleVar();
+
+    if (ImGui::BeginMenuBar())
     {
-        ImGuiIO& io = ImGui::GetIO();
-        const ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->WorkPos);
-        ImGui::SetNextWindowSize(viewport->WorkSize);
-        ImGui::SetNextWindowViewport(viewport->ID);
-
-        ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
-        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoScrollbar;
-        
-        ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_AutoHideTabBar;
-        
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::Begin("Main", NULL, window_flags);
-        ImGui::PopStyleVar();
-
-            if (ImGui::BeginMenuBar())
-            {
 /*
-                if (ImGui::BeginMenu("File"))
+            if (ImGui::BeginMenu("File"))
+            {
+                ImGui::MenuItem("New", NULL);
+                if(ImGui::MenuItem("Open", NULL))
                 {
-                    ImGui::MenuItem("New", NULL);
-                    if(ImGui::MenuItem("Open", NULL))
-                    {
-                        show_filebrowser = true;
-                    }
-                    ImGui::MenuItem("Save", NULL);
-                    ImGui::MenuItem("Save as", NULL);
-                    ImGui::EndMenu();
+                    show_filebrowser = true;
                 }
+                ImGui::MenuItem("Save", NULL);
+                ImGui::MenuItem("Save as", NULL);
+                ImGui::EndMenu();
+            }
 */
-                if (ImGui::BeginMenu("Edit"))
-                {
-                    bool ro = codeEditor.IsReadOnly();
-                    if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
-                        codeEditor.SetReadOnly(ro);
-                    ImGui::Separator();
-                    if (ImGui::MenuItem("Undo", "Ctrl-Z", nullptr, !ro && codeEditor.CanUndo()))
-                        codeEditor.Undo();
-                    if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && codeEditor.CanRedo()))
-                        codeEditor.Redo();
-                    ImGui::Separator();
-                    if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, codeEditor.HasSelection()))
-                        codeEditor.Copy();
-                    if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && codeEditor.HasSelection()))
-                        codeEditor.Cut();
-                    if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && codeEditor.HasSelection()))
-                        codeEditor.Delete();
-                    if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
-                        codeEditor.Paste();
-                    ImGui::Separator();
-                    if (ImGui::MenuItem("Select all", nullptr, nullptr))
-                        codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
-                    ImGui::EndMenu();
-                }
+            if (ImGui::BeginMenu("Edit"))
+            {
+                bool ro = codeEditor.IsReadOnly();
+                if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
+                    codeEditor.SetReadOnly(ro);
+                ImGui::Separator();
+                if (ImGui::MenuItem("Undo", "Ctrl-Z", nullptr, !ro && codeEditor.CanUndo()))
+                    codeEditor.Undo();
+                if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && codeEditor.CanRedo()))
+                    codeEditor.Redo();
+                ImGui::Separator();
+                if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, codeEditor.HasSelection()))
+                    codeEditor.Copy();
+                if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && codeEditor.HasSelection()))
+                    codeEditor.Cut();
+                if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && codeEditor.HasSelection()))
+                    codeEditor.Delete();
+                if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
+                    codeEditor.Paste();
+                ImGui::Separator();
+                if (ImGui::MenuItem("Select all", nullptr, nullptr))
+                    codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
+                ImGui::EndMenu();
+            }
                 
-                if (ImGui::BeginMenu("View"))
-                {
-                    ImGui::MenuItem("Tools", NULL, &show_tools);
-                    ImGui::MenuItem("FPS", NULL, &show_FPS);
-                    ImGui::Separator();
-                    ImGui::MenuItem("Player", NULL, &show_player);
-                    ImGui::MenuItem("Screen", NULL, &show_screen);
-                    ImGui::Separator();
-                    ImGui::MenuItem("Code", NULL, &show_code);
-                    ImGui::MenuItem("Console", NULL, &show_console);
-                    ImGui::Separator();
-                    ImGui::MenuItem("Crt", NULL, &show_crt);
-                    ImGui::MenuItem("Palette", NULL, &show_palette);
-                    ImGui::MenuItem("Memory", NULL, &show_memory);
-                    ImGui::MenuItem("File Browser", NULL, &show_filebrowser);
-                    ImGui::Separator();
-                    ImGui::MenuItem("Sprites", NULL, &show_sprites);
-                    ImGui::MenuItem("Make Sprite", NULL, &show_makeSprite);
-                    ImGui::Separator();
-                    ImGui::MenuItem("SFX", NULL, &show_sfx);
+            if (ImGui::BeginMenu("View"))
+            {
+                ImGui::MenuItem("Tools", NULL, &show_tools);
+                ImGui::MenuItem("FPS", NULL, &show_FPS);
+                ImGui::Separator();
+                ImGui::MenuItem("Player", NULL, &show_player);
+                ImGui::MenuItem("Screen", NULL, &show_screen);
+                ImGui::Separator();
+                ImGui::MenuItem("Code", NULL, &show_code);
+                ImGui::MenuItem("Console", NULL, &show_console);
+                ImGui::Separator();
+                ImGui::MenuItem("Crt", NULL, &show_crt);
+                ImGui::MenuItem("Palette", NULL, &show_palette);
+                ImGui::MenuItem("Memory", NULL, &show_memory);
+                ImGui::MenuItem("File Browser", NULL, &show_filebrowser);
+                ImGui::Separator();
+                ImGui::MenuItem("Sprites", NULL, &show_sprites);
+                ImGui::MenuItem("Make Sprite", NULL, &show_makeSprite);
+                ImGui::MenuItem("Meta Sprite", NULL, &show_metaSprite);
+                ImGui::Separator();
+                ImGui::MenuItem("SFX", NULL, &show_sfx);
 
-                    #ifdef DEBUG
-                    ImGui::MenuItem("Demo", NULL, &show_demo);
-                    #endif
+                #ifdef DEBUG
+                ImGui::MenuItem("Demo", NULL, &show_demo);
+                #endif
 
-                    ImGui::EndMenu();
-                }
-                if (ImGui::BeginMenu("Help"))
-                {
-                    ImGui::MenuItem("About", NULL, &show_credits);
-                    
-                    ImGui::EndMenu();
-                }   
-                ImGui::EndMenuBar();
+                ImGui::EndMenu();
             }
+            
+            if (ImGui::BeginMenu("Help"))
+            {
+                ImGui::MenuItem("About", NULL, &show_credits);        
+                ImGui::EndMenu();
+            }   
+
+            ImGui::EndMenuBar();
+        }
         
-            ImGuiID dockspace_id = ImGui::GetID("DockId");
-            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f),dockspace_flags);
+        ImGuiID dockspace_id = ImGui::GetID("DockId");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f),dockspace_flags);
+
+        if(show_credits)
+        {
+            Credits();      
+        }
+
+        if(show_getcolor)
+        {
+            GetColorPopup();
+        }
+
+        if(show_tools)
+        {
+            ImGui::Begin("Tools", &show_tools, ImGuiWindowFlags_NoCollapse);
+                ImGui::DragFloat("Font", &io.FontGlobalScale, 0.05f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+            ImGui::End(); 
+        }
+
+        #ifdef DEBUG
+        if(show_demo)
+        {
+            ImGui::ShowDemoWindow(&show_demo);
+        }
+        #endif
             
-            if(show_credits)
-            {
-                Credits();      
-            }
+        //Console
+        if (show_console)
+        {
+            Tools::console->Draw();
+        }
 
-            if(show_tools)
-            {
-                ImGui::Begin("Tools", &show_tools, ImGuiWindowFlags_NoCollapse);
-                    ImGui::DragFloat("Font", &io.FontGlobalScale, 0.05f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
-                ImGui::End(); 
-            }
+        if (show_filebrowser)
+        {
+            ImGui::Begin("File browser", &show_filebrowser, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
+                DrawshowFileBrowser();
+            ImGui::End();    
+        }
 
-            #ifdef DEBUG
-            if(show_demo)
-            {
-                ImGui::ShowDemoWindow(&show_demo);
-            }
-            #endif
+        if (show_FPS)
+        {
+            ImGui::Begin("FPS", &show_FPS, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
+                DrawFPS();
+            ImGui::End();
+        }
+
+        if (show_screen)
+        {
+            ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse);
+                ScreenWindowHasFocus = ImGui::IsWindowFocused();
+                ImVec2 windowSize = ImGui::GetWindowSize();
+
+                ImVec2 windowPositionTotal= ImGui::GetWindowPos();
+                ImVec2 windowPosition= ImGui::GetCursorScreenPos();
+                float offset = windowPosition.y - windowPositionTotal.y;
+
+                windowSize.y -= offset;
+
+                //ImGui::BeginTooltip();
+                //    ImGui::Text("%f", offset);
+                //ImGui::EndTooltip();
+
+                float scale = (windowSize.x/windowSize.y < GAME_RATIO) ? windowSize.x/(float)GAME_SCREEN_W : windowSize.y/(float)GAME_SCREEN_H;
+                ImVec2 imageSize = ImVec2(GAME_SCREEN_W * scale, GAME_SCREEN_H * scale); 
+                ImVec2 imagePos = ImVec2((windowSize.x - imageSize.x) / 2, (windowSize.y - imageSize.y) / 2);
+                imagePos.y += offset;
+                ImGui::SetCursorPos(imagePos);
+                ImGui::Image(&editorEngineRef->postProcessing->editorRender.texture, imageSize, ImVec2(0,0), ImVec2(1,-1));
+                
+                if(ScreenWindowHasFocus)
+                {
+                    editorEngineRef->VirtualMouseX = (ImGui::GetMousePos().x - imagePos.x - windowPosition.x) * 1.0f / scale;
+                    editorEngineRef->VirtualMouseY = ((ImGui::GetMousePos().y - imagePos.y - windowPosition.y) * 1.0f / scale) + offset;
+                }
+
+                MouseInsideScreenWindow = editorEngineRef->VirtualMouseX > 0 && editorEngineRef->VirtualMouseX < GAME_SCREEN_W;
+                MouseInsideScreenWindow &= editorEngineRef->VirtualMouseY > 0 && editorEngineRef->VirtualMouseY < GAME_SCREEN_H;
+
+            ImGui::End();
+        }
             
-            //Console
-            if (show_console)
-            {
-                Tools::console->Draw();
-            }
+        if(show_palette)
+        {
+            ImGui::Begin("Palette", NULL, ImGuiWindowFlags_NoCollapse);
+                DrawPalette();
+            ImGui::End();
+        }
 
-            if (show_filebrowser)
-            {
-                ImGui::Begin("File browser", &show_filebrowser, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
-                    DrawshowFileBrowser();
-                ImGui::End();    
-            }
-
-            if (show_FPS)
-            {
-                ImGui::Begin("FPS", &show_FPS, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
-                    DrawFPS();
-                ImGui::End();
-            }
-
-            if (show_screen)
-            {
-                ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse);
-                    ScreenWindowHasFocus = ImGui::IsWindowFocused();
-                    ImVec2 windowSize = ImGui::GetWindowSize();
-
-                    ImVec2 windowPositionTotal= ImGui::GetWindowPos();
-                    ImVec2 windowPosition= ImGui::GetCursorScreenPos();
-                    float offset = windowPosition.y - windowPositionTotal.y;
-
-                    windowSize.y -= offset;
-
-                    //ImGui::BeginTooltip();
-                    //    ImGui::Text("%f", offset);
-                    //ImGui::EndTooltip();
-
-                    float scale = (windowSize.x/windowSize.y < GAME_RATIO) ? windowSize.x/(float)GAME_SCREEN_W : windowSize.y/(float)GAME_SCREEN_H;
-                    ImVec2 imageSize = ImVec2(GAME_SCREEN_W * scale, GAME_SCREEN_H * scale); 
-                    ImVec2 imagePos = ImVec2((windowSize.x - imageSize.x) / 2, (windowSize.y - imageSize.y) / 2);
-                    imagePos.y += offset;
-                    ImGui::SetCursorPos(imagePos);
-                    ImGui::Image(&editorEngineRef->postProcessing->editorRender.texture, imageSize, ImVec2(0,0), ImVec2(1,-1));
-                    
-                    if(ScreenWindowHasFocus)
-                    {
-                        editorEngineRef->VirtualMouseX = (ImGui::GetMousePos().x - imagePos.x - windowPosition.x) * 1.0f / scale;
-                        editorEngineRef->VirtualMouseY = ((ImGui::GetMousePos().y - imagePos.y - windowPosition.y) * 1.0f / scale) + offset;
-                    }
-
-                    MouseInsideScreenWindow = editorEngineRef->VirtualMouseX > 0 && editorEngineRef->VirtualMouseX < GAME_SCREEN_W;
-                    MouseInsideScreenWindow &= editorEngineRef->VirtualMouseY > 0 && editorEngineRef->VirtualMouseY < GAME_SCREEN_H;
-
-                ImGui::End();
-            }
+        if (show_crt)
+        {
+            ImGui::Begin("CRT", NULL, ImGuiWindowFlags_NoCollapse); 
+                DrawCRT();
+            ImGui::End();
+        }
             
-            if(show_palette)
-            {
-                ImGui::Begin("Palette", NULL, ImGuiWindowFlags_NoCollapse);
-                    DrawPalette();
-                ImGui::End();
-            }
+        if (show_player)
+        {
+            ImVec2 minHeight(200, 100);
+            ImVec2 maxHeight(2000, 100);
+            ImGui::SetNextWindowSizeConstraints(minHeight, maxHeight);
+            ImGui::Begin("Player", &show_player, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
+                DrawPlayer();
+            ImGui::End();
+        }
 
-            if (show_crt)
-            {
-                ImGui::Begin("CRT", NULL, ImGuiWindowFlags_NoCollapse); 
-                    DrawCRT();
-                ImGui::End();
-            }
-            
-            if (show_player)
-            {
-                ImVec2 minHeight(200, 100);
-                ImVec2 maxHeight(2000, 100);
-                ImGui::SetNextWindowSizeConstraints(minHeight, maxHeight);
-                ImGui::Begin("Player", &show_player, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar);
-                    DrawPlayer();
-                ImGui::End();
-            }
+        if(show_memory)
+        {
+            ImGui::Begin("Memory", NULL, ImGuiWindowFlags_NoCollapse);
+                DrawMemory();
+            ImGui::End();
+        }
 
-            if(show_memory)
-            {
-                ImGui::Begin("Memory", NULL, ImGuiWindowFlags_NoCollapse);
-                    DrawMemory();
-                ImGui::End();
-            }
+        if (show_sprites)
+        {
+            ImGui::Begin("Sprites", NULL, ImGuiWindowFlags_NoCollapse);
+                ImGui::BeginGroup();
+                    DrawSprites();
+                ImGui::EndGroup();
+                //windowSize = ImGui::GetWindowSize();
+                //scale = (windowSize.x/windowSize.y < 1.0f) ? windowSize.x/128.0f : windowSize.y/128.0f;
+                //rlImGuiImageRect(&editorEngineRef->spriteManager->spriteTexture, 128 * scale, 128 * scale, (Rectangle){0, 0, 128, 128});
+            ImGui::End();
+        } 
 
-            if (show_sprites)
-            {
-                ImGui::Begin("Sprites", NULL, ImGuiWindowFlags_NoCollapse);
-                    ImGui::BeginGroup();
-                        DrawSprites();
-                    ImGui::EndGroup();
-                    //windowSize = ImGui::GetWindowSize();
-                    //scale = (windowSize.x/windowSize.y < 1.0f) ? windowSize.x/128.0f : windowSize.y/128.0f;
-                    //rlImGuiImageRect(&editorEngineRef->spriteManager->spriteTexture, 128 * scale, 128 * scale, (Rectangle){0, 0, 128, 128});
-                ImGui::End();
-            } 
+        if (show_makeSprite)
+        {
+            ImGui::Begin("Make Sprite", NULL, ImGuiWindowFlags_NoCollapse);
+                MakeSprite(currentSprite);
+            ImGui::End(); 
+        }
 
-            if (show_makeSprite)
-            {
-                ImGui::Begin("Make Sprite", NULL, ImGuiWindowFlags_NoCollapse);
-                    MakeSprite(currentSprite);
-                ImGui::End(); 
-            }
+        if (show_metaSprite)
+        {
+            ImGui::Begin("Meta Sprite", NULL, ImGuiWindowFlags_NoCollapse);
+               DrawMetaSprites(currentMetaSprite);
+            ImGui::End(); 
+        }
 
-            if (show_metaSprite)
-            {
-                ImGui::Begin("Meta Sprite", NULL, ImGuiWindowFlags_NoCollapse);
-                    DrawMetaSprites(currentMetaSprite);
-                ImGui::End(); 
-            }
+        if (show_sfx)
+        {
+            ImGui::Begin("SFX", NULL, ImGuiWindowFlags_NoCollapse);
+                DrawSFX();
+            ImGui::End();
+        }
 
-            if (show_sfx)
-            {
-                ImGui::Begin("SFX", NULL, ImGuiWindowFlags_NoCollapse);
-                    DrawSFX();
-                ImGui::End();
-            }
+        if (show_code)
+        {
+            DrawCode();
+        }
 
-            if (show_code)
-            {
-                DrawCode();
-            }
 
-            //Hack ¿?¿?¿?, if you remove this, ImGui fails. ¯\_(ツ)_/¯
-            rlImGuiImageRect(&hackTexture, 1, 1, (Rectangle){0, 0, 1, 1});
 
-       ImGui::End();
-    }
+        //Hack ¿?¿?¿?, if you remove this, ImGui fails. ¯\_(ツ)_/¯
+        rlImGuiImageRect(&hackTexture, 1, 1, (Rectangle){0, 0, 1, 1});
+
+    ImGui::End();
+}
 

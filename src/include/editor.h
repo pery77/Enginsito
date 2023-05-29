@@ -99,6 +99,8 @@ class Editor
     void SetError(int line, int column, std::string dsc);
     void ClearError();
 
+    int GetColorPopup();
+
     void DrawCode();
     void DrawPalette();
     void SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id);
