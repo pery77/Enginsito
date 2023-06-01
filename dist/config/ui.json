@@ -7,7 +7,7 @@
     "show_makeSprite": true,
     "show_memory": true,
     "show_metaSprite": true,
-    "show_palette": false,
+    "show_palette": true,
     "show_player": true,
     "show_screen": true,
     "show_sfx": false,

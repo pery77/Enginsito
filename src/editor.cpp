@@ -1021,6 +1021,7 @@ void Editor::DrawMetaLine(int id)
 
     const char* spIdName = TextFormat("pop_spID_%04i", dir);
     const char* colIdName = TextFormat("pop_col_%04i", dir + 3);
+    const char* posIdName = TextFormat("pos_%04i", dir + 4);
 
     ImGui::BeginGroup();
 
@@ -1088,12 +1089,24 @@ void Editor::DrawMetaLine(int id)
             }
             ImGui::SameLine();
 
-            ImGui::Button("X");
-            ImGui::SameLine();
-            ImGui::Button("Y");
+            if(ImGui::Button(TextFormat("Pos###pos_%04i", id)))
+            {
+                ImGui::OpenPopup(posIdName);
+            }
             ImGui::SameLine();
         }
-
+        int offsetPos[2] = { editorEngineRef->Peek(dir + 1), editorEngineRef->Peek(dir + 2)};
+        if (ImGui::BeginPopup(posIdName))
+        {
+            ImGui::PushItemWidth(100);
+            if (ImGui::InputInt2(TextFormat("###offset_%i", id), offsetPos))
+            {
+                editorEngineRef->Poke(dir + 1, offsetPos[0]);
+                editorEngineRef->Poke(dir + 2, offsetPos[1]);
+            }
+            ImGui::PopItemWidth();
+            ImGui::EndPopup();
+        }
 
         ImGui::PushItemWidth(100);
         //ImGui::Combo(TextFormat("###meta_flag_%i", id), &item_current, "Disabled\0Normal\0Rot 90\0Rot 180\0Rot 270\0\0");
