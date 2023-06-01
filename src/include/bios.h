@@ -22,7 +22,7 @@ class Bios {
         void ProcessCommand();
 
         bool ShouldClose = false;
-        bool ShouldRun= false;
+        bool ShouldRun = false;
 
         std::string GetFile();
         void SetFile(std::string file);

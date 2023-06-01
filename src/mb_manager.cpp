@@ -206,6 +206,11 @@ void MBManager::Run()
 	managerError(run);
 }
 
+void MBManager::Reset()
+{
+	mb_reset(&bas, true, true);
+}
+
 void MBManager::CloseBas()
 {
 	mb_close(&bas);

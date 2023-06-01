@@ -111,6 +111,7 @@ int main(int argc, char *argv[])
             if ( engine->currentState == Running)
             {
                 engine->basicIntepreter->close();
+                engine->basicIntepreter->Reset();
             }
 
             if (engine->basicIntepreter->OpenBas(engine->bios->GetFile().c_str()) == MB_FUNC_OK)

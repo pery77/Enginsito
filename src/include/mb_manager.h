@@ -26,6 +26,7 @@ class MBManager{
 
         int OpenBas(const char *file);
         void Run();
+        void Reset();
         void CloseBas();
 
         void UpdateAudio();

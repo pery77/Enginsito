@@ -1070,11 +1070,6 @@ void Editor::DrawMetaLine(int id)
         }
         ImGui::SameLine();
 
-        //ImGui::Button("X");
-        //ImGui::SameLine();
-        //ImGui::Button("Y");
-        //ImGui::SameLine();
-
         int flag = editorEngineRef->Peek(dir + 4);
 
         if (!((flag >> 7) & 1)) {
@@ -1091,6 +1086,11 @@ void Editor::DrawMetaLine(int id)
             {
                 editorEngineRef->Poke(dir + 4, setBit(flag,4,v));
             }
+            ImGui::SameLine();
+
+            ImGui::Button("X");
+            ImGui::SameLine();
+            ImGui::Button("Y");
             ImGui::SameLine();
         }
 
@@ -1189,19 +1189,6 @@ void Editor::Draw()
 
     if (ImGui::BeginMenuBar())
     {
-/*
-            if (ImGui::BeginMenu("File"))
-            {
-                ImGui::MenuItem("New", NULL);
-                if(ImGui::MenuItem("Open", NULL))
-                {
-                    show_filebrowser = true;
-                }
-                ImGui::MenuItem("Save", NULL);
-                ImGui::MenuItem("Save as", NULL);
-                ImGui::EndMenu();
-            }
-*/
             if (ImGui::BeginMenu("Edit"))
             {
                 bool ro = codeEditor.IsReadOnly();
@@ -1379,9 +1366,6 @@ void Editor::Draw()
                 ImGui::BeginGroup();
                     DrawSprites();
                 ImGui::EndGroup();
-                //windowSize = ImGui::GetWindowSize();
-                //scale = (windowSize.x/windowSize.y < 1.0f) ? windowSize.x/128.0f : windowSize.y/128.0f;
-                //rlImGuiImageRect(&editorEngineRef->spriteManager->spriteTexture, 128 * scale, 128 * scale, (Rectangle){0, 0, 128, 128});
             ImGui::End();
         } 
 
