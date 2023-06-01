@@ -136,7 +136,8 @@ void SpriteManager::DrawMetaSprite(int id, int x, int y)
     unsigned int dir = (id * 20) + 2096;
     for ( uint8_t i=0; i<=3; i++) 
     {
-        if (spriteEngineRef->Peek(dir + 4) == 255) continue;
+        int flag = spriteEngineRef->Peek(dir + 4);
+        if ((flag >> 7) & 1) continue;
         DrawSprite(spriteEngineRef->Peek(dir + i * 5), spriteEngineRef->Peek(dir + 1 + i * 5) + x, spriteEngineRef->Peek(dir + 2 + i * 5) + y,
                     spriteEngineRef->Peek(dir + 3 + i * 5), spriteEngineRef->Peek(dir + 4 + i * 5));
     }
@@ -167,7 +168,7 @@ void SpriteManager::InitSprites()
 
 void SpriteManager::DrawSprite(int id, int x, int y, int col, int flag) 
 {
-    if (flag == 255) return;
+    if ((flag >> 7) & 1) return;
     float rot = 0;
 	Vector2 pivot {0,0};
 

@@ -413,6 +413,7 @@ void Editor::MetaSpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTex
     }
     ImGui::PopStyleVar();
 }
+
 void Editor::DrawSprites()
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -869,8 +870,8 @@ ImGui::EndChild();
     }
 
 
-inline unsigned char setBit(unsigned char byte, int posicion, bool newState) {
-    unsigned char mask = 1 << posicion;
+inline unsigned char setBit(unsigned char byte, int position, bool newState) {
+    unsigned char mask = 1 << position;
     
     if (newState) {
         byte |= mask; // set bit to 1
@@ -1067,13 +1068,63 @@ void Editor::DrawMetaLine(int id)
             }
             ImGui::EndPopup();
         }
-         
-        //ImGui::SameLine();
+        ImGui::SameLine();
+
         //ImGui::Button("X");
         //ImGui::SameLine();
         //ImGui::Button("Y");
         //ImGui::SameLine();
-        //ImGui::Button("FLAGS");
+
+        int flag = editorEngineRef->Peek(dir + 4);
+
+        if (!((flag >> 7) & 1)) {
+            bool h = (flag & (1 << 3));
+            bool v = (flag & (1 << 4));
+
+            if(ImGui::Checkbox(TextFormat("###h%i", id), &h))
+            {
+                editorEngineRef->Poke(dir + 4, setBit(flag,3,h));
+            }
+            ImGui::SameLine();
+
+            if (ImGui::Checkbox(TextFormat("###v%i", id), &v))
+            {
+                editorEngineRef->Poke(dir + 4, setBit(flag,4,v));
+            }
+            ImGui::SameLine();
+        }
+
+
+        ImGui::PushItemWidth(100);
+        //ImGui::Combo(TextFormat("###meta_flag_%i", id), &item_current, "Disabled\0Normal\0Rot 90\0Rot 180\0Rot 270\0\0");
+        const char* items[] = {  "Normal", "Rot 90", "Rot 180", "Rot 270", "Disabled" };
+        int item_current_idx =  ((flag >> 7) & 1) ? 4 : flag & 0b11;
+        const char* combo_preview_value = items[item_current_idx];
+
+        if (ImGui::BeginCombo(TextFormat("###meta_flag_%i", id), combo_preview_value, ImGuiComboFlags_NoArrowButton))
+        {
+            for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+            {
+                const bool is_selected = (item_current_idx == n);
+                if (ImGui::Selectable(items[n], is_selected))
+                {
+                    item_current_idx = n;
+                    
+                    int currentValue = flag;
+                    int firstThreeBits = n & 0x07;
+                    int clearedValue = currentValue & ~0b10000111;
+
+                    int combinedValue = clearedValue | firstThreeBits;  
+                    editorEngineRef->Poke(dir + 4, n > 3 ? setBit(flag, 7, 1) : combinedValue);
+                }
+
+                // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+                if (is_selected)
+                    ImGui::SetItemDefaultFocus();
+            }
+            ImGui::EndCombo();
+        }
+        ImGui::PopItemWidth();
 
     ImGui::EndGroup();
 }
