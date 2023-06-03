@@ -115,6 +115,7 @@ class Editor
     
     void DrawPlayer();
     void DrawMemory();
+    void DrawMetaExample();
     
     void PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack, bool pressed) ;
     bool IsBlack(int note);

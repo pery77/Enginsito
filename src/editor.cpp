@@ -1142,6 +1142,30 @@ void Editor::DrawMetaLine(int id)
     ImGui::EndGroup();
 }
 
+void Editor::DrawMetaExample()
+{
+    //ImTextureID my_tex_id = &editorEngineRef->spriteManager->spriteTexture.id;
+    //ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    //ImVec2 pos = ImVec2(0.0f, 0.0f);
+    //ImVec2 size = ImVec2(32.0f, 32.0f);
+    //float x, y = 1.0f;
+    //ImVec2 uv0 = ImVec2(x * 0.0625f, y * 0.0625f);
+    //ImVec2 uv1 = ImVec2(x * 0.0625f + 0.0625f, y * 0.0625f + 0.0625f);
+    //ImVec4 col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    //draw_list->AddImage(my_tex_id, pos, ImVec2(pos.x + size.x, pos.y + size.y), uv0, uv1);
+    //draw_list->AddRect(pos, ImVec2(pos.x + size.x + 2, pos.y + size.y + 2), IM_COL32(20, 20, 20, 255), 0, 0, 4);
+
+    //ImGui::SetCursorScreenPos(pos);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
+    //if (ImGui::ImageButton("###", my_tex_id, size, uv0, uv1, col))
+    //{
+    //}
+    ImGui::Button("XXX");
+    ImGui::PopStyleVar();
+}
+
 void Editor::DrawMetaSprites(int metaId)
 {
     ImGui::BeginGroup();
@@ -1159,11 +1183,13 @@ void Editor::DrawMetaSprites(int metaId)
                 ImVec4(0.8f, 0.8f, 0.9f, 1.0f):
                 ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
             ImGui::PushStyleColor(ImGuiCol_Button, color);
+            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
             if(ImGui::Button(button_label))
             {
                 currentMetaSprite = id;
                 HighLightMemory(currentMetaSprite * 20 + 2096, 20);
             }
+            ImGui::PopStyleVar();
             ImGui::PopStyleColor(1);
             ImGui::PopID();
             ImGui::SameLine();
@@ -1177,6 +1203,8 @@ void Editor::DrawMetaSprites(int metaId)
     {
         DrawMetaLine(i);
     }
+
+    DrawMetaExample();
 
     ImGui::EndGroup();
 
