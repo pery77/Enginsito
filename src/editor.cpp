@@ -1216,7 +1216,7 @@ void Editor::DrawMetaExample()
         Color bcol = editorEngineRef->spriteManager->GetColor(editorEngineRef->Peek(dir + 3));
         ImVec4 color = ImVec4(bcol.r / 255.0f, bcol.g / 255.0f, bcol.b / 255.0f, 1.0f);
 
-        ImageRotated(my_tex_id, spritePos + size * ImVec2(0.5f, 0.5f), size, flag & 0x07 * 90, uv0, uv1, ImGui::ColorConvertFloat4ToU32(color)); 
+        ImageRotated(my_tex_id, spritePos + size * ImVec2(0.5f, 0.5f), size, (flag & 0x07) * 90, uv0, uv1, ImGui::ColorConvertFloat4ToU32(color)); 
     }
 
 }
