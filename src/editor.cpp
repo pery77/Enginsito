@@ -1157,16 +1157,24 @@ void Editor::DrawMetaExample()
         int sprite = editorEngineRef->Peek(dir);
         int flag = editorEngineRef->Peek(dir + 4);
         if (((flag >> 7) & 1)) continue;
-        
-        ImVec2 spritePos = ImVec2(pos.x + editorEngineRef->Peek(dir + 1) * 8, pos.y + editorEngineRef->Peek(dir + 2) * 8);
-        
-        Color bcol = editorEngineRef->spriteManager->GetColor(editorEngineRef->Peek(dir + 3));
-        ImVec4 color = ImVec4(bcol.r / 255.0f, bcol.g / 255.0f, bcol.b / 255.0f, 1.0f);
+
+        bool h = (flag & (1 << 3));
+        bool v = (flag & (1 << 4));
 
         float x = sprite % 16; 
         float y = sprite / 16;
-        ImVec2 uv0 = ImVec2(x * 0.0625f, y * 0.0625f);
-        ImVec2 uv1 = ImVec2(x * 0.0625f + 0.0625f, y * 0.0625f + 0.0625f);
+
+        ImVec2 uv0, uv1 = ImVec2(0.0f ,0.0f);
+
+        uv0.x =  h ?  x * 0.0625f + 0.0625f : x * 0.0625f;
+        uv1.x = !h ?  x * 0.0625f + 0.0625f : x * 0.0625f;
+        uv0.y =  v ?  y * 0.0625f + 0.0625f : y * 0.0625f;
+        uv1.y = !v ?  y * 0.0625f + 0.0625f : y * 0.0625f;
+
+        ImVec2 spritePos = ImVec2(pos.x + editorEngineRef->Peek(dir + 1) * 8, pos.y + editorEngineRef->Peek(dir + 2) * 8);
+
+        Color bcol = editorEngineRef->spriteManager->GetColor(editorEngineRef->Peek(dir + 3));
+        ImVec4 color = ImVec4(bcol.r / 255.0f, bcol.g / 255.0f, bcol.b / 255.0f, 1.0f);
 
         draw_list->AddImage(my_tex_id, spritePos, ImVec2(spritePos.x + size.x, spritePos.y + size.y), uv0, uv1, ImGui::ColorConvertFloat4ToU32(color));
     }
