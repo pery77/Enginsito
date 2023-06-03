@@ -1109,7 +1109,6 @@ void Editor::DrawMetaLine(int id)
         }
 
         ImGui::PushItemWidth(100);
-        //ImGui::Combo(TextFormat("###meta_flag_%i", id), &item_current, "Disabled\0Normal\0Rot 90\0Rot 180\0Rot 270\0\0");
         const char* items[] = {  "Normal", "Rot 90", "Rot 180", "Rot 270", "Disabled" };
         int item_current_idx =  ((flag >> 7) & 1) ? 4 : flag & 0b11;
         const char* combo_preview_value = items[item_current_idx];
@@ -1144,26 +1143,34 @@ void Editor::DrawMetaLine(int id)
 
 void Editor::DrawMetaExample()
 {
-    //ImTextureID my_tex_id = &editorEngineRef->spriteManager->spriteTexture.id;
-    //ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    //ImVec2 pos = ImVec2(0.0f, 0.0f);
-    //ImVec2 size = ImVec2(32.0f, 32.0f);
-    //float x, y = 1.0f;
-    //ImVec2 uv0 = ImVec2(x * 0.0625f, y * 0.0625f);
-    //ImVec2 uv1 = ImVec2(x * 0.0625f + 0.0625f, y * 0.0625f + 0.0625f);
-    //ImVec4 col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+    ImGuiIO& io = ImGui::GetIO();
+    ImTextureID my_tex_id = &editorEngineRef->spriteManager->spriteTexture.id;
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    ImVec2 pos = ImVec2(0.0f, 0.0f);
+    ImVec2 size = ImVec2(64.0f *  io.FontGlobalScale, 64.0f * io.FontGlobalScale);
+    pos = ImGui::GetCursorScreenPos();
 
-    //draw_list->AddImage(my_tex_id, pos, ImVec2(pos.x + size.x, pos.y + size.y), uv0, uv1);
-    //draw_list->AddRect(pos, ImVec2(pos.x + size.x + 2, pos.y + size.y + 2), IM_COL32(20, 20, 20, 255), 0, 0, 4);
+    for (int id= 0; id<4; id++)
+    {
+        int dir = (currentMetaSprite * 20 + 2096);
+        dir += id * 5;
+        int sprite = editorEngineRef->Peek(dir);
+        int flag = editorEngineRef->Peek(dir + 4);
+        if (((flag >> 7) & 1)) continue;
+        
+        ImVec2 spritePos = ImVec2(pos.x + editorEngineRef->Peek(dir + 1) * 8, pos.y + editorEngineRef->Peek(dir + 2) * 8);
+        
+        Color bcol = editorEngineRef->spriteManager->GetColor(editorEngineRef->Peek(dir + 3));
+        ImVec4 color = ImVec4(bcol.r / 255.0f, bcol.g / 255.0f, bcol.b / 255.0f, 1.0f);
 
-    //ImGui::SetCursorScreenPos(pos);
+        float x = sprite % 16; 
+        float y = sprite / 16;
+        ImVec2 uv0 = ImVec2(x * 0.0625f, y * 0.0625f);
+        ImVec2 uv1 = ImVec2(x * 0.0625f + 0.0625f, y * 0.0625f + 0.0625f);
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
-    //if (ImGui::ImageButton("###", my_tex_id, size, uv0, uv1, col))
-    //{
-    //}
-    ImGui::Button("XXX");
-    ImGui::PopStyleVar();
+        draw_list->AddImage(my_tex_id, spritePos, ImVec2(spritePos.x + size.x, spritePos.y + size.y), uv0, uv1, ImGui::ColorConvertFloat4ToU32(color));
+    }
+
 }
 
 void Editor::DrawMetaSprites(int metaId)
@@ -1180,17 +1187,16 @@ void Editor::DrawMetaSprites(int metaId)
             ImGui::PushID(id);
           
             ImVec4 color = currentMetaSprite == id ?
-                ImVec4(0.8f, 0.8f, 0.9f, 1.0f):
-                ImVec4(0.2f, 0.2f, 0.2f, 1.0f);
+                ImVec4(0.1f, 0.4f, 0.8f, 1.0f):
+                ImVec4(0.15f, 0.15f, 0.25f, 1.0f);
+        
             ImGui::PushStyleColor(ImGuiCol_Button, color);
-            ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
             if(ImGui::Button(button_label))
             {
                 currentMetaSprite = id;
                 HighLightMemory(currentMetaSprite * 20 + 2096, 20);
             }
-            ImGui::PopStyleVar();
-            ImGui::PopStyleColor(1);
+            ImGui::PopStyleColor();
             ImGui::PopID();
             ImGui::SameLine();
         }
