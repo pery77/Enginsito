@@ -1141,6 +1141,46 @@ void Editor::DrawMetaLine(int id)
     ImGui::EndGroup();
 }
 
+static inline ImVec2 operator+(const ImVec2& lhs, const ImVec2& rhs) 
+{ 
+    return ImVec2(lhs.x + rhs.x, lhs.y + rhs.y); 
+}
+static inline ImVec2 operator*(const ImVec2& lhs, const ImVec2& rhs) 
+{ 
+    return ImVec2(lhs.x * rhs.x, lhs.y * rhs.y); 
+}
+static inline ImVec2 ImRotate(const ImVec2& v, float cos_a, float sin_a) 
+{ 
+    return ImVec2(v.x * cos_a - v.y * sin_a, v.x * sin_a + v.y * cos_a);
+}
+void ImageRotated(ImTextureID tex_id, ImVec2 center, ImVec2 size, float angle, ImVec2 uv0, ImVec2 uv1, ImU32 color)
+{
+    float rad = (angle * 3.141592f) / 180.0f;
+
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+    float cos_a = cosf(rad);
+    float sin_a = sinf(rad);
+    ImVec2 pos[4] =
+    {
+        center + ImRotate(ImVec2(-size.x * 0.5f, -size.y * 0.5f), cos_a, sin_a),
+        center + ImRotate(ImVec2(+size.x * 0.5f, -size.y * 0.5f), cos_a, sin_a),
+        center + ImRotate(ImVec2(+size.x * 0.5f, +size.y * 0.5f), cos_a, sin_a),
+        center + ImRotate(ImVec2(-size.x * 0.5f, +size.y * 0.5f), cos_a, sin_a)
+    };
+    ImVec2 uvs[4] = 
+    { 
+        ImVec2(uv0.x, uv0.y), 
+        ImVec2(uv1.x, uv0.y), 
+        ImVec2(uv1.x, uv1.y), 
+        ImVec2(uv0.x, uv1.y) 
+    };
+
+    draw_list->AddImageQuad(tex_id, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], color);
+}
+
+
+
 void Editor::DrawMetaExample()
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -1176,7 +1216,7 @@ void Editor::DrawMetaExample()
         Color bcol = editorEngineRef->spriteManager->GetColor(editorEngineRef->Peek(dir + 3));
         ImVec4 color = ImVec4(bcol.r / 255.0f, bcol.g / 255.0f, bcol.b / 255.0f, 1.0f);
 
-        draw_list->AddImage(my_tex_id, spritePos, ImVec2(spritePos.x + size.x, spritePos.y + size.y), uv0, uv1, ImGui::ColorConvertFloat4ToU32(color));
+        ImageRotated(my_tex_id, spritePos + size * ImVec2(0.5f, 0.5f), size, flag & 0x07 * 90, uv0, uv1, ImGui::ColorConvertFloat4ToU32(color)); 
     }
 
 }
