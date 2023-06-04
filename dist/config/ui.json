@@ -10,7 +10,7 @@
     "show_palette": true,
     "show_player": true,
     "show_screen": true,
-    "show_sfx": false,
+    "show_sfx": true,
     "show_sprites": true,
     "show_tools": false,
     "window_height": 1017,

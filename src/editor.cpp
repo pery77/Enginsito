@@ -624,9 +624,10 @@ void Editor::PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack, bool pres
         ImGui::PushStyleColor(ImGuiCol_Text, colorText);
         if (ImGui::Button(button_label, size)) 
         {
-            editorEngineRef->audioManager->LoadSoundData(0);
-            editorEngineRef->audioManager->SFXRender(0,note);
-            editorEngineRef->audioManager->SFXPlay(0,255);
+            //editorEngineRef->audioManager->LoadSoundData(0);
+            //editorEngineRef->audioManager->SFXRender(0,note);
+            //editorEngineRef->audioManager->SFXPlay(0,255);
+            editorEngineRef->audioManager->PlayNote(0, note, 127);
         }
         ImGui::PopStyleColor();
         ImGui::PopStyleColor();
@@ -681,15 +682,17 @@ bool Editor::IsBlack(int note)
 
                     if (IsKeyPressed(thisChar)) 
                     {
-                        editorEngineRef->audioManager->LoadSoundData(id);
-                        editorEngineRef->audioManager->SFXRender(id, thisKey);
-                        editorEngineRef->audioManager->SFXPlay(id, 255);
+                        //editorEngineRef->audioManager->LoadSoundData(id);
+                        //editorEngineRef->audioManager->SFXRender(id, thisKey);
+                        //editorEngineRef->audioManager->SFXPlay(id, 255);
+                        editorEngineRef->audioManager->PlayNote(0, thisKey, 127);
                         pressedKey = thisKey;
 
                     }
                     if (IsKeyReleased(thisChar)) 
                     {
-                        editorEngineRef->audioManager->SFXStop(id);
+                        //editorEngineRef->audioManager->SFXStop(id);
+                        editorEngineRef->audioManager->StopNote(0);
                         pressedKey = -1;
                     }
                 }
@@ -734,6 +737,14 @@ bool Editor::IsBlack(int note)
 
         ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
 
+        static int osc;
+        if (ImGuiKnobs::KnobInt("OSC", &osc, 0, 6, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->audioManager->SetOSC(0, osc);
+        }
+
+        
+/*
 ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
 
         ImGui::BeginGroup();
@@ -867,6 +878,7 @@ ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | 
             ImGui::DragInt("Sound Id", &id, 1, 0, 15, "%2i", ImGuiSliderFlags_AlwaysClamp);
         ImGui::EndGroup();
 ImGui::EndChild();
+*/
     }
 
 
@@ -1178,8 +1190,6 @@ void ImageRotated(ImTextureID tex_id, ImVec2 center, ImVec2 size, float angle, I
 
     draw_list->AddImageQuad(tex_id, pos[0], pos[1], pos[2], pos[3], uvs[0], uvs[1], uvs[2], uvs[3], color);
 }
-
-
 
 void Editor::DrawMetaExample()
 {

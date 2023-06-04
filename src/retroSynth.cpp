@@ -32,7 +32,7 @@ FTYPE RetroSynth::osc(const FTYPE dTime, const FTYPE dHertz, const int nType, co
 	switch (nType)
 	{
         case OSC_SINE: // Sine wave bewteen -1 and +1
-            return sin(dFreq);
+            return waveTable(dHertz);
 
         case OSC_SQUARE50: // Square wave between -1 and +1
             return sin(dFreq) > 0 ? 1.0 : -1.0;
@@ -57,6 +57,16 @@ FTYPE RetroSynth::osc(const FTYPE dTime, const FTYPE dHertz, const int nType, co
 	}
 }
 
+static float time = 0.0f;  // Variable para el tiempo o posición en la tabla
+FTYPE RetroSynth::waveTable(float freq)
+{   
+    float increment = freq / 44100;  // Cálculo del incremento basado en la frecuencia y la tasa de muestreo
+    int i = static_cast<int>(time * TABLE_SIZE) % TABLE_SIZE;  // Cálculo del índice
+
+    time += increment;  // Actualización del tiempo
+    FTYPE result = (SQUARE[i] / 127.0f) - 1.0f;
+    return result;
+}
 
 FTYPE env(const FTYPE dTime, envelope &env, const FTYPE dTimeOn, const FTYPE dTimeOff){
 	return env.amplitude(dTime, dTimeOn, dTimeOff);
