@@ -114,7 +114,8 @@ uint8_t PULSE_12 [64]  =
     { 255, 255, 255, 255, 255, 255, 255, 255,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
 	    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0
 	};		
-uint8_t NOISE [0]  = {};
+uint8_t NOISE [4096];
+
 
     float RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp);
 	void SetEnv(int channel, float attackTime, float decayTime, float sustainAmplitude, float releaseTime, float dStartAmplitude);
@@ -128,5 +129,6 @@ uint8_t NOISE [0]  = {};
     private:
     FTYPE osc(const FTYPE dTime, const FTYPE dHertz, const int nType, const FTYPE dLFOHertz, const FTYPE dLFOAmplitude);
 	FTYPE waveTable(float freq);
+	FTYPE waveTableNoise(float freq);
 
 };

@@ -1,5 +1,7 @@
 #include "retroSynth.h"
 #include <cmath>
+#include <iostream>
+#include <random>
 
 #define INV2PI  0.63661977 // 2.0 / PI
 #define HALF_PI 1.57079632 // PI / 2.0
@@ -11,8 +13,31 @@ FTYPE w(const FTYPE dHertz) {
 	return dHertz * PI2;
 }
 
-RetroSynth::RetroSynth(){
+RetroSynth::RetroSynth()
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<uint8_t> dis(100, 156);
+    std::uniform_int_distribution<int8_t> dis2(-32, 32);
+
+    int changeInterval = 16;
+    uint8_t rnd = dis(gen);
+
+    for (int i = 0; i < 4096; i++) 
+    {
+        //if (i % changeInterval == 0) 
+        //{
+            rnd = dis(gen);
+        //}
+        NOISE[i] = rnd;
+    }
+
+    for (int i = 0; i < 4096; i++) 
+    {
+        NOISE[i] += dis2(gen);
+    }
 }
+
 RetroSynth::~RetroSynth(){
 }
 
@@ -47,8 +72,8 @@ FTYPE RetroSynth::osc(const FTYPE dTime, const FTYPE dHertz, const int nType, co
             return asin(sin(dFreq)) * INV2PI;
 
         case OSC_SAW_DIG:
-            return INV2PI * (dHertz * PI * fmod(dTime, 1.0 / dHertz) - HALF_PI);
-
+            //return INV2PI * (dHertz * PI * fmod(dTime, 1.0 / dHertz) - HALF_PI);
+            return waveTableNoise(dHertz);
         case OSC_NOISE:
             return 2.0 * ((FTYPE)rand() / (FTYPE)RAND_MAX) - 1.0;
 
@@ -57,14 +82,25 @@ FTYPE RetroSynth::osc(const FTYPE dTime, const FTYPE dHertz, const int nType, co
 	}
 }
 
-static float time = 0.0f;  // Variable para el tiempo o posición en la tabla
+static FTYPE pos = 0.0;  // Variable para el tiempo o posición en la tabla
 FTYPE RetroSynth::waveTable(float freq)
 {   
-    float increment = freq / 44100;  // Cálculo del incremento basado en la frecuencia y la tasa de muestreo
-    int i = static_cast<int>(time * TABLE_SIZE) % TABLE_SIZE;  // Cálculo del índice
+    FTYPE increment = freq / 44100.0;  // Cálculo del incremento basado en la frecuencia y la tasa de muestreo
+    int i = static_cast<int>(pos * TABLE_SIZE) % TABLE_SIZE;  // Cálculo del índice
 
-    time += increment;  // Actualización del tiempo
-    FTYPE result = (SQUARE[i] / 127.0f) - 1.0f;
+    pos += increment;  // Actualización del tiempo
+    FTYPE result = (SQUARE[i] / 127.0) - 1.0;
+
+    return result;
+}
+FTYPE RetroSynth::waveTableNoise(float freq)
+{   
+    FTYPE increment = freq / 44100.0;  // Cálculo del incremento basado en la frecuencia y la tasa de muestreo
+    int i = static_cast<int>(pos * 4096) % 4096;  // Cálculo del índice
+
+    pos += increment;  // Actualización del tiempo
+    FTYPE result = (NOISE[i] / 127.0) - 1.0;
+
     return result;
 }
 
@@ -86,7 +122,8 @@ void RetroSynth::SetLFO(int channel, float lfoHertz, float lfoAmp){
     channels[channel].lfo.dLFOHertz = lfoHertz;
     channels[channel].lfo.dLFOAmplitude = lfoAmp;
 }
-void RetroSynth::SetOsc(int channel, float osc){
-    
+void RetroSynth::SetOsc(int channel, float osc)
+{
+    pos = 0.0;
     channels[channel].osc = osc;
 }
