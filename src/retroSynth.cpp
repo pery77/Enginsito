@@ -8,6 +8,10 @@
 #define PI      3.14159565
 #define PI2     6.28318530 // PI * 2.0
 
+#define NOISE_SAMPLES 16000
+uint8_t NOISE [NOISE_SAMPLES];
+static FTYPE tablePosition = 0.0;  // Variable para el tiempo o posición en la tabla
+
 // Converts frequency (Hz) to angular velocity
 FTYPE w(const FTYPE dHertz) {
 	return dHertz * PI2;
@@ -17,25 +21,26 @@ RetroSynth::RetroSynth()
 {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint8_t> dis(100, 156);
-    std::uniform_int_distribution<int8_t> dis2(-32, 32);
+    std::uniform_int_distribution<uint8_t> dis1(128, 192);
+    std::uniform_int_distribution<uint8_t> dis0(64, 128);
+    std::uniform_int_distribution<int8_t> dis(0, 32);
 
-    int changeInterval = 16;
-    uint8_t rnd = dis(gen);
-
-    for (int i = 0; i < 4096; i++) 
+    for (int i = 0; i < NOISE_SAMPLES; i++) 
     {
-        //if (i % changeInterval == 0) 
-        //{
-            rnd = dis(gen);
-        //}
-        NOISE[i] = rnd;
+        //NOISE[i] = dis(gen);
+        //int part = (i / NOISE_SAMPLES) * 64;
+        //NOISE[i] = part % 2 == 0 ? dis1(gen) : dis0(gen);
+        NOISE[i] = (sin(i * ((1.0/NOISE_SAMPLES) * PI2)) + 1.0) * 127;
     }
 
-    for (int i = 0; i < 4096; i++) 
+    for (int i = 0; i < NOISE_SAMPLES; i++) 
     {
-        NOISE[i] += dis2(gen);
+        //NOISE[i] = dis(gen);
+        //int part = (i / NOISE_SAMPLES) * 64;
+        //NOISE[i] = part % 2 == 0 ? dis1(gen) : dis0(gen);
+        NOISE[i] += dis(gen);
     }
+
 }
 
 RetroSynth::~RetroSynth(){
@@ -53,77 +58,65 @@ float RetroSynth::RenderNote(int oscT, int note, float time, float timeOn, float
 
 FTYPE RetroSynth::osc(const FTYPE dTime, const FTYPE dHertz, const int nType, const FTYPE dLFOHertz, const FTYPE dLFOAmplitude) {
 
-	FTYPE dFreq = w(dHertz) * dTime + dLFOAmplitude * dHertz * (sin(w(dLFOHertz) * dTime));
-	switch (nType)
-	{
-        case OSC_SINE: // Sine wave bewteen -1 and +1
-            return waveTable(dHertz);
-
-        case OSC_SQUARE50: // Square wave between -1 and +1
-            return sin(dFreq) > 0 ? 1.0 : -1.0;
-
-        case OSC_SQUARE25: // Square wave 25%
-            return sin(dFreq) > 0.5 ? 1.0 : -1.0;    
-
-        case OSC_SQUARE12: // Square wave 12%
-            return sin(dFreq) > 0.75 ? 1.0 : -1.0;  
-
-        case OSC_TRIANGLE: // Triangle wave between -1 and +1
-            return asin(sin(dFreq)) * INV2PI;
-
-        case OSC_SAW_DIG:
-            //return INV2PI * (dHertz * PI * fmod(dTime, 1.0 / dHertz) - HALF_PI);
-            return waveTableNoise(dHertz);
-        case OSC_NOISE:
-            return 2.0 * ((FTYPE)rand() / (FTYPE)RAND_MAX) - 1.0;
-
-        default:
-            return 0.0;
-	}
+	//FTYPE dFreq = w(dHertz) * dTime + dLFOAmplitude * dHertz * (sin(w(dLFOHertz) * dTime));
+	return waveTable(dHertz, nType);
+    
 }
 
-static FTYPE pos = 0.0;  // Variable para el tiempo o posición en la tabla
-FTYPE RetroSynth::waveTable(float freq)
+
+FTYPE RetroSynth::waveTable(float freq, uint8_t osc)
 {   
-    FTYPE increment = freq / 44100.0;  // Cálculo del incremento basado en la frecuencia y la tasa de muestreo
-    int i = static_cast<int>(pos * TABLE_SIZE) % TABLE_SIZE;  // Cálculo del índice
+    FTYPE increment = freq / 44100.0;
+    int size = osc == 4 ? NOISE_SAMPLES : TABLE_SIZE;
 
-    pos += increment;  // Actualización del tiempo
-    FTYPE result = (SQUARE[i] / 127.0) - 1.0;
+    int i = static_cast<int>(tablePosition * size) % size;
+    tablePosition += increment;
+    uint8_t tableValue = SQUARE[i];
+    
+    switch (osc)
+    {
+        case 1:
+            tableValue = PULSE_12[i];
+            break;
+        case 2:
+            tableValue = PULSE_25[i];
+            break;
+        case 3:
+            tableValue = TRIANGLE[i];
+            break;
+        case 4:
+            tableValue = NOISE[i];
+            break;
+    }
 
-    return result;
+    return (tableValue / 127.0) - 1.0;
 }
-FTYPE RetroSynth::waveTableNoise(float freq)
-{   
-    FTYPE increment = freq / 44100.0;  // Cálculo del incremento basado en la frecuencia y la tasa de muestreo
-    int i = static_cast<int>(pos * 4096) % 4096;  // Cálculo del índice
 
-    pos += increment;  // Actualización del tiempo
-    FTYPE result = (NOISE[i] / 127.0) - 1.0;
-
-    return result;
-}
-
-FTYPE env(const FTYPE dTime, envelope &env, const FTYPE dTimeOn, const FTYPE dTimeOff){
+FTYPE env(const FTYPE dTime, envelope &env, const FTYPE dTimeOn, const FTYPE dTimeOff)
+{
 	return env.amplitude(dTime, dTimeOn, dTimeOff);
 }
 
 void RetroSynth::SetEnv(int channel, float attackTime, float decayTime,
-                         float sustainAmplitude, float releaseTime, float startAmplitude){
+                         float sustainAmplitude, float releaseTime, float startAmplitude)
+{
 
     channels[channel].env.dAttackTime = attackTime;
     channels[channel].env.dDecayTime = decayTime;
     channels[channel].env.dSustainAmplitude = sustainAmplitude;
     channels[channel].env.dReleaseTime = releaseTime;
     channels[channel].env.dStartAmplitude = startAmplitude;
- }
-void RetroSynth::SetLFO(int channel, float lfoHertz, float lfoAmp){
+}
+
+void RetroSynth::SetLFO(int channel, float lfoHertz, float lfoAmp)
+{
 
     channels[channel].lfo.dLFOHertz = lfoHertz;
     channels[channel].lfo.dLFOAmplitude = lfoAmp;
 }
+
 void RetroSynth::SetOsc(int channel, float osc)
 {
-    pos = 0.0;
+    //tablePosition = 0.0;
     channels[channel].osc = osc;
 }

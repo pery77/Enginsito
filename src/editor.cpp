@@ -738,13 +738,12 @@ bool Editor::IsBlack(int note)
         ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
 
         static int osc;
-        if (ImGuiKnobs::KnobInt("OSC", &osc, 0, 6, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("OSC", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
             editorEngineRef->audioManager->SetOSC(0, osc);
         }
 
-        
-/*
+  editorEngineRef->audioManager->SetEnv(0,  editorEngineRef->Peek(dir+1), editorEngineRef->Peek(dir+2),editorEngineRef->Peek(dir+3),editorEngineRef->Peek(dir+4), 255)    ;  
 ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
 
         ImGui::BeginGroup();
@@ -754,21 +753,22 @@ ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | 
                 editorEngineRef->Poke(dir+1, attackTimeValue);
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Sustain", &sustainTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("dec", &sustainTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+2, sustainTimeValue);
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Punch", &sustainPunchValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("sus", &sustainPunchValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+3, sustainPunchValue);
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Decay", &decayTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("rel", &decayTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+4, decayTimeValue);
             }
         ImGui::EndGroup();
+/*
         ImGui::SameLine();
         ImGui::Text("  ");
         ImGui::SameLine();
@@ -877,8 +877,8 @@ ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | 
             ImGui::Text("  ");
             ImGui::DragInt("Sound Id", &id, 1, 0, 15, "%2i", ImGuiSliderFlags_AlwaysClamp);
         ImGui::EndGroup();
-ImGui::EndChild();
 */
+ImGui::EndChild();
     }
 
 
