@@ -8,37 +8,20 @@
 #define PI      3.14159565
 #define PI2     6.28318530 // PI * 2.0
 
-#define NOISE_SAMPLES 16000
+#define NOISE_SAMPLES 16386
 uint8_t NOISE [NOISE_SAMPLES];
-static FTYPE tablePosition = 0.0;  // Variable para el tiempo o posición en la tabla
+static FTYPE phase = 0.0;
 
-// Converts frequency (Hz) to angular velocity
-FTYPE w(const FTYPE dHertz) {
-	return dHertz * PI2;
-}
+std::random_device rd;
+std::mt19937 gen(rd());
+std::uniform_int_distribution<int8_t> rnd(0, 255);
 
 RetroSynth::RetroSynth()
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<uint8_t> dis1(128, 192);
-    std::uniform_int_distribution<uint8_t> dis0(64, 128);
-    std::uniform_int_distribution<int8_t> dis(0, 32);
 
     for (int i = 0; i < NOISE_SAMPLES; i++) 
     {
-        //NOISE[i] = dis(gen);
-        //int part = (i / NOISE_SAMPLES) * 64;
-        //NOISE[i] = part % 2 == 0 ? dis1(gen) : dis0(gen);
-        NOISE[i] = (sin(i * ((1.0/NOISE_SAMPLES) * PI2)) + 1.0) * 127;
-    }
-
-    for (int i = 0; i < NOISE_SAMPLES; i++) 
-    {
-        //NOISE[i] = dis(gen);
-        //int part = (i / NOISE_SAMPLES) * 64;
-        //NOISE[i] = part % 2 == 0 ? dis1(gen) : dis0(gen);
-        NOISE[i] += dis(gen);
+        NOISE[i] = rnd(gen) + 127;
     }
 
 }
@@ -56,22 +39,50 @@ float RetroSynth::RenderNote(int oscT, int note, float time, float timeOn, float
     return value;
 }
 
-FTYPE RetroSynth::osc(const FTYPE dTime, const FTYPE dHertz, const int nType, const FTYPE dLFOHertz, const FTYPE dLFOAmplitude) {
+float vibratoSpeed =  0.0f;
+float vibratoAmplitude = 0.0f;
+float vibratoPhase = 0.0f;
 
-	//FTYPE dFreq = w(dHertz) * dTime + dLFOAmplitude * dHertz * (sin(w(dLFOHertz) * dTime));
-	return waveTable(dHertz, nType);
+float valor_LFO = 0.0f;
+float t = 0.0f;
+
+FTYPE RetroSynth::osc(const FTYPE dTime, FTYPE dHertz, const int nType, const FTYPE dLFOHertz, const FTYPE dLFOAmplitude) {
+
+    float vibratoSpeed = powf(dLFOHertz, 2.0f)*0.01f;
+    float vibratoAmplitude = dLFOAmplitude * 2.0f;
+
+    if (vibratoAmplitude > 0.0f)
+    {
+        vibratoPhase += vibratoSpeed;
+        dHertz = (float)(dHertz*(1.0 + sinf(vibratoPhase)*vibratoAmplitude));
+    }
+
+    return waveTable(dHertz, nType);
     
 }
+FTYPE RetroSynth::HighPassFilter(const FTYPE dInput) {
+    return  1.0;
+}
 
+FTYPE RetroSynth::LowPassFilter(const FTYPE dInput) {
+    return  1.0;
+}
+
+FTYPE RetroSynth::ResonanceFilter(const FTYPE dInput) {
+    return  1.0;
+}
 
 FTYPE RetroSynth::waveTable(float freq, uint8_t osc)
 {   
     FTYPE increment = freq / 44100.0;
     int size = osc == 4 ? NOISE_SAMPLES : TABLE_SIZE;
 
-    int i = static_cast<int>(tablePosition * size) % size;
-    tablePosition += increment;
-    uint8_t tableValue = SQUARE[i];
+    int i = static_cast<int>(phase * size) % size;
+    int iN = static_cast<int>((phase * size) * increment) % size;
+ 
+    phase += increment;
+
+    uint8_t tableValue;
     
     switch (osc)
     {
@@ -85,11 +96,13 @@ FTYPE RetroSynth::waveTable(float freq, uint8_t osc)
             tableValue = TRIANGLE[i];
             break;
         case 4:
-            tableValue = NOISE[i];
+            tableValue = NOISE[iN];
             break;
+        default:
+            tableValue = SQUARE[i];
     }
 
-    return (tableValue / 127.0) - 1.0;
+    return ((tableValue / 127.0) - 1.0);
 }
 
 FTYPE env(const FTYPE dTime, envelope &env, const FTYPE dTimeOn, const FTYPE dTimeOff)
@@ -117,6 +130,5 @@ void RetroSynth::SetLFO(int channel, float lfoHertz, float lfoAmp)
 
 void RetroSynth::SetOsc(int channel, float osc)
 {
-    //tablePosition = 0.0;
     channels[channel].osc = osc;
 }

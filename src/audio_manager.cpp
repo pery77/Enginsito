@@ -193,6 +193,11 @@ void AudioManager::SetLFO(uint8_t channel, uint8_t lfoNote, uint8_t lfoAmp){
         lfoAmp * AUDIO_STEP * 0.125
     );
 }
+void AudioManager::SetFilter(uint8_t channel, uint8_t cutoff, uint8_t resonance){
+    
+    synth->Cutoff = cutoff * AUDIO_STEP;
+    synth->Resonance = resonance * AUDIO_STEP;
+}
 void AudioManager::SetOSC(uint8_t channel, uint8_t osc){
     
     synth->SetOsc(channel, osc);

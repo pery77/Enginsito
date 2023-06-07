@@ -737,11 +737,32 @@ bool Editor::IsBlack(int note)
 
         ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
 
-        static int osc;
+        static int osc, lfo, amp, cut, res;
+        static float noise;
         if (ImGuiKnobs::KnobInt("OSC", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
             editorEngineRef->audioManager->SetOSC(0, osc);
-        }
+        }     
+        ImGui::SameLine();  
+        if (ImGuiKnobs::KnobInt("LFO", &lfo, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->audioManager->SetLFO(0, lfo, amp);
+        }  
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("AMP", &amp, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->audioManager->SetLFO(0, lfo, amp);
+        }  
+                ImGui::SameLine();  
+        if (ImGuiKnobs::KnobInt("CUT", &cut, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->audioManager->SetFilter(0, cut, res);
+        }  
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("RES", &res, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->audioManager->SetFilter(0, cut, res);
+        }  
 
   editorEngineRef->audioManager->SetEnv(0,  editorEngineRef->Peek(dir+1), editorEngineRef->Peek(dir+2),editorEngineRef->Peek(dir+3),editorEngineRef->Peek(dir+4), 255)    ;  
 ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
