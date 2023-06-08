@@ -10,21 +10,21 @@ struct envelope {
 	virtual FTYPE amplitude(const FTYPE dTime, const FTYPE dTimeOn, const FTYPE dTimeOff) = 0;
 };
 
-struct envelope_adsr : public envelope{
+struct ADSR : public envelope{
 
-	FTYPE dAttackTime;
-	FTYPE dDecayTime;
-	FTYPE dSustainAmplitude;
-	FTYPE dReleaseTime;
-	FTYPE dStartAmplitude;
+	FTYPE Attack;
+	FTYPE Decay;
+	FTYPE Sustain;
+	FTYPE Release;
+	FTYPE Amplitude;
 
-	envelope_adsr() {
+	ADSR() {
 
-		dAttackTime = 0.04;
-		dDecayTime = 0.04;
-		dSustainAmplitude = 1.0;
-		dReleaseTime = 0.02;
-		dStartAmplitude = 1.0;
+		Attack = 0.04;
+		Decay = 0.04;
+		Sustain = 1.0;
+		Release = 0.02;
+		Amplitude = 1.0;
 	}
 
 	virtual FTYPE amplitude(const FTYPE dTime, const FTYPE dTimeOn, const FTYPE dTimeOff) {
@@ -35,29 +35,29 @@ struct envelope_adsr : public envelope{
 		{
 			FTYPE dLifeTime = dTime - dTimeOn;
 
-			if (dLifeTime <= dAttackTime)
-				dAmplitude = (dLifeTime / dAttackTime) * dStartAmplitude;
+			if (dLifeTime <= Attack)
+				dAmplitude = (dLifeTime / Attack) * Amplitude;
 
-			if (dLifeTime > dAttackTime && dLifeTime <= (dAttackTime + dDecayTime))
-				dAmplitude = ((dLifeTime - dAttackTime) / dDecayTime) * (dSustainAmplitude - dStartAmplitude) + dStartAmplitude;
+			if (dLifeTime > Attack && dLifeTime <= (Attack + Decay))
+				dAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + Amplitude;
 
-			if (dLifeTime > (dAttackTime + dDecayTime))
-				dAmplitude = dSustainAmplitude;
+			if (dLifeTime > (Attack + Decay))
+				dAmplitude = Sustain;
 		}
 		else // Note is off
 		{
 			FTYPE dLifeTime = dTimeOff - dTimeOn;
 
-			if (dLifeTime <= dAttackTime)
-				dReleaseAmplitude = (dLifeTime / dAttackTime) * dStartAmplitude;
+			if (dLifeTime <= Attack)
+				dReleaseAmplitude = (dLifeTime / Attack) * Amplitude;
 
-			if (dLifeTime > dAttackTime && dLifeTime <= (dAttackTime + dDecayTime))
-				dReleaseAmplitude = ((dLifeTime - dAttackTime) / dDecayTime) * (dSustainAmplitude - dStartAmplitude) + dStartAmplitude;
+			if (dLifeTime > Attack && dLifeTime <= (Attack + Decay))
+				dReleaseAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + Amplitude;
 
-			if (dLifeTime > (dAttackTime + dDecayTime))
-				dReleaseAmplitude = dSustainAmplitude;
+			if (dLifeTime > (Attack + Decay))
+				dReleaseAmplitude = Sustain;
 
-			dAmplitude = ((dTime - dTimeOff) / dReleaseTime) * (0.0 - dReleaseAmplitude) + dReleaseAmplitude;
+			dAmplitude = ((dTime - dTimeOff) / Release) * (0.0 - dReleaseAmplitude) + dReleaseAmplitude;
 
 		}
 
@@ -70,9 +70,21 @@ struct envelope_adsr : public envelope{
 };
 
 typedef struct {
-	FTYPE dLFOHertz = 0.0;
- 	FTYPE dLFOAmplitude = 0.0;
+	float freq      = 0.0;
+ 	float amplitude = 0.0;
+	float phase     = 0.0;
 } LFO;
+
+typedef struct {
+	float slope = 0.0;
+ 	float curve = 0.0;
+	float phase = 0.0;
+} Slide;
+
+typedef struct {
+	float cutoff    = 1.0;
+ 	float resonance = 0.0;
+} Filter;
 
 typedef struct {
     int osc = 0;
@@ -80,10 +92,10 @@ typedef struct {
     float volume = 0.5;
     double timeOn = 0.0;
     double timeOff = 0.0;
-    envelope_adsr env;
+    ADSR env;
 	LFO lfo;
-	float cutOff = 1.0;
-	float resonance = 0;
+	Filter LPF;
+	Slide slide;
 } Channel;
 
 const int SQUARE       = 0;
@@ -115,15 +127,13 @@ class RetroSynth{
 		  248, 240, 232, 224, 216, 208, 200, 192, 184, 176, 168, 160, 152, 144, 136, 128, 120, 112, 104,  96,  88,  80,  72,  64,  56,  48,  40,  32,  24,  16,   8,   0
 		};
 
-    FTYPE RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp);
-	void SetEnv(int channel, float attackTime, float decayTime, float sustainAmplitude, float releaseTime, float dStartAmplitude);
-	
+    FTYPE RenderNote(int channel, int oscT, int note, float time, float timeOn);
     FTYPE FrequencyFromNote(int midi_note);
 
     Channel channels[MAX_VOICES] = {0};
 
     private:
-    FTYPE osc(const FTYPE dTime, const FTYPE dHertz, const int nType, const FTYPE dLFOHertz, const FTYPE dLFOAmplitude);
+    FTYPE osc(const int dChannel, const FTYPE dHertz, const int nType);
 	FTYPE waveTable(float freq, uint8_t osc);
 
 };

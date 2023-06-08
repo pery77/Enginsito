@@ -26,31 +26,34 @@ void audioInputCallback(void* buffer, unsigned int frames)
     {
         float samples[TRACK_COUNT] = {0};
         float mixedSample = 0;
+        int channelPlaying = 0;
 
         for (int track = 0; track < TRACK_COUNT; track++) 
         {
-            float amplitude = synth->channels[track].env.amplitude(musicTime, synth->channels[track].timeOn,
-                                                               synth->channels[track].timeOff);
+            float amplitude = synth->channels[track].env.amplitude(musicTime, synth->channels[track].timeOn, synth->channels[track].timeOff);
             samples[track] = 0;
+
             if (amplitude > 0.0001) 
             {
-                samples[track] += synth->RenderNote(synth->channels[track].osc, synth->channels[track].note, musicTime,
-                                                synth->channels[track].timeOn, synth->channels[track].lfo.dLFOHertz,
-                                                synth->channels[track].lfo.dLFOAmplitude) *
-                                                synth->channels[track].volume * amplitude;
-                
+                samples[track] += synth->RenderNote(track, synth->channels[track].osc, synth->channels[track].note, musicTime, synth->channels[track].timeOn);
+                samples[track] *= synth->channels[track].volume * amplitude;
+
+                float cutoff    = synth->channels[track].LPF.cutoff;
+                float resonance = synth->channels[track].LPF.resonance;
+
+                float output = lastOutput[track] + cutoff * (samples[track] - lastOutput[track]);
+                output /= 1.0 + (resonance * cutoff);
+
+                lastOutput[track] = output;
+
+                samples[track] = output * 32767.0;
+                channelPlaying++;
             }
 
-            float cutoff = cutoff = synth->channels[track].cutOff;
-            float resonance = synth->channels[track].resonance * 10.;
-
-            float output = (1.0 - cutoff) * lastOutput[track] + cutoff * samples[track];
-            output /= 1.0 + (resonance * cutoff);
-
-            lastOutput[track] = output;
-            samples[track] = output * 32767.0;
-
-            mixedSample += samples[track] / TRACK_COUNT;
+            if (channelPlaying > 0)
+            {
+                mixedSample += samples[track] / channelPlaying;
+            }
         }
 
         bufferData[frame] = mixedSample;
@@ -196,27 +199,31 @@ RetroSynth* AudioManager::GetSynth()
 void AudioManager::SetEnv(uint8_t channel, uint8_t attackTime, uint8_t decayTime,
                          uint8_t sustainAmplitude, uint8_t releaseTime, uint8_t startAmplitude)
 {
-    synth->SetEnv(channel, 
-            attackTime       / 255.0,
-            decayTime        / 255.0,
-            sustainAmplitude / 255.0,
-            releaseTime      / 255.0,
-            startAmplitude   / 255.0);
+    synth->channels[channel].env.Attack       = attackTime       / 255.0;
+    synth->channels[channel].env.Decay        = decayTime        / 255.0;
+    synth->channels[channel].env.Sustain      = sustainAmplitude / 255.0;
+    synth->channels[channel].env.Release      = releaseTime      / 255.0;
+    synth->channels[channel].env.Amplitude    = startAmplitude   / 255.0;
 }
 
 void AudioManager::SetLFO(uint8_t channel, uint8_t lfoNote, uint8_t lfoAmp)
 {
-    synth->channels[channel].lfo.dLFOHertz = lfoNote / 255.0;
-    synth->channels[channel].lfo.dLFOAmplitude = lfoAmp / 255.0;
+    synth->channels[channel].lfo.freq = lfoNote / 255.0;
+    synth->channels[channel].lfo.amplitude = lfoAmp / 255.0;
 }
 void AudioManager::SetFilter(uint8_t channel, uint8_t cutoff, uint8_t resonance)
 {
-    synth->channels[channel].cutOff = cutoff / 255.0f;
-    synth->channels[channel].resonance = resonance / 255.0f;
+    synth->channels[channel].LPF.cutoff = cutoff / 255.0f;
+    synth->channels[channel].LPF.resonance = resonance / 255.0f;
 }
 void AudioManager::SetOSC(uint8_t channel, uint8_t osc)
 {
     synth->channels[channel].osc = osc;
+}
+void AudioManager::SetSlide(uint8_t channel, uint8_t slope, uint8_t curve)
+{
+    synth->channels[channel].slide.slope = slope / 255.0f;
+    synth->channels[channel].slide.curve = curve / 255.0f;
 }
 
 //Effects

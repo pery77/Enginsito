@@ -31,21 +31,22 @@ FTYPE RetroSynth::FrequencyFromNote(int midi_note)
     return 440.0f * pow(2.0f, (midi_note - 69) / 12.0f);
 }
 
-FTYPE RetroSynth::RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp) 
+FTYPE RetroSynth::RenderNote(int channel, int oscT, int note, float time, float timeOn) 
 {
     FTYPE frequency = FrequencyFromNote(note);
-    FTYPE value = osc(time - timeOn, frequency, oscT, lfoHertz, lfoAmp);
+    FTYPE value = osc(channel, frequency, oscT);
     return value;
 }
 
-float vibratoSpeed =  0.0f;
-float vibratoAmplitude = 0.0f;
 float vibratoPhase = 0.0f;
 
-FTYPE RetroSynth::osc(const FTYPE dTime, FTYPE dHertz, const int nType, const FTYPE dLFOHertz, const FTYPE dLFOAmplitude) {
+FTYPE RetroSynth::osc(const int channel, FTYPE dHertz, const int nType) 
+{
+    float slideFreq = channels[channel].slide.phase * channels[channel].slide.slope + 
+        (channels[channel].slide.curve * channels[channel].slide.slope * channels[channel].slide.phase * channels[channel].slide.phase);
 
-    float vibratoSpeed = powf(dLFOHertz, 2.0f)*0.01f;
-    float vibratoAmplitude = dLFOAmplitude * 2.0f;
+    float vibratoSpeed = powf(channels[channel].lfo.freq, 1.2f) * 0.01f;
+    float vibratoAmplitude = channels[channel].lfo.amplitude * 2.0f;
 
     if (vibratoAmplitude > 0.0f)
     {
@@ -53,8 +54,13 @@ FTYPE RetroSynth::osc(const FTYPE dTime, FTYPE dHertz, const int nType, const FT
         dHertz = (float)(dHertz*(1.0 + sinf(vibratoPhase)*vibratoAmplitude));
     }
 
-    return waveTable(dHertz, nType);
+    //if(slideFreq != 0.0)
+    {
+        channels[channel].slide.phase ++;
+    }
 
+    dHertz += slideFreq;
+    return waveTable(dHertz, nType);
 }
 
 FTYPE RetroSynth::waveTable(float freq, uint8_t osc)
@@ -93,15 +99,4 @@ FTYPE RetroSynth::waveTable(float freq, uint8_t osc)
 FTYPE env(const FTYPE dTime, envelope &env, const FTYPE dTimeOn, const FTYPE dTimeOff)
 {
 	return env.amplitude(dTime, dTimeOn, dTimeOff);
-}
-
-void RetroSynth::SetEnv(int channel, float attackTime, float decayTime,
-                         float sustainAmplitude, float releaseTime, float startAmplitude)
-{
-
-    channels[channel].env.dAttackTime = attackTime;
-    channels[channel].env.dDecayTime = decayTime;
-    channels[channel].env.dSustainAmplitude = sustainAmplitude;
-    channels[channel].env.dReleaseTime = releaseTime;
-    channels[channel].env.dStartAmplitude = startAmplitude;
 }
