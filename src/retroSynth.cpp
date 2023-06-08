@@ -26,15 +26,15 @@ RetroSynth::RetroSynth()
 
 RetroSynth::~RetroSynth(){}
 
-float RetroSynth::FrequencyFromNote(int midi_note) 
+FTYPE RetroSynth::FrequencyFromNote(int midi_note) 
 {
     return 440.0f * pow(2.0f, (midi_note - 69) / 12.0f);
 }
 
-float RetroSynth::RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp) 
+FTYPE RetroSynth::RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp) 
 {
-    float frequency = FrequencyFromNote(note);
-    float value = osc(time - timeOn, frequency, oscT, lfoHertz, lfoAmp);
+    FTYPE frequency = FrequencyFromNote(note);
+    FTYPE value = osc(time - timeOn, frequency, oscT, lfoHertz, lfoAmp);
     return value;
 }
 

@@ -16,66 +16,49 @@ float steps = 1.0f / (float)SAMPLE_RATE;
 double musicTime = 0.0;
 bool isPlaying = false;
 
-void audioInputCallback(void *buffer, unsigned int frames) 
+float lastOutput[TRACK_COUNT] = {0};
+
+void audioInputCallback(void* buffer, unsigned int frames) 
 {
-    short *bufferData = (short*) buffer;
+    short* bufferData = (short*)buffer;
 
-    // Variables para almacenar el estado del filtro
-    float previousSample = 0.0;
-    float currentSample = 0.0;
-    float previousFilteredSample = 0.0;
-    float currentFilteredSample = 0.0;
-
-    // Coeficientes del filtro
-    float a0, a1, a2, b1, b2;
-
-    // Calcular los coeficientes del filtro según el cutoff y la resonancia
-    float cutoffRadians = 2.0 * 3.14159 * synth->channels[0].cutOff;
-    float resonanceScale = pow(10.0, 0.05 * synth->channels[0].resonance);
-    float sinCutoff = sin(cutoffRadians);
-    float cosCutoff = cos(cutoffRadians);
-    float alpha = sinCutoff / (2.0 * resonanceScale);
-
-    a0 = 1.0 + alpha;
-    a1 = -2.0 * cosCutoff;
-    a2 = 1.0 - alpha;
-    b1 = (1.0 - cosCutoff) / 2.0;
-    b2 = 1.0 - cosCutoff;
-
-    for (int i = 0; i < frames; i++) 
+    for (int frame = 0; frame < frames; frame++)
     {
+        float samples[TRACK_COUNT] = {0};
+        float mixedSample = 0;
 
-        short samples[TRACK_COUNT] = {0};
-        short mixedSample = 0;
-        
-        for (int j = 0; j < TRACK_COUNT; j++) 
+        for (int track = 0; track < TRACK_COUNT; track++) 
         {
+            float amplitude = synth->channels[track].env.amplitude(musicTime, synth->channels[track].timeOn,
+                                                               synth->channels[track].timeOff);
+            samples[track] = 0;
+            if (amplitude > 0.0001) 
+            {
+                samples[track] += synth->RenderNote(synth->channels[track].osc, synth->channels[track].note, musicTime,
+                                                synth->channels[track].timeOn, synth->channels[track].lfo.dLFOHertz,
+                                                synth->channels[track].lfo.dLFOAmplitude) *
+                                                synth->channels[track].volume * amplitude;
+                
+            }
 
-            float amplitude = synth->channels[j].env.amplitude(musicTime, synth->channels[j].timeOn, 
-                                                                synth->channels[j].timeOff);
-            if (amplitude > 0.0001) {
-                samples[j] += synth->RenderNote(synth->channels[j].osc, synth->channels[j].note, musicTime,synth->channels[j].timeOn,
-                                                    synth->channels[j].lfo.dLFOHertz, synth->channels[j].lfo.dLFOAmplitude) 
-                                            * synth->channels[j].volume * 32000.0 * amplitude;
-            }
-            else{
-                samples[j] = 0;
-            }
+            float cutoff = cutoff = synth->channels[track].cutOff;
+            float resonance = synth->channels[track].resonance * 10.;
+
+            float output = (1.0 - cutoff) * lastOutput[track] + cutoff * samples[track];
+            output /= 1.0 + (resonance * cutoff);
+
+            lastOutput[track] = output;
+            samples[track] = output * 32767.0;
+
+            mixedSample += samples[track] / TRACK_COUNT;
         }
 
-        for (int j = 0; j < TRACK_COUNT; j++) {
-            mixedSample += samples[j] * 0.25;
-        }
+        //for (int track = 0; track < TRACK_COUNT; track++) 
+        //{
+        //    mixedSample += samples[track] / TRACK_COUNT;
+        //}
 
-        // Aplicar el filtro de paso bajo con cutoff y resonance controlados
-        currentSample = mixedSample / 32768.0;
-        currentFilteredSample = (a0 * currentSample + a1 * previousSample + a2 * previousFilteredSample -
-                                 b1 * currentFilteredSample - b2 * previousFilteredSample) / a0;
-
-        previousSample = currentSample;
-        previousFilteredSample = currentFilteredSample;
-
-        bufferData[i] = static_cast<short>(currentFilteredSample * 32767.0);
+        bufferData[frame] = mixedSample;
         musicTime += steps;
     }
 }
@@ -234,7 +217,7 @@ void AudioManager::SetLFO(uint8_t channel, uint8_t lfoNote, uint8_t lfoAmp)
 void AudioManager::SetFilter(uint8_t channel, uint8_t cutoff, uint8_t resonance)
 {
     synth->channels[channel].cutOff = cutoff / 255.0f;
-    synth->channels[channel].resonance = (resonance / 255.0f) * 40 - 20;
+    synth->channels[channel].resonance = resonance / 255.0f;
 }
 void AudioManager::SetOSC(uint8_t channel, uint8_t osc)
 {

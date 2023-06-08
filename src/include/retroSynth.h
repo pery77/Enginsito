@@ -82,8 +82,8 @@ typedef struct {
     double timeOff = 0.0;
     envelope_adsr env;
 	LFO lfo;
-	float cutOff = 0.0; // 0 to 1
-	float resonance = -20; //-20 to 20
+	float cutOff = 1.0;
+	float resonance = 0;
 } Channel;
 
 const int SQUARE       = 0;
@@ -115,10 +115,10 @@ class RetroSynth{
 		  248, 240, 232, 224, 216, 208, 200, 192, 184, 176, 168, 160, 152, 144, 136, 128, 120, 112, 104,  96,  88,  80,  72,  64,  56,  48,  40,  32,  24,  16,   8,   0
 		};
 
-    float RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp);
+    FTYPE RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp);
 	void SetEnv(int channel, float attackTime, float decayTime, float sustainAmplitude, float releaseTime, float dStartAmplitude);
 	
-    float FrequencyFromNote(int midi_note);
+    FTYPE FrequencyFromNote(int midi_note);
 
     Channel channels[MAX_VOICES] = {0};
 
