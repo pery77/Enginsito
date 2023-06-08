@@ -8,7 +8,7 @@
 #define PI      3.14159565
 #define PI2     6.28318530 // PI * 2.0
 
-#define NOISE_SAMPLES 16386
+#define NOISE_SAMPLES 22050
 uint8_t NOISE [NOISE_SAMPLES];
 static FTYPE phase = 0.0;
 
@@ -18,22 +18,21 @@ std::uniform_int_distribution<int8_t> rnd(0, 255);
 
 RetroSynth::RetroSynth()
 {
-
     for (int i = 0; i < NOISE_SAMPLES; i++) 
     {
-        NOISE[i] = rnd(gen) + 127;
+        NOISE[i] = rnd(gen);
     }
-
 }
 
-RetroSynth::~RetroSynth(){
-}
+RetroSynth::~RetroSynth(){}
 
-float RetroSynth::FrequencyFromNote(int midi_note) {
+float RetroSynth::FrequencyFromNote(int midi_note) 
+{
     return 440.0f * pow(2.0f, (midi_note - 69) / 12.0f);
 }
 
-float RetroSynth::RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp) {
+float RetroSynth::RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp) 
+{
     float frequency = FrequencyFromNote(note);
     float value = osc(time - timeOn, frequency, oscT, lfoHertz, lfoAmp);
     return value;
@@ -42,9 +41,6 @@ float RetroSynth::RenderNote(int oscT, int note, float time, float timeOn, float
 float vibratoSpeed =  0.0f;
 float vibratoAmplitude = 0.0f;
 float vibratoPhase = 0.0f;
-
-float valor_LFO = 0.0f;
-float t = 0.0f;
 
 FTYPE RetroSynth::osc(const FTYPE dTime, FTYPE dHertz, const int nType, const FTYPE dLFOHertz, const FTYPE dLFOAmplitude) {
 
@@ -58,18 +54,7 @@ FTYPE RetroSynth::osc(const FTYPE dTime, FTYPE dHertz, const int nType, const FT
     }
 
     return waveTable(dHertz, nType);
-    
-}
-FTYPE RetroSynth::HighPassFilter(const FTYPE dInput) {
-    return  1.0;
-}
 
-FTYPE RetroSynth::LowPassFilter(const FTYPE dInput) {
-    return  1.0;
-}
-
-FTYPE RetroSynth::ResonanceFilter(const FTYPE dInput) {
-    return  1.0;
 }
 
 FTYPE RetroSynth::waveTable(float freq, uint8_t osc)
@@ -119,16 +104,4 @@ void RetroSynth::SetEnv(int channel, float attackTime, float decayTime,
     channels[channel].env.dSustainAmplitude = sustainAmplitude;
     channels[channel].env.dReleaseTime = releaseTime;
     channels[channel].env.dStartAmplitude = startAmplitude;
-}
-
-void RetroSynth::SetLFO(int channel, float lfoHertz, float lfoAmp)
-{
-
-    channels[channel].lfo.dLFOHertz = lfoHertz;
-    channels[channel].lfo.dLFOAmplitude = lfoAmp;
-}
-
-void RetroSynth::SetOsc(int channel, float osc)
-{
-    channels[channel].osc = osc;
 }

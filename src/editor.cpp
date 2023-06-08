@@ -736,7 +736,10 @@ bool Editor::IsBlack(int note)
         ImGui::EndGroup();
 
         ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
-
+ImGui::BeginTooltip();
+ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].cutOff));
+ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].resonance));
+ImGui::EndTooltip();
         static int osc, lfo, amp, cut, res;
         static float noise;
         if (ImGuiKnobs::KnobInt("OSC", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
@@ -753,7 +756,7 @@ bool Editor::IsBlack(int note)
         {
             editorEngineRef->audioManager->SetLFO(0, lfo, amp);
         }  
-                ImGui::SameLine();  
+        ImGui::SameLine();  
         if (ImGuiKnobs::KnobInt("CUT", &cut, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
             editorEngineRef->audioManager->SetFilter(0, cut, res);

@@ -82,6 +82,8 @@ typedef struct {
     double timeOff = 0.0;
     envelope_adsr env;
 	LFO lfo;
+	float cutOff = 0.0; // 0 to 1
+	float resonance = -20; //-20 to 20
 } Channel;
 
 const int SQUARE       = 0;
@@ -113,23 +115,12 @@ class RetroSynth{
 		  248, 240, 232, 224, 216, 208, 200, 192, 184, 176, 168, 160, 152, 144, 136, 128, 120, 112, 104,  96,  88,  80,  72,  64,  56,  48,  40,  32,  24,  16,   8,   0
 		};
 
-
-	
     float RenderNote(int oscT, int note, float time, float timeOn, float lfoHertz, float lfoAmp);
 	void SetEnv(int channel, float attackTime, float decayTime, float sustainAmplitude, float releaseTime, float dStartAmplitude);
-	void SetLFO(int channel, float lfoHertz, float lfoAmp);
-	void SetOsc(int channel, float osc);
 	
     float FrequencyFromNote(int midi_note);
 
     Channel channels[MAX_VOICES] = {0};
-
-	FTYPE HighPassFilter(const FTYPE dInput);
-	FTYPE LowPassFilter(const FTYPE dInput);
-	FTYPE ResonanceFilter(const FTYPE dInput);
-
-	FTYPE Cutoff;     // Cutoff frequency del filtro
-	FTYPE Resonance;
 
     private:
     FTYPE osc(const FTYPE dTime, const FTYPE dHertz, const int nType, const FTYPE dLFOHertz, const FTYPE dLFOAmplitude);

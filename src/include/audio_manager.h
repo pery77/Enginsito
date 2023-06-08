@@ -72,6 +72,8 @@ class AudioManager
     bool MusicIsPlaying = false;
     unsigned int AudioTick = 0;
 
+    RetroSynth* GetSynth();
+
     private:
     const char* sequence[TRACK_COUNT + 1];
     void setNote(uint8_t id, uint8_t note);
