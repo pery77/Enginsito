@@ -53,11 +53,6 @@ void audioInputCallback(void* buffer, unsigned int frames)
             mixedSample += samples[track] / TRACK_COUNT;
         }
 
-        //for (int track = 0; track < TRACK_COUNT; track++) 
-        //{
-        //    mixedSample += samples[track] / TRACK_COUNT;
-        //}
-
         bufferData[frame] = mixedSample;
         musicTime += steps;
     }
