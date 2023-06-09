@@ -20,10 +20,10 @@ struct ADSR : public envelope{
 
 	ADSR() {
 
-		Attack = 0.04;
-		Decay = 0.04;
-		Sustain = 1.0;
-		Release = 0.02;
+		Attack    = 0.04;
+		Decay     = 0.04;
+		Sustain   = 1.0;
+		Release   = 0.02;
 		Amplitude = 1.0;
 	}
 
@@ -61,9 +61,8 @@ struct ADSR : public envelope{
 
 		}
 
-		// Amplitude should not be negative
-		if (dAmplitude <= 0.00001)
-			dAmplitude = 0.0;
+		if (dAmplitude <= 0.00001)	dAmplitude = 0.0;
+		if (dAmplitude > 0.9)		dAmplitude = 0.9;
 
 		return dAmplitude;
 	}

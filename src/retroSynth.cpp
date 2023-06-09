@@ -33,33 +33,31 @@ FTYPE RetroSynth::FrequencyFromNote(int midi_note)
 FTYPE RetroSynth::RenderNote(int channel, int oscT, int note) 
 {
     FTYPE frequency = FrequencyFromNote(note);
-    FTYPE value = osc(channel, frequency, oscT);
-    return value;
+    return osc(channel, frequency, oscT);
 }
-
-float vibratoPhase = 0.0f;
 
 FTYPE RetroSynth::osc(const int channel, FTYPE dHertz, const int nType) 
 {
-    float slope = channels[channel].slide.slope * 10.0;
-    float curve = channels[channel].slide.curve * 5.0;
+    float slope = channels[channel].slide.slope;
+    float curve = channels[channel].slide.curve;
     float phase = channels[channel].slide.phase;
-    float slideFreq = phase * slope + (curve * slope * phase * phase);
-    slideFreq *= dHertz;
-    
-    float vibratoSpeed = powf(channels[channel].lfo.freq, 1.2f) * 0.01f;
+
     float vibratoAmplitude = channels[channel].lfo.amplitude * 2.0f;
 
     if (vibratoAmplitude > 0.0f)
     {
-        vibratoPhase += vibratoSpeed;
-        dHertz = (float)(dHertz*(1.0 + sinf(vibratoPhase)*vibratoAmplitude));
+        float vibratoSpeed = powf(channels[channel].lfo.freq, 1.2f) * 0.01f;
+        channels[channel].lfo.phase += vibratoSpeed;
+        dHertz = (float)(dHertz*(1.0 + sinf(channels[channel].lfo.phase)*vibratoAmplitude));
     }
 
     if(slope + curve != 0.0)
     {
         channels[channel].slide.phase = channels[channel].time;
-        dHertz += slideFreq;
+        float fslide = 1.0 - pow(slope, 3.0)*0.001;
+        float fdslide = -pow(curve, 3.0)*0.0001;
+        fslide += fdslide;
+        channels[channel].phase *= fslide;
     }
 
     if (dHertz < 20) dHertz = 20;

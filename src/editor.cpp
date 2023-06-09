@@ -651,7 +651,8 @@ bool Editor::IsBlack(int note)
         int sustainPunchValue = editorEngineRef->Peek(dir+3);
         int decayTimeValue    = editorEngineRef->Peek(dir+4);
 
-        int slideValue        = Tools::ToSigned(editorEngineRef->Peek(dir+5));
+       // int slideValue        = Tools::ToSigned(editorEngineRef->Peek(dir+5));
+        int amplitude        = editorEngineRef->Peek(dir+5);
         int deltaSlideValue   = Tools::ToSigned(editorEngineRef->Peek(dir+6));
         int vibratoDepthValue = editorEngineRef->Peek(dir+7);
         int vibratoSpeedValue = editorEngineRef->Peek(dir+8);
@@ -776,7 +777,7 @@ bool Editor::IsBlack(int note)
             editorEngineRef->audioManager->SetSlide(0, slp, curv);
         }  
 
-  editorEngineRef->audioManager->SetEnv(0,  editorEngineRef->Peek(dir+1), editorEngineRef->Peek(dir+2),editorEngineRef->Peek(dir+3),editorEngineRef->Peek(dir+4), 255)    ;  
+editorEngineRef->audioManager->SetEnv(0,  editorEngineRef->Peek(dir+1), editorEngineRef->Peek(dir+2),editorEngineRef->Peek(dir+3),editorEngineRef->Peek(dir+4), editorEngineRef->Peek(dir+5))    ;  
 ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
 
         ImGui::BeginGroup();
@@ -799,6 +800,11 @@ ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | 
             if (ImGuiKnobs::KnobInt("rel", &decayTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+4, decayTimeValue);
+            }
+            ImGui::SameLine();
+            if (ImGuiKnobs::KnobInt("vel", &amplitude, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            {
+                editorEngineRef->Poke(dir+5, amplitude);
             }
         ImGui::EndGroup();
 /*
