@@ -92,6 +92,8 @@ typedef struct {
     float volume = 0.5;
     double timeOn = 0.0;
     double timeOff = 0.0;
+    double time = 0.0;
+	double phase = 0.0;
     ADSR env;
 	LFO lfo;
 	Filter LPF;
@@ -127,13 +129,13 @@ class RetroSynth{
 		  248, 240, 232, 224, 216, 208, 200, 192, 184, 176, 168, 160, 152, 144, 136, 128, 120, 112, 104,  96,  88,  80,  72,  64,  56,  48,  40,  32,  24,  16,   8,   0
 		};
 
-    FTYPE RenderNote(int channel, int oscT, int note, float time, float timeOn);
+    FTYPE RenderNote(int channel, int oscT, int note);
     FTYPE FrequencyFromNote(int midi_note);
 
     Channel channels[MAX_VOICES] = {0};
 
     private:
     FTYPE osc(const int dChannel, const FTYPE dHertz, const int nType);
-	FTYPE waveTable(float freq, uint8_t osc);
+	FTYPE waveTable(int channel, float freq, uint8_t osc);
 
 };

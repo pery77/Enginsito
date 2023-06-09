@@ -10,7 +10,6 @@
 
 #define NOISE_SAMPLES 22050
 uint8_t NOISE [NOISE_SAMPLES];
-static FTYPE phase = 0.0;
 
 std::random_device rd;
 std::mt19937 gen(rd());
@@ -31,7 +30,7 @@ FTYPE RetroSynth::FrequencyFromNote(int midi_note)
     return 440.0f * pow(2.0f, (midi_note - 69) / 12.0f);
 }
 
-FTYPE RetroSynth::RenderNote(int channel, int oscT, int note, float time, float timeOn) 
+FTYPE RetroSynth::RenderNote(int channel, int oscT, int note) 
 {
     FTYPE frequency = FrequencyFromNote(note);
     FTYPE value = osc(channel, frequency, oscT);
@@ -42,9 +41,12 @@ float vibratoPhase = 0.0f;
 
 FTYPE RetroSynth::osc(const int channel, FTYPE dHertz, const int nType) 
 {
-    float slideFreq = channels[channel].slide.phase * channels[channel].slide.slope + 
-        (channels[channel].slide.curve * channels[channel].slide.slope * channels[channel].slide.phase * channels[channel].slide.phase);
-
+    float slope = channels[channel].slide.slope * 10.0;
+    float curve = channels[channel].slide.curve * 5.0;
+    float phase = channels[channel].slide.phase;
+    float slideFreq = phase * slope + (curve * slope * phase * phase);
+    slideFreq *= dHertz;
+    
     float vibratoSpeed = powf(channels[channel].lfo.freq, 1.2f) * 0.01f;
     float vibratoAmplitude = channels[channel].lfo.amplitude * 2.0f;
 
@@ -54,24 +56,29 @@ FTYPE RetroSynth::osc(const int channel, FTYPE dHertz, const int nType)
         dHertz = (float)(dHertz*(1.0 + sinf(vibratoPhase)*vibratoAmplitude));
     }
 
-    //if(slideFreq != 0.0)
+    if(slope + curve != 0.0)
     {
-        channels[channel].slide.phase ++;
+        channels[channel].slide.phase = channels[channel].time;
+        dHertz += slideFreq;
     }
 
-    dHertz += slideFreq;
-    return waveTable(dHertz, nType);
+    if (dHertz < 20) dHertz = 20;
+    if (dHertz > 20000) dHertz = 20000;
+
+    return waveTable(channel, dHertz, nType);
 }
 
-FTYPE RetroSynth::waveTable(float freq, uint8_t osc)
+FTYPE RetroSynth::waveTable(int channel, float freq, uint8_t osc)
 {   
     FTYPE increment = freq / 44100.0;
     int size = osc == 4 ? NOISE_SAMPLES : TABLE_SIZE;
 
-    int i = static_cast<int>(phase * size) % size;
-    int iN = static_cast<int>((phase * size) * increment) % size;
+    float phaseXsize = channels[channel].phase * size;
+
+    int i = static_cast<int>(phaseXsize) % size;
+    int iN = static_cast<int>(phaseXsize * increment) % size;
  
-    phase += increment;
+    channels[channel].phase += increment;
 
     uint8_t tableValue;
     

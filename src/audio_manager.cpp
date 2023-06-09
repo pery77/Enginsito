@@ -35,7 +35,7 @@ void audioInputCallback(void* buffer, unsigned int frames)
 
             if (amplitude > 0.0001) 
             {
-                samples[track] += synth->RenderNote(track, synth->channels[track].osc, synth->channels[track].note, musicTime, synth->channels[track].timeOn);
+                samples[track] += synth->RenderNote(track, synth->channels[track].osc, synth->channels[track].note);
                 samples[track] *= synth->channels[track].volume * amplitude;
 
                 float cutoff    = synth->channels[track].LPF.cutoff;
@@ -48,6 +48,14 @@ void audioInputCallback(void* buffer, unsigned int frames)
 
                 samples[track] = output * 32767.0;
                 channelPlaying++;
+                synth->channels[track].time += steps;
+            }
+            else
+            {
+                synth->channels[track].phase = 0.0;
+                synth->channels[track].lfo.phase = 0.0;
+                synth->channels[track].slide.phase = 0.0;
+                synth->channels[track].time = 0.0;
             }
 
             if (channelPlaying > 0)
@@ -222,8 +230,8 @@ void AudioManager::SetOSC(uint8_t channel, uint8_t osc)
 }
 void AudioManager::SetSlide(uint8_t channel, uint8_t slope, uint8_t curve)
 {
-    synth->channels[channel].slide.slope = slope / 255.0f;
-    synth->channels[channel].slide.curve = curve / 255.0f;
+    synth->channels[channel].slide.slope = slope / 127.0f - 1.0f;
+    synth->channels[channel].slide.curve = curve / 127.0f - 1.0f;
 }
 
 //Effects

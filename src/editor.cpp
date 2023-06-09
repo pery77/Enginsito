@@ -737,10 +737,10 @@ bool Editor::IsBlack(int note)
 
         ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
 //ImGui::BeginTooltip();
-//ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].cutOff));
-//ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].resonance));
+//ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].slide.slope));
+//ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].slide.curve));
 //ImGui::EndTooltip();
-        static int osc, lfo, amp, cut = 255, res, slp, curv;
+        static int osc, lfo, amp, cut = 255, res, slp = 127, curv = 127;
         if (ImGuiKnobs::KnobInt("OSC", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
             editorEngineRef->audioManager->SetOSC(0, osc);
