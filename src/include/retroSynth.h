@@ -24,7 +24,6 @@ struct ADSR : public envelope{
 		Decay     = 0.04;
 		Sustain   = 1.0;
 		Release   = 0.02;
-		Amplitude = 1.0;
 	}
 
 	virtual FTYPE amplitude(const FTYPE dTime, const FTYPE dTimeOn, const FTYPE dTimeOff) {
@@ -36,10 +35,10 @@ struct ADSR : public envelope{
 			FTYPE dLifeTime = dTime - dTimeOn;
 
 			if (dLifeTime <= Attack)
-				dAmplitude = (dLifeTime / Attack) * Amplitude;
+				dAmplitude = (dLifeTime / Attack);
 
 			if (dLifeTime > Attack && dLifeTime <= (Attack + Decay))
-				dAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + Amplitude;
+				dAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + 1.0f;
 
 			if (dLifeTime > (Attack + Decay))
 				dAmplitude = Sustain;
@@ -49,10 +48,10 @@ struct ADSR : public envelope{
 			FTYPE dLifeTime = dTimeOff - dTimeOn;
 
 			if (dLifeTime <= Attack)
-				dReleaseAmplitude = (dLifeTime / Attack) * Amplitude;
+				dReleaseAmplitude = (dLifeTime / Attack);
 
 			if (dLifeTime > Attack && dLifeTime <= (Attack + Decay))
-				dReleaseAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + Amplitude;
+				dReleaseAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + 1.0f;
 
 			if (dLifeTime > (Attack + Decay))
 				dReleaseAmplitude = Sustain;

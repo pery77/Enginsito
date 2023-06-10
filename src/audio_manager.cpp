@@ -38,24 +38,17 @@ void audioInputCallback(void* buffer, unsigned int frames)
                 samples[track] += synth->RenderNote(track, synth->channels[track].osc, synth->channels[track].note);
                 samples[track] *= synth->channels[track].volume * amplitude;
 
-                float cutoff    = synth->channels[track].LPF.cutoff;
-                float resonance = synth->channels[track].LPF.resonance;
-
-                float output = lastOutput[track] + cutoff * (samples[track] - lastOutput[track]);
-                output /= 1.0 + (resonance * cutoff);
-
-                lastOutput[track] = output;
-
-                samples[track] = output * 32767.0;
+                samples[track] *= 32767.0;
+                
                 channelPlaying++;
                 synth->channels[track].time += steps;
             }
             else
             {
-                synth->channels[track].phase = 0.0;
-                synth->channels[track].lfo.phase = 0.0;
+                synth->channels[track].phase       = 0.0;
+                synth->channels[track].lfo.phase   = 0.0;
                 synth->channels[track].slide.phase = 0.0;
-                synth->channels[track].time = 0.0;
+                synth->channels[track].time        = 0.0;
             }
 
             if (channelPlaying > 0)
@@ -205,13 +198,12 @@ RetroSynth* AudioManager::GetSynth()
 }
 
 void AudioManager::SetEnv(uint8_t channel, uint8_t attackTime, uint8_t decayTime,
-                         uint8_t sustainAmplitude, uint8_t releaseTime, uint8_t startAmplitude)
+                         uint8_t sustainAmplitude, uint8_t releaseTime)
 {
     synth->channels[channel].env.Attack       = attackTime       / 255.0;
     synth->channels[channel].env.Decay        = decayTime        / 255.0;
     synth->channels[channel].env.Sustain      = sustainAmplitude / 255.0;
     synth->channels[channel].env.Release      = releaseTime      / 255.0;
-    synth->channels[channel].env.Amplitude    = startAmplitude   / 255.0;
 }
 
 void AudioManager::SetLFO(uint8_t channel, uint8_t lfoNote, uint8_t lfoAmp)

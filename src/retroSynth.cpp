@@ -36,6 +36,9 @@ FTYPE RetroSynth::RenderNote(int channel, int oscT, int note)
     return osc(channel, frequency, oscT);
 }
 
+float fltp  = 0.0f;
+float fltdp = 0.0f;
+
 FTYPE RetroSynth::osc(const int channel, FTYPE dHertz, const int nType) 
 {
     float slope = channels[channel].slide.slope;
@@ -46,9 +49,8 @@ FTYPE RetroSynth::osc(const int channel, FTYPE dHertz, const int nType)
 
     if (vibratoAmplitude > 0.0f)
     {
-        float vibratoSpeed = powf(channels[channel].lfo.freq, 1.2f) * 0.01f;
-        channels[channel].lfo.phase += vibratoSpeed;
-        dHertz = (float)(dHertz*(1.0 + sinf(channels[channel].lfo.phase)*vibratoAmplitude));
+        channels[channel].lfo.phase += powf(channels[channel].lfo.freq, 1.2f) * 0.01f;;
+        dHertz = (dHertz*(1.0 + sinf(channels[channel].lfo.phase) * vibratoAmplitude));
     }
 
     if(slope + curve != 0.0)
@@ -63,7 +65,33 @@ FTYPE RetroSynth::osc(const int channel, FTYPE dHertz, const int nType)
     if (dHertz < 20) dHertz = 20;
     if (dHertz > 20000) dHertz = 20000;
 
-    return waveTable(channel, dHertz, nType);
+    double sample = waveTable(channel, dHertz, nType);
+
+    float cutoff    = channels[channel].LPF.cutoff;
+    float resonance = channels[channel].LPF.resonance;
+
+    float fltw = powf(cutoff, 3.0f);
+    float fltdmp = 1.0f/(1.0f + powf(resonance, 2.0f)*10.0f)*(0.01f + fltw);
+
+    if (fltdmp > 0.8f) fltdmp = 0.8f;
+
+    float pp = fltp;
+
+    if (fltw < 0.0f) fltw = 0.0f;
+    if (fltw > 0.1f) fltw = 0.1f;
+
+    if (cutoff != 1.0f)  
+    {
+        fltdp += (sample-fltp)*fltw;
+        fltdp -= fltdp*fltdmp;
+        fltp += fltdp;
+        sample = fltp;
+    }
+
+    if (sample > 1.) sample = 1.;
+    if (sample < -1.) sample = -1.;
+
+    return sample;
 }
 
 FTYPE RetroSynth::waveTable(int channel, float freq, uint8_t osc)
@@ -77,6 +105,8 @@ FTYPE RetroSynth::waveTable(int channel, float freq, uint8_t osc)
     int iN = static_cast<int>(phaseXsize * increment) % size;
  
     channels[channel].phase += increment;
+
+    //if (channels[channel].phase > 1000.f) channels[channel].phase = 0.0f;
 
     uint8_t tableValue;
     

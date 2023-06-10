@@ -737,10 +737,10 @@ bool Editor::IsBlack(int note)
         ImGui::EndGroup();
 
         ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
-//ImGui::BeginTooltip();
-//ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].slide.slope));
+ImGui::BeginTooltip();
+//ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].env.));
 //ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].slide.curve));
-//ImGui::EndTooltip();
+ImGui::EndTooltip();
         static int osc, lfo, amp, cut = 255, res, slp = 127, curv = 127;
         if (ImGuiKnobs::KnobInt("OSC", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
@@ -777,7 +777,7 @@ bool Editor::IsBlack(int note)
             editorEngineRef->audioManager->SetSlide(0, slp, curv);
         }  
 
-editorEngineRef->audioManager->SetEnv(0,  editorEngineRef->Peek(dir+1), editorEngineRef->Peek(dir+2),editorEngineRef->Peek(dir+3),editorEngineRef->Peek(dir+4), editorEngineRef->Peek(dir+5))    ;  
+editorEngineRef->audioManager->SetEnv(0,  editorEngineRef->Peek(dir+1), editorEngineRef->Peek(dir+2),editorEngineRef->Peek(dir+3),editorEngineRef->Peek(dir+4))    ;  
 ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
 
         ImGui::BeginGroup();
@@ -800,11 +800,6 @@ ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | 
             if (ImGuiKnobs::KnobInt("rel", &decayTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+4, decayTimeValue);
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("vel", &amplitude, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+5, amplitude);
             }
         ImGui::EndGroup();
 /*

@@ -1493,11 +1493,10 @@ int MBManager::setEnv(struct mb_interpreter_t* s, void** l){
 		mb_check(mb_pop_int(s, l, &dec));
 		mb_check(mb_pop_int(s, l, &sus));
 		mb_check(mb_pop_int(s, l, &rel));
-		mb_check(mb_pop_int(s, l, &amp));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    basicEngineRef->audioManager->SetEnv(channel, attk, dec, sus, rel, amp);
+    basicEngineRef->audioManager->SetEnv(channel, attk, dec, sus, rel);
 
 	return result;
 }

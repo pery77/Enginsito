@@ -43,7 +43,7 @@ class AudioManager
     unsigned int GetMusicPosition(uint8_t channel);
     unsigned int GetMusicSize(uint8_t channel);
 
-    void SetEnv(uint8_t channel, uint8_t attackTime, uint8_t decayTime, uint8_t sustainAmplitude, uint8_t releaseTime, uint8_t dStartAmplitude);
+    void SetEnv(uint8_t channel, uint8_t attackTime, uint8_t decayTime, uint8_t sustainAmplitude, uint8_t releaseTime);
 	void SetLFO(uint8_t channel, uint8_t lfoHertz, uint8_t lfoAmp);
 	void SetOSC(uint8_t channel, uint8_t osc);
     void SetFilter(uint8_t channel, uint8_t cutoff, uint8_t resonance);
