@@ -741,38 +741,38 @@ ImGui::BeginTooltip();
 //ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].env.));
 //ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].slide.curve));
 ImGui::EndTooltip();
-        static int osc, lfo, amp, cut = 255, res, slp = 127, curv = 127;
-        if (ImGuiKnobs::KnobInt("OSC", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
+        static int osc, speed, depth, cut = 255, res = 255, slp = 127, curv = 127;
+        if (ImGuiKnobs::KnobInt("osc", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
             editorEngineRef->audioManager->SetOSC(0, osc);
         }     
         ImGui::SameLine();  
-        if (ImGuiKnobs::KnobInt("LFO", &lfo, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("speed", &speed, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetLFO(0, lfo, amp);
+            editorEngineRef->audioManager->SetLFO(0, speed, depth);
         }  
         ImGui::SameLine();
-        if (ImGuiKnobs::KnobInt("AMP", &amp, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("depth", &depth, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetLFO(0, lfo, amp);
+            editorEngineRef->audioManager->SetLFO(0, speed, depth);
         }  
         ImGui::SameLine();  
-        if (ImGuiKnobs::KnobInt("CUT", &cut, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("cut", &cut, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
             editorEngineRef->audioManager->SetFilter(0, cut, res);
         }  
         ImGui::SameLine();
-        if (ImGuiKnobs::KnobInt("RES", &res, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("res", &res, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
             editorEngineRef->audioManager->SetFilter(0, cut, res);
         }  
 
-        if (ImGuiKnobs::KnobInt("Slope", &slp, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("slope", &slp, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
             editorEngineRef->audioManager->SetSlide(0, slp, curv);
         }  
         ImGui::SameLine();
-        if (ImGuiKnobs::KnobInt("Curve", &curv, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("curve", &curv, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
             editorEngineRef->audioManager->SetSlide(0, slp, curv);
         }  
@@ -782,7 +782,7 @@ ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | 
 
         ImGui::BeginGroup();
             ImGui::Text("Envelope");
-            if (ImGuiKnobs::KnobInt("Attack", &attackTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("att", &attackTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
                 editorEngineRef->Poke(dir+1, attackTimeValue);
             }

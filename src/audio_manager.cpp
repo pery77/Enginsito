@@ -16,8 +16,6 @@ float steps = 1.0f / (float)SAMPLE_RATE;
 double musicTime = 0.0;
 bool isPlaying = false;
 
-float lastOutput[TRACK_COUNT] = {0};
-
 void audioInputCallback(void* buffer, unsigned int frames) 
 {
     short* bufferData = (short*)buffer;
@@ -30,25 +28,29 @@ void audioInputCallback(void* buffer, unsigned int frames)
 
         for (int track = 0; track < TRACK_COUNT; track++) 
         {
-            float amplitude = synth->channels[track].env.amplitude(musicTime, synth->channels[track].timeOn, synth->channels[track].timeOff);
+            float amplitude = 
+                synth->channels[track].preset->env.amplitude(musicTime, 
+                                                            synth->channels[track].preset->timeOn,
+                                                            synth->channels[track].preset->timeOff);
             samples[track] = 0;
 
             if (amplitude > 0.0001) 
             {
-                samples[track] += synth->RenderNote(track, synth->channels[track].osc, synth->channels[track].note);
-                samples[track] *= synth->channels[track].volume * amplitude;
+                samples[track] += synth->RenderNote(track, synth->channels[track].preset->osc, 
+                                                           synth->channels[track].preset->note);
+                samples[track] *= synth->channels[track].preset->volume * amplitude;
 
                 samples[track] *= 32767.0;
                 
                 channelPlaying++;
-                synth->channels[track].time += steps;
+                synth->channels[track].preset->time += steps;
             }
             else
             {
-                synth->channels[track].phase       = 0.0;
-                synth->channels[track].lfo.phase   = 0.0;
-                synth->channels[track].slide.phase = 0.0;
-                synth->channels[track].time        = 0.0;
+                synth->channels[track].preset->phase       = 0.0;
+                synth->channels[track].preset->lfo.phase   = 0.0;
+                synth->channels[track].preset->slide.phase = 0.0;
+                synth->channels[track].preset->time        = 0.0;
             }
 
             if (channelPlaying > 0)
@@ -126,7 +128,8 @@ AudioManager::AudioManager(Engine* _engine)
 AudioManager::~AudioManager(){}
 
 //Music
-void AudioManager::Update(){
+void AudioManager::Update()
+{
 
     MusicIsPlaying = false;
     for (int i = 0; i < TRACK_COUNT + 1; i++) {
@@ -139,7 +142,8 @@ void AudioManager::Update(){
     if (MusicIsPlaying) AudioTick++;
 }
 
-void AudioManager::SetSequence(uint8_t id, const char* newSequence){
+void AudioManager::SetSequence(uint8_t id, const char* newSequence)
+{
     if (id > TRACK_COUNT) 
         id = TRACK_COUNT;
     sequence[id] = newSequence;
@@ -149,18 +153,21 @@ const char* AudioManager::GetSequence(uint8_t id){
         return sequence[id];
 }
 
-void AudioManager::PlayNote(uint8_t channel, uint8_t note, uint8_t volume){
+void AudioManager::PlayNote(uint8_t channel, uint8_t note, uint8_t volume)
+{
     if (channel >= TRACK_COUNT) return;
-    synth->channels[channel].note = note;
-    synth->channels[channel].volume = volume * 0.007874; // 1/127
-    synth->channels[channel].timeOn = musicTime;
-    synth->channels[channel].timeOff = 0;
+    synth->channels[channel].preset->note    = note;
+    synth->channels[channel].preset->volume  = volume * 0.007874; // 1/127
+    synth->channels[channel].preset->timeOn  = musicTime;
+    synth->channels[channel].preset->timeOff = 0;
 }
-void AudioManager::StopNote(uint8_t channel){
+void AudioManager::StopNote(uint8_t channel)
+{
     if (channel >= TRACK_COUNT) return;
-    synth->channels[channel].timeOff = musicTime;
+    synth->channels[channel].preset->timeOff = musicTime;
 }
-void AudioManager::MusicPlay(){
+void AudioManager::MusicPlay()
+{
     AudioTick = 0;
     musicTime = 0;
     for (int i = 0; i < TRACK_COUNT + 1; i++) {
@@ -179,15 +186,17 @@ void AudioManager::MusicStop(){
         MusicIsPlaying = false;
         if (i<TRACK_COUNT)
         {
-            synth->channels[i].timeOn = -2;
-            synth->channels[i].timeOff = -1;
+            synth->channels[i].preset->timeOn = -2;
+            synth->channels[i].preset->timeOff = -1;
         }
     }
 }
-unsigned int AudioManager::GetMusicPosition(uint8_t channel){
+unsigned int AudioManager::GetMusicPosition(uint8_t channel)
+{
     return mml[channel]->getTotalSteps();
 }
-unsigned int AudioManager::GetMusicSize(uint8_t channel){
+unsigned int AudioManager::GetMusicSize(uint8_t channel)
+{
     return mml[channel]->getSize();
 }
 
@@ -196,35 +205,38 @@ RetroSynth* AudioManager::GetSynth()
 {
     return synth;
 }
-
-void AudioManager::SetEnv(uint8_t channel, uint8_t attackTime, uint8_t decayTime,
+void AudioManager::SetOSC(uint8_t preset, uint8_t osc)
+{
+    synth->presets[preset].osc = osc;
+}
+void AudioManager::SetEnv(uint8_t preset, uint8_t attackTime, uint8_t decayTime,
                          uint8_t sustainAmplitude, uint8_t releaseTime)
 {
-    synth->channels[channel].env.Attack       = attackTime       / 255.0;
-    synth->channels[channel].env.Decay        = decayTime        / 255.0;
-    synth->channels[channel].env.Sustain      = sustainAmplitude / 255.0;
-    synth->channels[channel].env.Release      = releaseTime      / 255.0;
+    synth->presets[preset].env.Attack  = attackTime       / 255.0;
+    synth->presets[preset].env.Decay   = decayTime        / 255.0;
+    synth->presets[preset].env.Sustain = sustainAmplitude / 255.0;
+    synth->presets[preset].env.Release = releaseTime      / 255.0;
+}
+void AudioManager::SetLFO(uint8_t preset, uint8_t lfoNote, uint8_t lfoAmp)
+{
+    synth->presets[preset].lfo.speed = lfoNote / 255.0;
+    synth->presets[preset].lfo.depht = lfoAmp  / 255.0;
+}
+void AudioManager::SetFilter(uint8_t preset, uint8_t cutoff, uint8_t resonance)
+{
+    synth->presets[preset].LPF.cutoff    = cutoff    / 255.0f;
+    synth->presets[preset].LPF.resonance = resonance / 255.0f;
 }
 
-void AudioManager::SetLFO(uint8_t channel, uint8_t lfoNote, uint8_t lfoAmp)
+void AudioManager::SetSlide(uint8_t preset, uint8_t slope, uint8_t curve)
 {
-    synth->channels[channel].lfo.freq = lfoNote / 255.0;
-    synth->channels[channel].lfo.amplitude = lfoAmp / 255.0;
+    synth->presets[preset].slide.slope = slope / 127.0f - 1.0f;
+    synth->presets[preset].slide.curve = curve / 127.0f - 1.0f;
 }
-void AudioManager::SetFilter(uint8_t channel, uint8_t cutoff, uint8_t resonance)
-{
-    synth->channels[channel].LPF.cutoff = cutoff / 255.0f;
-    synth->channels[channel].LPF.resonance = resonance / 255.0f;
-}
-void AudioManager::SetOSC(uint8_t channel, uint8_t osc)
-{
-    synth->channels[channel].osc = osc;
-}
-void AudioManager::SetSlide(uint8_t channel, uint8_t slope, uint8_t curve)
-{
-    synth->channels[channel].slide.slope = slope / 127.0f - 1.0f;
-    synth->channels[channel].slide.curve = curve / 127.0f - 1.0f;
-}
+
+
+
+
 
 //Effects
 void AudioManager::SFXRender(uint8_t id, uint8_t note)

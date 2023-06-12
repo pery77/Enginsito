@@ -1,22 +1,25 @@
 #pragma once
 #include <stdint.h>
 
-#define MAX_VOICES 4 // one per track
-#define FTYPE double
+#define NUM_CHANNELS 4
+#define NUM_PRESETS  16
 
 #define TABLE_SIZE  64
+#define SAMPLERATE  44100
+
+#define NOISE_SAMPLES 22050
 
 struct envelope {
-	virtual FTYPE amplitude(const FTYPE dTime, const FTYPE dTimeOn, const FTYPE dTimeOff) = 0;
+	virtual double amplitude(const double dTime, const double dTimeOn, const double dTimeOff) = 0;
 };
 
 struct ADSR : public envelope{
 
-	FTYPE Attack;
-	FTYPE Decay;
-	FTYPE Sustain;
-	FTYPE Release;
-	FTYPE Amplitude;
+	double Attack;
+	double Decay;
+	double Sustain;
+	double Release;
+	double Amplitude;
 
 	ADSR() {
 
@@ -26,13 +29,13 @@ struct ADSR : public envelope{
 		Release   = 0.02;
 	}
 
-	virtual FTYPE amplitude(const FTYPE dTime, const FTYPE dTimeOn, const FTYPE dTimeOff) {
+	virtual double amplitude(const double dTime, const double dTimeOn, const double dTimeOff) {
 
-		FTYPE dAmplitude = 0.0;
-		FTYPE dReleaseAmplitude = 0.0;
+		double dAmplitude = 0.0;
+		double dReleaseAmplitude = 0.0;
 		if (dTimeOn > dTimeOff) // Note is on
 		{
-			FTYPE dLifeTime = dTime - dTimeOn;
+			double dLifeTime = dTime - dTimeOn;
 
 			if (dLifeTime <= Attack)
 				dAmplitude = (dLifeTime / Attack);
@@ -45,7 +48,7 @@ struct ADSR : public envelope{
 		}
 		else // Note is off
 		{
-			FTYPE dLifeTime = dTimeOff - dTimeOn;
+			double dLifeTime = dTimeOff - dTimeOn;
 
 			if (dLifeTime <= Attack)
 				dReleaseAmplitude = (dLifeTime / Attack);
@@ -68,9 +71,9 @@ struct ADSR : public envelope{
 };
 
 typedef struct {
-	float freq      = 0.0;
- 	float amplitude = 0.0;
-	float phase     = 0.0;
+	float speed   = 0.0;
+ 	float depht  = 0.0;
+	float phase  = 0.0;
 } LFO;
 
 typedef struct {
@@ -96,6 +99,10 @@ typedef struct {
 	LFO lfo;
 	Filter LPF;
 	Slide slide;
+} Preset;
+
+typedef struct {
+	Preset *preset;
 } Channel;
 
 const int SQUARE       = 0;
@@ -127,13 +134,15 @@ class RetroSynth{
 		  248, 240, 232, 224, 216, 208, 200, 192, 184, 176, 168, 160, 152, 144, 136, 128, 120, 112, 104,  96,  88,  80,  72,  64,  56,  48,  40,  32,  24,  16,   8,   0
 		};
 
-    FTYPE RenderNote(int channel, int oscT, int note);
-    FTYPE FrequencyFromNote(int midi_note);
+	uint8_t NOISE [NOISE_SAMPLES];
 
-    Channel channels[MAX_VOICES] = {0};
+    Channel channels[NUM_CHANNELS] = {0};
+    Preset presets[NUM_PRESETS] = {0};
+
+    double RenderNote(int channel, int oscT, int note);
+	void SetChannelPreset(uint8_t channel, uint8_t preset);
 
     private:
-    FTYPE osc(const int dChannel, const FTYPE dHertz, const int nType);
-	FTYPE waveTable(int channel, float freq, uint8_t osc);
-
+    double osc(const int dChannel, const double dHertz, const int nType);
+	double waveTable(int channel, float freq, uint8_t osc);
 };

@@ -43,11 +43,13 @@ class AudioManager
     unsigned int GetMusicPosition(uint8_t channel);
     unsigned int GetMusicSize(uint8_t channel);
 
-    void SetEnv(uint8_t channel, uint8_t attackTime, uint8_t decayTime, uint8_t sustainAmplitude, uint8_t releaseTime);
-	void SetLFO(uint8_t channel, uint8_t lfoHertz, uint8_t lfoAmp);
-	void SetOSC(uint8_t channel, uint8_t osc);
-    void SetFilter(uint8_t channel, uint8_t cutoff, uint8_t resonance);
-    void SetSlide(uint8_t channel, uint8_t slope, uint8_t curve);
+    void SetEnv(uint8_t preset, uint8_t attackTime, uint8_t decayTime, uint8_t sustainAmplitude, uint8_t releaseTime);
+	void SetLFO(uint8_t preset, uint8_t lfoHertz, uint8_t lfoAmp);
+	void SetOSC(uint8_t preset, uint8_t osc);
+    void SetFilter(uint8_t preset, uint8_t cutoff, uint8_t resonance);
+    void SetSlide(uint8_t preset, uint8_t slope, uint8_t curve);
+    
+    void SetChannelPreset(uint8_t channel, uint8_t preset);
 
     void SFXPlay(uint8_t id, uint8_t vol = 127);
     void SFXStop(uint8_t id);
