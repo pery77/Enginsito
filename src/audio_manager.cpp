@@ -12,57 +12,7 @@ RetroSynth* synth;
 AudioStream stream;
 Engine* audioEngineRef;
 
-float steps = 1.0f / (float)SAMPLE_RATE;
-double musicTime = 0.0;
 bool isPlaying = false;
-
-void audioInputCallback(void* buffer, unsigned int frames) 
-{
-    short* bufferData = (short*)buffer;
-
-    for (int frame = 0; frame < frames; frame++)
-    {
-        float samples[TRACK_COUNT] = {0};
-        float mixedSample = 0;
-        int channelPlaying = 0;
-
-        for (int track = 0; track < TRACK_COUNT; track++) 
-        {
-            float amplitude = 
-                synth->channels[track].preset->env.amplitude(musicTime, 
-                                                            synth->channels[track].timeOn,
-                                                            synth->channels[track].timeOff);
-            samples[track] = 0;
-
-            if (amplitude > 0.0001) 
-            {
-                samples[track] += synth->RenderNote(track, synth->channels[track].preset->osc, 
-                                                           synth->channels[track].note);
-                samples[track] *= synth->channels[track].volume * amplitude;
-
-                samples[track] *= 32767.0;
-                
-                channelPlaying++;
-                synth->channels[track].time += steps;
-            }
-            else
-            {
-                synth->channels[track].phase      = 0.0;
-                synth->channels[track].lfoPhase   = 0.0;
-                synth->channels[track].slidePhase = 0.0;
-                synth->channels[track].time       = 0.0;
-            }
-
-            if (channelPlaying > 0)
-            {
-                mixedSample += samples[track] / channelPlaying;
-            }
-        }
-
-        bufferData[frame] = mixedSample;
-        musicTime += steps;
-    }
-}
 
 void mmlCallback(MMLEvent event, int channel, int program, int note, int volume, AudioManager* au){
     switch (event) {
@@ -111,7 +61,7 @@ AudioManager::AudioManager(Engine* _engine)
    
     SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
     stream = LoadAudioStream(SAMPLE_RATE, SAMPLE_SIZE, CHANNELS);
-    SetAudioStreamCallback(stream, audioInputCallback);
+    SetAudioStreamCallback(stream, [](void* buffer, unsigned int frames) { synth->AudioInputCallback(buffer, frames);});
 
     PlayAudioStream(stream);
    
@@ -158,18 +108,18 @@ void AudioManager::PlayNote(uint8_t channel, uint8_t note, uint8_t volume)
     if (channel >= TRACK_COUNT) return;
     synth->channels[channel].note    = note;
     synth->channels[channel].volume  = volume * 0.007874; // 1/127
-    synth->channels[channel].timeOn  = musicTime;
+    synth->channels[channel].timeOn  = synth->musicTime;
     synth->channels[channel].timeOff = 0;
 }
 void AudioManager::StopNote(uint8_t channel)
 {
     if (channel >= TRACK_COUNT) return;
-    synth->channels[channel].timeOff = musicTime;
+    synth->channels[channel].timeOff = synth->musicTime;
 }
 void AudioManager::MusicPlay()
 {
     AudioTick = 0;
-    musicTime = 0;
+    synth->musicTime = 0;
     for (int i = 0; i < TRACK_COUNT + 1; i++) {
         size_t lenght = strlen(sequence[i]);
         if (lenght > 2){
@@ -180,7 +130,7 @@ void AudioManager::MusicPlay()
 }
 void AudioManager::MusicStop(){
     AudioTick = 0;
-    musicTime = 0;
+    synth->musicTime = 0;
     for (int i = 0; i < TRACK_COUNT; i++) {
         mml[i]->stop();
         MusicIsPlaying = false;

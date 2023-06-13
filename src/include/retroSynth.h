@@ -7,6 +7,7 @@
 #define TABLE_SIZE  64
 #define SAMPLERATE  44100.0
 
+
 #define NOISE_SAMPLES 22050
 
 struct envelope {
@@ -143,8 +144,12 @@ class RetroSynth{
 
     double RenderNote(int channel, int oscT, int note);
 	void SetChannelPreset(uint8_t channel, uint8_t preset);
+	void AudioInputCallback(void* buffer, unsigned int frames);
+
+	double musicTime = 0.0;
 
     private:
     double osc(const int dChannel, const double dHertz, const int nType);
 	double waveTable(int channel, float freq, uint8_t osc);
+	float steps = 1.0 / SAMPLERATE;
 };

@@ -74,7 +74,7 @@ double RetroSynth::osc(const int channel, double dHertz, const int nType)
 
         channels[channel].fltdp += (sample-channels[channel].fltp)*fltw;
         channels[channel].fltdp -= channels[channel].fltdp*fltdmp;
-        channels[channel].fltp += channels[channel].fltdp;
+        channels[channel].fltp  += channels[channel].fltdp;
         sample = channels[channel].fltp;
     }
 
@@ -122,4 +122,49 @@ double RetroSynth::waveTable(int channel, float freq, uint8_t osc)
 void RetroSynth::SetChannelPreset(uint8_t channel, uint8_t preset)
 {
     channels[channel].preset = &presets[preset];
+}
+
+void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames) 
+{
+    short* bufferData = (short*)buffer;
+int TRACK_COUNT = 4;
+    for (int frame = 0; frame < frames; frame++)
+    {
+        float samples[TRACK_COUNT] = {0};
+        float mixedSample = 0;
+        int channelPlaying = 0;
+
+        for (int track = 0; track < TRACK_COUNT; track++) 
+        {
+            float amplitude = 
+                channels[track].preset->env.amplitude(musicTime, channels[track].timeOn, channels[track].timeOff);
+            samples[track] = 0;
+
+            if (amplitude > 0.0001) 
+            {
+                samples[track] += RenderNote(track, channels[track].preset->osc, channels[track].note);
+                samples[track] *= channels[track].volume * amplitude;
+
+                samples[track] *= 32767.0;
+                
+                channelPlaying++;
+                channels[track].time += steps;
+            }
+            else
+            {
+                channels[track].phase      = 0.0;
+                channels[track].lfoPhase   = 0.0;
+                channels[track].slidePhase = 0.0;
+                channels[track].time       = 0.0;
+            }
+
+            if (channelPlaying > 0)
+            {
+                mixedSample += samples[track] / channelPlaying;
+            }
+        }
+
+        bufferData[frame] = mixedSample;
+        musicTime += steps;
+    }
 }
