@@ -30,27 +30,27 @@ void audioInputCallback(void* buffer, unsigned int frames)
         {
             float amplitude = 
                 synth->channels[track].preset->env.amplitude(musicTime, 
-                                                            synth->channels[track].preset->timeOn,
-                                                            synth->channels[track].preset->timeOff);
+                                                            synth->channels[track].timeOn,
+                                                            synth->channels[track].timeOff);
             samples[track] = 0;
 
             if (amplitude > 0.0001) 
             {
                 samples[track] += synth->RenderNote(track, synth->channels[track].preset->osc, 
-                                                           synth->channels[track].preset->note);
-                samples[track] *= synth->channels[track].preset->volume * amplitude;
+                                                           synth->channels[track].note);
+                samples[track] *= synth->channels[track].volume * amplitude;
 
                 samples[track] *= 32767.0;
                 
                 channelPlaying++;
-                synth->channels[track].preset->time += steps;
+                synth->channels[track].time += steps;
             }
             else
             {
-                synth->channels[track].preset->phase       = 0.0;
-                synth->channels[track].preset->lfo.phase   = 0.0;
-                synth->channels[track].preset->slide.phase = 0.0;
-                synth->channels[track].preset->time        = 0.0;
+                synth->channels[track].phase      = 0.0;
+                synth->channels[track].lfoPhase   = 0.0;
+                synth->channels[track].slidePhase = 0.0;
+                synth->channels[track].time       = 0.0;
             }
 
             if (channelPlaying > 0)
@@ -156,15 +156,15 @@ const char* AudioManager::GetSequence(uint8_t id){
 void AudioManager::PlayNote(uint8_t channel, uint8_t note, uint8_t volume)
 {
     if (channel >= TRACK_COUNT) return;
-    synth->channels[channel].preset->note    = note;
-    synth->channels[channel].preset->volume  = volume * 0.007874; // 1/127
-    synth->channels[channel].preset->timeOn  = musicTime;
-    synth->channels[channel].preset->timeOff = 0;
+    synth->channels[channel].note    = note;
+    synth->channels[channel].volume  = volume * 0.007874; // 1/127
+    synth->channels[channel].timeOn  = musicTime;
+    synth->channels[channel].timeOff = 0;
 }
 void AudioManager::StopNote(uint8_t channel)
 {
     if (channel >= TRACK_COUNT) return;
-    synth->channels[channel].preset->timeOff = musicTime;
+    synth->channels[channel].timeOff = musicTime;
 }
 void AudioManager::MusicPlay()
 {
@@ -186,8 +186,8 @@ void AudioManager::MusicStop(){
         MusicIsPlaying = false;
         if (i<TRACK_COUNT)
         {
-            synth->channels[i].preset->timeOn = -2;
-            synth->channels[i].preset->timeOff = -1;
+            synth->channels[i].timeOn  = -2;
+            synth->channels[i].timeOff = -1;
         }
     }
 }

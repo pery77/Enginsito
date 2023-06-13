@@ -10,9 +10,9 @@ std::uniform_int_distribution<int8_t> rnd(0, 255);
 RetroSynth::RetroSynth()
 {
     SetChannelPreset(0,0);
-    SetChannelPreset(1,1);
-    SetChannelPreset(2,2);
-    SetChannelPreset(3,3);
+    SetChannelPreset(1,0);
+    SetChannelPreset(2,0);
+    SetChannelPreset(3,0);
     
     for (int i = 0; i < NOISE_SAMPLES; i++) 
     {
@@ -32,9 +32,6 @@ double RetroSynth::RenderNote(int channel, int oscT, int note)
     return osc(channel, frequencyFromNote(note), oscT);
 }
 
-float fltp  = 0.0f;
-float fltdp = 0.0f;
-
 double RetroSynth::osc(const int channel, double dHertz, const int nType) 
 {
     float slope = channels[channel].preset->slide.slope;
@@ -44,17 +41,17 @@ double RetroSynth::osc(const int channel, double dHertz, const int nType)
 
     if (vibratoAmplitude > 0.0f)
     {
-        channels[channel].preset->lfo.phase += powf(channels[channel].preset->lfo.speed, 1.2f) * 0.01f;;
-        dHertz = (dHertz*(1.0 + sinf(channels[channel].preset->lfo.phase) * vibratoAmplitude));
+        channels[channel].lfoPhase += powf(channels[channel].preset->lfo.speed, 1.2f) * 0.01f;;
+        dHertz = (dHertz*(1.0 + sinf(channels[channel].lfoPhase) * vibratoAmplitude));
     }
 
     if(slope + curve != 0.0)
     {
-        channels[channel].preset->slide.phase = channels[channel].preset->time;
-        float fslide = 1.0 - pow(slope, 3.0)*0.001;
+        channels[channel].slidePhase = channels[channel].time;
+        float fslide  = 1.0 - pow(slope, 3.0)*0.001;
         float fdslide = -pow(curve, 3.0)*0.0001;
         fslide += fdslide;
-        channels[channel].preset->phase *= fslide;
+        channels[channel].phase *= fslide;
     }
 
     if (dHertz < 20)    dHertz = 20;
@@ -75,10 +72,10 @@ double RetroSynth::osc(const int channel, double dHertz, const int nType)
         if (fltw < 0.0f) fltw = 0.0f;
         if (fltw > 0.1f) fltw = 0.1f;
 
-        fltdp += (sample-fltp)*fltw;
-        fltdp -= fltdp*fltdmp;
-        fltp += fltdp;
-        sample = fltp;
+        channels[channel].fltdp += (sample-channels[channel].fltp)*fltw;
+        channels[channel].fltdp -= channels[channel].fltdp*fltdmp;
+        channels[channel].fltp += channels[channel].fltdp;
+        sample = channels[channel].fltp;
     }
 
     if (sample > 1.) sample = 1.;
@@ -89,15 +86,15 @@ double RetroSynth::osc(const int channel, double dHertz, const int nType)
 
 double RetroSynth::waveTable(int channel, float freq, uint8_t osc)
 {   
-    double increment = freq / 44100.0;
+    double increment = freq / SAMPLERATE;
     int size = osc == 4 ? NOISE_SAMPLES : TABLE_SIZE;
 
-    float phaseXsize = channels[channel].preset->phase * size;
+    float phaseXsize = channels[channel].phase * size;
 
     int i = static_cast<int>(phaseXsize) % size;
     int iN = static_cast<int>(phaseXsize * increment) % size;
  
-    channels[channel].preset->phase += increment;
+    channels[channel].phase += increment;
 
     uint8_t tableValue;
     

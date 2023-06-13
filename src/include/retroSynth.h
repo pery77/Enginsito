@@ -5,7 +5,7 @@
 #define NUM_PRESETS  16
 
 #define TABLE_SIZE  64
-#define SAMPLERATE  44100
+#define SAMPLERATE  44100.0
 
 #define NOISE_SAMPLES 22050
 
@@ -73,13 +73,11 @@ struct ADSR : public envelope{
 typedef struct {
 	float speed   = 0.0;
  	float depht  = 0.0;
-	float phase  = 0.0;
 } LFO;
 
 typedef struct {
 	float slope = 0.0;
  	float curve = 0.0;
-	float phase = 0.0;
 } Slide;
 
 typedef struct {
@@ -88,21 +86,25 @@ typedef struct {
 } Filter;
 
 typedef struct {
-    int osc = 0;
-    int note = 69;
-    float volume = 0.5;
-    double timeOn = 0.0;
-    double timeOff = 0.0;
-    double time = 0.0;
-	double phase = 0.0;
-    ADSR env;
-	LFO lfo;
+    int    osc = 0;
+    ADSR   env;
+	LFO    lfo;
 	Filter LPF;
-	Slide slide;
+	Slide  slide;
 } Preset;
 
 typedef struct {
 	Preset *preset;
+	int    note       = 69;
+    float  volume     = 0.5f;
+	double phase      = 0.0;
+	double lfoPhase   = 0.0;
+	double slidePhase = 0.0;
+	double timeOn 	  = 0.0;
+    double timeOff    = 0.0;
+    double time       = 0.0;
+	double fltp       = 0.0;
+	double fltdp      = 0.0;
 } Channel;
 
 const int SQUARE       = 0;
