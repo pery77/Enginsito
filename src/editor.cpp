@@ -737,44 +737,65 @@ bool Editor::IsBlack(int note)
         ImGui::EndGroup();
 
         ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
-ImGui::BeginTooltip();
+
+        static char str0[128] = "cdefg";
+        static char str1[128] = "cdefg";
+
+        if (ImGui::Button("Play")) 
+        {
+            editorEngineRef->audioManager->SetSequence(0, str0);
+            editorEngineRef->audioManager->SetSequence(1, str1);
+            editorEngineRef->audioManager->MusicPlay();
+        }
+        
+        ImGui::InputText("#00", str0, IM_ARRAYSIZE(str0));
+        ImGui::InputText("#01", str1, IM_ARRAYSIZE(str1));
+ 
+
+
+
+
+//ImGui::BeginTooltip();
 //ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].env.));
 //ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].slide.curve));
-ImGui::EndTooltip();
-        static int osc, speed, depth, cut = 255, res = 255, slp = 127, curv = 127;
+//ImGui::EndTooltip();
+
+
+        static int osc, speed, depth, cut = 255, res = 255, slp = 127, curv = 127, prg;
+        ImGuiKnobs::KnobInt("prg", &prg, 0, 3, 0.1f, "%01i", ImGuiKnobVariant_Stepped);
         if (ImGuiKnobs::KnobInt("osc", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetOSC(0, osc);
+            editorEngineRef->audioManager->SetOSC(prg, osc);
         }     
         ImGui::SameLine();  
         if (ImGuiKnobs::KnobInt("speed", &speed, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetLFO(0, speed, depth);
+            editorEngineRef->audioManager->SetLFO(prg, speed, depth);
         }  
         ImGui::SameLine();
         if (ImGuiKnobs::KnobInt("depth", &depth, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetLFO(0, speed, depth);
+            editorEngineRef->audioManager->SetLFO(prg, speed, depth);
         }  
         ImGui::SameLine();  
         if (ImGuiKnobs::KnobInt("cut", &cut, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetFilter(0, cut, res);
+            editorEngineRef->audioManager->SetFilter(prg, cut, res);
         }  
         ImGui::SameLine();
         if (ImGuiKnobs::KnobInt("res", &res, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetFilter(0, cut, res);
+            editorEngineRef->audioManager->SetFilter(prg, cut, res);
         }  
 
         if (ImGuiKnobs::KnobInt("slope", &slp, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetSlide(0, slp, curv);
+            editorEngineRef->audioManager->SetSlide(prg, slp, curv);
         }  
         ImGui::SameLine();
         if (ImGuiKnobs::KnobInt("curve", &curv, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetSlide(0, slp, curv);
+            editorEngineRef->audioManager->SetSlide(prg, slp, curv);
         }  
 
 editorEngineRef->audioManager->SetEnv(0,  editorEngineRef->Peek(dir+1), editorEngineRef->Peek(dir+2),editorEngineRef->Peek(dir+3),editorEngineRef->Peek(dir+4))    ;  

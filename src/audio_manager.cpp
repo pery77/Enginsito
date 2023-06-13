@@ -17,26 +17,15 @@ bool isPlaying = false;
 void mmlCallback(MMLEvent event, int channel, int program, int note, int volume, AudioManager* au){
     switch (event) {
         case MML_NOTE_ON:
-        printf("[CHAN: %i] %i\n", channel ,note);
-            if (channel == TRACK_COUNT){
-                au->SFXRender(program, note);
-                au->SFXPlay(program, volume);
-                printf("[Playing: %i] %i\n", program ,note);
-            }
-            else{
-                au->PlayNote(channel, note, volume);
-            }
+            printf("[CHAN: %i] %i\n", channel ,note);
+            au->PlayNote(channel, note, volume);
             break;
         case MML_NOTE_OFF:
-            if (channel == TRACK_COUNT){
-                au->SFXStop(program);
-            }
-            else{
-                au->StopNote(channel);
-            }
+            au->StopNote(channel);
             break;
         case MML_PROGRAM_CHANGE:
             printf("[Program: %i]\n", program);
+            au->SetChannelPreset(channel, program);
             break; 
     }
 }
@@ -45,20 +34,6 @@ AudioManager::AudioManager(Engine* _engine)
 {
     audioEngineRef = _engine;
 
-    for (int i = 0; i < MAX_WAVE_SLOTS; i++)
-    {
-        LoadSoundData(i);
-
-        // Default wave values
-        wave[i].sampleRate = RFXGEN_GEN_SAMPLE_RATE;
-        wave[i].sampleSize = RFXGEN_GEN_SAMPLE_SIZE;
-        wave[i].channels = RFXGEN_GEN_CHANNELS;
-        wave[i].frameCount = wave[i].sampleRate;
-
-        wave[i].data = GenerateWave(params[i], &wave[i].frameCount);
-        sound[i] = LoadSoundFromWave(wave[i]);
-    }
-   
     SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
     stream = LoadAudioStream(SAMPLE_RATE, SAMPLE_SIZE, CHANNELS);
     SetAudioStreamCallback(stream, [](void* buffer, unsigned int frames) { synth->AudioInputCallback(buffer, frames);});
@@ -99,7 +74,8 @@ void AudioManager::SetSequence(uint8_t id, const char* newSequence)
     sequence[id] = newSequence;
     AudioTick = 0;
 }
-const char* AudioManager::GetSequence(uint8_t id){
+const char* AudioManager::GetSequence(uint8_t id)
+{
         return sequence[id];
 }
 
@@ -111,10 +87,15 @@ void AudioManager::PlayNote(uint8_t channel, uint8_t note, uint8_t volume)
     synth->channels[channel].timeOn  = synth->musicTime;
     synth->channels[channel].timeOff = 0;
 }
+
 void AudioManager::StopNote(uint8_t channel)
 {
     if (channel >= TRACK_COUNT) return;
     synth->channels[channel].timeOff = synth->musicTime;
+}
+void AudioManager::SetChannelPreset(uint8_t channel, uint8_t preset)
+{
+    synth->SetChannelPreset(channel, preset);
 }
 void AudioManager::MusicPlay()
 {
@@ -128,7 +109,9 @@ void AudioManager::MusicPlay()
         }    
     }
 }
-void AudioManager::MusicStop(){
+
+void AudioManager::MusicStop()
+{
     AudioTick = 0;
     synth->musicTime = 0;
     for (int i = 0; i < TRACK_COUNT; i++) {
