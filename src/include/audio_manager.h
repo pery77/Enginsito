@@ -51,25 +51,6 @@ class AudioManager
     
     void SetChannelPreset(uint8_t channel, uint8_t preset);
 
-    void SFXPlay(uint8_t id, uint8_t vol = 127);
-    void SFXStop(uint8_t id);
-    void SFXRender(uint8_t id, uint8_t note);
-    void SFXWave(uint8_t id, uint8_t waveType);
-    void SFXEnv(uint8_t id, uint8_t att, uint8_t susT, uint8_t susP, uint8_t dec);
-    void SFXFreq(uint8_t id, uint8_t slide, uint8_t delta, uint8_t vibratoD, uint8_t vibratoS);
-    void SFXTone(uint8_t id, uint8_t amount, uint8_t speed, uint8_t square, uint8_t duty);
-    void SFXRepeat(uint8_t id, uint8_t speed, uint8_t offset, uint8_t sweep);
-    void SFXFilter(uint8_t id, uint8_t lpfCutoff, uint8_t lpfSweep, uint8_t lpfRes, uint8_t hpfCutoff, uint8_t hpfSweep);
-     
-    void StoreWave(uint8_t id);
-    void StoreEnv(uint8_t id);
-    void StoreFreq(uint8_t id);
-    void StoreTone(uint8_t id);
-    void StoreRepeat(uint8_t id);
-    void StoreFilter(uint8_t id);
-    
-    void LoadSoundData(uint8_t id);
-
     unsigned short GetSoundDir(uint8_t id);
 
     bool MusicIsPlaying = false;

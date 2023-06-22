@@ -126,18 +126,7 @@ class MBManager{
         static int setEnv(struct mb_interpreter_t* s, void** l);
         static int setLFO(struct mb_interpreter_t* s, void** l);
         static int setOsc(struct mb_interpreter_t* s, void** l);
-
         
-        static int sfxRender(struct mb_interpreter_t* s, void** l);
-        static int sfxWave(struct mb_interpreter_t* s, void** l);
-        static int sfxEnv(struct mb_interpreter_t* s, void** l);
-        static int sfxFreq(struct mb_interpreter_t* s, void** l);
-        static int sfxTone(struct mb_interpreter_t* s, void** l);
-        static int sfxRepeat(struct mb_interpreter_t* s, void** l);
-        static int sfxFilter(struct mb_interpreter_t* s, void** l);
-        static int sfxPlay(struct mb_interpreter_t* s, void** l);
-        static int sfxStop(struct mb_interpreter_t* s, void** l);
-
         //Sprites
         static int drawSprite(struct mb_interpreter_t* s, void** l);
         static int drawMetaSprite(struct mb_interpreter_t* s, void** l);
