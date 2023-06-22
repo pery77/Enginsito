@@ -20,10 +20,19 @@ def draw()
 
 enddef
 
-for d = 0x440 to 0x820
+for d = 0xde0 to 0xe90
 	poke(d,0)
 next
 
+for d = 0xd30 to 0xd30 + 11 * 15 step 11
+	poke(d+3,64)
+	poke(d+4,32)
+	poke(d+7,255)
+	poke(d+8,255)
+	poke(d+9,127)
+	poke(d+10,127)
+next
 def close()
+
 dumpMemory("default")
 enddef

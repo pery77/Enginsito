@@ -27,13 +27,9 @@ inline double frequencyFromNote(int midi_note)
     return 440.0f * pow(2.0f, (midi_note - 69) / 12.0f);
 }
 
-double RetroSynth::RenderNote(int channel, int oscT, int note) 
+double RetroSynth::renderChannel(int channel) 
 {
-    return osc(channel, frequencyFromNote(note), oscT);
-}
-
-double RetroSynth::osc(const int channel, double dHertz, const int nType) 
-{
+    double dHertz = frequencyFromNote(channels[channel].note);
     float slope = channels[channel].preset->slide.slope;
     float curve = channels[channel].preset->slide.curve;
 
@@ -57,7 +53,7 @@ double RetroSynth::osc(const int channel, double dHertz, const int nType)
     if (dHertz < 20)    dHertz = 20;
     if (dHertz > 20000) dHertz = 20000;
 
-    double sample = waveTable(channel, dHertz, nType);
+    double sample = waveTable(channel, dHertz, channels[channel].preset->osc);
 
     float cutoff    = channels[channel].preset->LPF.cutoff;   
     if (cutoff != 1.0f)  
@@ -127,14 +123,13 @@ void RetroSynth::SetChannelPreset(uint8_t channel, uint8_t preset)
 void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames) 
 {
     short* bufferData = (short*)buffer;
-int TRACK_COUNT = 4;
     for (int frame = 0; frame < frames; frame++)
     {
-        float samples[TRACK_COUNT] = {0};
+        float samples[NUM_CHANNELS] = {0};
         float mixedSample = 0;
         int channelPlaying = 0;
 
-        for (int track = 0; track < TRACK_COUNT; track++) 
+        for (int track = 0; track < NUM_CHANNELS; track++) 
         {
             float amplitude = 
                 channels[track].preset->env.amplitude(musicTime, channels[track].timeOn, channels[track].timeOff);
@@ -142,7 +137,7 @@ int TRACK_COUNT = 4;
 
             if (amplitude > 0.0001) 
             {
-                samples[track] += RenderNote(track, channels[track].preset->osc, channels[track].note);
+                samples[track] += renderChannel(track);
                 samples[track] *= channels[track].volume * amplitude;
 
                 samples[track] *= 32767.0;

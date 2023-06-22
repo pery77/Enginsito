@@ -639,79 +639,77 @@ bool Editor::IsBlack(int note)
     return (n == 1 || n == 3 || n == 6 || n == 8 || n == 10);
 }
 
-    void Editor::DrawSFX()
+void Editor::DrawSFX()
+{
+    static int id = 0;
+    unsigned int dir = 3376 + (id * 11);
+
+    int osc = editorEngineRef->Peek(dir);
+
+    int attack   = editorEngineRef->Peek(dir+1);
+    int decay    = editorEngineRef->Peek(dir+2);
+    int sustain  = editorEngineRef->Peek(dir+3);
+    int release  = editorEngineRef->Peek(dir+4);
+
+    int lfoSpeed = editorEngineRef->Peek(dir+5);
+    int lfoDepth = editorEngineRef->Peek(dir+6);
+
+    int cut = editorEngineRef->Peek(dir+7);
+    int res = editorEngineRef->Peek(dir+8);
+
+    int slope = editorEngineRef->Peek(dir+9);
+    int curve = editorEngineRef->Peek(dir+10);
+
+    //int slope = Tools::ToSigned(editorEngineRef->Peek(dir+9));
+    //int curve = Tools::ToSigned(editorEngineRef->Peek(dir+10));
+       
+    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
     {
-        static int id = 0;
-        unsigned int dir = 3376 + (id * 22);
-
-        int waveType = editorEngineRef->Peek(dir);
-
-        int attackTimeValue   = editorEngineRef->Peek(dir+1);
-        int sustainTimeValue  = editorEngineRef->Peek(dir+2);
-        int sustainPunchValue = editorEngineRef->Peek(dir+3);
-        int decayTimeValue    = editorEngineRef->Peek(dir+4);
-
-       // int slideValue        = Tools::ToSigned(editorEngineRef->Peek(dir+5));
-        int amplitude        = editorEngineRef->Peek(dir+5);
-        int deltaSlideValue   = Tools::ToSigned(editorEngineRef->Peek(dir+6));
-        int vibratoDepthValue = editorEngineRef->Peek(dir+7);
-        int vibratoSpeedValue = editorEngineRef->Peek(dir+8);
-
-        int changeAmountValue = Tools::ToSigned(editorEngineRef->Peek(dir+9));
-        int changeSpeedValue  = Tools::ToSigned(editorEngineRef->Peek(dir+10));
-        int squareDutyValue   = editorEngineRef->Peek(dir+11);
-        int dutySweepValue    = editorEngineRef->Peek(dir+12);
-
-        int repeatSpeedValue  = editorEngineRef->Peek(dir+13);
-        int phaserOffsetValue = Tools::ToSigned(editorEngineRef->Peek(dir+14));
-        int phaserSweepValue  = Tools::ToSigned(editorEngineRef->Peek(dir+15));;    
-
-        int lpfCutoffValue      = editorEngineRef->Peek(dir+16);
-        int lpfCutoffSweepValue = Tools::ToSigned(editorEngineRef->Peek(dir+17));
-        int lpfResonanceValue   = editorEngineRef->Peek(dir+18);
-        int hpfCutoffValue      = editorEngineRef->Peek(dir+19);
-        int hpfCutoffSweepValue = Tools::ToSigned(editorEngineRef->Peek(dir+20));
-
+        HighLightMemory(dir,11);
+    }
        
 
-        if (ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
+
+    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
+    {
+        for (auto& key : keyCharToKey)
         {
-                for (auto& key : keyCharToKey)
-                {
-                    char thisChar = key.first;
-                    int thisKey = key.second + keyboardOctave * 12;
+            char thisChar = key.first;
+            int thisKey = key.second + keyboardOctave * 12;
 
-                    if (IsKeyPressed(thisChar)) 
-                    {
-                        //editorEngineRef->audioManager->LoadSoundData(id);
-                        //editorEngineRef->audioManager->SFXRender(id, thisKey);
-                        //editorEngineRef->audioManager->SFXPlay(id, 255);
-                        editorEngineRef->audioManager->PlayNote(0, thisKey, 127);
-                        pressedKey = thisKey;
+            if (IsKeyPressed(thisChar)) 
+            {
+                editorEngineRef->audioManager->PlayNote(3, thisKey, 127);
+                pressedKey = thisKey;
 
-                    }
-                    if (IsKeyReleased(thisChar)) 
-                    {
-                        //editorEngineRef->audioManager->SFXStop(id);
-                        editorEngineRef->audioManager->StopNote(0);
-                        pressedKey = -1;
-                    }
-                }
+            }
+
+            if (IsKeyReleased(thisChar)) 
+            {
+                editorEngineRef->audioManager->StopNote(3);
+                pressedKey = -1;
+            }
+        }
                 
-                // key input - octave control
-                if (IsKeyPressed('=') && keyboardOctave < 8) 
-                {
-                    keyboardOctave++;
-                } 
-                else if (IsKeyPressed('-') && keyboardOctave > 0) 
-                {
-                    keyboardOctave--;
-                }
-        }      
+        // key input - octave control
+        if (IsKeyPressed('=') && keyboardOctave < 8) 
+        {
+            keyboardOctave++;
+        } 
+        else if (IsKeyPressed('-') && keyboardOctave > 0) 
+        {
+            keyboardOctave--;
+        }
+    }    
+
+
+/*      
         ImVec2 white_key_pos = ImGui::GetCursorScreenPos();
         ImVec2 black_key_pos = white_key_pos;
-       
+    
+
         ImGui::BeginGroup();
+
             for (int i = 48; i <= 84; i++) 
             {
                 if (!IsBlack(i))
@@ -721,7 +719,6 @@ bool Editor::IsBlack(int note)
                 } 
             }
         ImGui::EndGroup();        
- 
         ImGui::BeginGroup();
             for (int i = 48; i <= 84; i++) 
             {
@@ -737,9 +734,11 @@ bool Editor::IsBlack(int note)
         ImGui::EndGroup();
 
         ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
+*/
 
-        static char str0[128] = "cdefg";
-        static char str1[128] = "cdefg";
+
+        static char str0[4096] = "@0cdefg";
+        static char str1[4096] = "@1cdefg";
 
         if (ImGui::Button("Play")) 
         {
@@ -751,190 +750,96 @@ bool Editor::IsBlack(int note)
         ImGui::InputText("#00", str0, IM_ARRAYSIZE(str0));
         ImGui::InputText("#01", str1, IM_ARRAYSIZE(str1));
  
+        editorEngineRef->audioManager->SetOSC(id, osc);
+        editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release);  
+        editorEngineRef->audioManager->SetLFO(id, lfoSpeed, lfoDepth);
+        editorEngineRef->audioManager->SetFilter(id, cut, res);
+        editorEngineRef->audioManager->SetSlide(id, slope, curve);
 
-
-
-
-//ImGui::BeginTooltip();
-//ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].env.));
-//ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].slide.curve));
-//ImGui::EndTooltip();
-
-
-        static int osc, speed, depth, cut = 255, res = 255, slp = 127, curv = 127, prg;
-        ImGuiKnobs::KnobInt("prg", &prg, 0, 3, 0.1f, "%01i", ImGuiKnobVariant_Stepped);
-        if (ImGuiKnobs::KnobInt("osc", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if(ImGuiKnobs::KnobInt("Bank", &id, 0, 15, 0.1f, "%01i", ImGuiKnobVariant_Stepped))
         {
-            editorEngineRef->audioManager->SetOSC(prg, osc);
-        }     
-        ImGui::SameLine();  
-        if (ImGuiKnobs::KnobInt("speed", &speed, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+            editorEngineRef->audioManager->SetChannelPreset(3,id);
+            //editorEngineRef->audioManager->PlayNote(3,69,127);
+        }
+
+
+        ImGui::BeginGroup();
+            ImGui::Text("Envelope");
+            if (ImGuiKnobs::KnobInt("att", &attack, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            {
+                editorEngineRef->Poke(dir+1, attack);
+            }
+            ImGui::SameLine();
+            if (ImGuiKnobs::KnobInt("dec", &decay, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            {
+                editorEngineRef->Poke(dir+2, decay);
+            }
+            ImGui::SameLine();
+            if (ImGuiKnobs::KnobInt("sus", &sustain, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            {
+                editorEngineRef->Poke(dir+3, sustain);
+            }
+            ImGui::SameLine();
+            if (ImGuiKnobs::KnobInt("rel", &release, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            {
+                editorEngineRef->Poke(dir+4, release);
+            }
+        ImGui::EndGroup();
+
+        ImGui::BeginGroup();
+        ImGui::Text("LFO");
+        if (ImGuiKnobs::KnobInt("speed", &lfoSpeed, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetLFO(prg, speed, depth);
+            editorEngineRef->Poke(dir+5, lfoSpeed);
         }  
         ImGui::SameLine();
-        if (ImGuiKnobs::KnobInt("depth", &depth, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("depth", &lfoDepth, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetLFO(prg, speed, depth);
+            editorEngineRef->Poke(dir+6, lfoDepth);
         }  
-        ImGui::SameLine();  
+        ImGui::EndGroup();
+        ImGui::SameLine();
+        ImGui::Text("    ");
+        ImGui::SameLine();
+
+        ImGui::BeginGroup();
+        ImGui::Text("LPF");
         if (ImGuiKnobs::KnobInt("cut", &cut, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetFilter(prg, cut, res);
+            editorEngineRef->Poke(dir+7, cut);
         }  
         ImGui::SameLine();
         if (ImGuiKnobs::KnobInt("res", &res, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetFilter(prg, cut, res);
+            editorEngineRef->Poke(dir+8, res);
         }  
+        ImGui::EndGroup();
 
-        if (ImGuiKnobs::KnobInt("slope", &slp, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        ImGui::BeginGroup();
+        ImGui::Text("Slide");
+        if (ImGuiKnobs::KnobInt("slope", &slope, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetSlide(prg, slp, curv);
+            editorEngineRef->Poke(dir+9, slope);
         }  
         ImGui::SameLine();
-        if (ImGuiKnobs::KnobInt("curve", &curv, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("curve", &curve, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->audioManager->SetSlide(prg, slp, curv);
+            editorEngineRef->Poke(dir+10, curve);
+        } 
+        ImGui::EndGroup();
+        ImGui::SameLine();
+        ImGui::Text("    ");
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("osc", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->Poke(dir, osc);
         }  
 
-editorEngineRef->audioManager->SetEnv(0,  editorEngineRef->Peek(dir+1), editorEngineRef->Peek(dir+2),editorEngineRef->Peek(dir+3),editorEngineRef->Peek(dir+4))    ;  
-ImGui::BeginChild("##scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoNav);
-
-        ImGui::BeginGroup();
-            ImGui::Text("Envelope");
-            if (ImGuiKnobs::KnobInt("att", &attackTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+1, attackTimeValue);
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("dec", &sustainTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+2, sustainTimeValue);
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("sus", &sustainPunchValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+3, sustainPunchValue);
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("rel", &decayTimeValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+4, decayTimeValue);
-            }
-        ImGui::EndGroup();
-/*
-        ImGui::SameLine();
-        ImGui::Text("  ");
-        ImGui::SameLine();
-        ImGui::BeginGroup();
-            ImGui::Text("Frequence");
-            if (ImGuiKnobs::KnobInt("Slide", &slideValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+5, Tools::ToSigned(slideValue));
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Delta", &deltaSlideValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+6, Tools::ToSigned(deltaSlideValue));
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("V.Depht", &vibratoDepthValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+7, vibratoDepthValue);
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("V.Speed", &vibratoSpeedValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+8, vibratoSpeedValue);
-            }
-        ImGui::EndGroup();
-        ImGui::Text("  ");
-        ImGui::BeginGroup();
-            ImGui::Text("Tone");
-            if (ImGuiKnobs::KnobInt("Amount", &changeAmountValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+9, Tools::ToSigned(changeAmountValue));
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("C.Speed", &changeSpeedValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+10, Tools::ToSigned(changeSpeedValue));
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("S.Duty", &squareDutyValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+11, squareDutyValue);
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("D.Sweep", &dutySweepValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+12, dutySweepValue);
-            }
-        ImGui::EndGroup();
-        ImGui::SameLine();
-        ImGui::Text("  ");
-        ImGui::SameLine();
-        ImGui::BeginGroup();
-            ImGui::Text("Repeat");
-            if (ImGuiKnobs::KnobInt("R.Speed", &repeatSpeedValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+13, repeatSpeedValue);
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("R.Offset", &phaserOffsetValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+14, Tools::ToSigned(phaserOffsetValue));
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("R.Sweep", &phaserSweepValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+15, Tools::ToSigned(phaserSweepValue));
-            }
-        ImGui::EndGroup();
-        ImGui::Text("  ");
-        ImGui::BeginGroup();
-            ImGui::Text("Filter");
-            if (ImGuiKnobs::KnobInt("LPF Cut", &lpfCutoffValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+16, lpfCutoffValue);
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("LPF Swp", &lpfCutoffSweepValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+17, Tools::ToSigned(lpfCutoffSweepValue));
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("Reso", &lpfResonanceValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+18, lpfResonanceValue);
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("HPF Cut", &hpfCutoffValue, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+19, hpfCutoffValue);
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("HPF Swp", &hpfCutoffSweepValue, -127, 127, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->Poke(dir+20, Tools::ToSigned(hpfCutoffSweepValue));
-            }
-        ImGui::EndGroup();
-        ImGui::SameLine();
-        ImGui::Text("  ");
-        ImGui::SameLine();
-        ImGui::BeginGroup();
-            ImGui::Text("Wave Type");
-            if (ImGui::RadioButton("Sqr", waveType == 0)) { waveType = 0; editorEngineRef->Poke(dir, waveType);} ImGui::SameLine();
-            if (ImGui::RadioButton("Saw", waveType == 1)) { waveType = 1; editorEngineRef->Poke(dir, waveType);} ImGui::SameLine();
-            if (ImGui::RadioButton("Sin", waveType == 2)) { waveType = 2; editorEngineRef->Poke(dir, waveType);} ImGui::SameLine();
-            if (ImGui::RadioButton("RND", waveType == 3)) { waveType = 3; editorEngineRef->Poke(dir, waveType);}
-            ImGui::Text("  ");
-            ImGui::DragInt("Sound Id", &id, 1, 0, 15, "%2i", ImGuiSliderFlags_AlwaysClamp);
-        ImGui::EndGroup();
-*/
-ImGui::EndChild();
-    }
+    //ImGui::BeginTooltip();
+    //ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].env.));
+    //ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].slide.curve));
+    //ImGui::EndTooltip();
+}
 
 
 inline unsigned char setBit(unsigned char byte, int position, bool newState) {

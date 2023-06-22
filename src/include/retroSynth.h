@@ -142,14 +142,13 @@ class RetroSynth{
     Channel channels[NUM_CHANNELS] = {0};
     Preset presets[NUM_PRESETS] = {0};
 
-    double RenderNote(int channel, int oscT, int note);
 	void SetChannelPreset(uint8_t channel, uint8_t preset);
 	void AudioInputCallback(void* buffer, unsigned int frames);
 
 	double musicTime = 0.0;
 
     private:
-    double osc(const int dChannel, const double dHertz, const int nType);
+    double renderChannel(int channel);
 	double waveTable(int channel, float freq, uint8_t osc);
 	float steps = 1.0 / SAMPLERATE;
 };
