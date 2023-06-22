@@ -1390,13 +1390,16 @@ int MBManager::musicPlay(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
-    int key;
-	int voice;
+    int channel;
 
 	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) 
+	{
+		mb_check(mb_pop_int(s, l, &channel));
+	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    basicEngineRef->audioManager->MusicPlay();
+    basicEngineRef->audioManager->MusicPlay(channel);
 
 	return result;
 }
@@ -1404,13 +1407,16 @@ int MBManager::musicStop(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
-    int key;
-	int voice;
+    int channel;;
 
-	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_open_bracket(s, l));	
+	if(mb_has_arg(s, l)) 
+	{
+		mb_check(mb_pop_int(s, l, &channel));
+	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    basicEngineRef->audioManager->MusicStop();
+    basicEngineRef->audioManager->MusicStop(channel);
 
 	return result;
 }
@@ -1462,8 +1468,8 @@ int MBManager::getMusicTick(struct mb_interpreter_t* s, void** l){
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	mb_check(mb_attempt_close_bracket(s, l));
-
-    ret.value.integer = basicEngineRef->audioManager->AudioTick;
+//TODO devolver tick del canal
+    //ret.value.integer = basicEngineRef->audioManager->AudioTick;
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }

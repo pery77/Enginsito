@@ -132,7 +132,7 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
         for (int track = 0; track < NUM_CHANNELS; track++) 
         {
             float amplitude = 
-                channels[track].preset->env.amplitude(musicTime, channels[track].timeOn, channels[track].timeOff);
+                channels[track].preset->env.amplitude(channels[track].musicTime, channels[track].timeOn, channels[track].timeOff);
             samples[track] = 0;
 
             if (amplitude > 0.0001) 
@@ -157,9 +157,11 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
             {
                 mixedSample += samples[track] / channelPlaying;
             }
+            
+            channels[track].musicTime += steps;
         }
 
         bufferData[frame] = mixedSample;
-        musicTime += steps;
+        //musicTime += steps;
     }
 }

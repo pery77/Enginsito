@@ -7,7 +7,6 @@
 #define TABLE_SIZE  64
 #define SAMPLERATE  44100.0
 
-
 #define NOISE_SAMPLES 22050
 
 struct envelope {
@@ -103,9 +102,12 @@ typedef struct {
 	double slidePhase = 0.0;
 	double timeOn 	  = 0.0;
     double timeOff    = 0.0;
-    double time       = 0.0;
+    double time 	  = 0.0;
 	double fltp       = 0.0;
 	double fltdp      = 0.0;
+	bool isPlaying	   = false;
+    double musicTime   = 0.0;
+	unsigned int tick  = 0;
 } Channel;
 
 const int SQUARE       = 0;
@@ -145,7 +147,7 @@ class RetroSynth{
 	void SetChannelPreset(uint8_t channel, uint8_t preset);
 	void AudioInputCallback(void* buffer, unsigned int frames);
 
-	double musicTime = 0.0;
+	//double musicTime = 0.0;
 
     private:
     double renderChannel(int channel);

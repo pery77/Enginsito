@@ -37,8 +37,8 @@ class AudioManager
 
     void PlayNote(uint8_t channel, uint8_t note, uint8_t volume);
     void StopNote(uint8_t channel);
-    void MusicPlay();
-    void MusicStop();
+    void MusicPlay(uint8_t channel);
+    void MusicStop(uint8_t channel);
     
     unsigned int GetMusicPosition(uint8_t channel);
     unsigned int GetMusicSize(uint8_t channel);
@@ -53,8 +53,8 @@ class AudioManager
 
     unsigned short GetSoundDir(uint8_t id);
 
-    bool MusicIsPlaying = false;
-    unsigned int AudioTick = 0;
+    //bool MusicIsPlaying = false;
+    //unsigned int AudioTick = 0;
 
     RetroSynth* GetSynth();
 
