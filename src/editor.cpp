@@ -659,16 +659,11 @@ void Editor::DrawSFX()
 
     int slope = editorEngineRef->Peek(dir+9);
     int curve = editorEngineRef->Peek(dir+10);
-
-    //int slope = Tools::ToSigned(editorEngineRef->Peek(dir+9));
-    //int curve = Tools::ToSigned(editorEngineRef->Peek(dir+10));
        
     if (ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
     {
         HighLightMemory(dir,11);
     }
-       
-
 
     if (ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
     {
@@ -749,69 +744,59 @@ void Editor::DrawSFX()
         
         ImGui::InputText("#00", str0, IM_ARRAYSIZE(str0));
         ImGui::InputText("#01", str1, IM_ARRAYSIZE(str1));
- 
-        editorEngineRef->audioManager->SetOSC(id, osc);
-        editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release);  
-        editorEngineRef->audioManager->SetLFO(id, lfoSpeed, lfoDepth);
-        editorEngineRef->audioManager->SetFilter(id, cut, res);
-        editorEngineRef->audioManager->SetSlide(id, slope, curve);
 
         if(ImGuiKnobs::KnobInt("Bank", &id, 0, 15, 0.1f, "%01i", ImGuiKnobVariant_Stepped))
         {
             editorEngineRef->audioManager->SetChannelPreset(3,id);
-            //editorEngineRef->audioManager->PlayNote(3,69,127);
         }
-
 
         ImGui::BeginGroup();
             ImGui::Text("Envelope");
             if (ImGuiKnobs::KnobInt("att", &attack, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
-                editorEngineRef->Poke(dir+1, attack);
+                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
             }
             ImGui::SameLine();
             if (ImGuiKnobs::KnobInt("dec", &decay, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
-                editorEngineRef->Poke(dir+2, decay);
+                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
             }
             ImGui::SameLine();
             if (ImGuiKnobs::KnobInt("sus", &sustain, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
-                editorEngineRef->Poke(dir+3, sustain);
+                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
             }
             ImGui::SameLine();
             if (ImGuiKnobs::KnobInt("rel", &release, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
-                editorEngineRef->Poke(dir+4, release);
+                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
             }
         ImGui::EndGroup();
-
         ImGui::BeginGroup();
         ImGui::Text("LFO");
         if (ImGuiKnobs::KnobInt("speed", &lfoSpeed, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->Poke(dir+5, lfoSpeed);
+            editorEngineRef->audioManager->SetLFO(id, lfoSpeed, lfoDepth);
         }  
         ImGui::SameLine();
         if (ImGuiKnobs::KnobInt("depth", &lfoDepth, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->Poke(dir+6, lfoDepth);
+            editorEngineRef->audioManager->SetLFO(id, lfoSpeed, lfoDepth);
         }  
         ImGui::EndGroup();
         ImGui::SameLine();
         ImGui::Text("    ");
         ImGui::SameLine();
-
         ImGui::BeginGroup();
         ImGui::Text("LPF");
         if (ImGuiKnobs::KnobInt("cut", &cut, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->Poke(dir+7, cut);
+            editorEngineRef->audioManager->SetFilter(id, cut, res);
         }  
         ImGui::SameLine();
         if (ImGuiKnobs::KnobInt("res", &res, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->Poke(dir+8, res);
+            editorEngineRef->audioManager->SetFilter(id, cut, res);
         }  
         ImGui::EndGroup();
 
@@ -819,22 +804,24 @@ void Editor::DrawSFX()
         ImGui::Text("Slide");
         if (ImGuiKnobs::KnobInt("slope", &slope, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->Poke(dir+9, slope);
+            editorEngineRef->audioManager->SetSlide(id, slope, curve);
         }  
         ImGui::SameLine();
         if (ImGuiKnobs::KnobInt("curve", &curve, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->Poke(dir+10, curve);
+            editorEngineRef->audioManager->SetSlide(id, slope, curve);
         } 
         ImGui::EndGroup();
         ImGui::SameLine();
         ImGui::Text("    ");
         ImGui::SameLine();
+        ImGui::BeginGroup();
+        ImGui::Text("Wave Table");
         if (ImGuiKnobs::KnobInt("osc", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
-            editorEngineRef->Poke(dir, osc);
+           editorEngineRef->audioManager->SetOSC(id, osc);
         }  
-
+        ImGui::EndGroup();
     //ImGui::BeginTooltip();
     //ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].env.));
     //ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].slide.curve));
