@@ -82,14 +82,14 @@ void AudioManager::PlayNote(uint8_t channel, uint8_t note, uint8_t volume)
     if (channel >= TRACK_COUNT) return;
     synth->channels[channel].note    = note;
     synth->channels[channel].volume  = volume * 0.007874; // 1/127
-    synth->channels[channel].timeOn  = synth->channels[channel].musicTime;
-    synth->channels[channel].timeOff = 0;
+    synth->channels[channel].noteTimeOn  = synth->channels[channel].sequenceTime;
+    synth->channels[channel].noteTimeOff = 0;
 }
 
 void AudioManager::StopNote(uint8_t channel)
 {
     if (channel >= TRACK_COUNT) return;
-    synth->channels[channel].timeOff = synth->channels[channel].musicTime;
+    synth->channels[channel].noteTimeOff = synth->channels[channel].sequenceTime;
 }
 
 void AudioManager::SetChannelPreset(uint8_t channel, uint8_t preset)
@@ -106,7 +106,7 @@ void AudioManager::ChannelPlay(uint8_t channel, const char* newSequence)
 void AudioManager::ChannelPlay(uint8_t channel)
 {
     synth->channels[channel].tick = 0;
-    synth->channels[channel].musicTime = 0.0;
+    //synth->channels[channel].sequenceTime = 0.0;
     
     size_t lenght = strlen(sequence[channel]);
     if (lenght > 2)
@@ -119,13 +119,12 @@ void AudioManager::ChannelPlay(uint8_t channel)
 void AudioManager::ChannelStop(uint8_t channel)
 {
     synth->channels[channel].tick = 0;
-    synth->channels[channel].musicTime = 0.0;
- 
-    mml[channel]->stop();
     synth->channels[channel].isPlaying = false;
+    //synth->channels[channel].sequenceTime = 0.0;
+    //synth->channels[channel].noteTimeOn  = 0.0;
+    //synth->channels[channel].noteTimeOff = 0.0;
 
-    synth->channels[channel].timeOn  = 0.0;
-    synth->channels[channel].timeOff = 0.0;
+    mml[channel]->stop();
 }
 
 void AudioManager::StopAll()

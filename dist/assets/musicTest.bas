@@ -25,7 +25,7 @@ def tetris()
     'music.set(4,"t130 @4 v80 o2c8r8c8r8")
 enddef
 mario()
-music.stop(0)
+
 'music.play(0)
 'music.play(1)
 'music.play(2)
@@ -40,7 +40,7 @@ def kettonote(k,o)
     endif
 enddef
 music.set(2, "T 200 v130 L16@14c")
-music.set(3, "T 200 v130 L16@15o6r64cr32g")
+music.set(3, "v100 @15o6f")
 def tick()
     k = key.get()
     IF k <> 0 THEN

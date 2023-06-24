@@ -13,79 +13,80 @@ struct envelope {
 	virtual double amplitude(const double dTime, const double dTimeOn, const double dTimeOff) = 0;
 };
 
-struct ADSR : public envelope{
-
+struct ADSR : public envelope
+{
 	double Attack;
 	double Decay;
 	double Sustain;
 	double Release;
 	double Amplitude;
 
-	ADSR() {
-
+	ADSR() 
+	{
 		Attack    = 0.0;
 		Decay     = 0.0;
 		Sustain   = 0.0;
 		Release   = 0.0;
+		Amplitude = 1.0;
 	}
 
-	virtual double amplitude(const double dTime, const double dTimeOn, const double dTimeOff) {
-
+	virtual double amplitude(const double dTime, const double dTimeOn, const double dTimeOff)
+	{
 		double dAmplitude = 0.0;
-		double dReleaseAmplitude = 0.0;
-		if (dTimeOn > dTimeOff) // Note is on
-		{
+    	double dReleaseAmplitude = 0.0;
+
+		if (dTimeOn > dTimeOff) 
+		{ // Note is on
 			double dLifeTime = dTime - dTimeOn;
 
 			if (dLifeTime <= Attack)
 				dAmplitude = (dLifeTime / Attack);
-
-			if (dLifeTime > Attack && dLifeTime <= (Attack + Decay))
-				dAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + 1.0f;
-
-			if (dLifeTime > (Attack + Decay))
+			else if (dLifeTime <= (Attack + Decay))
+				dAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + Amplitude;
+			else
 				dAmplitude = Sustain;
-		}
-		else // Note is off
-		{
+    	} 
+		else 
+		{ // Note is off
 			double dLifeTime = dTimeOff - dTimeOn;
 
 			if (dLifeTime <= Attack)
 				dReleaseAmplitude = (dLifeTime / Attack);
-
-			if (dLifeTime > Attack && dLifeTime <= (Attack + Decay))
-				dReleaseAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + 1.0f;
-
-			if (dLifeTime > (Attack + Decay))
+			else if (dLifeTime <= (Attack + Decay))
+				dReleaseAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + Amplitude;
+			else
 				dReleaseAmplitude = Sustain;
 
 			dAmplitude = ((dTime - dTimeOff) / Release) * (0.0 - dReleaseAmplitude) + dReleaseAmplitude;
+    	}
 
-		}
-
-		if (dAmplitude <= 0.00001)	dAmplitude = 0.0;
-		if (dAmplitude > 0.9)		dAmplitude = 0.9;
+		if (dAmplitude <= 0.00001) dAmplitude = 0.0;
+		if (dAmplitude > 0.9)      dAmplitude = 0.9;
 
 		return dAmplitude;
 	}
 };
 
-typedef struct {
+typedef struct 
+{
 	float speed   = 0.0;
  	float depht  = 0.0;
 } LFO;
 
-typedef struct {
+typedef struct 
+{
 	float slope = 0.0;
  	float curve = 0.0;
 } Slide;
 
-typedef struct {
+typedef struct 
+{
 	float cutoff    = 1.0;
  	float resonance = 0.0;
 } Filter;
 
-typedef struct {
+typedef struct 
+{
     int    osc = 0;
     ADSR   env;
 	LFO    lfo;
@@ -93,21 +94,22 @@ typedef struct {
 	Slide  slide;
 } Preset;
 
-typedef struct {
+typedef struct 
+{
 	Preset *preset;
 	int    note       = 69;
     float  volume     = 0.5f;
 	double phase      = 0.0;
 	double lfoPhase   = 0.0;
 	double slidePhase = 0.0;
-	double timeOn 	  = 0.0;
-    double timeOff    = 0.0;
-    double time 	  = 0.0;
+	double noteTimeOn 	  = 0.0;
+    double noteTimeOff    = 0.0;
+    double noteTotalTime  = 0.0;
 	double fltp       = 0.0;
 	double fltdp      = 0.0;
-	bool isPlaying	   = false;
-    double musicTime   = 0.0;
-	unsigned int tick  = 0;
+	bool isPlaying	    = false;
+    double sequenceTime = 0.0;
+	unsigned int tick   = 0;
 } Channel;
 
 const int SQUARE       = 0;
@@ -116,8 +118,8 @@ const int OSC_SQUARE25 = 2;
 const int OSC_TRIANGLE = 3;
 const int OSC_NOISE    = 4;
 
-class RetroSynth{
-
+class RetroSynth
+{
     public:
     RetroSynth();
     ~RetroSynth();
@@ -146,8 +148,6 @@ class RetroSynth{
 
 	void SetChannelPreset(uint8_t channel, uint8_t preset);
 	void AudioInputCallback(void* buffer, unsigned int frames);
-
-	//double musicTime = 0.0;
 
     private:
     double renderChannel(uint8_t channel);

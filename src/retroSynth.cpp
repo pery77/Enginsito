@@ -32,7 +32,7 @@ void RetroSynth::resetChannelPhase(uint8_t channel)
     channels[channel].phase      = 0.0;
     channels[channel].lfoPhase   = 0.0;
     channels[channel].slidePhase = 0.0;
-    channels[channel].time       = 0.0;
+    channels[channel].noteTotalTime       = 0.0;
 }
 
 double RetroSynth::renderChannel(uint8_t channel) 
@@ -51,7 +51,7 @@ double RetroSynth::renderChannel(uint8_t channel)
 
     if(slope + curve != 0.0)
     {
-        channels[channel].slidePhase = channels[channel].time;
+        channels[channel].slidePhase = channels[channel].noteTotalTime;
         float fslide  = 1.0 - pow(slope, 3.0)*0.001;
         float fdslide = -pow(curve, 3.0)*0.0001;
         fslide += fdslide;
@@ -127,7 +127,6 @@ void RetroSynth::SetChannelPreset(uint8_t channel, uint8_t preset)
 {
     channels[channel].preset = &presets[preset];
     resetChannelPhase(channel);
-    channels[channel].musicTime  = 0.0;
 }
 
 void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames) 
@@ -142,7 +141,8 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
         for (int track = 0; track < NUM_CHANNELS; track++) 
         {
             float amplitude = 
-                channels[track].preset->env.amplitude(channels[track].musicTime, channels[track].timeOn, channels[track].timeOff);
+                channels[track].preset->env.amplitude(channels[track].sequenceTime, channels[track].noteTimeOn, channels[track].noteTimeOff);
+
             samples[track] = 0;
 
             if (amplitude > 0.0001) 
@@ -153,7 +153,7 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
                 samples[track] *= 32767.0;
                 
                 channelPlaying++;
-                channels[track].time += steps;
+                channels[track].noteTotalTime += steps;
             }
             else
             {
@@ -165,7 +165,7 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
                 mixedSample += samples[track] / channelPlaying;
             }
             
-            channels[track].musicTime += steps;
+            channels[track].sequenceTime += steps;
         }
 
         bufferData[frame] = mixedSample;
