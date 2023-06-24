@@ -37,25 +37,24 @@ class AudioManager
 
     void PlayNote(uint8_t channel, uint8_t note, uint8_t volume);
     void StopNote(uint8_t channel);
-    void MusicPlay(uint8_t channel);
-    void MusicStop(uint8_t channel);
+    void ChannelPlay(uint8_t channel);
+    void ChannelPlay(uint8_t channel, const char* newSequence);
+    void ChannelStop(uint8_t channel);
+    void StopAll();
     
-    unsigned int GetMusicPosition(uint8_t channel);
-    unsigned int GetMusicSize(uint8_t channel);
+    unsigned int GetChannelPosition(uint8_t channel);
+    unsigned int GetChannelSize(uint8_t channel);
 
     void SetEnv(uint8_t preset, uint8_t attackTime, uint8_t decayTime, uint8_t sustainAmplitude, uint8_t releaseTime);
 	void SetLFO(uint8_t preset, uint8_t lfoHertz, uint8_t lfoAmp);
 	void SetOSC(uint8_t preset, uint8_t osc);
     void SetFilter(uint8_t preset, uint8_t cutoff, uint8_t resonance);
     void SetSlide(uint8_t preset, uint8_t slope, uint8_t curve);
+    void InitializePresets();
     
     void SetChannelPreset(uint8_t channel, uint8_t preset);
 
     unsigned short GetSoundDir(uint8_t id);
-
-    //bool MusicIsPlaying = false;
-    //unsigned int AudioTick = 0;
-
     RetroSynth* GetSynth();
 
     private:

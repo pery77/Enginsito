@@ -27,7 +27,15 @@ inline double frequencyFromNote(int midi_note)
     return 440.0f * pow(2.0f, (midi_note - 69) / 12.0f);
 }
 
-double RetroSynth::renderChannel(int channel) 
+void RetroSynth::resetChannelPhase(uint8_t channel)
+{
+    channels[channel].phase      = 0.0;
+    channels[channel].lfoPhase   = 0.0;
+    channels[channel].slidePhase = 0.0;
+    channels[channel].time       = 0.0;
+}
+
+double RetroSynth::renderChannel(uint8_t channel) 
 {
     double dHertz = frequencyFromNote(channels[channel].note);
     float slope = channels[channel].preset->slide.slope;
@@ -80,7 +88,7 @@ double RetroSynth::renderChannel(int channel)
     return sample;
 }
 
-double RetroSynth::waveTable(int channel, float freq, uint8_t osc)
+double RetroSynth::waveTable(uint8_t channel, float freq, uint8_t osc)
 {   
     double increment = freq / SAMPLERATE;
     int size = osc == 4 ? NOISE_SAMPLES : TABLE_SIZE;
@@ -118,6 +126,8 @@ double RetroSynth::waveTable(int channel, float freq, uint8_t osc)
 void RetroSynth::SetChannelPreset(uint8_t channel, uint8_t preset)
 {
     channels[channel].preset = &presets[preset];
+    resetChannelPhase(channel);
+    channels[channel].musicTime  = 0.0;
 }
 
 void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames) 
@@ -147,10 +157,7 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
             }
             else
             {
-                channels[track].phase      = 0.0;
-                channels[track].lfoPhase   = 0.0;
-                channels[track].slidePhase = 0.0;
-                channels[track].time       = 0.0;
+                resetChannelPhase(track);
             }
 
             if (channelPlaying > 0)
@@ -162,6 +169,5 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
         }
 
         bufferData[frame] = mixedSample;
-        //musicTime += steps;
     }
 }

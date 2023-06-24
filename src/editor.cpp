@@ -732,30 +732,41 @@ void Editor::DrawSFX()
 */
 
 
-        static char str0[4096] = "@0cdefg";
-        static char str1[4096] = "@1cdefg";
-        static char str2[4096] = "@2cdefg";
+        static char str0[4096] = "@0cccc";
+        static char str1[4096] = "@1eeee";
+        static char str2[4096] = "@2gggg";
+        static char str3[4096] = "@3O3cece";
 
-        if (ImGui::Button("Play")) 
+        if (ImGui::CollapsingHeader("Sequence"))
         {
-            editorEngineRef->audioManager->SetSequence(0, str0);
-            editorEngineRef->audioManager->SetSequence(1, str1);
-            editorEngineRef->audioManager->SetSequence(2, str2);
-            editorEngineRef->audioManager->MusicPlay(0);
-            editorEngineRef->audioManager->MusicPlay(1);
-            editorEngineRef->audioManager->MusicPlay(2);
+            if (ImGui::Button("Play")) 
+            {
+                editorEngineRef->audioManager->ChannelPlay(0, str0);
+                editorEngineRef->audioManager->ChannelPlay(1, str1);
+                editorEngineRef->audioManager->ChannelPlay(2, str2);
+                editorEngineRef->audioManager->ChannelPlay(3, str3);
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Stop")) 
+            {
+                editorEngineRef->audioManager->ChannelStop(0);
+                editorEngineRef->audioManager->ChannelStop(1);
+                editorEngineRef->audioManager->ChannelStop(2);
+                editorEngineRef->audioManager->ChannelStop(3);
+            }
+
+            ImGui::BeginGroup();
+            ImGui::Text("Channel 0");
+            ImGui::InputTextMultiline("##channel_00", str0, IM_ARRAYSIZE(str0), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
+            ImGui::Text("Channel 1");
+            ImGui::InputTextMultiline("##channel_01", str1, IM_ARRAYSIZE(str1), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
+            ImGui::Text("Channel 2");
+            ImGui::InputTextMultiline("##channel_02", str2, IM_ARRAYSIZE(str2), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
+            ImGui::Text("Channel 3");
+            ImGui::InputTextMultiline("##channel_03", str3, IM_ARRAYSIZE(str3), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
+            ImGui::EndGroup();
+
         }
-        ImGui::SameLine();
-        if (ImGui::Button("Stop")) 
-        {
-            editorEngineRef->audioManager->MusicStop(0);
-            editorEngineRef->audioManager->MusicStop(1);
-            editorEngineRef->audioManager->MusicStop(2);
-        }
-        
-        ImGui::InputText("#00", str0, IM_ARRAYSIZE(str0));
-        ImGui::InputText("#01", str1, IM_ARRAYSIZE(str1));
-        ImGui::InputText("#02", str2, IM_ARRAYSIZE(str2));
 
         if(ImGuiKnobs::KnobInt("Bank", &id, 0, 15, 0.1f, "%01i", ImGuiKnobVariant_Stepped))
         {

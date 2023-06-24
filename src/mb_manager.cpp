@@ -1399,7 +1399,7 @@ int MBManager::musicPlay(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    basicEngineRef->audioManager->MusicPlay(channel);
+    basicEngineRef->audioManager->ChannelPlay(channel);
 
 	return result;
 }
@@ -1416,7 +1416,7 @@ int MBManager::musicStop(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    basicEngineRef->audioManager->MusicStop(channel);
+    basicEngineRef->audioManager->ChannelStop(channel);
 
 	return result;
 }
@@ -1435,7 +1435,7 @@ int MBManager::getMusicPosition(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ret.value.integer = basicEngineRef->audioManager->GetMusicPosition(channel);
+    ret.value.integer = basicEngineRef->audioManager->GetChannelPosition(channel);
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
@@ -1454,7 +1454,7 @@ int MBManager::getMusicSize(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    ret.value.integer = basicEngineRef->audioManager->GetMusicSize(channel);
+    ret.value.integer = basicEngineRef->audioManager->GetChannelSize(channel);
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }

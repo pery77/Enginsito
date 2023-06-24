@@ -42,7 +42,8 @@ AudioManager::AudioManager(Engine* _engine)
 
     PlayAudioStream(stream);
    
-    for (int i = 0; i < TRACK_COUNT; i++) {
+    for (int i = 0; i < TRACK_COUNT; i++) 
+    {
         mml[i] = new MMLParser(this);
         mml[i]->setChannel(i);
         mml[i]->setCallback(mmlCallback);
@@ -50,11 +51,12 @@ AudioManager::AudioManager(Engine* _engine)
     }
 
     synth = new RetroSynth();
+    InitializePresets();
 }
 
 AudioManager::~AudioManager(){}
 
-//Music
+//Sequencer
 void AudioManager::Update()
 {
     for (int i = 0; i < TRACK_COUNT; i++) 
@@ -66,9 +68,7 @@ void AudioManager::Update()
 
 void AudioManager::SetSequence(uint8_t id, const char* newSequence)
 {
-    if (id > TRACK_COUNT) 
-        id = TRACK_COUNT;
-
+    if (id > TRACK_COUNT) id = TRACK_COUNT;
     sequence[id] = newSequence;
 }
 
@@ -91,11 +91,19 @@ void AudioManager::StopNote(uint8_t channel)
     if (channel >= TRACK_COUNT) return;
     synth->channels[channel].timeOff = synth->channels[channel].musicTime;
 }
+
 void AudioManager::SetChannelPreset(uint8_t channel, uint8_t preset)
 {
     synth->SetChannelPreset(channel, preset);
 }
-void AudioManager::MusicPlay(uint8_t channel)
+
+void AudioManager::ChannelPlay(uint8_t channel, const char* newSequence)
+{
+    SetSequence(channel, newSequence);
+    ChannelPlay(channel);
+}
+
+void AudioManager::ChannelPlay(uint8_t channel)
 {
     synth->channels[channel].tick = 0;
     synth->channels[channel].musicTime = 0.0;
@@ -108,7 +116,7 @@ void AudioManager::MusicPlay(uint8_t channel)
     }
 }
 
-void AudioManager::MusicStop(uint8_t channel)
+void AudioManager::ChannelStop(uint8_t channel)
 {
     synth->channels[channel].tick = 0;
     synth->channels[channel].musicTime = 0.0;
@@ -116,16 +124,25 @@ void AudioManager::MusicStop(uint8_t channel)
     mml[channel]->stop();
     synth->channels[channel].isPlaying = false;
 
-    synth->channels[channel].timeOn  = -2;
-    synth->channels[channel].timeOff = -1;
-        
+    synth->channels[channel].timeOn  = 0.0;
+    synth->channels[channel].timeOff = 0.0;
+}
+
+void AudioManager::StopAll()
+{
+    for (uint8_t i = 0; i < TRACK_COUNT; i++)
+    {
+        ChannelStop(i);
+    }
     
 }
-unsigned int AudioManager::GetMusicPosition(uint8_t channel)
+
+unsigned int AudioManager::GetChannelPosition(uint8_t channel)
 {
     return mml[channel]->getTotalSteps();
 }
-unsigned int AudioManager::GetMusicSize(uint8_t channel)
+
+unsigned int AudioManager::GetChannelSize(uint8_t channel)
 {
     return mml[channel]->getSize();
 }
@@ -135,6 +152,20 @@ RetroSynth* AudioManager::GetSynth()
 {
     return synth;
 }
+void AudioManager::InitializePresets()
+{
+    for (uint8_t i = 0; i < NUM_PRESETS; i++)
+    {
+        unsigned short dir = GetSoundDir(i);
+
+        SetOSC   (i, audioEngineRef->Peek(dir));
+        SetEnv   (i, audioEngineRef->Peek(dir + 1), audioEngineRef->Peek(dir + 2), audioEngineRef->Peek(dir + 3), audioEngineRef->Peek(dir + 4));
+        SetLFO   (i, audioEngineRef->Peek(dir + 5), audioEngineRef->Peek(dir + 6));
+        SetFilter(i, audioEngineRef->Peek(dir + 7), audioEngineRef->Peek(dir + 8));
+        SetSlide (i, audioEngineRef->Peek(dir + 9), audioEngineRef->Peek(dir + 10));
+    }
+    
+}
 void AudioManager::SetOSC(uint8_t preset, uint8_t osc)
 {
     synth->presets[preset].osc = osc;
@@ -142,6 +173,7 @@ void AudioManager::SetOSC(uint8_t preset, uint8_t osc)
     unsigned short dir = GetSoundDir(preset);
     audioEngineRef->Poke(dir, osc);
 }
+
 void AudioManager::SetEnv(uint8_t preset, uint8_t attackTime, uint8_t decayTime,
                          uint8_t sustainAmplitude, uint8_t releaseTime)
 {
@@ -156,6 +188,7 @@ void AudioManager::SetEnv(uint8_t preset, uint8_t attackTime, uint8_t decayTime,
     audioEngineRef->Poke(dir + 3, sustainAmplitude);
     audioEngineRef->Poke(dir + 4, releaseTime);
 }
+
 void AudioManager::SetLFO(uint8_t preset, uint8_t speed, uint8_t depth)
 {
     synth->presets[preset].lfo.speed = speed / 255.0;
@@ -165,6 +198,7 @@ void AudioManager::SetLFO(uint8_t preset, uint8_t speed, uint8_t depth)
     audioEngineRef->Poke(dir + 5, speed);
     audioEngineRef->Poke(dir + 6, depth);
 }
+
 void AudioManager::SetFilter(uint8_t preset, uint8_t cutoff, uint8_t resonance)
 {
     synth->presets[preset].LPF.cutoff    = cutoff    / 255.0f;

@@ -23,10 +23,10 @@ struct ADSR : public envelope{
 
 	ADSR() {
 
-		Attack    = 0.04;
-		Decay     = 0.04;
-		Sustain   = 1.0;
-		Release   = 0.02;
+		Attack    = 0.0;
+		Decay     = 0.0;
+		Sustain   = 0.0;
+		Release   = 0.0;
 	}
 
 	virtual double amplitude(const double dTime, const double dTimeOn, const double dTimeOff) {
@@ -150,7 +150,8 @@ class RetroSynth{
 	//double musicTime = 0.0;
 
     private:
-    double renderChannel(int channel);
-	double waveTable(int channel, float freq, uint8_t osc);
+    double renderChannel(uint8_t channel);
+    void resetChannelPhase(uint8_t channel);
+	double waveTable(uint8_t channel, float freq, uint8_t osc);
 	float steps = 1.0 / SAMPLERATE;
 };
