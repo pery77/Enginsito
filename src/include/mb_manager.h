@@ -123,9 +123,11 @@ class MBManager{
         static int getMusicPosition(struct mb_interpreter_t* s, void** l);
         static int getMusicSize(struct mb_interpreter_t* s, void** l);
         static int getMusicTick(struct mb_interpreter_t* s, void** l);
+        static int setOsc(struct mb_interpreter_t* s, void** l);
         static int setEnv(struct mb_interpreter_t* s, void** l);
         static int setLFO(struct mb_interpreter_t* s, void** l);
-        static int setOsc(struct mb_interpreter_t* s, void** l);
+        static int setFilter(struct mb_interpreter_t* s, void** l);
+        static int setSlider(struct mb_interpreter_t* s, void** l);
         
         //Sprites
         static int drawSprite(struct mb_interpreter_t* s, void** l);

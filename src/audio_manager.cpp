@@ -50,8 +50,7 @@ AudioManager::AudioManager(Engine* _engine)
         sequence[i] = "";
     }
 
-    synth = new RetroSynth();
-    InitializePresets();
+    synth = new RetroSynth(this);
 }
 
 AudioManager::~AudioManager(){}
@@ -106,8 +105,7 @@ void AudioManager::ChannelPlay(uint8_t channel, const char* newSequence)
 void AudioManager::ChannelPlay(uint8_t channel)
 {
     synth->channels[channel].tick = 0;
-    //synth->channels[channel].sequenceTime = 0.0;
-    
+
     size_t lenght = strlen(sequence[channel]);
     if (lenght > 2)
     {
@@ -120,9 +118,6 @@ void AudioManager::ChannelStop(uint8_t channel)
 {
     synth->channels[channel].tick = 0;
     synth->channels[channel].isPlaying = false;
-    //synth->channels[channel].sequenceTime = 0.0;
-    //synth->channels[channel].noteTimeOn  = 0.0;
-    //synth->channels[channel].noteTimeOff = 0.0;
 
     mml[channel]->stop();
 }
@@ -151,23 +146,77 @@ RetroSynth* AudioManager::GetSynth()
 {
     return synth;
 }
-void AudioManager::InitializePresets()
-{
-    for (uint8_t i = 0; i < NUM_PRESETS; i++)
-    {
-        unsigned short dir = GetSoundDir(i);
 
-        SetOSC   (i, audioEngineRef->Peek(dir));
-        SetEnv   (i, audioEngineRef->Peek(dir + 1), audioEngineRef->Peek(dir + 2), audioEngineRef->Peek(dir + 3), audioEngineRef->Peek(dir + 4));
-        SetLFO   (i, audioEngineRef->Peek(dir + 5), audioEngineRef->Peek(dir + 6));
-        SetFilter(i, audioEngineRef->Peek(dir + 7), audioEngineRef->Peek(dir + 8));
-        SetSlide (i, audioEngineRef->Peek(dir + 9), audioEngineRef->Peek(dir + 10));
-    }
-    
+uint8_t AudioManager::GetOSC(uint8_t preset)
+{
+    unsigned short dir = GetSoundDir(preset);
+    return audioEngineRef->Peek(dir);
 }
+
+float AudioManager::GetEnvA(uint8_t preset)
+{
+    unsigned short dir = GetSoundDir(preset);
+    return audioEngineRef->Peek(dir + 1) / 255.0f;
+}
+
+float AudioManager::GetEnvD(uint8_t preset)
+{
+    unsigned short dir = GetSoundDir(preset);
+    return audioEngineRef->Peek(dir + 2) / 255.0f;
+
+}
+
+float AudioManager::GetEnvS(uint8_t preset)
+{
+    unsigned short dir = GetSoundDir(preset);
+    return audioEngineRef->Peek(dir + 3) / 255.0f;
+
+}
+
+float AudioManager::GetEnvR(uint8_t preset)
+{
+    unsigned short dir = GetSoundDir(preset);
+    return audioEngineRef->Peek(dir + 4) / 255.0f;
+}
+
+float AudioManager::GetLFOSpeed(uint8_t preset)
+{
+    unsigned short dir = GetSoundDir(preset);
+    return audioEngineRef->Peek(dir + 5) / 255.0;
+}
+
+float AudioManager::GetLFODepth(uint8_t preset)
+{
+    unsigned short dir = GetSoundDir(preset);
+    return audioEngineRef->Peek(dir + 6)  / 255.0;
+}
+
+float AudioManager::GetCut(uint8_t preset)
+{
+    unsigned short dir = GetSoundDir(preset);
+    return audioEngineRef->Peek(dir + 7) / 255.0f;
+}
+
+float AudioManager::GetRes(uint8_t preset)
+{
+    unsigned short dir = GetSoundDir(preset);
+    return audioEngineRef->Peek(dir + 8) / 255.0f;
+}
+
+float AudioManager::GetSlope(uint8_t preset)
+{
+    unsigned short dir = GetSoundDir(preset);
+    return audioEngineRef->Peek(dir + 9) / 127.0f - 1.0f;
+}
+
+float AudioManager::GetCurve(uint8_t preset)
+{
+    unsigned short dir = GetSoundDir(preset);
+    return audioEngineRef->Peek(dir + 10) / 127.0f - 1.0f;
+}
+
 void AudioManager::SetOSC(uint8_t preset, uint8_t osc)
 {
-    synth->presets[preset].osc = osc;
 
     unsigned short dir = GetSoundDir(preset);
     audioEngineRef->Poke(dir, osc);
@@ -176,23 +225,14 @@ void AudioManager::SetOSC(uint8_t preset, uint8_t osc)
 void AudioManager::SetEnv(uint8_t preset, uint8_t attackTime, uint8_t decayTime,
                          uint8_t sustainAmplitude, uint8_t releaseTime)
 {
-    synth->presets[preset].env.Attack  = attackTime       / 255.0;
-    synth->presets[preset].env.Decay   = decayTime        / 255.0;
-    synth->presets[preset].env.Sustain = sustainAmplitude / 255.0;
-    synth->presets[preset].env.Release = releaseTime      / 255.0;
-
     unsigned short dir = GetSoundDir(preset);
     audioEngineRef->Poke(dir + 1, attackTime);
     audioEngineRef->Poke(dir + 2, decayTime);
     audioEngineRef->Poke(dir + 3, sustainAmplitude);
     audioEngineRef->Poke(dir + 4, releaseTime);
 }
-
 void AudioManager::SetLFO(uint8_t preset, uint8_t speed, uint8_t depth)
 {
-    synth->presets[preset].lfo.speed = speed / 255.0;
-    synth->presets[preset].lfo.depht = depth  / 255.0;
-
     unsigned short dir = GetSoundDir(preset);
     audioEngineRef->Poke(dir + 5, speed);
     audioEngineRef->Poke(dir + 6, depth);
@@ -200,9 +240,6 @@ void AudioManager::SetLFO(uint8_t preset, uint8_t speed, uint8_t depth)
 
 void AudioManager::SetFilter(uint8_t preset, uint8_t cutoff, uint8_t resonance)
 {
-    synth->presets[preset].LPF.cutoff    = cutoff    / 255.0f;
-    synth->presets[preset].LPF.resonance = resonance / 255.0f;
-
     unsigned short dir = GetSoundDir(preset);
     audioEngineRef->Poke(dir + 7, cutoff);
     audioEngineRef->Poke(dir + 8, resonance);
@@ -210,9 +247,6 @@ void AudioManager::SetFilter(uint8_t preset, uint8_t cutoff, uint8_t resonance)
 
 void AudioManager::SetSlide(uint8_t preset, uint8_t slope, uint8_t curve)
 {
-    synth->presets[preset].slide.slope = slope / 127.0f - 1.0f;
-    synth->presets[preset].slide.curve = curve / 127.0f - 1.0f;
-
     unsigned short dir = GetSoundDir(preset);
     audioEngineRef->Poke(dir + 9, slope);
     audioEngineRef->Poke(dir + 10, curve);

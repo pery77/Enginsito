@@ -118,7 +118,6 @@ int main(int argc, char *argv[])
             {
                 engine->basicIntepreter->Run();
                 engine->basicIntepreter->init();
-                engine->audioManager->InitializePresets();
                 engine->currentState = Running;
             }
             else

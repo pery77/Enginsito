@@ -20,8 +20,7 @@
 class Engine;
 
 class AudioManager 
-{
-    
+{   
     public:
     AudioManager(Engine* _engine);
     ~AudioManager();
@@ -45,12 +44,23 @@ class AudioManager
     unsigned int GetChannelPosition(uint8_t channel);
     unsigned int GetChannelSize(uint8_t channel);
 
+	void SetOSC(uint8_t preset, uint8_t osc);
     void SetEnv(uint8_t preset, uint8_t attackTime, uint8_t decayTime, uint8_t sustainAmplitude, uint8_t releaseTime);
 	void SetLFO(uint8_t preset, uint8_t lfoHertz, uint8_t lfoAmp);
-	void SetOSC(uint8_t preset, uint8_t osc);
     void SetFilter(uint8_t preset, uint8_t cutoff, uint8_t resonance);
     void SetSlide(uint8_t preset, uint8_t slope, uint8_t curve);
-    void InitializePresets();
+
+	uint8_t GetOSC(uint8_t preset);
+	float GetEnvA(uint8_t preset);
+	float GetEnvD(uint8_t preset);
+	float GetEnvS(uint8_t preset);
+	float GetEnvR(uint8_t preset);
+	float GetLFOSpeed(uint8_t preset);
+	float GetLFODepth(uint8_t preset);
+    float GetCut(uint8_t preset);
+	float GetRes(uint8_t preset);
+	float GetSlope(uint8_t preset);
+	float GetCurve(uint8_t preset);
     
     void SetChannelPreset(uint8_t channel, uint8_t preset);
 
@@ -58,6 +68,5 @@ class AudioManager
     RetroSynth* GetSynth();
 
     private:
-    const char* sequence[TRACK_COUNT + 1];
-    void setNote(uint8_t id, uint8_t note);
+    const char* sequence[TRACK_COUNT];
 };

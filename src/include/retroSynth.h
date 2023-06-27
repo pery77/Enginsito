@@ -9,94 +9,8 @@
 
 #define NOISE_SAMPLES 22050
 
-struct envelope {
-	virtual double amplitude(const double dTime, const double dTimeOn, const double dTimeOff) = 0;
-};
-
-struct ADSR : public envelope
-{
-	double Attack;
-	double Decay;
-	double Sustain;
-	double Release;
-	double Amplitude;
-
-	ADSR() 
-	{
-		Attack    = 0.0;
-		Decay     = 0.0;
-		Sustain   = 0.0;
-		Release   = 0.0;
-		Amplitude = 1.0;
-	}
-
-	virtual double amplitude(const double dTime, const double dTimeOn, const double dTimeOff)
-	{
-		double dAmplitude = 0.0;
-    	double dReleaseAmplitude = 0.0;
-
-		if (dTimeOn > dTimeOff) 
-		{ // Note is on
-			double dLifeTime = dTime - dTimeOn;
-
-			if (dLifeTime <= Attack)
-				dAmplitude = (dLifeTime / Attack);
-			else if (dLifeTime <= (Attack + Decay))
-				dAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + Amplitude;
-			else
-				dAmplitude = Sustain;
-    	} 
-		else 
-		{ // Note is off
-			double dLifeTime = dTimeOff - dTimeOn;
-
-			if (dLifeTime <= Attack)
-				dReleaseAmplitude = (dLifeTime / Attack);
-			else if (dLifeTime <= (Attack + Decay))
-				dReleaseAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + Amplitude;
-			else
-				dReleaseAmplitude = Sustain;
-
-			dAmplitude = ((dTime - dTimeOff) / Release) * (0.0 - dReleaseAmplitude) + dReleaseAmplitude;
-    	}
-
-		if (dAmplitude <= 0.00001) dAmplitude = 0.0;
-		if (dAmplitude > 0.9)      dAmplitude = 0.9;
-
-		return dAmplitude;
-	}
-};
-
 typedef struct 
 {
-	float speed   = 0.0;
- 	float depht  = 0.0;
-} LFO;
-
-typedef struct 
-{
-	float slope = 0.0;
- 	float curve = 0.0;
-} Slide;
-
-typedef struct 
-{
-	float cutoff    = 1.0;
- 	float resonance = 0.0;
-} Filter;
-
-typedef struct 
-{
-    int    osc = 0;
-    ADSR   env;
-	LFO    lfo;
-	Filter LPF;
-	Slide  slide;
-} Preset;
-
-typedef struct 
-{
-	Preset *preset;
 	int    note       = 69;
     float  volume     = 0.5f;
 	double phase      = 0.0;
@@ -110,6 +24,7 @@ typedef struct
 	bool isPlaying	    = false;
     double sequenceTime = 0.0;
 	unsigned int tick   = 0;
+	uint8_t currentPreset = 0;
 } Channel;
 
 const int SQUARE       = 0;
@@ -118,10 +33,12 @@ const int OSC_SQUARE25 = 2;
 const int OSC_TRIANGLE = 3;
 const int OSC_NOISE    = 4;
 
+class AudioManager;
+
 class RetroSynth
 {
     public:
-    RetroSynth();
+    RetroSynth(AudioManager* _audioManagerRef);
     ~RetroSynth();
 
 	uint8_t SQUARE [64] =
@@ -144,14 +61,15 @@ class RetroSynth
 	uint8_t NOISE [NOISE_SAMPLES];
 
     Channel channels[NUM_CHANNELS] = {0};
-    Preset presets[NUM_PRESETS] = {0};
 
 	void SetChannelPreset(uint8_t channel, uint8_t preset);
 	void AudioInputCallback(void* buffer, unsigned int frames);
+	AudioManager* audioManagerRef;
 
     private:
     double renderChannel(uint8_t channel);
     void resetChannelPhase(uint8_t channel);
 	double waveTable(uint8_t channel, float freq, uint8_t osc);
 	float steps = 1.0 / SAMPLERATE;
+	double amplitude(uint8_t preset, const double dTime, const double dTimeOn, const double dTimeOff);
 };

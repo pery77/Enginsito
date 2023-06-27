@@ -2,13 +2,15 @@
 #include <cmath>
 #include <iostream>
 #include <random>
+#include "audio_manager.h"
 
 std::random_device rd;
 std::mt19937 gen(rd());
 std::uniform_int_distribution<int8_t> rnd(0, 255);
 
-RetroSynth::RetroSynth()
+RetroSynth::RetroSynth(AudioManager* _audioManagerRef)
 {
+    audioManagerRef = _audioManagerRef;
     SetChannelPreset(0,0);
     SetChannelPreset(1,0);
     SetChannelPreset(2,0);
@@ -29,23 +31,28 @@ inline double frequencyFromNote(int midi_note)
 
 void RetroSynth::resetChannelPhase(uint8_t channel)
 {
-    channels[channel].phase      = 0.0;
-    channels[channel].lfoPhase   = 0.0;
-    channels[channel].slidePhase = 0.0;
-    channels[channel].noteTotalTime       = 0.0;
+    channels[channel].phase         = 0.0;
+    channels[channel].lfoPhase      = 0.0;
+    channels[channel].slidePhase    = 0.0;
+    channels[channel].noteTotalTime = 0.0;
 }
 
 double RetroSynth::renderChannel(uint8_t channel) 
 {
-    double dHertz = frequencyFromNote(channels[channel].note);
-    float slope = channels[channel].preset->slide.slope;
-    float curve = channels[channel].preset->slide.curve;
+    uint8_t currentPreset = channels[channel].currentPreset;
+    uint8_t osc = audioManagerRef->GetOSC(currentPreset);
 
-    float vibratoAmplitude = channels[channel].preset->lfo.depht * 2.0f;
+    double dHertz = frequencyFromNote(channels[channel].note);
+    float slope = audioManagerRef->GetSlope(currentPreset);
+    float curve = audioManagerRef->GetCurve(currentPreset);
+
+    float vibratoAmplitude = audioManagerRef->GetLFODepth(currentPreset) * 2.0f;
 
     if (vibratoAmplitude > 0.0f)
     {
-        channels[channel].lfoPhase += powf(channels[channel].preset->lfo.speed, 1.2f) * 0.01f;;
+        float lfoSpeed = audioManagerRef->GetLFOSpeed(currentPreset);
+
+        channels[channel].lfoPhase += powf(lfoSpeed, 1.2f) * 0.01f;;
         dHertz = (dHertz*(1.0 + sinf(channels[channel].lfoPhase) * vibratoAmplitude));
     }
 
@@ -61,12 +68,12 @@ double RetroSynth::renderChannel(uint8_t channel)
     if (dHertz < 20)    dHertz = 20;
     if (dHertz > 20000) dHertz = 20000;
 
-    double sample = waveTable(channel, dHertz, channels[channel].preset->osc);
+    double sample = waveTable(channel, dHertz, osc);
 
-    float cutoff    = channels[channel].preset->LPF.cutoff;   
+    float cutoff = audioManagerRef->GetCut(currentPreset);   
     if (cutoff != 1.0f)  
     {
-        float resonance = channels[channel].preset->LPF.resonance;
+        float resonance = audioManagerRef->GetRes(currentPreset);
 
         float fltw = powf(cutoff, 3.0f);
         float fltdmp = 1.0f/(1.0f + powf(resonance, 2.0f)*10.0f)*(0.01f + fltw);
@@ -125,7 +132,7 @@ double RetroSynth::waveTable(uint8_t channel, float freq, uint8_t osc)
 
 void RetroSynth::SetChannelPreset(uint8_t channel, uint8_t preset)
 {
-    channels[channel].preset = &presets[preset];
+    channels[channel].currentPreset = preset;
     resetChannelPhase(channel);
 }
 
@@ -140,15 +147,15 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
 
         for (int track = 0; track < NUM_CHANNELS; track++) 
         {
-            float amplitude = 
-                channels[track].preset->env.amplitude(channels[track].sequenceTime, channels[track].noteTimeOn, channels[track].noteTimeOff);
+            float amp = amplitude(channels[track].currentPreset, channels[track].sequenceTime, 
+                                        channels[track].noteTimeOn, channels[track].noteTimeOff);
 
             samples[track] = 0;
 
-            if (amplitude > 0.0001) 
+            if (amp > 0.0001) 
             {
                 samples[track] += renderChannel(track);
-                samples[track] *= channels[track].volume * amplitude;
+                samples[track] *= channels[track].volume * amp;
 
                 samples[track] *= 32767.0;
                 
@@ -170,4 +177,45 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
 
         bufferData[frame] = mixedSample;
     }
+}
+
+double RetroSynth::amplitude(uint8_t preset, const double dTime, const double dTimeOn, const double dTimeOff)
+{
+    double Attack  = audioManagerRef->GetEnvA(preset);
+	double Decay   = audioManagerRef->GetEnvD(preset);
+	double Sustain = audioManagerRef->GetEnvS(preset);
+	double Release = audioManagerRef->GetEnvR(preset);
+	double Amplitude = 1.0;
+
+	double dAmplitude = 0.0;
+    double dReleaseAmplitude = 0.0;
+
+	if (dTimeOn > dTimeOff) 
+	{ // Note is on
+		double dLifeTime = dTime - dTimeOn;
+
+		if (dLifeTime <= Attack)
+			dAmplitude = (dLifeTime / Attack);
+		else if (dLifeTime <= (Attack + Decay))
+			dAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + Amplitude;
+		else
+			dAmplitude = Sustain;
+    } 
+	else 
+	{ // Note is off
+		double dLifeTime = dTimeOff - dTimeOn;
+
+		if (dLifeTime <= Attack)
+			dReleaseAmplitude = (dLifeTime / Attack);
+		else if (dLifeTime <= (Attack + Decay))
+			dReleaseAmplitude = ((dLifeTime - Attack) / Decay) * (Sustain - Amplitude) + Amplitude;
+		else
+			dReleaseAmplitude = Sustain;
+		dAmplitude = ((dTime - dTimeOff) / Release) * (0.0 - dReleaseAmplitude) + dReleaseAmplitude;
+    }
+
+	if (dAmplitude <= 0.00001) dAmplitude = 0.0;
+	if (dAmplitude > 0.9)      dAmplitude = 0.9;
+
+	return dAmplitude;
 }
