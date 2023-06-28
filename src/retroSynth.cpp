@@ -139,6 +139,7 @@ void RetroSynth::SetChannelPreset(uint8_t channel, uint8_t preset)
 void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames) 
 {
     short* bufferData = (short*)buffer;
+
     for (int frame = 0; frame < frames; frame++)
     {
         float samples[NUM_CHANNELS] = {0};
@@ -154,10 +155,7 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
 
             if (amp > 0.0001) 
             {
-                samples[track] += renderChannel(track);
-                samples[track] *= channels[track].volume * amp;
-
-                samples[track] *= 32767.0;
+                samples[track] = renderChannel(track) * channels[track].volume * amp;;
                 
                 channelPlaying++;
                 channels[track].noteTotalTime += steps;
@@ -169,13 +167,25 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
 
             if (channelPlaying > 0)
             {
-                mixedSample += samples[track] / channelPlaying;
+                mixedSample += samples[track];
             }
             
             channels[track].sequenceTime += steps;
+            channels[track].frame[frame] = (samples[track] ) * 127;
         }
 
-        bufferData[frame] = mixedSample;
+        bufferData[frame] = (mixedSample / channelPlaying) * 32767.0 ;
+    }
+
+    int nuevoArray[64];
+    int elementosPorTrozo = 441 / 64; // Número de elementos por trozo
+
+    for (int i = 0; i < 64; i++) {
+        int suma = 0;
+        for (int j = 0; j < elementosPorTrozo; j++) {
+            suma += channels[3].frame[i * elementosPorTrozo + j];
+        }
+        channels[3].frame[i] = suma / elementosPorTrozo;
     }
 }
 

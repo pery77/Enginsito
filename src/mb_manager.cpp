@@ -72,25 +72,36 @@ int MBManager::OpenBas(const char *file){
 	mb_set_printer(bas, my_print);
 	mb_set_inputer(bas, my_input);
 
-	mb_reg_fun(bas, cls);
-	mb_begin_module(bas, "DRAW");
-		mb_register_func(bas, "PIXEL", drawPixel);
-		mb_register_func(bas, "LINE", drawLine);
-		mb_register_func(bas, "CIRCLE", drawCircle);
-		mb_register_func(bas, "RING", drawRing);
-		mb_register_func(bas, "ELLIPSE", drawEllipse);
-		mb_register_func(bas, "TRIANGLE", drawTriangle);
-		mb_register_func(bas, "RECT", drawRect);
-		mb_register_func(bas, "RECTROUND", drawRectRound);
-		mb_register_func(bas, "POLY", drawPoly);
+	//Sound
+	mb_register_func(bas, "CH_SET",  setSequence); 
+	mb_register_func(bas, "CH_ON",   playNote);
+	mb_register_func(bas, "CH_OFF",  stopNote);
+	mb_register_func(bas, "CH_PLAY", musicPlay);
+	mb_register_func(bas, "CH_STOP", musicStop);
+	mb_register_func(bas, "CH_POS",  getMusicPosition);
+	mb_register_func(bas, "CH_SIZE", getMusicSize);
+	mb_register_func(bas, "CH_TICK", getMusicTick);
 
-		mb_register_func(bas, "TEXT", drawText);
+	//Draw
+	mb_register_func(bas, "CLS", cls);
 
-		mb_register_func(bas, "SPRITE", drawSprite);
-		mb_register_func(bas, "META", drawMetaSprite);
+	mb_register_func(bas, "PIXEL", drawPixel);
+	mb_register_func(bas, "LINE", drawLine);
+	mb_register_func(bas, "CIRCLE", drawCircle);
+	mb_register_func(bas, "RING", drawRing);
+	mb_register_func(bas, "ELLIPSE", drawEllipse);
+	mb_register_func(bas, "TRIANGLE", drawTriangle);
+	mb_register_func(bas, "RECT", drawRect);
+	mb_register_func(bas, "RECTROUND", drawRectRound);
+	mb_register_func(bas, "POLY", drawPoly);
+
+	mb_register_func(bas, "TEXT", drawText);
+
+	mb_register_func(bas, "SPRITE", drawSprite);
+	mb_register_func(bas, "META", drawMetaSprite);
 		
-	mb_end_module(bas);
-
+	
+/*
 	mb_begin_module(bas, "CRT");
 		mb_register_func(bas, "ENABLED", crtEnabled);
 		mb_register_func(bas, "BLURPOWER", crtBlurPower);
@@ -105,7 +116,7 @@ int MBManager::OpenBas(const char *file){
 		mb_register_func(bas, "NOISE", crtNoise);
 		mb_register_func(bas, "FLIKER", crtFliker);
 	mb_end_module(bas);
-
+*/
 	mb_reg_fun(bas, intToText);
 	mb_reg_fun(bas, floatToText);
 	mb_reg_fun(bas, delta);
@@ -154,19 +165,8 @@ int MBManager::OpenBas(const char *file){
 		mb_register_func(bas, "AXISVALUE", axisValue);
 	mb_end_module(bas);
 
-	mb_begin_module(bas, "MUSIC");
-		mb_register_func(bas, "SET", setSequence); 
-		mb_register_func(bas, "NOTE", playNote);
-		mb_register_func(bas, "NOTEOFF", stopNote);
-		mb_register_func(bas, "PLAY", musicPlay);
-		mb_register_func(bas, "STOP", musicStop);
-		mb_register_func(bas, "POSITION", getMusicPosition);
-		mb_register_func(bas, "SIZE", getMusicSize);
-		mb_register_func(bas, "TICK", getMusicTick);
-		mb_register_func(bas, "ENV", setEnv);
-		mb_register_func(bas, "LFO", setLFO);
-		mb_register_func(bas, "OSC", setOsc);
-	mb_end_module(bas);
+
+
 
 	mb_reg_fun(bas, addMetaSprite);
 	mb_reg_fun(bas, getMetaSprite);
@@ -1400,7 +1400,7 @@ int MBManager::musicPlay(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     basicEngineRef->audioManager->ChannelPlay(channel);
-
+	
 	return result;
 }
 int MBManager::musicStop(struct mb_interpreter_t* s, void** l){

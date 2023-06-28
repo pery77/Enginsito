@@ -24,6 +24,7 @@ typedef struct
 	bool isPlaying	    = false;
     double sequenceTime = 0.0;
 	unsigned int tick   = 0;
+	uint8_t frame[441];
 	uint8_t currentPreset = 0;
 } Channel;
 
@@ -68,8 +69,8 @@ class RetroSynth
 
     private:
     double renderChannel(uint8_t channel);
-    void resetChannelPhase(uint8_t channel);
+    void   resetChannelPhase(uint8_t channel);
 	double waveTable(uint8_t channel, float freq, uint8_t osc);
-	float steps = 1.0 / SAMPLERATE;
+	float  steps = 1.0 / SAMPLERATE;
 	double amplitude(uint8_t preset, const double dTime, const double dTimeOn, const double dTimeOff);
 };

@@ -845,10 +845,22 @@ void Editor::DrawSFX()
            editorEngineRef->audioManager->SetOSC(id, osc);
         }  
         ImGui::EndGroup();
-    ImGui::BeginTooltip();
-    ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].sequenceTime));
+    for (int i = 0; i <= 63; i++) 
+    {
+        ImGui::Text(TextFormat("%i", editorEngineRef->audioManager->GetSynth()->channels[0].frame[i]));
+        ImGui::SameLine();
+    }
+    ImGui::NewLine();
+    for (int i = 0; i <= 63; i++) 
+    {
+        ImGui::Text(TextFormat("%i", editorEngineRef->audioManager->GetSynth()->channels[3].frame[i]));
+        ImGui::SameLine();
+    }
+    //ImGui::BeginTooltip();
+    //ImGui::Text(TextFormat("%i", editorEngineRef->audioManager->GetSynth()->channels[0].frames));
+
     //ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].slide.curve));
-    ImGui::EndTooltip();
+    //ImGui::EndTooltip();
 }
 
 

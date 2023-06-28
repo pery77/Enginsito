@@ -4,10 +4,10 @@ def mario()
     m3 = "T100 @3 v30 >>e16-e8-e8-c16-e8-g4-<g4>-c8.<g8.e8.a8b8a+16a8g16.>e16g16.a8f16g8e8c16d16<b8.>c8.<g8.e8.a8b8a+16a8g16.>e16g16.a8f16g8e8c16d16<b4&b16>g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.g16f+16f16d+8e8>c8c16c4.<g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.d+8.d8.c2&c8g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.g16f+16f16d+8e8>c8c16c4.<g16f+16f16d+8e8<g+16a16>c8<a16>c16d8.d+8.d8.c2"
     m4 = "T100 @5 v70 <<d16d8d8d16d8g4<g4>g8.e8.c8.f8g8f+16f8c16.>c16e16.f8d16e8c8<a16b16g8.g8.e8.c8.f8g8f+16f8c16.>c16e16.f8d16e8c8<a16b16g8.c8.g8.>c8<f8.>c16c16c16<f8c8.e8.g16>c4.&c16<g8c8.g8.>c8<f8.>c16c16c16<f8c8g+8.a+8.>c8.<g16g8c8c8.g8.>c8<f8.>c16c16c16<f8c8.g8.g16>c4.&c16<g8c8.g8.>c8<f8.>c16c16c16<f8c8g+8.a+8.>c8."
 
-    music.set(0,m1)
-    music.set(1,m2)
-    music.set(2,m3)
-    music.set(3,m4)
+    chanset(0,m1)
+    chanset(1,m2)
+    chanset(2,m3)
+    chanset(3,m4)
 enddef
 
 def tetris()
@@ -39,26 +39,26 @@ def kettonote(k,o)
 
     endif
 enddef
-music.set(2, "T 200 v130 L16@14c")
-music.set(3, "v100 @15o6f")
+chanset(2, "T 200 v130 L16@14cg")
+chanset(3, "v100 @15o6f")
 def tick()
     k = key.get()
     IF k <> 0 THEN
     print k;
         if k = 90 then
-        	music.play(0)
+        	chanplay(0, "v100 @15o6f")
         endif
         
         if k = 88 then
-        	music.play(1)
+        	chanplay(1)
         endif
 
         if k = 67 then
-        	music.play(2)
+        	chanplay(2)
         endif
 
         if k = 86 then
-        	music.play(3)
+        	chanplay(3)
         endif
     ENDIF
 enddef
