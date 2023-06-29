@@ -624,9 +624,6 @@ void Editor::PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack, bool pres
         ImGui::PushStyleColor(ImGuiCol_Text, colorText);
         if (ImGui::Button(button_label, size)) 
         {
-            //editorEngineRef->audioManager->LoadSoundData(0);
-            //editorEngineRef->audioManager->SFXRender(0,note);
-            //editorEngineRef->audioManager->SFXPlay(0,255);
             editorEngineRef->audioManager->PlayNote(0, note, 127);
         }
         ImGui::PopStyleColor();
@@ -840,22 +837,32 @@ void Editor::DrawSFX()
         ImGui::SameLine();
         ImGui::BeginGroup();
         ImGui::Text("Wave Table");
-        if (ImGuiKnobs::KnobInt("osc", &osc, 0, 4, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("osc", &osc, 0, 5, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
            editorEngineRef->audioManager->SetOSC(id, osc);
         }  
         ImGui::EndGroup();
-    for (int i = 0; i <= 63; i++) 
-    {
-        ImGui::Text(TextFormat("%i", editorEngineRef->audioManager->GetSynth()->channels[0].frame[i]));
-        ImGui::SameLine();
-    }
+
     ImGui::NewLine();
-    for (int i = 0; i <= 63; i++) 
+    ImVec2 pos = ImGui::GetCursorPos();
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    float step = 3.0f;
+    ImVec2 init = pos, end;
+
+    for (int i = 0; i < 63; i++)
     {
-        ImGui::Text(TextFormat("%i", editorEngineRef->audioManager->GetSynth()->channels[3].frame[i]));
-        ImGui::SameLine();
+        float h = editorEngineRef->audioManager->GetSynth()->GetFrameAverage(3 ,i);
+        if (i==0) init = ImVec2(pos.x * step, pos.y - h);
+        
+        if (i>0)
+        {
+            draw_list->AddLine(init, end, IM_COL32(200, 200, 100, 255));
+            init = end;
+        }
+
+        end = ImVec2((pos.x + i) * step, pos.y - h);
     }
+
     //ImGui::BeginTooltip();
     //ImGui::Text(TextFormat("%i", editorEngineRef->audioManager->GetSynth()->channels[0].frames));
 

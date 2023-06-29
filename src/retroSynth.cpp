@@ -98,7 +98,7 @@ double RetroSynth::renderChannel(uint8_t channel)
 double RetroSynth::waveTable(uint8_t channel, float freq, uint8_t osc)
 {   
     double increment = freq / SAMPLERATE;
-    int size = osc == 4 ? NOISE_SAMPLES : TABLE_SIZE;
+    int size = osc == 5 ? NOISE_SAMPLES : TABLE_SIZE;
 
     float phaseXsize = channels[channel].phase * size;
 
@@ -121,6 +121,9 @@ double RetroSynth::waveTable(uint8_t channel, float freq, uint8_t osc)
             tableValue = TRIANGLE[i];
             break;
         case 4:
+            tableValue = SAW[i];
+            break;    
+        case 5:
             tableValue = NOISE[iN];
             break;
         default:
@@ -155,7 +158,7 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
 
             if (amp > 0.0001) 
             {
-                samples[track] = renderChannel(track) * channels[track].volume * amp;;
+                samples[track] = renderChannel(track) * channels[track].volume * amp;
                 
                 channelPlaying++;
                 channels[track].noteTotalTime += steps;
@@ -171,22 +174,27 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
             }
             
             channels[track].sequenceTime += steps;
-            channels[track].frame[frame] = (samples[track] ) * 127;
+            channels[track].frame[frame] = ((samples[track] + 1.0f) * 127);
         }
 
         bufferData[frame] = (mixedSample / channelPlaying) * 32767.0 ;
     }
 
-    int nuevoArray[64];
-    int elementosPorTrozo = 441 / 64; // Número de elementos por trozo
 
-    for (int i = 0; i < 64; i++) {
-        int suma = 0;
-        for (int j = 0; j < elementosPorTrozo; j++) {
-            suma += channels[3].frame[i * elementosPorTrozo + j];
-        }
-        channels[3].frame[i] = suma / elementosPorTrozo;
+}
+
+uint8_t RetroSynth::GetFrameAverage(uint8_t channel, uint8_t frame)
+{
+    if (frame > 62) frame = 62;
+    float suma = 0;
+
+    for (int i = 0; i < 7; i++) 
+    { 
+        suma += channels[channel].frame[(frame * 7) + i];
     }
+
+    suma /= 7;
+    return suma;
 }
 
 double RetroSynth::amplitude(uint8_t preset, const double dTime, const double dTimeOn, const double dTimeOff)
