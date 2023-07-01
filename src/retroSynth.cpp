@@ -59,10 +59,12 @@ double RetroSynth::renderChannel(uint8_t channel)
     if(slope + curve != 0.0)
     {
         channels[channel].slidePhase = channels[channel].noteTotalTime;
-        float fslide  = 1.0 - pow(slope, 3.0)*0.001;
-        float fdslide = -pow(curve, 3.0)*0.0001;
+        float fslide  = 1.0 - pow(slope, 3.0) * 0.001;
+        float fdslide = -pow(curve, 3.0)* 0.0001;
         fslide += fdslide;
         channels[channel].phase *= fslide;
+        //dHertz += fslide * channels[channel].slidePhase;
+
     }
 
     if (dHertz < 20)    dHertz = 20;
