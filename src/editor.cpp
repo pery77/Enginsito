@@ -180,6 +180,7 @@ void Editor::Credits()
 void Editor::OpenFile()
 {
     Tools::console->AddLog("Open: [ %s ]\n", editorEngineRef->bios->CurrentProgram.c_str());
+
     std::ifstream inFile;
     inFile.open(editorEngineRef->bios->GetFile().c_str());
     std::stringstream strStream;
@@ -201,15 +202,15 @@ void Editor::DrawshowFileBrowser()
     float window_height = input_bar_ypos - ImGui::GetCursorPosY() - style.ItemSpacing.y;
     float window_content_height = window_height - style.WindowPadding.y * 6.0f;
     float min_content_size = pw_size.x - style.WindowPadding.x * 4.0f;
-    static bool memoryMode = false;
+
     ImGui::BeginChild("#Head",ImVec2(0, list_item_height), true, ImGuiWindowFlags_NoScrollWithMouse);
         ImGui::Text("Current path: %s", editorEngineRef->bios->CurrentPath.c_str());
         ImGui::SameLine();
-        ImGui::Checkbox("Memory mode", &memoryMode);
+
     ImGui::EndChild();
-    if(memoryMode) ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0.192f, 0.106, 0.216f, 1.0f));
+
     ImGui::BeginChild("#Files", ImVec2(0, window_content_height), true);
-    if(memoryMode) ImGui::PopStyleColor();
+
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.882f, 0.745f, 0.078f, 1.0f));
         std::stringstream ss = Tools::GetFolders(editorEngineRef->bios->CurrentPath.c_str());
         std::string temp;
@@ -231,24 +232,14 @@ void Editor::DrawshowFileBrowser()
         ImGui::PopStyleColor(1);
     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.827f, 0.871f, 0.98f, 1.0f));
 
-    ss = Tools::GetFiles(editorEngineRef->bios->CurrentPath.c_str(), memoryMode);
+    ss = Tools::GetFiles(editorEngineRef->bios->CurrentPath.c_str());
     while (std::getline(ss, temp))
     {
         if(ImGui::Selectable(temp.c_str(), false))
         {
-            if (memoryMode)
-            {
-                std::stringstream m;
-                m << ASSETS_FOLDER << "/" << editorEngineRef->bios->CurrentPath << "/" << temp << MEM_EXTENSION;
-                Tools::console->AddLog("[MEMORY] Loaded:");
-                Tools::console->AddLog(m.str().c_str());
-                editorEngineRef->LoadMemory(m.str().c_str());
-            }
-            else
-            {
-                editorEngineRef->bios->CurrentProgram = temp;
-                OpenFile();
-            }
+
+            editorEngineRef->bios->SetProgram(temp);  
+            OpenFile();
         }
     }
         
@@ -261,7 +252,7 @@ void Editor::DrawshowFileBrowser()
         static char str0[128] = "new";
         if(ImGui::SmallButton("New file"))
         {
-            editorEngineRef->bios->CurrentProgram = str0;
+            editorEngineRef->bios->SetProgram(str0);
         }
         ImGui::SameLine();
         ImGui::InputText("New File", str0, IM_ARRAYSIZE(str0));

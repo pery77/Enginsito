@@ -208,7 +208,7 @@ void Bios::ProcessCommand()
 
     if (checkCommand(lastCommand.command,"LOAD")){
         if (Tools::FileExist(CurrentPath, lastCommand.args[0])){
-            CurrentProgram = lastCommand.args[0];
+            SetProgram(lastCommand.args[0]);
             screenLines += "Loaded " + CurrentProgram + " in memory.\n";
         }
         else{
@@ -250,7 +250,41 @@ std::string Bios::GetFile()
 
     return full_path.string();
 }
+std::string Bios::GetMemoryFile()
+{
+    namespace fs = std::filesystem;
+    fs::path dir (ASSETS_FOLDER);
+    fs::path file (CurrentProgram + MEM_EXTENSION);
+    fs::path full_path = dir / CurrentPath / file;
+    Tools::console->AddLog(full_path.string().c_str());
+    return full_path.string();
+}
+void Bios::SetProgram(std::string file)
+{
+    std::string currentMemoryFile = GetMemoryFile();
+    if (Tools::FileMemoryExist(currentMemoryFile))
+    {
+        Tools::console->AddLog("Saving current memory: [%s]", currentMemoryFile.c_str());
+        biosEngineRef->DumpMemory(currentMemoryFile.c_str());
+    }
 
+    CurrentProgram = file;
+    std::string memoryFile = GetMemoryFile();
+
+    Tools::console->AddLog("Data file: [%s]", memoryFile.c_str()); 
+
+    if (Tools::FileMemoryExist(memoryFile))
+    {
+        Tools::console->AddLog("Loading data file.");
+        biosEngineRef->LoadMemory(memoryFile.c_str());
+    } 
+    else
+    {
+        Tools::console->AddLog("Creating data file");
+        biosEngineRef->DumpMemory(memoryFile.c_str());
+        biosEngineRef->LoadMemory(memoryFile.c_str());
+    }
+}
 void Bios::SetFile(std::string filePath)
 {
     namespace fs = std::filesystem;

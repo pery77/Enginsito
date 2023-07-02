@@ -82,7 +82,7 @@ std::vector<std::string> Tools::Split(const std::string& str, const char sep)
     return tokens;
 }
 
-std::stringstream Tools::GetFiles(const char *path, bool memoryFiles) 
+std::stringstream Tools::GetFiles(const char *path) 
 {
     
     namespace fs = std::filesystem;
@@ -98,7 +98,7 @@ std::stringstream Tools::GetFiles(const char *path, bool memoryFiles)
     for(auto& p : std::filesystem::directory_iterator(current_path)){
         if (p.is_regular_file()) {
             std::string file = p.path().stem().string();   
-            if (IsFileExtension(p.path().filename().string().c_str(), memoryFiles ? MEM_EXTENSION : PROGRAM_EXTENSION))
+            if (IsFileExtension(p.path().filename().string().c_str(), PROGRAM_EXTENSION))
                 result  << file << "\n";
         }
     }
@@ -157,6 +157,14 @@ bool Tools::FileExist(std::string path, std::string file)
     const fs::path current_path = fs::current_path() / ASSETS_FOLDER / path / file;
     bool result = fs::exists(current_path);
     printf("[%s] File> %s\n",result ? "OK" : "Fail", current_path.string().c_str());
+    return result;
+}
+bool Tools::FileMemoryExist(std::string memoryFile) 
+{
+    namespace fs = std::filesystem;
+    const fs::path current_path = fs::current_path() / memoryFile;
+    bool result = fs::exists(current_path);
+    printf("[%s] File Memmory> %s\n",result ? "OK" : "Fail", current_path.string().c_str());
     return result;
 }
 

@@ -25,12 +25,15 @@ class Bios {
         bool ShouldRun = false;
 
         std::string GetFile();
+        std::string GetMemoryFile();
         void SetFile(std::string file);
         void LoadBoot();
 
         std::string CurrentPath = "";
         std::string CurrentProgram = "";
 
+        void SetProgram(std::string file);
+        
         void AddSubPath(std::string current);
         void RemoveSubPath();
 

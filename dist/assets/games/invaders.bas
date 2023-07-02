@@ -1,13 +1,13 @@
 ' First program for testing the engine
 ' 
-import "assets/games/invaders_data.dat"
+'import "assets/games/invaders_data.dat"
 'Global Variables
 bullets = list()
 rocks = list()
 aliens = list()
 aliensBullets = list()
 
-' hiScore = readed from invader_data.dat
+hiScore = 0 'readed from invader_data.dat
 score = nil ' overwrited in startGame()
 lives = nil ' overwrited in startGame()
 maxbullets = 1
@@ -38,56 +38,56 @@ waveInfoTime = 0
 
 'Set sounds
 'shot
-sfx.env(0, 0, 61, 0, 44)
-sfx.freq(0, 16, -64, 0, 0)
-sfx.tone(0, 0, 0, 0, 0)
-sfx.repeat(0, 0, 0, 0)
-sfx.filter(0, 125, 127, 0, 106, -55)
-sfx.wave(0, 2)
-sfx.render(0, 88)
+'sfx.env(0, 0, 61, 0, 44)
+'sfx.freq(0, 16, -64, 0, 0)
+'sfx.tone(0, 0, 0, 0, 0)
+'sfx.repeat(0, 0, 0, 0)
+'sfx.filter(0, 125, 127, 0, 106, -55)
+'sfx.wave(0, 2)
+'sfx.render(0, 88)
 'explosion
-sfx.env(1, 0, 35, 53, 138)
-sfx.freq(1, 5, -61, 51, 240)
-sfx.tone(1, 0, 0, 0, 0)
-sfx.repeat(1, 0, 0, 0)
-sfx.filter(1, 139, -4, 0, 0, 0)
-sfx.wave(1, 3)
-sfx.render(1, 26)
+'sfx.env(1, 0, 35, 53, 138)
+'sfx.freq(1, 5, -61, 51, 240)
+'sfx.tone(1, 0, 0, 0, 0)
+'sfx.repeat(1, 0, 0, 0)
+'sfx.filter(1, 139, -4, 0, 0, 0)
+'sfx.wave(1, 3)
+'sfx.render(1, 26)
 'alien steps
-sfx.env(2, 0, 40, 0, 27)
-sfx.freq(2, 0, -11, 0, 0)
-sfx.tone(2, 0, 0, 0, 0)
-sfx.repeat(2, 0, 0, 0)
-sfx.filter(2, 255, 0, 0, 0, 0)
-sfx.wave(2, 1)
-sfx.render(2, 44)
+'sfx.env(2, 0, 40, 0, 27)
+'sfx.freq(2, 0, -11, 0, 0)
+'sfx.tone(2, 0, 0, 0, 0)
+'sfx.repeat(2, 0, 0, 0)
+'sfx.filter(2, 255, 0, 0, 0, 0)
+'sfx.wave(2, 1)
+'sfx.render(2, 44)
 
 'alien ship
-sfx.env(3, 255, 255, 0, 255)
-sfx.freq(3, 0, 19, 0, 0)
-sfx.tone(3, 0, 0, 0, 0)
-sfx.repeat(3, 50, -1, 0)
-sfx.filter(3, 34, 127, 0, 0, 0)
-sfx.wave(3, 1)
-sfx.render(3, 69)
+'sfx.env(3, 255, 255, 0, 255)
+'sfx.freq(3, 0, 19, 0, 0)
+'sfx.tone(3, 0, 0, 0, 0)
+'sfx.repeat(3, 50, -1, 0)
+'sfx.filter(3, 34, 127, 0, 0, 0)
+'sfx.wave(3, 1)
+'sfx.render(3, 69)
 
 'alien shot
-sfx.env(4, 0, 104, 86, 65)
-sfx.freq(4, 0, 58, 0, 0)
-sfx.tone(4, 0, 0, 0, 0)
-sfx.repeat(4, 0, 0, 0)
-sfx.filter(4, 48, -13, 208, 102, 109)
-sfx.wave(4, 3)
-sfx.render(4, 64)
+'sfx.env(4, 0, 104, 86, 65)
+'sfx.freq(4, 0, 58, 0, 0)
+'sfx.tone(4, 0, 0, 0, 0)
+'sfx.repeat(4, 0, 0, 0)
+'sfx.filter(4, 48, -13, 208, 102, 109)
+'sfx.wave(4, 3)
+'sfx.render(4, 64)
 
 'player explosion
-sfx.env(5, 0, 79, 203, 255)
-sfx.freq(5, -10, -63, 0, 0)
-sfx.tone(5, 37, 121, 211, 88)
-sfx.repeat(5, 12, -3, -15)
-sfx.filter(5, 154, 53, 71, 0, 0)
-sfx.wave(5, 3)
-sfx.render(5, 39)
+'sfx.env(5, 0, 79, 203, 255)
+'sfx.freq(5, -10, -63, 0, 0)
+'sfx.tone(5, 37, 121, 211, 88)
+'sfx.repeat(5, 12, -3, -15)
+'sfx.filter(5, 154, 53, 71, 0, 0)
+'sfx.wave(5, 3)
+'sfx.render(5, 39)
 
 'Set graphics
 setSprite(0,15,31,63,127,255,255,255,255)    'rock square
@@ -230,7 +230,7 @@ class player
                 b.speed = -2
                 b.explosionFrame = 0
                 push(bullets, b)
-                sfx.play(0, 127)
+                'sfx.play(0, 127)
             endif
         endif
 
@@ -243,7 +243,7 @@ class player
                     gameState = GAME_OVER
                 endif
                 remove(aliensBullets, index_of(aliensBullets, b))
-                sfx.play(5, 99)
+                'sfx.play(5, 99)
             endif
         next
 
@@ -340,7 +340,7 @@ class alien
             b.speed = 1
             b.explosionFrame = 0
             push(aliensBullets, b)
-            sfx.play(4, 97)
+            'sfx.play(4, 97)
         endif
     enddef
 
@@ -368,7 +368,7 @@ class alien
             if checkCollisionAABB(b.x,b.y,2,4,x+2,y,11,8) then
                 remove(bullets, index_of(bullets, b))
                 dead = 1
-                sfx.play(1,127)
+                'sfx.play(1,127)
                 addScore((shape + 1) * 10)
             endif
         next
@@ -407,7 +407,7 @@ class ship
             if checkCollisionAABB(b.x,b.y,2,4,x,y,16,8) then
                 remove(bullets, index_of(bullets, b))
                 dead = 1
-                sfx.play(1,127)
+                'sfx.play(1,127)
                 price = priceList(rnd(0,len(priceList)))
                 addScore(price)
             endif
@@ -418,7 +418,7 @@ class ship
             if deadCounter < 10 then
                 draw.sprite(16,x,y,4)
                 draw.sprite(16,x+8,y,4,8)
-                sfx.stop(3)
+                'sfx.stop(3)
             elseif
                 draw.text(intToText("%03i",price),x-4,y,1,3)
             endif
@@ -591,9 +591,9 @@ def alienMovement()
         alienTick = 0
         alienStep = alienStep + 1
        
-        sfx.stop(2)
-        sfx.play(2,80)
-        sfx.render(2, 44 - alienStep mod 4)
+        'sfx.stop(2)
+        'sfx.play(2,80)
+        'sfx.render(2, 44 - alienStep mod 4)
 
         maxX = 0
         minX = 320
@@ -645,7 +645,7 @@ def alienShipUpdate()
             alienShip.x = 320
             alienShip.dead = 0
             alienShip.deadCounter = 0
-            sfx.play(3,90)
+            'sfx.play(3,90)
         endif
     endif
 
