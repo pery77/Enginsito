@@ -72,15 +72,7 @@ int MBManager::OpenBas(const char *file){
 	mb_set_printer(bas, my_print);
 	mb_set_inputer(bas, my_input);
 
-	//Sound
-	mb_register_func(bas, "CH_SET",  setSequence); 
-	mb_register_func(bas, "CH_ON",   playNote);
-	mb_register_func(bas, "CH_OFF",  stopNote);
-	mb_register_func(bas, "CH_PLAY", musicPlay);
-	mb_register_func(bas, "CH_STOP", musicStop);
-	mb_register_func(bas, "CH_POS",  getMusicPosition);
-	mb_register_func(bas, "CH_SIZE", getMusicSize);
-	mb_register_func(bas, "CH_TICK", getMusicTick);
+
 
 	//Draw
 	mb_register_func(bas, "CLS", cls);
@@ -100,6 +92,16 @@ int MBManager::OpenBas(const char *file){
 	mb_register_func(bas, "SPRITE", drawSprite);
 	mb_register_func(bas, "META", drawMetaSprite);
 		
+	//Sound
+	mb_register_func(bas, "CH_SET",  setSequence); 
+	mb_register_func(bas, "CH_ON",   playNote);
+	mb_register_func(bas, "CH_OFF",  stopNote);
+	mb_register_func(bas, "CH_PLAY", musicPlay);
+	mb_register_func(bas, "CH_STOP", musicStop);
+	mb_register_func(bas, "CH_POS",  getMusicPosition);
+	mb_register_func(bas, "CH_SIZE", getMusicSize);
+	mb_register_func(bas, "CH_TICK", getMusicTick);
+
 	
 /*
 	mb_begin_module(bas, "CRT");

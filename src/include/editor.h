@@ -69,6 +69,7 @@ class Editor
 
     Engine* editorEngineRef;
     TextEditor codeEditor;
+    TextEditor docs;
     TextEditor::LanguageDefinition lang = TextEditor::LanguageDefinition::Basic();
     std::string editorFile = "";
 
@@ -104,6 +105,7 @@ class Editor
     void MetaSpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id);
 
     void DrawCode();
+    void DrawDocs();
     void DrawPalette();
     void SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id);
     void DrawSprites();

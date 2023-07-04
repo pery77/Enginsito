@@ -1,0 +1,62 @@
+-KEYWRODS-
+-========-
+REM     -> ' Is used to add comments or explanatory notes within 
+            'the code that are ignored by the interpreter.
+
+NIL     -> ' Represents a null or empty value.
+
+MOD     -> ' Performs the modulo operation, which 
+            'calculates the remainder after division.
+
+AND     -> ' A logical operator used to perform a logical 
+            'conjunction (also known as a logical AND) between two conditions.
+
+OR      -> ' A logical operator used to perform a logical 
+            'disjunction (also known as a logical OR) between two conditions.
+
+NOT     -> ' A logical operator used to negate a condition, 
+            ' resulting in its opposite value.
+
+IS      -> ' Used for comparison and checks if a value or variable 
+            'is of a specific type or meets certain conditions.
+
+LET     -> ' Used to assign a value to a variable. (Optional)
+
+DIM     -> ' It is used to declare and allocate 
+            'memory for variables or arrays.
+
+IF      -> ' Begins a conditional statement that executes a block of code if a certain condition is met.
+THEN    -> ' Specifies the code to be executed if the condition of an "IF" statement is true.
+ELSEIF  -> ' Used within an "IF" statement to specify an additional condition to be checked if the previous condition was false.
+ELSE    -> ' Specifies the code to be executed if none of the previous conditions in an "IF" statement were true.
+ENDIF   -> ' Marks the end of an "IF" statement.
+
+FOR     -> ' Begins a loop that repeats a block of code for a specified number of times.
+IN      -> ' Used in conjunction with the "FOR" keyword to specify the range or collection to iterate over.
+TO      -> ' Specifies the upper limit of the range in a "FOR" loop.
+STEP    -> ' Specifies the increment or decrement value for each iteration in a "FOR" loop.
+NEXT    -> ' Marks the end of a "FOR" loop and proceeds to the next iteration.
+
+WHILE   -> ' Begins a loop that repeats a block of code while a certain condition is true.
+WEND    -> ' Marks the end of a "WHILE" loop.
+
+DO      -> ' Begins a loop that repeats a block of code until a certain condition is true.
+UNTIL   -> ' Specifies the condition for exiting a "DO" loop.
+EXIT    -> ' Terminates a loop prematurely.
+GOTO    -> ' Transfers the program execution to a specified line number or label.
+GOSUB   -> ' Transfers the program execution to a specified subroutine or procedure and returns to the calling code afterwards.
+RETURN  -> ' Marks the end of a subroutine or procedure and returns to the calling code.
+CALL    -> ' Used to invoke a subroutine or function.
+DEF     -> ' Begins the definition of a user-defined function.
+ENDDEF  -> ' Marks the end of a user-defined function.
+CLASS   -> ' Begins the definition of a user-defined class.
+ENDCLASS-> ' Marks the end of a user-defined class.
+ME      -> ' Refers to the current instance of a class.
+NEW     -> ' Creates a new instance of a class.
+VAR     -> ' Used to declare a variable within a class.
+REFLECT -> ' Provides reflection capabilities to access and manipulate class members dynamically.
+LAMBDA  -> ' Allows the creation of anonymous functions or closures.
+MEM     -> ' Refers to the memory address of a variable or object.
+TYPE    -> ' Used to define a custom data type or structure.
+IMPORT  -> ' Used to include external modules or libraries in the code.
+END     -> ' Marks the end of the program or a code block.

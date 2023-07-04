@@ -17,6 +17,7 @@ static bool show_screen = false;
 static bool show_player = false;
 static bool show_memory = false;
 static bool show_credits = false;
+static bool show_docs = false;
 
 static unsigned char spriteCopy[8]{};
 
@@ -30,6 +31,14 @@ Editor::Editor(Engine* _engine)
     codeEditor.SetLanguageDefinition(lang);
     codeEditor.SetPalette(TextEditor::GetBasicPalette()); 
 
+    docs.SetLanguageDefinition(lang);
+    docs.SetPalette(TextEditor::GetBasicPalette()); 
+    docs.SetReadOnly(true);
+
+    char* docsText = LoadFileText(DOCS_FILE);
+    docs.SetText(docsText);
+    docs.SetShowWhitespaces(false);
+
     mem_edit.HighlightColor = IM_COL32(22, 110, 162, 255);
     mem_edit.OptShowAscii = false;
 
@@ -42,20 +51,21 @@ Editor::Editor(Engine* _engine)
     std::ifstream f(ss.str().c_str());
     data = nlohmann::json::parse(f);
 
-    show_player = data["show_player"].get<bool>();
-    show_FPS = data["show_fps"].get<bool>();
-    show_tools = data["show_tools"].get<bool>();
-    show_screen = data["show_screen"].get<bool>();
-    show_code = data["show_code"].get<bool>();
-    show_console = data["show_console"].get<bool>();
-    show_palette = data["show_palette"].get<bool>();
-    show_crt = data["show_crt"].get<bool>();
-    show_memory = data["show_memory"].get<bool>();
-    show_filebrowser = data["show_filebrowser"].get<bool>();
-    show_sprites = data["show_sprites"].get<bool>();
-    show_makeSprite = data["show_makeSprite"].get<bool>();
-    show_metaSprite = data["show_metaSprite"].get<bool>();
-    show_sfx = data["show_sfx"].get<bool>();
+    show_player         = data["show_player"].get<bool>();
+    show_FPS            = data["show_fps"].get<bool>();
+    show_tools          = data["show_tools"].get<bool>();
+    show_screen         = data["show_screen"].get<bool>();
+    show_code           = data["show_code"].get<bool>();
+    show_console        = data["show_console"].get<bool>();
+    show_palette        = data["show_palette"].get<bool>();
+    show_crt            = data["show_crt"].get<bool>();
+    show_memory         = data["show_memory"].get<bool>();
+    show_filebrowser    = data["show_filebrowser"].get<bool>();
+    show_sprites        = data["show_sprites"].get<bool>();
+    show_makeSprite     = data["show_makeSprite"].get<bool>();
+    show_metaSprite     = data["show_metaSprite"].get<bool>();
+    show_sfx            = data["show_sfx"].get<bool>();
+    show_docs           = data["show_docs"].get<bool>();
 
     SetMainWindow();
 }
@@ -65,25 +75,26 @@ Editor::~Editor()
     std::stringstream ss;
 	ss << CONFIG_FOLDER << "/ui.json";
 
-    data["window_width"] = GetScreenWidth();
-    data["window_height"] = GetScreenHeight();
-    data["window_position_x"] = window_position_x;
-    data["window_position_y"] = window_position_y;
+    data["window_width"]        = GetScreenWidth();
+    data["window_height"]       = GetScreenHeight();
+    data["window_position_x"]   = window_position_x;
+    data["window_position_y"]   = window_position_y;
 
-    data["show_player"] = show_player;
-    data["show_fps"] = show_FPS;
-    data["show_tools"] = show_tools;
-    data["show_screen"] = show_screen;
-    data["show_code"] = show_code;
-    data["show_console"] = show_console;
-    data["show_palette"] = show_palette;
-    data["show_crt"] = show_crt;
-    data["show_memory"] = show_memory;
-    data["show_filebrowser"] = show_filebrowser;
-    data["show_sprites"] = show_sprites;
-    data["show_makeSprite"] = show_makeSprite;
-    data["show_metaSprite"] = show_metaSprite;
-    data["show_sfx"] = show_sfx;
+    data["show_player"]         = show_player;
+    data["show_fps"]            = show_FPS;
+    data["show_tools"]          = show_tools;
+    data["show_screen"]         = show_screen;
+    data["show_code"]           = show_code;
+    data["show_console"]        = show_console;
+    data["show_palette"]        = show_palette;
+    data["show_crt"]            = show_crt;
+    data["show_memory"]         = show_memory;
+    data["show_filebrowser"]    = show_filebrowser;
+    data["show_sprites"]        = show_sprites;
+    data["show_makeSprite"]     = show_makeSprite;
+    data["show_metaSprite"]     = show_metaSprite;
+    data["show_sfx"]            = show_sfx;
+    data["show_docs"]           = show_docs;
 
     std::ofstream o(ss.str().c_str());
     o << std::setw(4) << data << std::endl;
@@ -275,65 +286,23 @@ void Editor::ClearError()
 
 void Editor::DrawCode()
 {
-        auto cpos = codeEditor.GetCursorPosition();
+    auto cpos = codeEditor.GetCursorPosition();
 
-        ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, codeEditor.GetTotalLines(),
+			        codeEditor.IsOverwrite() ? "Ovr" : "Ins", codeEditor.CanUndo() ? "*" : " ",
+                    editorEngineRef->bios->CurrentProgram.c_str());
 
-/*
-        ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
-	    if (ImGui::BeginMenuBar())
-	    {
-	    	if (ImGui::BeginMenu("Edit"))
-	    	{
-	    		bool ro = codeEditor.IsReadOnly();
-	    		if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
-	    			codeEditor.SetReadOnly(ro);
-	    		ImGui::Separator();
-	    		if (ImGui::MenuItem("Undo", "Ctrl-Z", nullptr, !ro && codeEditor.CanUndo()))
-	    			codeEditor.Undo();
-	    		if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && codeEditor.CanRedo()))
-	    			codeEditor.Redo();
-	    		ImGui::Separator();
-	    		if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, codeEditor.HasSelection()))
-	    			codeEditor.Copy();
-	    		if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && codeEditor.HasSelection()))
-	    			codeEditor.Cut();
-	    		if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && codeEditor.HasSelection()))
-	    			codeEditor.Delete();
-	    		if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
-	    			codeEditor.Paste();
-	    		ImGui::Separator();
-	    		if (ImGui::MenuItem("Select all", nullptr, nullptr))
-	    			codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
-	    		ImGui::EndMenu();
-	    	}
- 
-	    		if (ImGui::BeginMenu("View"))
-	    		{
-	    			if (ImGui::MenuItem("Dark palette"))
-	    				codeEditor.SetPalette(TextEditor::GetDarkPalette());
-	    			if (ImGui::MenuItem("Light palette"))
-	    				codeEditor.SetPalette(TextEditor::GetLightPalette());
-	    			if (ImGui::MenuItem("Retro blue palette"))
-	    				codeEditor.SetPalette(TextEditor::GetRetroBluePalette());
-                    if (ImGui::MenuItem("Basic palette"))
-	    				codeEditor.SetPalette(TextEditor::GetBasicPalette());
-                                           
-	    			ImGui::EndMenu();
-	    		}
-             
-	    	ImGui::EndMenuBar();
-	    	}
-*/
-	    	ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, codeEditor.GetTotalLines(),
-	    		codeEditor.IsOverwrite() ? "Ovr" : "Ins",
-	    		codeEditor.CanUndo() ? "*" : " ",
-                editorEngineRef->bios->CurrentProgram.c_str());
+        codeEditor.Render("TextEditor");
+    ImGui::End();
+}
 
-            codeEditor.Render("TextEditor");
-
-        ImGui::End();
-    }
+void Editor::DrawDocs()
+{
+    ImGui::Begin("Documentation", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+        docs.Render("Documentation");
+    ImGui::End();
+}
 
 void Editor::DrawPalette()
 {
@@ -866,14 +835,7 @@ void Editor::DrawSFX()
             }  
             ImGui::EndGroup();
         }
-
-    //ImGui::BeginTooltip();
-    //ImGui::Text(TextFormat("%i", editorEngineRef->audioManager->GetSynth()->channels[0].frames));
-
-    //ImGui::Text(TextFormat("%.03f", editorEngineRef->audioManager->GetSynth()->channels[0].slide.curve));
-    //ImGui::EndTooltip();
 }
-
 
 inline unsigned char setBit(unsigned char byte, int position, bool newState) {
     unsigned char mask = 1 << position;
@@ -1493,8 +1455,11 @@ void Editor::Draw()
             DrawCode();
         }
 
-
-
+        if (show_docs)
+        {
+            DrawDocs();
+        }
+        
         //Hack ¿?¿?¿?, if you remove this, ImGui fails. ¯\_(ツ)_/¯
         rlImGuiImageRect(&hackTexture, 1, 1, (Rectangle){0, 0, 1, 1});
 

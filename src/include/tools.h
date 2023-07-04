@@ -21,6 +21,7 @@
 #define ASSETS_FOLDER       "assets"
 #define CONFIG_FOLDER       "config"
 #define BOOT_FILE           "config/boot.txt"
+#define DOCS_FILE           "config/docs.txt"
 #define PROGRAM_EXTENSION   ".bas"
 #define MEM_EXTENSION       ".data"
 

@@ -2,6 +2,7 @@
     "show_code": true,
     "show_console": true,
     "show_crt": true,
+    "show_docs": true,
     "show_filebrowser": true,
     "show_fps": true,
     "show_makeSprite": true,
