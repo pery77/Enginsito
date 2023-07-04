@@ -1044,9 +1044,9 @@ void TextEditor::Render()
 						const ImVec2 p2(x2, y);
 						const ImVec2 p3(x2 - s * 0.2f, y - s * 0.2f);
 						const ImVec2 p4(x2 - s * 0.2f, y + s * 0.2f);
-						drawList->AddLine(p1, p2, 0x90909090);
-						drawList->AddLine(p2, p3, 0x90909090);
-						drawList->AddLine(p2, p4, 0x90909090);
+						drawList->AddLine(p1, p2, 0x80303040);
+						drawList->AddLine(p2, p3, 0x80303040);
+						drawList->AddLine(p2, p4, 0x80303040);
 					}
 				}
 				else if (glyph.mChar == ' ')
@@ -1056,7 +1056,7 @@ void TextEditor::Render()
 						const auto s = ImGui::GetFontSize();
 						const auto x = textScreenPos.x + bufferOffset.x + spaceSize * 0.5f;
 						const auto y = textScreenPos.y + bufferOffset.y + s * 0.5f;
-						drawList->AddCircleFilled(ImVec2(x, y), 1.5f, 0x80808080, 4);
+						drawList->AddCircleFilled(ImVec2(x, y), 1.5f, 0x80404050, 4);
 					}
 					bufferOffset.x += spaceSize;
 					i++;

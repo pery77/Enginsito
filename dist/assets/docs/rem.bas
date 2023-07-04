@@ -5,4 +5,4 @@ REM this is ignored by compiler
 multi line comment between '[ and 
 this -> ']
 
-rem BASIC is case insensitive
+rem BASIC is case insensitive a = A

@@ -72,6 +72,8 @@ Editor::Editor(Engine* _engine)
 
 Editor::~Editor()
 {
+    SaveCurrentFile();
+
     std::stringstream ss;
 	ss << CONFIG_FOLDER << "/ui.json";
 
@@ -98,6 +100,15 @@ Editor::~Editor()
 
     std::ofstream o(ss.str().c_str());
     o << std::setw(4) << data << std::endl;
+}
+
+void Editor::SaveCurrentFile()
+{
+    if (editorEngineRef->bios->CurrentProgram.size() > 0)
+    {
+        auto textToSave = codeEditor.GetText();
+        SaveFileText(editorEngineRef->bios->GetFile().c_str(), (char *)textToSave.c_str());
+    }
 }
 
 void Editor::SetMainWindow()
@@ -248,7 +259,7 @@ void Editor::DrawshowFileBrowser()
     {
         if(ImGui::Selectable(temp.c_str(), false))
         {
-
+            SaveCurrentFile();
             editorEngineRef->bios->SetProgram(temp);  
             OpenFile();
         }
@@ -263,7 +274,10 @@ void Editor::DrawshowFileBrowser()
         static char str0[128] = "new";
         if(ImGui::SmallButton("New file"))
         {
+            SaveCurrentFile();
             editorEngineRef->bios->SetProgram(str0);
+            codeEditor.SetText("");
+            SaveCurrentFile();
         }
         ImGui::SameLine();
         ImGui::InputText("New File", str0, IM_ARRAYSIZE(str0));
@@ -500,9 +514,7 @@ void Editor::DrawPlayer()
     {
         if (!Paused)
         {
-            auto textToSave = codeEditor.GetText();
-            SaveFileText(editorEngineRef->bios->GetFile().c_str(), (char *)textToSave.c_str());
-
+            SaveCurrentFile();
             editorEngineRef->bios->ShouldRun = true;
         }
 
