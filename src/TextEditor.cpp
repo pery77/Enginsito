@@ -2355,20 +2355,11 @@ void TextEditor::ColorizeInternal()
 						auto from = line.begin() + currentIndex;
 						auto& startStr = mLanguageDefinition.mCommentStart;
 						auto& singleStartStr = mLanguageDefinition.mSingleLineComment;
-/*
-						if (singleStartStr.size() > 0 &&
-							currentIndex + singleStartStr.size() <= line.size() &&
-							equals(singleStartStr.begin(), singleStartStr.end(), from, from + singleStartStr.size(), pred))
-						{
-							withinSingleLineComment = true;
-						}
-						else if (!withinSingleLineComment && currentIndex + startStr.size() <= line.size() &&
-							equals(startStr.begin(), startStr.end(), from, from + startStr.size(), pred))
-						{
-							commentStartLine = currentLine;
-							commentStartIndex = currentIndex;
-						}
-*/
+
+						std::string remComment  = "REM ";
+						std::string remComment2 = " REM ";
+						auto predRem = [](const char& a, const Glyph& b) { return a == std::toupper(b.mChar);};
+
 						if (!withinSingleLineComment && currentIndex + startStr.size() <= line.size() &&
 							equals(startStr.begin(), startStr.end(), from, from + startStr.size(), pred))
 						{
@@ -2381,8 +2372,19 @@ void TextEditor::ColorizeInternal()
 						{
 							withinSingleLineComment = true;
 						}
-
+						else if (currentIndex == 0 && currentIndex + remComment.size() <= line.size() &&
+							equals(remComment.begin(), remComment.end(), from, from + remComment.size(), predRem))
+						{
+							withinSingleLineComment = true;
+						}
+						else if (currentIndex > 0 && currentIndex + remComment2.size() <= line.size() &&
+							equals(remComment2.begin(), remComment2.end(), from, from + remComment2.size(), predRem))
+						{
+							withinSingleLineComment = true;
+						}
 						
+
+
 						inComment = inComment = (commentStartLine < currentLine || (commentStartLine == currentLine && commentStartIndex <= currentIndex));
 
 						line[currentIndex].mMultiLineComment = inComment;

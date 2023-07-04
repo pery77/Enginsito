@@ -1,8 +1,8 @@
-rem this is ignored by compiler
+REM this is ignored by compiler
 'also this because start with '
-print "hello"
-'[y esto 
-tambien debería pero no
-print "f"
-']
-print "xx"
+
+'[
+multi line comment between '[ and 
+this -> ']
+
+rem BASIC is case insensitive
