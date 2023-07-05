@@ -37,7 +37,9 @@ public:
 		CurrentLineFill,
 		CurrentLineFillInactive,
 		CurrentLineEdge,
-		Max
+		Keyword2,
+		Keyword3,
+		Max,
 	};
 
 	enum class SelectionMode
@@ -157,6 +159,8 @@ public:
 
 		std::string mName;
 		Keywords mKeywords;
+		Keywords mKeywords2;
+		Keywords mKeywords3;
 		Identifiers mIdentifiers;
 		Identifiers mPreprocIdentifiers;
 		std::string mCommentStart, mCommentEnd, mSingleLineComment;

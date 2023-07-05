@@ -2112,6 +2112,8 @@ const TextEditor::Palette & TextEditor::GetBasicPalette()
 		0x40343434, // Current line fill
 		0x40221114, // Current line fill (inactive)
 		0x40aaaaaa, // Current line edge
+		0xffa0589b, // Keyword 2 init draw pause close tick
+		0xff7dba17, // Keyword 3 pixel rect circle ...
 		} };
 	return p;
 }
@@ -2252,6 +2254,10 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 					{
 						if (mLanguageDefinition.mKeywords.count(id) != 0)
 							token_color = PaletteIndex::Keyword;
+						else if (mLanguageDefinition.mKeywords2.count(id) != 0)
+							token_color = PaletteIndex::Keyword2;
+						else if (mLanguageDefinition.mKeywords3.count(id) != 0)
+							token_color = PaletteIndex::Keyword3;
 						else if (mLanguageDefinition.mIdentifiers.count(id) != 0)
 							token_color = PaletteIndex::KnownIdentifier;
 						else if (mLanguageDefinition.mPreprocIdentifiers.count(id) != 0)
@@ -2804,6 +2810,20 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 			id.mDeclaration = "Built-in function";
 			langDef.mIdentifiers.insert(std::make_pair(std::string(k), id));
 		}
+
+		static const char* const keywords2[] = {
+			"INIT", "TICK", "PAUSE", "DRAW", "CLOSE"
+		};
+
+		for (auto& k : keywords2)
+			langDef.mKeywords2.insert(k);
+		
+		static const char* const keywords3[] = {
+			"CLS", "PIXEL", "LINE", "CIRCLE", "RING", "ELLIPSE", "TRIANGLE", "RECT", "RECTROUND", "POLY", "TEXT", "SPRITE", "META"
+		};
+
+		for (auto& k : keywords3)
+			langDef.mKeywords3.insert(k);
 
 		langDef.mTokenize = [](const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end, PaletteIndex & paletteIndex) -> bool
 		{

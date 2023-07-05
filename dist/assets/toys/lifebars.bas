@@ -31,9 +31,7 @@ enddef
 def drawMeta(x,y,size,fill)
 	for v = 0 to size-1
 		id=0
-		if v/size > fill then
-			id = 1		
-		endif
+		if v/size > fill then id = 1
 		meta(id,v*6+x,y)
 	next
 enddef

@@ -83,16 +83,15 @@ struct Console
 */
         // TODO: display items starting from the bottom
 
-        if (ImGui::SmallButton("Clear"))           { ClearLog(); }
+        if (ImGui::Button("Clear")) { ClearLog(); }
         ImGui::SameLine();
-        bool copy_to_clipboard = ImGui::SmallButton("Copy");
+        bool copy_to_clipboard = ImGui::Button("Copy");
 
         ImGui::SameLine();
         ImGui::Checkbox("Scroll", &AutoScroll);
 
         ImGui::SameLine();
         Filter.Draw("Filter", 180);
-       
 
         // Reserve enough left-over height for 1 separator + 1 input text
         const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
