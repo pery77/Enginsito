@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
                 engine->basicIntepreter->Reset();
             }
 
-            if (engine->basicIntepreter->OpenBas(engine->bios->GetFile().c_str()) == MB_FUNC_OK)
+            if (engine->basicIntepreter->OpenBas(engine->bios->CurrentProject.programFile.c_str()) == MB_FUNC_OK)
             {
                 engine->basicIntepreter->Run();
                 engine->basicIntepreter->init();
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-                Tools::console->AddLog("%s not found.\n", engine->bios->GetFile().c_str());
+                Tools::console->AddLog("%s not found.\n", engine->bios->CurrentProject.programFile.c_str());
             }
         }
         if (IsKeyReleased(KEY_ESCAPE))

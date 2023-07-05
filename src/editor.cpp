@@ -104,10 +104,12 @@ Editor::~Editor()
 
 void Editor::SaveCurrentFile()
 {
-    if (editorEngineRef->bios->CurrentProgram.size() > 0)
+    if (editorEngineRef->bios->CurrentProject.name.size() > 0)
     {
+        Tools::console->AddLog("Autosaving: [%s]", editorEngineRef->bios->CurrentProject.programFile.c_str());
         auto textToSave = codeEditor.GetText();
-        SaveFileText(editorEngineRef->bios->GetFile().c_str(), (char *)textToSave.c_str());
+        SaveFileText(editorEngineRef->bios->CurrentProject.programFile.c_str(), (char *)textToSave.c_str());
+        editorEngineRef->bios->TryToSaveMemory();
     }
 }
 
@@ -201,16 +203,16 @@ void Editor::Credits()
 
 void Editor::OpenFile()
 {
-    Tools::console->AddLog("Open: [ %s ]\n", editorEngineRef->bios->CurrentProgram.c_str());
+    Tools::console->AddLog("Open: [ %s ]\n", editorEngineRef->bios->CurrentProject.name.c_str());
 
     std::ifstream inFile;
-    inFile.open(editorEngineRef->bios->GetFile().c_str());
+    inFile.open(editorEngineRef->bios->CurrentProject.programFile.c_str());
     std::stringstream strStream;
     strStream << inFile.rdbuf();
     std::string str = strStream.str();
-    std::cout << str << "\n";
+    //std::cout << str << "\n";
     codeEditor.SetText(str);
-    editorFile = editorEngineRef->bios->CurrentProgram;
+    editorFile = editorEngineRef->bios->CurrentProject.name;
     Paused = false;
     DoStep = false;
 }
@@ -259,6 +261,7 @@ void Editor::DrawshowFileBrowser()
     {
         if(ImGui::Selectable(temp.c_str(), false))
         {
+            ClearError();
             SaveCurrentFile();
             editorEngineRef->bios->SetProgram(temp);  
             OpenFile();
@@ -268,7 +271,7 @@ void Editor::DrawshowFileBrowser()
     ImGui::PopStyleColor(1);
     ImGui::EndChild();
     ImGui::BeginChild("#Foot",ImVec2(0, list_item_height), true, ImGuiWindowFlags_NoScrollWithMouse);
-        ImGui::Text("Current program: %s", editorEngineRef->bios->CurrentProgram.c_str());
+        ImGui::Text("Current program: %s", editorEngineRef->bios->CurrentProject.name.c_str());
     ImGui::EndChild();
     ImGui::BeginChild("#Foot2",ImVec2(0, list_item_height*2), true, ImGuiWindowFlags_NoScrollWithMouse);
         static char str0[128] = "new";
@@ -305,7 +308,7 @@ void Editor::DrawCode()
     ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
 		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, codeEditor.GetTotalLines(),
 			        codeEditor.IsOverwrite() ? "Ovr" : "Ins", codeEditor.CanUndo() ? "*" : " ",
-                    editorEngineRef->bios->CurrentProgram.c_str());
+                    editorEngineRef->bios->CurrentProject.name.c_str());
 
         codeEditor.Render("TextEditor");
     ImGui::End();

@@ -199,8 +199,8 @@ void Bios::ProcessCommand()
     }
 
     if (checkCommand(lastCommand.command,"MEM")){
-        if (CurrentProgram != "")
-            screenLines += CurrentProgram + " loaded.\n";
+        if (CurrentProject.name.size() > 0)
+            screenLines += CurrentProject.name + " loaded.\n";
         else
             screenLines += "No program loaded.\n";
         return;
@@ -209,11 +209,11 @@ void Bios::ProcessCommand()
     if (checkCommand(lastCommand.command,"LOAD")){
         if (Tools::FileExist(CurrentPath, lastCommand.args[0])){
             SetProgram(lastCommand.args[0]);
-            screenLines += "Loaded " + CurrentProgram + " in memory.\n";
+            screenLines += "Loaded " + CurrentProject.name + " in memory.\n";
         }
         else{
             screenLines += "Fail loading " + lastCommand.args[0] + "\n";
-            CurrentProgram = "";
+            CurrentProject.name = "";
         }
 
         return;
@@ -241,56 +241,54 @@ void Bios::ProcessCommand()
     }
 }
 
-std::string Bios::GetFile()
+void Bios::TryToSaveMemory()
 {
-    namespace fs = std::filesystem;
-    fs::path dir (ASSETS_FOLDER);
-    fs::path file (CurrentProgram + PROGRAM_EXTENSION);
-    fs::path full_path = dir / CurrentPath / file;
-
-    return full_path.string();
-}
-std::string Bios::GetMemoryFile()
-{
-    namespace fs = std::filesystem;
-    fs::path dir (ASSETS_FOLDER);
-    fs::path file (CurrentProgram + MEM_EXTENSION);
-    fs::path full_path = dir / CurrentPath / file;
-    Tools::console->AddLog(full_path.string().c_str());
-    return full_path.string();
-}
-void Bios::SetProgram(std::string file)
-{
-    std::string currentMemoryFile = GetMemoryFile();
-    if (Tools::FileMemoryExist(currentMemoryFile))
+    if (Tools::FileMemoryExist(CurrentProject.memoryFile))
     {
-        Tools::console->AddLog("Saving current memory: [%s]", currentMemoryFile.c_str());
-        biosEngineRef->DumpMemory(currentMemoryFile.c_str());
+        Tools::console->AddLog("Saving current memory: [%s]", CurrentProject.memoryFile.c_str());
+        biosEngineRef->DumpMemory(CurrentProject.memoryFile.c_str());
     }
+}
 
-    CurrentProgram = file;
-    std::string memoryFile = GetMemoryFile();
-
-    Tools::console->AddLog("Data file: [%s]", memoryFile.c_str()); 
-
-    if (Tools::FileMemoryExist(memoryFile))
+void Bios::TryToLoadMemory()
+{
+    if (Tools::FileMemoryExist(CurrentProject.memoryFile))
     {
-        Tools::console->AddLog("Loading data file.");
-        biosEngineRef->LoadMemory(memoryFile.c_str());
+        Tools::console->AddLog("Loading data file [%s]", CurrentProject.memoryFile.c_str());
+        biosEngineRef->LoadMemory(CurrentProject.memoryFile.c_str());
     } 
     else
     {
-        Tools::console->AddLog("Creating data file");
-        biosEngineRef->DumpMemory(memoryFile.c_str());
-        biosEngineRef->LoadMemory(memoryFile.c_str());
+        Tools::console->AddLog("Creating data file [%s]", CurrentProject.memoryFile.c_str());
+        biosEngineRef->DumpMemory(CurrentProject.memoryFile.c_str());
+        biosEngineRef->LoadMemory(CurrentProject.memoryFile.c_str());
     }
 }
+
+void Bios::SetProgram(std::string file)
+{
+    namespace fs = std::filesystem;
+    fs::path dir (ASSETS_FOLDER);
+    fs::path fileP (file + PROGRAM_EXTENSION);
+    fs::path fileM (file + MEM_EXTENSION);
+    fs::path programFile = dir / CurrentPath / fileP;
+    fs::path memoryFile = dir / CurrentPath / fileM;
+
+    CurrentProject.name = file;
+    CurrentProject.programFile = programFile.string();
+    CurrentProject.memoryFile = memoryFile.string();
+
+    TryToLoadMemory();
+}
+
 void Bios::SetFile(std::string filePath)
 {
+
+    //TODO CHECK THIS
     namespace fs = std::filesystem;
     fs::path file = filePath;
 
-    CurrentProgram = file.stem().string();
+    CurrentProject.name = file.stem().string();
     CurrentPath = file.parent_path().string();
     CurrentPath = CurrentPath.erase(0, 9); //Delete > ./assets/ bye the dirty way. :(
     std::replace(CurrentPath.begin(), CurrentPath.end(), '\\', '/');

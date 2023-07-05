@@ -1,29 +1,18 @@
 -KEYWRODS-
 -========-
-REM     -> ' Is used to add comments or explanatory notes within 
-            'the code that are ignored by the interpreter.
+REM     -> ' Is used to add comments or explanatory notes within the code that are ignored by the interpreter.
 
 NIL     -> ' Represents a null or empty value.
 
-MOD     -> ' Performs the modulo operation, which 
-            'calculates the remainder after division.
+MOD     -> ' Performs the modulo operation, which calculates the remainder after division.
 
-AND     -> ' A logical operator used to perform a logical 
-            'conjunction (also known as a logical AND) between two conditions.
-
-OR      -> ' A logical operator used to perform a logical 
-            'disjunction (also known as a logical OR) between two conditions.
-
-NOT     -> ' A logical operator used to negate a condition, 
-            ' resulting in its opposite value.
-
-IS      -> ' Used for comparison and checks if a value or variable 
-            'is of a specific type or meets certain conditions.
+AND     -> ' A logical operator used to perform a logical conjunction (also known as a logical AND) between two conditions.
+OR      -> ' A logical operator used to perform a logical disjunction (also known as a logical OR) between two conditions.
+NOT     -> ' A logical operator used to negate a conditionresulting in its opposite value.
+IS      -> ' Used for comparison and checks if a value or variable is of a specific type or meets certain conditions.
 
 LET     -> ' Used to assign a value to a variable. (Optional)
-
-DIM     -> ' It is used to declare and allocate 
-            'memory for variables or arrays.
+DIM     -> ' It is used to declare and allocate memory for variables or arrays.
 
 IF      -> ' Begins a conditional statement that executes a block of code if a certain condition is met.
 THEN    -> ' Specifies the code to be executed if the condition of an "IF" statement is true.

@@ -11,6 +11,13 @@
 
 class Engine;
 
+typedef struct 
+{
+    std::string name;
+    std::string programFile;
+    std::string memoryFile;
+} Project;
+
 class Bios {
 
     public:
@@ -24,16 +31,16 @@ class Bios {
         bool ShouldClose = false;
         bool ShouldRun = false;
 
-        std::string GetFile();
-        std::string GetMemoryFile();
         void SetFile(std::string file);
         void LoadBoot();
 
         std::string CurrentPath = "";
-        std::string CurrentProgram = "";
 
+        Project CurrentProject;
+
+        void TryToSaveMemory();
+        void TryToLoadMemory();
         void SetProgram(std::string file);
-        
         void AddSubPath(std::string current);
         void RemoveSubPath();
 
