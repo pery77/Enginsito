@@ -42,6 +42,9 @@ void MBManager::managerError(int state){
 void MBManager::UpdateAudio(){
 	basicEngineRef->audioManager->Update();
 }
+void MBManager::UpdateVars(){
+	updateVars(bas, &context);
+}
 inline void MBManager::doRoutine(char* routineName, mb_value_t routine){
 	mb_get_routine(bas, &context, routineName, &routine);
     mb_eval_routine(bas, &context, routine, nullArg, 0, NULL);
@@ -53,7 +56,6 @@ void MBManager::init(){
 }
 void MBManager::tick(){
 	currentframe++;
-	UpdateVars(bas, &context);
 	doRoutine("TICK", MBManager::tickRoutine);
 }
 void MBManager::pause(){
@@ -67,7 +69,7 @@ void MBManager::close(){
 	CloseBas();
 }
 
-int MBManager::UpdateVars(struct mb_interpreter_t* s, void** l){
+int MBManager::updateVars(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 

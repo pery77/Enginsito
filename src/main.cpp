@@ -156,6 +156,7 @@ int main(int argc, char *argv[])
 
         if (engine->currentState == Running)
         {
+            engine->basicIntepreter->UpdateVars();
             if (!engine->editor->Paused)
             {
                 engine->basicIntepreter->tick();

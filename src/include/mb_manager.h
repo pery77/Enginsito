@@ -30,6 +30,7 @@ class MBManager{
         void CloseBas();
 
         void UpdateAudio();
+        void UpdateVars();
 
     private:
         mb_value_t nullArg[1];
@@ -42,7 +43,7 @@ class MBManager{
         void managerError(int state);
 
         void doRoutine(char* routineName, mb_value_t routine);
-        static int UpdateVars(struct mb_interpreter_t* s, void** l);
+        static int updateVars(struct mb_interpreter_t* s, void** l);
 
         //Draw
         static int cls(struct mb_interpreter_t* s, void** l);
