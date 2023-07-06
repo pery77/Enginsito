@@ -1,3 +1,4 @@
+REM see result in console
 for a = 0 to 30 step 3
 	print a
 next
@@ -10,8 +11,8 @@ next
 
 print ;
 
-r = list("___", 6,9,6,9,6,9, "___")
+rl = list("___", 6,9,6,9,6,9, "___")
 
-for rn in r
-	print rn
+for n in rl
+	print n
 next

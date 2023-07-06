@@ -9,6 +9,10 @@
 
 Engine* basicEngineRef;
 uint32_t currentframe = 0;
+mb_value_t cFrame;
+mb_value_t cDelta;
+mb_value_t cMouseX;
+mb_value_t cMouseY;
 
 MBManager::MBManager(Engine* _engine){
 	nullArg[0].type = MB_DT_NIL;
@@ -38,7 +42,7 @@ void MBManager::managerError(int state){
 void MBManager::UpdateAudio(){
 	basicEngineRef->audioManager->Update();
 }
-void MBManager::doRoutine(char* routineName, mb_value_t routine){
+inline void MBManager::doRoutine(char* routineName, mb_value_t routine){
 	mb_get_routine(bas, &context, routineName, &routine);
     mb_eval_routine(bas, &context, routine, nullArg, 0, NULL);
 }
@@ -49,10 +53,10 @@ void MBManager::init(){
 }
 void MBManager::tick(){
 	currentframe++;
+	UpdateVars(bas, &context);
 	doRoutine("TICK", MBManager::tickRoutine);
 }
 void MBManager::pause(){
-	currentframe++;
 	doRoutine("PAUSE", MBManager::pauseRoutine);
 }
 void MBManager::draw(){
@@ -63,6 +67,23 @@ void MBManager::close(){
 	CloseBas();
 }
 
+int MBManager::UpdateVars(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	cFrame.value.integer = currentframe;
+	cDelta.value.integer = (int)(GetFrameTime()*1000);
+	cMouseX.value.integer = basicEngineRef->VirtualMouseX;
+	cMouseY.value.integer = basicEngineRef->VirtualMouseY;
+
+	mb_add_var(s, l, "FRAME", cFrame, true);
+	mb_add_var(s, l, "DELTA", cDelta, true);
+	mb_add_var(s, l, "MOUSEX", cMouseX, true);
+	mb_add_var(s, l, "MOUSEY", cMouseY, true);
+
+	return result;
+}
+
 // Init and close
 int MBManager::OpenBas(const char *file){ 
 	
@@ -70,9 +91,17 @@ int MBManager::OpenBas(const char *file){
 	mb_open(&bas);
 
 	mb_set_printer(bas, my_print);
-	mb_set_inputer(bas, my_input);
+	//mb_set_inputer(bas, my_input);
 
+	mb_make_int(cFrame, 0);
+	mb_make_int(cDelta, 0);
+	mb_make_int(cMouseX, 0);
+	mb_make_int(cMouseY, 0);
 
+	mb_add_var(bas, &context, "FRAME", cFrame, true);
+	mb_add_var(bas, &context, "DELTA", cDelta, true);
+	mb_add_var(bas, &context, "MOUSEX", cMouseX, true);
+	mb_add_var(bas, &context, "MOUSEY", cMouseY, true);
 
 	//Draw
 	mb_register_func(bas, "CLS", cls);
@@ -121,8 +150,6 @@ int MBManager::OpenBas(const char *file){
 */
 	mb_reg_fun(bas, intToText);
 	mb_reg_fun(bas, floatToText);
-	mb_reg_fun(bas, delta);
-	mb_reg_fun(bas, frame);
 	mb_reg_fun(bas, getChar);
 	mb_reg_fun(bas, setFontSpacing);
 
@@ -144,8 +171,6 @@ int MBManager::OpenBas(const char *file){
 	mb_end_module(bas);
 
 	mb_begin_module(bas, "MOUSE");
-		mb_register_func(bas, "X", mouseX); 
-		mb_register_func(bas, "Y", mouseY); 
 		mb_register_func(bas, "WHEEL", mouseWheel); 
 		mb_register_func(bas, "PRESSED", mousePressed); 
 		mb_register_func(bas, "DOWN", mouseDown); 
@@ -167,9 +192,7 @@ int MBManager::OpenBas(const char *file){
 		mb_register_func(bas, "AXISVALUE", axisValue);
 	mb_end_module(bas);
 
-
-
-
+	
 	mb_reg_fun(bas, addMetaSprite);
 	mb_reg_fun(bas, getMetaSprite);
 	mb_reg_fun(bas, setColor);
@@ -641,38 +664,7 @@ int MBManager::floatToText(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
-int MBManager::delta(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
 
-    mb_value_t ret;
-    mb_make_int(ret, 0);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	mb_check(mb_attempt_close_bracket(s, l));
-
-    ret.value.integer = (int)(GetFrameTime()*1000);
-
-
-    mb_check(mb_push_value(s, l, ret));
-	return result;
-}
-int MBManager::frame(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-    mb_value_t ret;
-    mb_make_int(ret, 0);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	mb_check(mb_attempt_close_bracket(s, l));
-
-    ret.value.integer = currentframe;
-
-
-    mb_check(mb_push_value(s, l, ret));
-	return result;
-}
 int MBManager::getChar(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1193,37 +1185,7 @@ int MBManager::axisValue(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
-int MBManager::mouseX(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;	
-	mb_assert(s && l);
 
-    mb_value_t position;
-    mb_make_int(position, 0);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	mb_check(mb_attempt_close_bracket(s, l));
-
-    position.value.integer = basicEngineRef->VirtualMouseX;
-
-    mb_check(mb_push_value(s, l, position));
-
-	return result;
-}
-int MBManager::mouseY(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;	
-	mb_assert(s && l);
-	
-    mb_value_t position;
-    mb_make_int(position, 0);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	mb_check(mb_attempt_close_bracket(s, l));
-
-	position.value.integer = basicEngineRef->VirtualMouseY;
-    mb_check(mb_push_value(s, l, position));
-
-	return result;
-}
 int MBManager::mouseWheel(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1917,7 +1879,8 @@ int MBManager::my_print(struct mb_interpreter_t* s, const char* fmt, ...) {
 	}
 	va_end(argptr);
 	if(result >= 0)
-		Tools::console->AddLog(ptr); /* Change me */
+		Tools::console->AddLog(ptr); 
+		basicEngineRef->bios->Print(ptr);
 	if(ptr != buf)
 		free(ptr);
 

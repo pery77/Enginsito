@@ -1,11 +1,14 @@
-a=0
-def init()
-cls(0)
+REM This program is an example of MY-BASIC
+REM For more information, see https://github.com/paladin-t/my_basic/
+
+def area(a, b)
+	return call mul(a, b)
 enddef
 
-def draw()
-	'cls(0)
-	rect(0,0,320,200,1,50)
-	pixel(mouse.x(), mouse.y(),a)
-	a=mouse.x()/16
+def mul(a, b)
+	return a * b
 enddef
+
+a = 3
+b = 4
+print a , b; area(a, b);

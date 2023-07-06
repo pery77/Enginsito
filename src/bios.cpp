@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "postProcessing.h"
 #include "sprite_manager.h"
+#include "editor.h"
 
 Engine* biosEngineRef;
 
@@ -83,6 +84,11 @@ bool Bios::checkCommand(std::string command, std::string value){
                       [](char command, char value) {
                           return tolower(command) == tolower(value);
                       });
+}
+void Bios::Print(char* line)
+{
+    currentLine = line;
+    currentLine.push_back('\n');
 }
 
 void Bios::ProcessCommand()
@@ -208,7 +214,9 @@ void Bios::ProcessCommand()
 
     if (checkCommand(lastCommand.command,"LOAD")){
         if (Tools::FileExist(CurrentPath, lastCommand.args[0])){
+            biosEngineRef->editor->SaveCurrentFile();
             SetProgram(lastCommand.args[0]);
+            biosEngineRef->editor->OpenFile();
             screenLines += "Loaded " + CurrentProject.name + " in memory.\n";
         }
         else{

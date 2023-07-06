@@ -42,6 +42,7 @@ class MBManager{
         void managerError(int state);
 
         void doRoutine(char* routineName, mb_value_t routine);
+        static int UpdateVars(struct mb_interpreter_t* s, void** l);
 
         //Draw
         static int cls(struct mb_interpreter_t* s, void** l);
@@ -66,8 +67,8 @@ class MBManager{
         //Tools
         static int intToText(struct mb_interpreter_t* s, void** l);
         static int floatToText(struct mb_interpreter_t* s, void** l);
-        static int delta(struct mb_interpreter_t* s, void** l);
-        static int frame(struct mb_interpreter_t* s, void** l);
+
+
         static int setColor(struct mb_interpreter_t* s, void** l);
         static int getColor(struct mb_interpreter_t* s, void** l);
         static int getFiles(struct mb_interpreter_t* s, void** l);
@@ -90,8 +91,6 @@ class MBManager{
         static int getKeyChar(struct mb_interpreter_t* s, void** l);
         
         //Mouse
-        static int mouseX(struct mb_interpreter_t* s, void** l);
-        static int mouseY(struct mb_interpreter_t* s, void** l);
         static int mouseWheel(struct mb_interpreter_t* s, void** l);  
         static int setMousePosition(struct mb_interpreter_t* s, void** l);
 

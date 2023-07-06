@@ -10,6 +10,7 @@
 #include "imgui/imgui.h"
 
 class Engine;
+class Editor;
 
 typedef struct 
 {
@@ -27,6 +28,7 @@ class Bios {
         
         void Update();
         void ProcessCommand();
+        void Print(char* line);
 
         bool ShouldClose = false;
         bool ShouldRun = false;

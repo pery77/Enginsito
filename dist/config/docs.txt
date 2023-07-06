@@ -28,24 +28,28 @@ NEXT    -> ' Marks the end of a "FOR" loop and proceeds to the next iteration.
 
 WHILE   -> ' Begins a loop that repeats a block of code while a certain condition is true.
 WEND    -> ' Marks the end of a "WHILE" loop.
-
 DO      -> ' Begins a loop that repeats a block of code until a certain condition is true.
 UNTIL   -> ' Specifies the condition for exiting a "DO" loop.
 EXIT    -> ' Terminates a loop prematurely.
+
 GOTO    -> ' Transfers the program execution to a specified line number or label.
 GOSUB   -> ' Transfers the program execution to a specified subroutine or procedure and returns to the calling code afterwards.
 RETURN  -> ' Marks the end of a subroutine or procedure and returns to the calling code.
 CALL    -> ' Used to invoke a subroutine or function.
+
 DEF     -> ' Begins the definition of a user-defined function.
 ENDDEF  -> ' Marks the end of a user-defined function.
+
 CLASS   -> ' Begins the definition of a user-defined class.
 ENDCLASS-> ' Marks the end of a user-defined class.
 ME      -> ' Refers to the current instance of a class.
 NEW     -> ' Creates a new instance of a class.
 VAR     -> ' Used to declare a variable within a class.
+
 REFLECT -> ' Provides reflection capabilities to access and manipulate class members dynamically.
 LAMBDA  -> ' Allows the creation of anonymous functions or closures.
 MEM     -> ' Refers to the memory address of a variable or object.
 TYPE    -> ' Used to define a custom data type or structure.
 IMPORT  -> ' Used to include external modules or libraries in the code.
 END     -> ' Marks the end of the program or a code block.
+
