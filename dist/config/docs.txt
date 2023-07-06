@@ -53,3 +53,11 @@ TYPE    -> ' Used to define a custom data type or structure.
 IMPORT  -> ' Used to include external modules or libraries in the code.
 END     -> ' Marks the end of the program or a code block.
 
+INPUTS
+
+MOUSE_WHEEL
+MOUSE_PRESSED	
+MOUSE_DOWN
+MOUSE_RELEASED
+MOUSE_UP
+MOUSE_SETPOS

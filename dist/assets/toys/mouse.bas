@@ -1,5 +1,5 @@
 def isHover(x,y,w,h)
-    return mouseX > x AND mouseY > y AND mouseX < x + w AND mouseY < y + h
+    return mouse_X > x AND mouse_Y > y AND mouse_X < x + w AND mouse_Y < y + h
 enddef
 
 def button(x,y,txt)
@@ -10,7 +10,7 @@ def button(x,y,txt)
     if hover then 
         colB = 9
         colH = 3 
-        if mouse.down() then 
+        if mouse_down(0) then 
             colH = colB
             colB = 1
         endif
@@ -21,7 +21,7 @@ def button(x,y,txt)
     xc = 20 - (measureText(txt,1) * 0.5)
     text(txt,x + xc,y+3,1,colH)
 
-    return (mouse.released(0) AND hover)
+    return (mouse_released(0) AND hover)
 enddef
 
 let a = 99
@@ -35,5 +35,5 @@ def draw()
 	if (button(10,30, "Sub")) then a = a - 1
 	text(inttotext("Score:%03i", a), 170,10,2,13)
 	
-	meta(0,mousex,mousey)
+	meta(0,mouse_x,mouse_y)
 enddef

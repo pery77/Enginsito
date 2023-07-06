@@ -2812,14 +2812,15 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 		}
 
 		static const char* const keywords2[] = {
-			"INIT", "TICK", "PAUSE", "DRAW", "CLOSE", "FRAME", "DELTA", "MOUSEX", "MOUSEY"
+			"INIT", "TICK", "PAUSE", "DRAW", "CLOSE", "FRAME", "DELTA", "MOUSE_X", "MOUSE_Y"
 		};
 
 		for (auto& k : keywords2)
 			langDef.mKeywords2.insert(k);
 		
 		static const char* const keywords3[] = {
-			"CLS", "PIXEL", "LINE", "CIRCLE", "RING", "ELLIPSE", "TRIANGLE", "RECT", "RECTROUND", "POLY", "TEXT", "SPRITE", "META"
+			"CLS", "PIXEL", "LINE", "CIRCLE", "RING", "ELLIPSE", "TRIANGLE", "RECT", "RECTROUND", "POLY", "TEXT", "SPRITE", "META",
+			"MOUSE_WHEEL", "MOUSE_PRESSED", "MOUSE_DOWN", "MOUSE_RELEASED", "MOUSE_UP", "MOUSE_SETPOS"
 		};
 
 		for (auto& k : keywords3)

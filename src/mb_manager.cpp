@@ -80,8 +80,8 @@ int MBManager::updateVars(struct mb_interpreter_t* s, void** l){
 
 	mb_add_var(s, l, "FRAME", cFrame, true);
 	mb_add_var(s, l, "DELTA", cDelta, true);
-	mb_add_var(s, l, "MOUSEX", cMouseX, true);
-	mb_add_var(s, l, "MOUSEY", cMouseY, true);
+	mb_add_var(s, l, "MOUSE_X", cMouseX, true);
+	mb_add_var(s, l, "MOUSE_Y", cMouseY, true);
 
 	return result;
 }
@@ -100,10 +100,11 @@ int MBManager::OpenBas(const char *file){
 	mb_make_int(cMouseX, 0);
 	mb_make_int(cMouseY, 0);
 
+	//Vars
 	mb_add_var(bas, &context, "FRAME", cFrame, true);
 	mb_add_var(bas, &context, "DELTA", cDelta, true);
-	mb_add_var(bas, &context, "MOUSEX", cMouseX, true);
-	mb_add_var(bas, &context, "MOUSEY", cMouseY, true);
+	mb_add_var(bas, &context, "MOUSE_X", cMouseX, true);
+	mb_add_var(bas, &context, "MOUSE_Y", cMouseY, true);
 
 	//Draw
 	mb_register_func(bas, "CLS", cls);
@@ -122,6 +123,14 @@ int MBManager::OpenBas(const char *file){
 
 	mb_register_func(bas, "SPRITE", drawSprite);
 	mb_register_func(bas, "META", drawMetaSprite);
+
+	//Mouse inputs
+	mb_register_func(bas, "MOUSE_WHEEL", 	mouseWheel); 
+	mb_register_func(bas, "MOUSE_PRESSED", 	mousePressed); 
+	mb_register_func(bas, "MOUSE_DOWN", 	mouseDown); 
+	mb_register_func(bas, "MOUSE_RELEASED", mouseReleased); 
+	mb_register_func(bas, "MOUSE_UP", 		mouseUp); 
+	mb_register_func(bas, "MOUSE_SETPOS", 	setMousePosition); 
 		
 	//Sound
 	mb_register_func(bas, "CH_SET",  setSequence); 
@@ -172,14 +181,9 @@ int MBManager::OpenBas(const char *file){
 		mb_register_func(bas, "CHAR", getKeyChar);
 	mb_end_module(bas);
 
-	mb_begin_module(bas, "MOUSE");
-		mb_register_func(bas, "WHEEL", mouseWheel); 
-		mb_register_func(bas, "PRESSED", mousePressed); 
-		mb_register_func(bas, "DOWN", mouseDown); 
-		mb_register_func(bas, "RELEASED", mouseReleased); 
-		mb_register_func(bas, "UP", mouseUp); 
-		mb_register_func(bas, "SETPOS", setMousePosition); 
-	mb_end_module(bas);
+	
+
+
 
 	mb_begin_module(bas, "PAD");
 		mb_register_func(bas, "ISAVIABLE", isGamepadAvailable);
