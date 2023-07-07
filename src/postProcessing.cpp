@@ -123,6 +123,7 @@ void PostProcessing::RenderBlur()
 
 void PostProcessing::RenderFinal(bool isEditor)
 {
+    SetState(postProEngineRef->Peek(4091)!= 0);
 
     Rectangle screenRect = isEditor ? (Rectangle){0,0, editorRender.texture.width, editorRender.texture.height} : gameScaledRect;
 
@@ -194,7 +195,7 @@ void PostProcessing::UpdateGameScreenRects()
 
 void PostProcessing::UpdateWindowSize()
 {
-    previusWindowsWidth = GetScreenWidth();
+    previusWindowsWidth  = GetScreenWidth();
 	previusWindowsHeight = GetScreenHeight();
 
     previusWindowsX = GetWindowPosition().x;
@@ -240,7 +241,9 @@ void PostProcessing::SetState(bool newState)
 {
     if (newState == enabled)
         return;
+
     enabled = newState;
+    postProEngineRef->Poke(4091, enabled ? 1 : 0);
     SetTextureFilter(mainRender.texture, enabled ? TEXTURE_FILTER_BILINEAR : TEXTURE_FILTER_POINT);
     SetTextureFilter(editorRender.texture, enabled ? TEXTURE_FILTER_BILINEAR : TEXTURE_FILTER_POINT);
 }

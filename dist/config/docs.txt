@@ -53,11 +53,33 @@ TYPE    -> ' Used to define a custom data type or structure.
 IMPORT  -> ' Used to include external modules or libraries in the code.
 END     -> ' Marks the end of the program or a code block.
 
-INPUTS
+-INPUTS-
+-======-
+    * Mouse
+MOUSE_WHEEL()           -> ' get the whell value
+MOUSE_PRESSED(button)	-> ' true if button is pressed
+MOUSE_DOWN(button)      -> ' true if button is down
+MOUSE_RELEASED(button)  -> ' true if button is released
+MOUSE_UP(button)        -> ' true if button is up
+MOUSE_SETPOS(x, y)      -> ' set the cursor at position x, y
+    'button -> 0, left, 1 right, 2 middel, 3...
 
-MOUSE_WHEEL
-MOUSE_PRESSED	
-MOUSE_DOWN
-MOUSE_RELEASED
-MOUSE_UP
-MOUSE_SETPOS
+Mouse_X -> 'position x of mouse 
+Mouse_Y -> 'position y of mouse 
+
+    * Keys
+
+    * Joystics
+
+- DRAW -
+-======-
+CLS(color)      -> Clear screen.
+PIXEL(x,y,color)
+
+- EDITOR KEYS -
+-=============-
+
+ESC -> ' Pause Game 
+F1 ->  ' Toggle Editor
+F11 -> ' Toggle Fullscreen
+F12 -> ' Take Screenshoot

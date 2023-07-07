@@ -40,7 +40,7 @@ def draw()
 	
 	'mouse whell add and sub score
 	if mouse_x > 160 and mouse_y < 100 then
-		rect(160,0,158,100,2,5)
+		rect(160,0,159,100,2,5)
 		a = a + mouse_wheel()
 		text("use mouse wheel",180,50,1,15)
 	endif

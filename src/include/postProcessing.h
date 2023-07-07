@@ -48,8 +48,6 @@ class PostProcessing
     void RenderBlur();
     void RenderFinal(bool isEditor);
 
-    bool enabled = true;
-
     RenderTexture2D mainRender;
     RenderTexture2D editorRender;
 
@@ -87,7 +85,8 @@ class PostProcessing
     void SetGrilleTexture(int newTextureId);
 
     private:
-
+    
+    bool enabled = true;
     Rectangle gameRect  { 0, 0, (float)(GAME_SCREEN_W), -(float)(GAME_SCREEN_H)};
     Rectangle gameScaledRect { 0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()};
 
