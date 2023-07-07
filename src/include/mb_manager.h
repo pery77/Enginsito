@@ -68,6 +68,7 @@ class MBManager{
         //Tools
         static int intToText(struct mb_interpreter_t* s, void** l);
         static int floatToText(struct mb_interpreter_t* s, void** l);
+        static int formatText(struct mb_interpreter_t* s, void** l);
 
 
         static int setColor(struct mb_interpreter_t* s, void** l);

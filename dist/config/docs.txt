@@ -53,6 +53,18 @@ TYPE    -> ' Used to define a custom data type or structure.
 IMPORT  -> ' Used to include external modules or libraries in the code.
 END     -> ' Marks the end of the program or a code block.
 
+- FLOW -
+-======-
+ * Gameflow Functions
+ INIT()     -> ' When the program start
+ TICK()     -> ' In each frame if not paused
+ DRAW()     -> ' In each frame after tick if not paused
+ PAUSE()    -> ' In each frame only in pause mode
+ END()      -> ' When the program end
+
+  * Time
+frame       -> ' number of frame since game started
+delta       -> ' return the millisecond frame duration
 -INPUTS-
 -======-
     * Mouse
@@ -73,8 +85,25 @@ Mouse_Y -> 'position y of mouse
 
 - DRAW -
 -======-
-CLS(color)      -> Clear screen.
-PIXEL(x,y,color)
+CLS(col)            -> Clear screen.
+PIXEL(x,y,col)
+LINE(x1,y1,x2,y2,thick,col)
+CIRCLE(x,y,radius,style,col)
+RING(x,y,radioIn,radioOut,startAngle,endAngle,segments,style,col)
+ELLIPSE(x,y,rh,rv,style,col)
+TRIANGLE(x1,y1,x2,y2,x3,y3,style,col)
+RECT(x,y,w,h,thick,col)
+RECTROUND(x,t,w,h,thick,roundnes,segments,col)
+POLY(x,y,sides,radius,rotation,thick,col)
+TEXT(string,x,y,size,col)
+SPRITE(id,x,y,col,[flags])
+META(id,x,y)
+
+' x,y ,x1,y1 >... positions
+' col > color (0-15)
+' style 0 fill other line thickness
+' segments > quality
+
 
 - EDITOR KEYS -
 -=============-
