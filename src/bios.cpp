@@ -87,8 +87,11 @@ bool Bios::checkCommand(std::string command, std::string value){
 }
 void Bios::Print(char* line)
 {
-    currentLine = line;
-    currentLine.push_back('\n');
+    char sline[1024];
+    strcpy(sline, "print ");
+    strcat(sline, line);
+    currentLine = sline;
+    ProcessCommand();
 }
 
 void Bios::ProcessCommand()

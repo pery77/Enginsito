@@ -1299,7 +1299,7 @@ int MBManager::setMousePosition(struct mb_interpreter_t* s, void** l){
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    Tools::SetVirtualMouse(x,y);
+	basicEngineRef->SetVirtualMouse(x,y);
 	return result;
 }
 

@@ -18,12 +18,6 @@ int Tools::GetVirtualMouse(bool isXAxis)
     return (int)Clamp(value, 0,(float)gamescreen);
 }
 
-void Tools::SetVirtualMouse(int x,int y) 
-{   
-	float screenScale = Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
-    SetMousePosition(x * screenScale, y * screenScale);
-}
-
 bool Tools::CompareFloats(float x, float y, float epsilon) 
 {
    if(fabs(x - y) < epsilon) return true;

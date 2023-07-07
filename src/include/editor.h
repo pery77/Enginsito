@@ -106,4 +106,5 @@ class Editor
     void DrawSFX();
     void Draw();
     void SaveCurrentFile();
+    void SetMousePosInEditor(int x, int y);
 };

@@ -1243,6 +1243,12 @@ void Editor::DrawMetaSprites(int metaId)
     ImGui::EndGroup();
 
 }
+void Editor::SetMousePosInEditor(int x, int y)
+{
+
+    SetMousePosition(x,y);
+}
+
 
 void Editor::Draw()
 {
@@ -1371,7 +1377,7 @@ void Editor::Draw()
 
         if (show_screen)
         {
-            ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
                 ScreenWindowHasFocus = ImGui::IsWindowFocused();
                 ImVec2 windowSize = ImGui::GetWindowSize();
 
@@ -1396,6 +1402,7 @@ void Editor::Draw()
                 {
                     editorEngineRef->VirtualMouseX = (ImGui::GetMousePos().x - imagePos.x - windowPosition.x) * 1.0f / scale;
                     editorEngineRef->VirtualMouseY = ((ImGui::GetMousePos().y - imagePos.y - windowPosition.y) * 1.0f / scale) + offset;
+
                 }
 
                 MouseInsideScreenWindow = editorEngineRef->VirtualMouseX > 0 && editorEngineRef->VirtualMouseX < GAME_SCREEN_W;

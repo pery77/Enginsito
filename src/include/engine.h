@@ -54,7 +54,10 @@ class Engine
 
         int GetVersion();
         void SetVersion();
+        void SetVirtualMouse(int x, int y);
 
         int VirtualMouseX;
         int VirtualMouseY;
+
+        bool isInImGui;
 };

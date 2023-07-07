@@ -72,10 +72,12 @@ int main(int argc, char *argv[])
         if(IsKeyReleased(KEY_F1))
         {
             showImgui = !showImgui;
+            engine->isInImGui = showImgui;
             if (!showImgui)
             {
                 engine->postProcessing->UpdateGameScreenRects();
                 engine->postProcessing->UpdateWindowSize();
+                
             }
             else
             {

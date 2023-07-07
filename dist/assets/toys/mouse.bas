@@ -25,6 +25,8 @@ def button(x,y,txt)
 enddef
 
 let a = 99
+let oldx = 0
+let oldy = 0
 
 def draw()
 	cls(0)
@@ -34,6 +36,25 @@ def draw()
 	if (button(10,10, "Add")) then a = a + 1	
 	if (button(10,30, "Sub")) then a = a - 1
 	text(inttotext("Score:%03i", a), 170,10,2,13)
+	
+	'mouse whell add and sub score
+	if mouse_x > 160 and mouse_y < 100 then
+		rect(160,0,158,100,2,5)
+		a = a + mouse_wheel()
+	endif
+	
+	if mouse_x < 160 and mouse_y > 100 then
+		mouse_setpos( 20, 20)
+	endif
+	
+	if mouse_pressed(2) then
+		oldx = mouse_x
+		oldy = mouse_y
+	endif
+	
+	if mouse_down(2) then
+		line(oldx,oldy,mouse_x,mouse_y,2,6)
+	endif
 	
 	meta(0,mouse_x,mouse_y)
 enddef

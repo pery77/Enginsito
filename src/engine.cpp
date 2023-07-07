@@ -166,3 +166,14 @@ void Engine::SetVersion(){
     Poke(4094, PE_VERSION / 256);
     Poke(4095, PE_VERSION % 256);
 }
+
+void Engine::SetVirtualMouse(int x,int y) 
+{   
+    if (isInImGui)
+    {
+        editor->SetMousePosInEditor(x,y);
+        return;
+    }
+	float screenScale = Tools::Min((float)GetScreenWidth()/GAME_SCREEN_W,(float)GetScreenHeight()/GAME_SCREEN_H);
+    SetMousePosition(x * screenScale, y * screenScale);
+}
