@@ -25,6 +25,11 @@ int currentSprite = 0;
 int currentMetaSprite = 0;
 nlohmann::json data;
 
+static float mouseEditorPositionX;
+static float mouseEditorPositionY;
+static float mouseEditorOffset;
+static float iScale;
+
 Editor::Editor(Engine* _engine)
 {
     editorEngineRef = _engine;
@@ -694,10 +699,11 @@ void Editor::DrawSFX()
         if (ImGui::CollapsingHeader("Info&Test"))
         {
             ImVec2 pos = ImGui::GetCursorScreenPos();
-
+/*
             ImGui::BeginTooltip();
             ImGui::Text(TextFormat("%f, %f", pos.x, pos.y));
             ImGui::EndTooltip();
+*/            
             DrawChannel(0, pos);
             DrawChannel(1, pos);
             DrawChannel(2, pos);
@@ -1243,12 +1249,13 @@ void Editor::DrawMetaSprites(int metaId)
     ImGui::EndGroup();
 
 }
+
 void Editor::SetMousePosInEditor(int x, int y)
 {
-
+    x = (x / iScale) + mouseEditorPositionX;
+    y = ((y / iScale) + mouseEditorPositionY) - mouseEditorOffset;
     SetMousePosition(x,y);
 }
-
 
 void Editor::Draw()
 {
@@ -1261,6 +1268,8 @@ void Editor::Draw()
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoScrollbar;
+
+    if (ScreenWindowHasFocus) window_flags |= ImGuiWindowFlags_NoScrollWithMouse;
         
     ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_AutoHideTabBar;
         
@@ -1377,38 +1386,38 @@ void Editor::Draw()
 
         if (show_screen)
         {
-            ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+            ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar);
                 ScreenWindowHasFocus = ImGui::IsWindowFocused();
                 ImVec2 windowSize = ImGui::GetWindowSize();
 
                 ImVec2 windowPositionTotal= ImGui::GetWindowPos();
                 ImVec2 windowPosition= ImGui::GetCursorScreenPos();
-                float offset = windowPosition.y - windowPositionTotal.y;
+                mouseEditorOffset = windowPosition.y - windowPositionTotal.y;
 
-                windowSize.y -= offset;
-
-                //ImGui::BeginTooltip();
-                //    ImGui::Text("%f", offset);
-                //ImGui::EndTooltip();
+                windowSize.y -= mouseEditorOffset;
 
                 float scale = (windowSize.x/windowSize.y < GAME_RATIO) ? windowSize.x/(float)GAME_SCREEN_W : windowSize.y/(float)GAME_SCREEN_H;
                 ImVec2 imageSize = ImVec2(GAME_SCREEN_W * scale, GAME_SCREEN_H * scale); 
                 ImVec2 imagePos = ImVec2((windowSize.x - imageSize.x) / 2, (windowSize.y - imageSize.y) / 2);
-                imagePos.y += offset;
+                imagePos.y += mouseEditorOffset;
                 ImGui::SetCursorPos(imagePos);
                 ImGui::Image(&editorEngineRef->postProcessing->editorRender.texture, imageSize, ImVec2(0,0), ImVec2(1,-1));
                 
                 if(ScreenWindowHasFocus)
                 {
-                    editorEngineRef->VirtualMouseX = (ImGui::GetMousePos().x - imagePos.x - windowPosition.x) * 1.0f / scale;
-                    editorEngineRef->VirtualMouseY = ((ImGui::GetMousePos().y - imagePos.y - windowPosition.y) * 1.0f / scale) + offset;
-
+                    iScale = 1.0f / scale;
+                    mouseEditorPositionX = imagePos.x + windowPosition.x;
+                    mouseEditorPositionY = imagePos.y + windowPosition.y;
+                    editorEngineRef->VirtualMouseX = (ImGui::GetMousePos().x - imagePos.x - windowPosition.x) * iScale;
+                    editorEngineRef->VirtualMouseY = ((ImGui::GetMousePos().y + mouseEditorOffset) - imagePos.y - windowPosition.y) * iScale;
                 }
 
                 MouseInsideScreenWindow = editorEngineRef->VirtualMouseX > 0 && editorEngineRef->VirtualMouseX < GAME_SCREEN_W;
                 MouseInsideScreenWindow &= editorEngineRef->VirtualMouseY > 0 && editorEngineRef->VirtualMouseY < GAME_SCREEN_H;
 
             ImGui::End();
+            ImGui::PopStyleVar();
         }
             
         if(show_palette)

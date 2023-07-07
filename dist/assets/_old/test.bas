@@ -12,3 +12,7 @@ enddef
 a = 3
 b = 4
 print a , b; area(a, b);
+def draw()
+cls(0)
+rect(0,0,320,200,2,3)
+enddef

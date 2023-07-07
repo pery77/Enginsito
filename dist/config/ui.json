@@ -13,9 +13,9 @@
     "show_screen": true,
     "show_sfx": true,
     "show_sprites": true,
-    "show_tools": false,
-    "window_height": 1001,
-    "window_position_x": -12,
-    "window_position_y": 119,
-    "window_width": 1601
+    "show_tools": true,
+    "window_height": 1017,
+    "window_position_x": 58,
+    "window_position_y": 129,
+    "window_width": 2325
 }
