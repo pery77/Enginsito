@@ -159,8 +159,6 @@ int MBManager::OpenBas(const char *file){
 		mb_register_func(bas, "FLIKER", crtFliker);
 	mb_end_module(bas);
 */
-	mb_reg_fun(bas, intToText);
-	mb_reg_fun(bas, floatToText);
 	mb_reg_fun(bas, formatText);
 	mb_reg_fun(bas, getChar);
 	mb_reg_fun(bas, setFontSpacing);
@@ -602,80 +600,15 @@ int MBManager::measureText(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 //Tools
-inline int getArgIntValue(const mb_value_t& arg) {
-	return arg.type == MB_DT_REAL ? (int)arg.value.float_point : arg.value.integer;
-}
-inline float getArgFloatValue(const mb_value_t& arg) {
-	return arg.type == MB_DT_REAL ? arg.value.float_point : (float)arg.value.integer;
-}
-
-int MBManager::intToText(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	char* arg = 0;
-	std::vector<mb_value_t> vals;
-
-    mb_value_t ret;
-    mb_make_string(ret, 0);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		mb_check(mb_pop_string(s, l, &arg));
-		while(mb_has_arg(s, l)) {
-			mb_value_t val;
-			mb_check(mb_pop_value(s, l, &val));
-			vals.push_back(val);
-		}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-	std::array<mb_value_t, 8> args{ MB_DT_NIL };
-	for (size_t i = 0; i < vals.size() && i < 8; i++) {
-		args[i] = vals[i];
-	}
-	
-	ret.value.string = (char *)TextFormat(arg, getArgIntValue(args[0]), getArgIntValue(args[1]), getArgIntValue(args[2]), getArgIntValue(args[3]),
-												getArgIntValue(args[4]), getArgIntValue(args[5]), getArgIntValue(args[6]), getArgIntValue(args[7]));
-    mb_check(mb_push_value(s, l, ret));
-
-	return result;
-}
-int MBManager::floatToText(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	char* arg = 0;
-	std::vector<mb_value_t> vals;
-
-    mb_value_t ret;
-    mb_make_string(ret, 0);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		mb_check(mb_pop_string(s, l, &arg));
-		while(mb_has_arg(s, l)) {
-			mb_value_t val;
-			mb_check(mb_pop_value(s, l, &val));
-			vals.push_back(val);
-		}
-	mb_check(mb_attempt_close_bracket(s, l));
-	
-	std::array<mb_value_t, 8> args{ MB_DT_NIL };
-	for (size_t i = 0; i < vals.size() && i < 8; i++) {
-		args[i] = vals[i];
-	}
-	
-	ret.value.string = (char *)TextFormat(arg, getArgFloatValue(args[0]), getArgFloatValue(args[1]), getArgFloatValue(args[2]), getArgFloatValue(args[3]),
-												getArgFloatValue(args[4]), getArgFloatValue(args[5]), getArgFloatValue(args[6]), getArgFloatValue(args[7]));
-    
-    mb_check(mb_push_value(s, l, ret));
-
-	return result;
-}
 int MBManager::formatText(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
 
 	char* arg = nullptr;
+	mb_value_t val;
+	mb_make_nil(val);
 	std::vector<mb_value_t> vals;
 
     mb_value_t ret;
@@ -685,36 +618,28 @@ int MBManager::formatText(struct mb_interpreter_t* s, void** l){
 		mb_check(mb_pop_string(s, l, &arg));	
 		while(mb_has_arg(s, l)) 
 		{
-			mb_value_t val;
+			mb_make_nil(val);
 			mb_check(mb_pop_value(s, l, &val));
 			vals.push_back(val);
 		}
 	mb_check(mb_attempt_close_bracket(s, l));
-	
-	// Construct the argument list for TextFormat
-	std::string typeName;
-	std::vector<std::pair<std::string, mb_value_t>> formattedArgs;
-	for (size_t i = 0; i < vals.size(); i++) 
+
+	std::array<mb_value_t, 8> args{ MB_DT_NIL };
+	for (size_t i = 0; i < vals.size() && i < 8; i++) {
+		args[i] = vals[i];
+	}
+
+	if (args[0].type == MB_DT_INT) 
 	{
-		typeName += (vals[i].type == MB_DT_INT) ? "int, " : "float, ";
-		//std::string argName = "arg" + std::to_string(i + 1);
+		ret.value.string = (char *)TextFormat(arg, args[0].value.integer, args[1].value.integer, args[2].value.integer, args[3].value.integer,
+												   args[4].value.integer, args[5].value.integer, args[6].value.integer, args[7].value.integer);
+	}
+	else
+	{
+		ret.value.string = (char *)TextFormat(arg, args[0].value.float_point, args[1].value.float_point, args[2].value.float_point, args[3].value.float_point,
+												   args[4].value.float_point, args[5].value.float_point, args[6].value.float_point, args[7].value.float_point);
+	}
 
-		// Create a new mb_value_t instance and copy the value from args[i]
-		mb_value_t formattedArg;
-/*
-		mb_make_int(formattedArg, 0);  // Initialize with a default value (0 in this case)
-		if (args[i].type == MB_DT_INT) {
-			formattedArg.value.integer = args[i].value.integer;
-		} else {
-			formattedArg.value.float_point = args[i].value.float_point;
-		}
-*/
-		//formattedArgs.emplace_back(argName, formattedArg);
-		//formattedArgs.emplace_back(typename, formattedArg);
-	}	
-
-	ret.value.string = (char *)TextFormat("%s", typeName.c_str());
-    
     mb_check(mb_push_value(s, l, ret));
 
 	return result;

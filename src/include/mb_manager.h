@@ -66,10 +66,7 @@ class MBManager{
         static int setFontSpacing(struct mb_interpreter_t* s, void** l);
 
         //Tools
-        static int intToText(struct mb_interpreter_t* s, void** l);
-        static int floatToText(struct mb_interpreter_t* s, void** l);
         static int formatText(struct mb_interpreter_t* s, void** l);
-
 
         static int setColor(struct mb_interpreter_t* s, void** l);
         static int getColor(struct mb_interpreter_t* s, void** l);

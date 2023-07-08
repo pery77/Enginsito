@@ -1,10 +1,16 @@
-print formatText("Int int   %i ",130)
-print formatText("Int float %i ",77777.545)
-print formatText("Float float %.3f ",130.0)
-print formatText("Float int   %.3f ",99)
+int = formatText("(33) Int int   %06i",32)
+float= formatText("(55.2) Float float %.6f ",55.229)
+
+print formatText("(no)Int float %i ",55.222)
+print formatText("(no)Float int   %f ",33)
+
 print formatText("Multi  %i,%i,%i,%i,%i,%i,",1,2,3,4.6,5,6,7)
 
 def draw()
-cls(0)
-rect(0,0,320,200,2,3)
+	cls(0)
+	rect(0,0,320,200,2,3)
+	mousePos = formatText("%03e,%d",mouse_x,mouse_y/3.)
+	text(int,4,4,1,2)
+	text(float,4,12,1,2)
+		text(mousePos,4,22,1,2)
 enddef
