@@ -36,7 +36,7 @@ def draw()
 	text("move mouse",40,150,1,0)
 	if (button(10,10, "Add")) then a = a + 1	
 	if (button(10,30, "Sub")) then a = a - 1
-	text(inttotext("Score:%03i", a), 170,10,2,13)
+	text(formatText("Score:%03i", a), 170,10,2,13)
 	
 	'mouse whell add and sub score
 	if mouse_x > 160 and mouse_y < 100 then

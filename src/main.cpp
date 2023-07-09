@@ -114,10 +114,12 @@ int main(int argc, char *argv[])
             {
                 engine->basicIntepreter->close();
                 engine->basicIntepreter->Reset();
+                engine->audioManager->StopAll();
             }
 
             if (engine->basicIntepreter->OpenBas(engine->bios->CurrentProject.programFile.c_str()) == MB_FUNC_OK)
             {
+                engine->audioManager->StopAll();
                 engine->basicIntepreter->Run();
                 engine->basicIntepreter->init();
                 engine->currentState = Running;

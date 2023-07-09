@@ -549,6 +549,7 @@ void Editor::DrawPlayer()
         editorEngineRef->basicIntepreter->close();
         editorEngineRef->currentState = Off;
         editorEngineRef->basicIntepreter->CloseBas();
+        editorEngineRef->audioManager->StopAll();
     }
 }
 
@@ -659,7 +660,7 @@ void Editor::DrawSFX()
     int slope = editorEngineRef->Peek(dir+9);
     int curve = editorEngineRef->Peek(dir+10);
        
-    if (ImGui::IsWindowFocused(ImGuiFocusedFlags_ChildWindows))
+    if (ImGui::IsWindowFocused())
     {
         HighLightMemory(dir,11);
     }
@@ -696,7 +697,7 @@ void Editor::DrawSFX()
 
         ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
 */
-        if (ImGui::CollapsingHeader("Info&Test"))
+        if (ImGui::CollapsingHeader("Info&Test") && ImGui::IsWindowFocused())
         {
             ImVec2 pos = ImGui::GetCursorScreenPos();
 /*

@@ -133,14 +133,16 @@ int MBManager::OpenBas(const char *file){
 	mb_register_func(bas, "MOUSE_SETPOS", 	setMousePosition); 
 		
 	//Sound
-	mb_register_func(bas, "CH_SET",  setSequence); 
-	mb_register_func(bas, "CH_ON",   playNote);
-	mb_register_func(bas, "CH_OFF",  stopNote);
-	mb_register_func(bas, "CH_PLAY", musicPlay);
-	mb_register_func(bas, "CH_STOP", musicStop);
-	mb_register_func(bas, "CH_POS",  getMusicPosition);
-	mb_register_func(bas, "CH_SIZE", getMusicSize);
-	mb_register_func(bas, "CH_TICK", getMusicTick);
+	mb_register_func(bas, "CH_PRESET",  setPreset); 
+	mb_register_func(bas, "CH_SET",  	setSequence); 
+	mb_register_func(bas, "CH_ON",   	playNote);
+	mb_register_func(bas, "CH_OFF",  	stopNote);
+	mb_register_func(bas, "CH_PLAY", 	musicPlay);
+	mb_register_func(bas, "CH_STOP", 	musicStop);
+	mb_register_func(bas, "CH_POS",  	getMusicPosition);
+	mb_register_func(bas, "CH_SIZE", 	getMusicSize);
+	mb_register_func(bas, "CH_TICK", 	getMusicTick);
+	mb_register_func(bas, "CH_FRAME",	getFrameAverage);
 
 	
 /*
@@ -1295,6 +1297,24 @@ int MBManager::setSequence(struct mb_interpreter_t* s, void** l){
     basicEngineRef->audioManager->SetSequence(id, arg);
 	return result;
 }
+int MBManager::setPreset(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	int channel;
+	int preset;
+
+
+	mb_check(mb_attempt_open_bracket(s, l));
+
+		mb_check(mb_pop_int(s, l, &channel));
+		mb_check(mb_pop_int(s, l, &preset));
+	
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    basicEngineRef->audioManager->SetChannelPreset(channel, preset);
+	return result;
+}
 int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1414,6 +1434,25 @@ int MBManager::getMusicTick(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 //TODO devolver tick del canal
     //ret.value.integer = basicEngineRef->audioManager->AudioTick;
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+int MBManager::getFrameAverage(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+	int channel;
+	int frame;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_int(s, l, &channel));
+		mb_check(mb_pop_int(s, l, &frame));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = basicEngineRef->audioManager->GetSynth()->GetFrameAverage(channel, frame);
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }

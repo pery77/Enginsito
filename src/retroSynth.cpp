@@ -179,7 +179,8 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
             channels[track].frame[frame] = ((samples[track] + 1.0f) * 127);
         }
 
-        bufferData[frame] = (mixedSample / channelPlaying) * 32767.0 ;
+        bufferData[frame] = (mixedSample * 2/channelPlaying) * 32767.0 ;
+
     }
 
 
