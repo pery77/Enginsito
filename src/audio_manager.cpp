@@ -127,9 +127,10 @@ void AudioManager::StopAll()
 {
     for (uint8_t i = 0; i < TRACK_COUNT; i++)
     {
-        StopNote(i);
         ChannelStop(i);
         SetSequence(i, "");
+        synth->channels[i].noteTimeOn  =synth->channels[i].sequenceTime;
+        synth->channels[i].noteTimeOff =synth->channels[i].sequenceTime;
     }
     
 }
@@ -258,4 +259,59 @@ void AudioManager::SetSlide(uint8_t preset, uint8_t slope, uint8_t curve)
 unsigned short AudioManager::GetSoundDir(uint8_t id)
 {
     return (3376 + (id * 11));
+}
+
+char* AudioManager::GetNoteName(uint8_t channel) {
+    int midiNote = synth->channels[channel].note;
+    int note = midiNote % 12;
+    int octave = midiNote / 12 - 1;
+    
+    char* noteName;
+    
+    switch(note) {
+        case 0:
+            noteName = "C-";
+            break;
+        case 1:
+            noteName = "C#";
+            break;
+        case 2:
+            noteName = "D-";
+            break;
+        case 3:
+            noteName = "D#";
+            break;
+        case 4:
+            noteName = "E-";
+            break;
+        case 5:
+            noteName = "F-";
+            break;
+        case 6:
+            noteName = "F#";
+            break;
+        case 7:
+            noteName = "G-";
+            break;
+        case 8:
+            noteName = "G#";
+            break;
+        case 9:
+            noteName = "A-";
+            break;
+        case 10:
+            noteName = "A#";
+            break;
+        case 11:
+            noteName = "B-";
+            break;
+        default:
+            noteName = "Unknown";
+            break;
+    }
+    
+    char* fullName = (char*)malloc(sizeof(char) * 4);
+    sprintf(fullName, "%s%d", noteName, octave);
+    
+    return fullName;
 }
