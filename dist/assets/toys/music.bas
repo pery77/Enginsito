@@ -1,5 +1,5 @@
 '[ 
-Songs are MML format
+Songs are in MML format
 This is from https://archeagemmllibrary.com/castlevania-bloody-tears-master/
 Credit: NethulMeow
 ']
@@ -59,7 +59,10 @@ def draw()
 		ch_stop(0)
 		ch_stop(1)
 	endif
-	
+	n=0
+	for n= 0 to 1
+		text(formatText("(%04i/%04i)",ch_pos(n),ch_size(n)), 120,10+n*9,1,3)
+	next
 	if button(55,40,"Jump") then 
 		ch_set(2,jump)
 		ch_play(2) 	
