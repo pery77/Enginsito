@@ -1,24 +1,89 @@
-alg =2
+ALG = 2
 xScale = 0.75
 yScale =10.
 
+def isHover(x,y,w,h)
+    return mouse_X > x AND mouse_Y > y AND mouse_X < x + w AND mouse_Y < y + h
+enddef
+
+def slider(v,x,y,w,max)
+
+    v = ROUND(w * v/max)
+    cb = 6
+    colN = 9
+    colNH = 10
+    col = 4
+
+    mx = x+v+1
+    my = y+1
+
+    hover = isHover(x,y,w+10,16)
+    IF hover THEN
+        col = colNH
+        cb = 8
+        
+        vMul = 1
+        IF w/max > 1 THEN
+            vMul = w/max
+        ENDIF
+        v = v + (mouse_wheel() * vMul);
+    ENDIF
+
+    IF mouse_down(0) AND hover THEN
+        v = v + (mouse_x - mx - 4);
+    ENDIF
+    
+    'v = ROUND(v/w * max)
+    'v = clamp(v,0, max)
+    v = (v/w * max)
+    rect(x,y,w + 10,16-2,0,0)
+    rect(x,y,w + 10,16-1,1,cb)
+    rect(mx,my,8,16-3,0,col)
+    textPos = formatText("%02i",v)
+    text(textPos, x - textsize(textPos, 1)-2, y, 1, cb)
+
+    return v
+enddef
+
+def button(x,y,txt)
+    colB = 1
+    colH = 2
+    bw = 50
+    hover = isHover(x,y,bw,14)
+
+    if hover then 
+        colB = 4
+        colH = 3 
+        if mouse_down(0) then 
+            colH = colB
+            colB = 1
+        endif
+    endif
+
+    rect(x,y,bw,14,0,colB)
+    rect(x,y,bw,14,1,colH)
+    xc = bw/2 - (textSize(txt,1) * 0.5)
+    text(txt,x + xc,y+3,1,colH)
+
+    return (mouse_released(0) AND hover)
+enddef
+
 def process(i,h)
-	i = i
-	
-	if alg = 0 then
+
+	if ALG = 0 then
 		return abs(i)
 	endif
 
-	if alg = 1 then
+	if ALG = 1 then
 		return sgn(i)*ySCALE
 	endif
 	
 	
-	if alg = 2 then
+	if ALG = 2 then
 		return sqr(i)*H
 	endif	
 	
-	if alg = 3 then	
+	if ALG = 3 then	
 		return floor(i)*H
 	endif	
 	
@@ -100,6 +165,25 @@ enddef
 def draw()
 	cls(8)
 	drawGraph(30,10)
+	
+	if button(10,130,"ABS") then 
+		ALG = 0
+	endif
+	
+	if button(10,144,"SGN") then 
+		ALG = 1
+	endif
+	
+	if button(10,156,"SQR") then 
+		ALG = 2	
+	endif
+	
+	if button(10,170,"FLOOR") then 
+		ALG = 3		
+	endif
+	
+	xScale = slider(xScale,160,120,100,100)
+	
 	sprite(0,mouse_x+1,mouse_y+1,0)
 	sprite(0,mouse_x,mouse_y,3)
 enddef
