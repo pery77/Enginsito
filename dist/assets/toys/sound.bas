@@ -42,10 +42,23 @@ enddef
 
 def drawOSC(ch,x,y)
 	text(formatText("Chn:%i",ch), x,y-44,1,3)
+	rect(x,y-32,63,64,0,1)
 	rect(x,y-32,63,64,1,4)
 	for i = 0 to 62
 		yf = ch_frame(ch,i)* 0.25
-		pixel(x+i,(y + yf)-32,13)
+		
+		newY = (y + yf)-32
+		newX = i+x
+		
+		if i = 0 then 
+			oldX=newX
+			oldY=newY
+		endif
+		
+		line(oldX,oldy,newX,newY,1,13)
+		oldX=newX		
+		oldY=newY
+
 	next
 enddef
 

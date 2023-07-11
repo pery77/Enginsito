@@ -1,5 +1,38 @@
+alg =2
+xScale = 0.75
+yScale =10.
+
 def process(i,h)
-	i = i/2
+	i = i
+	
+	if alg = 0 then
+		return abs(i)
+	endif
+
+	if alg = 1 then
+		return sgn(i)*ySCALE
+	endif
+	
+	
+	if alg = 2 then
+		return sqr(i)*H
+	endif	
+	
+	if alg = 3 then	
+		return floor(i)*H
+	endif	
+	
+	if alg = 666 then	endif
+	
+		
+				
+	if alg = 666 then
+		return cos(i)*h
+	endif
+	
+	if alg = 666 then
+		return sin(i*0.17)*(h-3)/2
+	endif
 	
 	if i mod 8 then return h/3
 	else return -h/3
@@ -11,12 +44,12 @@ def process(i,h)
 	return log(i)*10
 	return exp(i/5)
 	return rnd(-i,i)
-	return floor(i/5)*10
-	return sqr(i)*5
-	return abs(i)
-	return sgn(i)*48
-	return sin(i*0.17)*(h-3)/2
-	return cos(i*0.17)*(h-3)/2
+	
+	
+	
+
+
+
 	
 enddef
 
@@ -30,17 +63,17 @@ def drawGraph(x,y)
 	line(x,height/2+y,width+x,height/2+y,1,1)
 	line(x+width/2,y,x+width/2,height+y,1,1)
 	
-	text(formatText("%03i",height/2),x-25,y,1,2)
-	text(formatText("%03i",-height/2),x-25,y+height-8,1,2)
-	text(formatText("%03i",-width/2),x,y+height+2,1,2)
-	text(formatText("%03i",width/2),x+width-21,y+height+2,1,2)
+	text(formatText("%03.1f",yScale),x-25,y,1,2)
+	text(formatText("%03.1f",-yScale),x-25,y+height-8,1,2)
+	text(formatText("%03i",round(-width/2*xScale)),x,y+height+2,1,2)
+	text(formatText("%03i",round(width/2*xScale)),x+width-21,y+height+2,1,2)
 	
 	text("0",x-9,y+height/2-3,1,2)
 	text("0",x+width/2-4,y+height+2,1,2)
 	
 	for i = -width/2 to width/2
 		newY = y + height/2
-		newY = newY - process(i,height)
+		newY = newY - process(i*xScale,height/2/yScale)
 		newX = i+x+width/2
 		
 		if newY > y + height-1 then 
