@@ -1,12 +1,28 @@
 def process(i,h)
 	i = i/2
-	'return sgn(i)
-	return (sin(i)*h/2)
-
+	
+	if i mod 8 then return h/3
+	else return -h/3
+	endif
+	
+	return (sin(i*0.27) / cos(i*0.17))*(h-3)/mouse_X
+	return sin(i*0.17+frame*0.1)*(h-3)/2
+	return (mouse_x / (320/h*2))
+	return log(i)*10
+	return exp(i/5)
+	return rnd(-i,i)
+	return floor(i/5)*10
+	return sqr(i)*5
+	return abs(i)
+	return sgn(i)*48
+	return sin(i*0.17)*(h-3)/2
+	return cos(i*0.17)*(h-3)/2
+	
 enddef
 
 def drawGraph(x,y)
-	width = 200
+
+	width = 280
 	height = 100
 	
 	rect(x,y,width,height,0,0)
@@ -27,13 +43,13 @@ def drawGraph(x,y)
 		newY = newY - process(i,height)
 		newX = i+x+width/2
 		
-		if newY > y + height then 
-			newY = y + height
+		if newY > y + height-1 then 
+			newY = y + height-1
 		endif
 		if newY < y  then 
 			newY = y
 		endif
-		
+
 		if i = -width/2 then 
 			oldX=newX
 			oldY=newY
@@ -51,4 +67,6 @@ enddef
 def draw()
 	cls(8)
 	drawGraph(30,10)
+	sprite(0,mouse_x+1,mouse_y+1,0)
+	sprite(0,mouse_x,mouse_y,3)
 enddef
