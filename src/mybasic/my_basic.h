@@ -135,11 +135,11 @@ extern "C" {
 #endif /* MB_ENABLE_CLASS */
 
 #ifndef MB_ENABLE_LAMBDA
-#	define MB_ENABLE_LAMBDA
+//#	define MB_ENABLE_LAMBDA
 #endif /* MB_ENABLE_LAMBDA */
 
 #ifndef MB_ENABLE_MODULE
-#	define MB_ENABLE_MODULE
+//#	define MB_ENABLE_MODULE
 #endif /* MB_ENABLE_MODULE */
 
 #ifndef MB_ENABLE_UNICODE

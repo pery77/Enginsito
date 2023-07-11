@@ -20,5 +20,5 @@ def draw()
 	for f = 0 to 320 step 16
 		line(160 + (f - 160),h, 160 + (f - 160)*2, 200,1,10)
 	next
-	
+
 enddef

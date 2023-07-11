@@ -47,11 +47,81 @@ NEW     -> ' Creates a new instance of a class.
 VAR     -> ' Used to declare a variable within a class.
 
 REFLECT -> ' Provides reflection capabilities to access and manipulate class members dynamically.
-LAMBDA  -> ' Allows the creation of anonymous functions or closures.
 MEM     -> ' Refers to the memory address of a variable or object.
 TYPE    -> ' Used to define a custom data type or structure.
-IMPORT  -> ' Used to include external modules or libraries in the code.
 END     -> ' Marks the end of the program or a code block.
+
+
+Mathematical Functions
+----------------------
+ABS      -> ' Returns the absolute value of a number.
+SGN      -> ' Returns the sign of a number.
+SQR      -> ' Returns the square root of a number.
+FLOOR    -> ' Returns the greatest integer not greater than a number.
+CEIL     -> ' Returns the least integer not less than a number.
+FIX      -> ' Returns the integer part of a number.
+ROUND    -> ' Rounds a number to the nearest integer.
+SRND     -> ' Sets the seed for the random number generator.
+RND      -> ' Returns a random float number between [0.0, 1.0] with RND, or [0, max] with
+            ' RND(max), or [MIN, MAX] with RND(min,max).
+EXP      -> ' Returns the base-e exponential of a number.
+LOG      -> ' Returns the natural logarithm (base e) of a specified number.
+
+Trigonometric Functions
+-----------------------
+SIN  -> ' Returns the sine of an angle (in radians).
+COS  -> ' Returns the cosine of an angle (in radians).
+TAN  -> ' Returns the tangent of an angle (in radians).
+ASIN -> ' Returns the arcsine of a number, resulting in an angle (in radians).
+ACOS -> ' Returns the arccosine of a number, resulting in an angle (in radians).
+ATAN -> ' Returns the arctangent of a number, resulting in an angle (in radians).
+
+String Manipulation Functions
+-----------------------------
+ASC   -> ' Returns the ASCII code value of a character.
+CHR   -> ' Returns the character associated with an ASCII code.
+LEFT  -> ' Returns a specific number of characters from the left of a string.
+MID   -> ' Returns a specific number of characters from the specific position of a string.
+RIGHT -> ' Returns a specific number of characters from the right of a string.
+STR   -> ' Converts a number to a string.
+PRINT -> ' Displays output to the console or standard output device.
+
+VAL   -> ' Returns the number representation of a string, or the value of a dictionary iterator,
+         'overridable for referenced usertype and class instance.
+LEN   -> ' Returns the length of a string or an array, or the element count of a LIST or a DICT,
+         'overridable for referenced usertype and class instance.
+
+Data Structures and Operations
+------------------------------
+
+LIST         -> ' Creates a list.
+DICT         -> ' Creates a dictionary.
+PUSH         -> ' Pushes a value to the tail of a list, overridable for
+               '  referenced usertype and class instance.
+POP          -> ' Pops a value from the tail of a list, overridable for
+                '  referenced usertype and class instance.
+BACK         -> ' Peeks the value at tail of a list, overridable for
+                '  referenced usertype and class instance.
+INSERT       -> ' Inserts a value at a specific position of a list,
+                '  overridable for referenced usertype and class instance.
+SORT         -> ' Sorts a list increasingly, overridable for referenced usertype and class instance.
+EXISTS       -> ' Tells whether a list contains a specific value, or whether a dictionary contains 
+                '  a specific key, overridable for referenced usertype and class instance.
+INDEX_OF     -> ' Gets the index of a value in a list, overridable for referenced usertype and class instance.
+GET          -> ' Returns the value at a specific index in a list, or the value with a specific key in a dictionary, 
+                '  or a member of a class instance, overridable for referenced usertype and class instance.
+SET          -> ' Sets the value at a specific index in a list, or the value with a specific key in a dictionary,
+                '  or a member variable of a class instance, overridable for referenced usertype and class instance.
+REMOVE       -> ' Removes the element at a specific index in a list, or the element with a specific key in a dictionary,
+                '  overridable for referenced usertype and class instance.
+CLEAR        -> ' Clears a list or a dictionary, overridable for referenced usertype and class instance.
+CLONE        -> ' Clones a collection, or a referenced usertype
+TO_ARRAY     -> ' Copies all elements from a list to an array
+ITERATOR     -> ' Gets an iterator of a list or a dictionary,
+                ' overridablefor referenced usertype and class instance.
+MOVE_NEXT    -> ' Moves an iterator to next position over a list or a dictionary, 
+                '  overridable for referenced user type and class instance.
+
 
 - FLOW -
 -======-
@@ -60,7 +130,7 @@ END     -> ' Marks the end of the program or a code block.
  TICK()     -> ' In each frame if not paused
  DRAW()     -> ' In each frame after tick if not paused
  PAUSE()    -> ' In each frame only in pause mode
- END()      -> ' When the program end
+ CLOSE()      -> ' When the program end
 
   * Time
 frame       -> ' number of frame since game started
@@ -86,23 +156,24 @@ Mouse_Y -> 'position y of mouse
 - DRAW -
 -======-
 CLS(col)            -> Clear screen.
-PIXEL(x,y,col)
-LINE(x1,y1,x2,y2,thick,col)
-CIRCLE(x,y,radius,style,col)
-RING(x,y,radioIn,radioOut,startAngle,endAngle,segments,style,col)
-ELLIPSE(x,y,rh,rv,style,col)
-TRIANGLE(x1,y1,x2,y2,x3,y3,style,col)
-RECT(x,y,w,h,thick,col)
-RECTROUND(x,t,w,h,thick,roundnes,segments,col)
-POLY(x,y,sides,radius,rotation,thick,col)
-TEXT(string,x,y,size,col)
-SPRITE(id,x,y,col,[flags])
-META(id,x,y)
+PIXEL(x, y, col)
+LINE(x1, y1, x2, y2, thick, col)
+CIRCLE(x, y, radius, style, col)
+RING(x, y, radioIn, radioOut, startAngle, endAngle, segments, style, col)
+ELLIPSE(x, y, rh, rv, style, col)
+TRIANGLE(x1, y1, x2, y2, x3, y3, style col)
+RECT(x, y, w, h, thick, col)
+RECTROUND(x, t, w, h, thick, roundnes, segments, col)
+POLY(x, y, sides, radius, rotation, thick, col)
+TEXT(string, x, y, size, col)
+SPRITE(id, x, y, col, [flags])
+META(id, x, y)
 
 ' x,y ,x1,y1 >... positions
 ' col > color (0-15)
-' style 0 fill other line thickness
+' style 0 fill, other line thickness
 ' segments > quality
+' Flags > rotation 0-1-2-3 flip h + 8, flip v + 16
 
 
 - EDITOR KEYS -

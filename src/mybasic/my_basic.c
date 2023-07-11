@@ -2309,8 +2309,8 @@ MBCONST static const _func_t _std_libs[] = {
 	{ _STD_ID_GET, _std_get },
 	{ _STD_ID_SET, _std_set },
 
-	{ "PRINT", _std_print },
-	{ "INPUT", _std_input }
+	{ "PRINT", _std_print }
+	//{ "INPUT", _std_input }
 };
 
 #ifdef MB_ENABLE_COLLECTION_LIB

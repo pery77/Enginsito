@@ -9,4 +9,5 @@ enddef
 def draw()
 	cls(0)
 	drawBar(5,5,10,33)
+	text(str(frame/8),10,20,1,2)
 enddef

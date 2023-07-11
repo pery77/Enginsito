@@ -1,6 +1,6 @@
 ' First program for testing the engine
 ' 
-'import "assets/games/invaders_data.dat"
+import "assets/games/invaders_data.dat"
 'Global Variables
 bullets = list()
 rocks = list()
