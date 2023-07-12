@@ -18,7 +18,7 @@ def button(x,y,txt)
 
     rect(x,y,40,14,0,colB)
     rect(x,y,40,14,1,colH)
-    xc = 20 - (measureText(txt,1) * 0.5)
+    xc = 20 - (textSize(txt,1) * 0.5)
     text(txt,x + xc,y+3,1,colH)
 
     return (mouse_released(0) AND hover)
@@ -46,7 +46,7 @@ def draw()
 	endif
 	
 	if mouse_x < 160 and mouse_y > 100 then
-mouse_setpos( 220, 50)
+		mouse_setpos( 220, 50)
 	endif
 	
 	if mouse_pressed(2) then

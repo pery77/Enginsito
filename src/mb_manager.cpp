@@ -141,74 +141,54 @@ int MBManager::OpenBas(const char *file){
 	mb_register_func(bas, "CH_STOP", 	musicStop);
 	mb_register_func(bas, "CH_POS",  	getMusicPosition);
 	mb_register_func(bas, "CH_SIZE", 	getMusicSize);
-	mb_register_func(bas, "CH_TICK", 	getMusicTick);
 	mb_register_func(bas, "CH_FRAME",	getFrameAverage);
+	mb_register_func(bas, "CH_GETNOTE",	getNoteName);
+	//mb_register_func(bas, "CH_TICK", 	getMusicTick);
 
+	//Memory
+	mb_register_func(bas, "PEEK", peek);
+	mb_register_func(bas, "POKE", poke);
+	//mb_register_func(bas, "SAVE", dumpMemory);
+	//mb_register_func(bas, "LOAD", loadMemory);
+
+	//Keys inputs
+	mb_register_func(bas, "KEY_PRESSED", 	keyPressed);
+	mb_register_func(bas, "KEY_DOWN", 		keyDown);
+	mb_register_func(bas, "KEY_RELEASED", 	keyReleased);
+	mb_register_func(bas, "KEY_UP", 		keyUp);
+	mb_register_func(bas, "KEY_GET", 		getKey);
+	mb_register_func(bas, "KEY_CHAR", 		getKeyChar);
+
+	//Joy inpust
+	mb_register_func(bas, "JOY_ISAVIABLE",  isGamepadAvailable);
+	mb_register_func(bas, "JOY_NAME", 		getGamepadName);
+	mb_register_func(bas, "JOY_PRESSED",	buttonPressed);
+	mb_register_func(bas, "JOY_DOWN",		buttonDown);
+	mb_register_func(bas, "JOY_RELEASED", 	buttonReleased);
+	mb_register_func(bas, "JOY_UP",			buttonUp);
+	mb_register_func(bas, "JOY_GET",		getButton);
+
+	mb_register_func(bas, "JOY_AXISCOUNT", getAxisCount);
+	mb_register_func(bas, "JOY_AXISVALUE", axisValue);
 	
-/*
-	mb_begin_module(bas, "CRT");
-		mb_register_func(bas, "ENABLED", crtEnabled);
-		mb_register_func(bas, "BLURPOWER", crtBlurPower);
-		mb_register_func(bas, "BLURFACTOR", crtBlurFactor);
-		mb_register_func(bas, "CHROMATIC", crtChromatic);
-		mb_register_func(bas, "CURVATURE", crtCurvature);
-		mb_register_func(bas, "VIGNETTING", crtVignetting);
-		mb_register_func(bas, "SCANLINE", crtScanline);
-		mb_register_func(bas, "GRILLE", crtSetGrille);
-		mb_register_func(bas, "VERTICALLINE", crtVerticalLine);
-		mb_register_func(bas, "GRILLEFORCE", crtGrilleForce);
-		mb_register_func(bas, "NOISE", crtNoise);
-		mb_register_func(bas, "FLIKER", crtFliker);
-	mb_end_module(bas);
-*/
-	mb_reg_fun(bas, formatText);
-	mb_reg_fun(bas, getChar);
-	mb_reg_fun(bas, setFontSpacing);
+	//Text tools
 
+	mb_register_func(bas, "FORMATTEXT", formatText);
+	mb_register_func(bas, "FONTSPACE",  setFontSpacing);
+	mb_register_func(bas, "TEXTSIZE",   measureText);
+/*
+	mb_reg_fun(bas, getChar);
 	mb_reg_fun(bas, setSprite);
 	mb_reg_fun(bas, getSpriteByte);
-	mb_reg_fun(bas, peek);
-	mb_reg_fun(bas, poke);
 	mb_reg_fun(bas, toSigned);
-	mb_reg_fun(bas, dumpMemory);
-	mb_reg_fun(bas, loadMemory);
-
-	mb_begin_module(bas, "KEY");
-		mb_register_func(bas, "PRESSED", keyPressed);
-		mb_register_func(bas, "DOWN", keyDown);
-		mb_register_func(bas, "RELEASED", keyReleased);
-		mb_register_func(bas, "UP", keyUp);
-		mb_register_func(bas, "GET", getKey);
-		mb_register_func(bas, "CHAR", getKeyChar);
-	mb_end_module(bas);
-
-	
-
-
-
-	mb_begin_module(bas, "PAD");
-		mb_register_func(bas, "ISAVIABLE", isGamepadAvailable);
-		mb_register_func(bas, "NAME", getGamepadName);
-		mb_register_func(bas, "PRESSED", buttonPressed);
-		mb_register_func(bas, "DOWN", buttonDown);
-		mb_register_func(bas, "RELEASED", buttonReleased);
-		mb_register_func(bas, "UP", buttonUp);
-		mb_register_func(bas, "GET", getButton);
-
-		mb_register_func(bas, "AXISCOUNT", getAxisCount);
-		mb_register_func(bas, "AXISVALUE", axisValue);
-	mb_end_module(bas);
-
-	
 	mb_reg_fun(bas, addMetaSprite);
 	mb_reg_fun(bas, getMetaSprite);
 	mb_reg_fun(bas, setColor);
 	mb_reg_fun(bas, getColor);
-	mb_reg_fun(bas, measureText);
 	mb_reg_fun(bas, getFiles);
 	mb_reg_fun(bas, getFolders);
 	mb_reg_fun(bas, saveFile);
-
+*/
     int loadState = mb_load_file(bas, file);
 	basFile = file;
 	Tools::console->AddLog("Loading: [ %s ]\n", basFile);
@@ -1453,6 +1433,24 @@ int MBManager::getFrameAverage(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     ret.value.integer = basicEngineRef->audioManager->GetSynth()->GetFrameAverage(channel, frame);
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+
+int MBManager::getNoteName(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_string(ret, 0);
+
+	int channel;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_int(s, l, &channel));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.string = basicEngineRef->audioManager->GetNoteName(channel);
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }

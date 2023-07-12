@@ -149,6 +149,8 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
     {
         float samples[NUM_CHANNELS] = {0};
         int channelPlaying = 0;
+        float mixedSample = 0.0;
+        float maxAbsValue = 0.0;
 
         for (int track = 0; track < NUM_CHANNELS; track++) 
         {
@@ -171,16 +173,24 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
 
             channels[track].sequenceTime += steps;
             channels[track].frame[frame] = ((samples[track] + 1.0f) * 127);
+            
+            mixedSample += samples[track];
+            
+            if (fabs(samples[track]) > maxAbsValue)
+            {
+                maxAbsValue = fabs(samples[track]);
+            }
         }
 
-        float mixedSample = 0.0;
+        float scale = 1.0;
+        if (maxAbsValue > 0.0)
+        {
+            scale = 1.0f / maxAbsValue;
+        }
 
         for (int track = 0; track < NUM_CHANNELS; track++) 
         {
-            if (channelPlaying > 0)
-            {
-                mixedSample += samples[track] / channelPlaying;
-            }
+            samples[track] *= scale;
         }
 
         bufferData[frame] = mixedSample * 32767.0;

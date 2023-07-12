@@ -61,7 +61,9 @@ class AudioManager
 	float GetRes(uint8_t preset);
 	float GetSlope(uint8_t preset);
 	float GetCurve(uint8_t preset);
-    
+
+    char* GetNoteName(uint8_t channel);
+
     void SetChannelPreset(uint8_t channel, uint8_t preset);
 
     unsigned short GetSoundDir(uint8_t id);

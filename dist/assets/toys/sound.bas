@@ -1,5 +1,5 @@
 '[ 
-Songs are MML format
+Songs are in MML format
 This is from https://archeagemmllibrary.com/castlevania-bloody-tears-master/
 Credit: NethulMeow
 ']
@@ -34,7 +34,7 @@ def button(x,y,txt)
 
     rect(x,y,40,14,0,colB)
     rect(x,y,40,14,1,colH)
-    xc = 20 - (measureText(txt,1) * 0.5)
+    xc = 20 - (textSize(txt,1) * 0.5)
     text(txt,x + xc,y+3,1,colH)
 
     return (mouse_released(0) AND hover)
@@ -42,10 +42,23 @@ enddef
 
 def drawOSC(ch,x,y)
 	text(formatText("Chn:%i",ch), x,y-44,1,3)
+	rect(x,y-32,63,64,0,1)
 	rect(x,y-32,63,64,1,4)
 	for i = 0 to 62
 		yf = ch_frame(ch,i)* 0.25
-		pixel(x+i,(y + yf)-32,13)
+		
+		newY = (y + yf)-32
+		newX = i+x
+		
+		if i = 0 then 
+			oldX=newX
+			oldY=newY
+		endif
+		
+		line(oldX,oldy,newX,newY,1,13)
+		oldX=newX		
+		oldY=newY
+
 	next
 enddef
 
@@ -59,7 +72,11 @@ def draw()
 		ch_stop(0)
 		ch_stop(1)
 	endif
-	
+	n=0
+	for n= 0 to 1
+		text(formatText("(%04i/%04i)",ch_pos(n),ch_size(n)), 120,10+n*9,1,3)
+		text(ch_getnote(n), 220,10+n*9,1,3)
+	next
 	if button(55,40,"Jump") then 
 		ch_set(2,jump)
 		ch_play(2) 	
