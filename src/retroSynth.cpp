@@ -148,7 +148,6 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
     for (int frame = 0; frame < frames; frame++)
     {
         float samples[NUM_CHANNELS] = {0};
-        float mixedSample = 0;
         int channelPlaying = 0;
 
         for (int track = 0; track < NUM_CHANNELS; track++) 
@@ -170,20 +169,23 @@ void RetroSynth::AudioInputCallback(void* buffer, unsigned int frames)
                 resetChannelPhase(track);
             }
 
-            if (channelPlaying > 0)
-            {
-                mixedSample += samples[track];
-            }
-            
             channels[track].sequenceTime += steps;
             channels[track].frame[frame] = ((samples[track] + 1.0f) * 127);
         }
 
-        bufferData[frame] = (mixedSample * 2/channelPlaying) * 32767.0 ;
+        float mixedSample = 0.0;
+
+        for (int track = 0; track < NUM_CHANNELS; track++) 
+        {
+            if (channelPlaying > 0)
+            {
+                mixedSample += samples[track] / channelPlaying;
+            }
+        }
+
+        bufferData[frame] = mixedSample * 32767.0;
 
     }
-
-
 }
 
 uint8_t RetroSynth::GetFrameAverage(uint8_t channel, uint8_t frame)
