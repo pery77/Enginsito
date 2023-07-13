@@ -102,8 +102,13 @@ def process(i,h)
 	
 				
 	if alg = 6 then	
-		return exp(i)	* h	
-	endif			
+		return exp(i)* h	
+	endif
+	
+	if alg = 7 then	
+		return log(i)* h
+	endif
+	
 	if alg = 666 then
 		return cos(i)*h
 	endif
@@ -119,11 +124,7 @@ def process(i,h)
 	return (sin(i*0.27) / cos(i*0.17))*(h-3)/mouse_X
 	return sin(i*0.17+frame*0.1)*(h-3)/2
 	return (mouse_x / (320/h*2))
-	return log(i)*10
-	return exp(i/5)
-	
-	
-	
+
 
 
 
@@ -137,21 +138,35 @@ def drawGraph(x,y)
 	
 	rect(x,y,width,height,0,0)
 	
-	line(x,height/2+y,width+x,height/2+y,1,1)
-	line(x+width/2,y,x+width/2,height+y,1,1)
-	
+	x2 = round(width/2.0*xScale)
 	text(formatText("%03.1f",yScale+0.0001),x+5,y+5,1,2)
 	text(formatText("%03.1f",-yScale+0.0001),x+5,y+height-9,1,2)
-	text(formatText("%03i",round(-width/2*xScale)),x,y+height+2,1,2)
-	text(formatText("%03i",round(width/2*xScale)),x+width-21,y+height+2,1,2)
+	text(formatText("%03i",round(-x2)),x,y+height+2,1,2)
+	text(formatText("%03i",round(x2)),x+width-21,y+height+2,1,2)
 	
 	text("0",x-9,y+height/2-3,1,2)
 	text("0",x+width/2-4,y+height+2,1,2)
 	
-	for i = 0 to width step width*xScale
-		xL = (i)
-		line(xL+x,y,xL+x,height+y,1,5)	
+	jump = round((width/2.0)/x2)
+
+	if jump < 3 then jump = width
+	
+	for i = width/2 to width step jump
+		xR = i+x
+		line(xR,y,xR,height+y,1,5)
+		xL = (width - i) + x 
+		line(xL,y,xL,height+y,1,5)
 	next
+	
+	for i = height/2 to height step jump
+		xR = i+x
+		line(xR,y,xR,height+y,1,5)
+		'xL = (width - i) + x 
+		'line(xL,y,xL,height+y,1,5)
+	next
+
+	line(x,height/2+y,width+x,height/2+y,1,1)
+	line(x+width/2,y,x+width/2,height+y,1,1)
 	
 	for i = -width/2 to width/2
 
@@ -224,6 +239,12 @@ def draw()
 		ALG = 6
 		xScale = 0.02
 		yScale = 15	
+	endif
+
+	if button(60,172,"LOG") then 
+		ALG = 7
+		xScale = 0.03
+		yScale = 3.2
 	endif
 
 	xScale = slider(xScale,240,125,60,2)
