@@ -1,18 +1,42 @@
 class pad
 	x = 8
 	y = 180
-	col = 3
+	col = 13
 	size = 3
 	
 	def update()
 	enddef
 	
 	def draw()
+		rect(x,y+1,(1+size)*8,6,0,15)
 		sprite(0,x,y,col)
 		for i = 0 to size-2
 			sprite(1,x*i+16,y,col)
 		next
 		sprite(0,x+8*size,y,col,8)
+	enddef
+endclass
+
+class block
+	x = 0
+	y = 0
+	col = 4
+	def draw()
+		sprite(5,x,y,col)
+	enddef
+endclass
+
+class ball
+	x = 100
+	y = 60
+	dy = 1
+	def update()
+		y = y + dy
+		if y>190 then dy = -1
+		if y < 8 then dy = 1
+	enddef
+	def draw()
+		circle(x,y,2,0,3)
 	enddef
 endclass
 
@@ -35,6 +59,15 @@ enddef
 gamePad = new(pad)
 currentScore = 0
 lifes = 3
+gameBall = new(ball)
+
+
+blocks = list()
+for b = 0 to 10
+	cb = new(block)
+	cb.x = b*8 + 16
+	cb.y = 32
+next
 
 def drawScore()
 	sc =formatText("%05i00",currentScore)
@@ -52,6 +85,7 @@ enddef
 
 def tick()
 	gamePad.update()
+	gameBall.update()
 	currentScore = frame
 enddef
 
@@ -59,7 +93,9 @@ def draw()
 	cls(0)
 	drawBorder()
 	drawScore()
+	drawBlocks()
 	drawLifes()
+	gameBall.draw()
 	gamePad.draw()
 
 enddef
