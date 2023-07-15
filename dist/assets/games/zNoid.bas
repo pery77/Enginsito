@@ -34,11 +34,20 @@ enddef
 
 gamePad = new(pad)
 currentScore = 0
+lifes = 3
 
 def drawScore()
 	sc =formatText("%05i00",currentScore)
 	text("8888888",256,16,1,1)
 	text(sc,256,16,1,3)
+	text("Score",256,26,1,10)
+enddef
+
+def drawLifes()
+	for l=0 to lifes-1
+	sprite(4,260+l*16,180,13)
+	sprite(4,268+l*16,180,13,8)
+	next
 enddef
 
 def tick()
@@ -50,6 +59,7 @@ def draw()
 	cls(0)
 	drawBorder()
 	drawScore()
+	drawLifes()
 	gamePad.draw()
 
 enddef
