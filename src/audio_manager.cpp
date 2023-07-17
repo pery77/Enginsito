@@ -33,6 +33,7 @@ void mmlCallback(MMLEvent event, int channel, int program, int note, int volume,
 AudioManager::AudioManager(Engine* _engine)
 {
     audioEngineRef = _engine;
+    synth = new RetroSynth(this);
 
     SetAudioStreamBufferSizeDefault(MAX_SAMPLES_PER_UPDATE);
     stream = LoadAudioStream(SAMPLE_RATE, SAMPLE_SIZE, CHANNELS);
@@ -47,11 +48,16 @@ AudioManager::AudioManager(Engine* _engine)
         mml[i]->setCallback(mmlCallback);
         sequence[i] = "";
     }
-
-    synth = new RetroSynth(this);
 }
 
-AudioManager::~AudioManager(){}
+AudioManager::~AudioManager()
+{
+    delete synth;
+    for (int i = 0; i < TRACK_COUNT; i++) 
+    {
+        delete mml[i];
+    }
+}
 
 //Sequencer
 void AudioManager::Update()
