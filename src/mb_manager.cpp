@@ -131,7 +131,32 @@ int MBManager::OpenBas(const char *file){
 	mb_register_func(bas, "MOUSE_RELEASED", mouseReleased); 
 	mb_register_func(bas, "MOUSE_UP", 		mouseUp); 
 	mb_register_func(bas, "MOUSE_SETPOS", 	setMousePosition); 
-		
+
+	//Keys inputs
+	mb_register_func(bas, "KEY_PRESSED", 	keyPressed);
+	mb_register_func(bas, "KEY_DOWN", 		keyDown);
+	mb_register_func(bas, "KEY_RELEASED", 	keyReleased);
+	mb_register_func(bas, "KEY_UP", 		keyUp);
+	mb_register_func(bas, "KEY_GET", 		getKey);
+	mb_register_func(bas, "KEY_CHAR", 		getKeyChar);
+	
+	//Joy
+	mb_register_func(bas, "JOY_ISAVIABLE",  isGamepadAvailable);
+	mb_register_func(bas, "JOY_NAME", 		getGamepadName);
+	mb_register_func(bas, "JOY_PRESSED",	buttonPressed);
+	mb_register_func(bas, "JOY_DOWN",		buttonDown);
+	mb_register_func(bas, "JOY_RELEASED", 	buttonReleased);
+	mb_register_func(bas, "JOY_UP",			buttonUp);
+	mb_register_func(bas, "JOY_GET",		getButton);
+
+	mb_register_func(bas, "JOY_AXISCOUNT", getAxisCount);
+	mb_register_func(bas, "JOY_AXISVALUE", axisValue);
+
+	//Text tools
+	mb_register_func(bas, "FORMATTEXT", formatText);
+	mb_register_func(bas, "FONTSPACE",  setFontSpacing);
+	mb_register_func(bas, "TEXTSIZE",   measureText);
+
 	//Sound
 	mb_register_func(bas, "CH_PRESET",  setPreset); 
 	mb_register_func(bas, "CH_SET",  	setSequence); 
@@ -151,31 +176,6 @@ int MBManager::OpenBas(const char *file){
 	//mb_register_func(bas, "SAVE", dumpMemory);
 	//mb_register_func(bas, "LOAD", loadMemory);
 
-	//Keys inputs
-	mb_register_func(bas, "KEY_PRESSED", 	keyPressed);
-	mb_register_func(bas, "KEY_DOWN", 		keyDown);
-	mb_register_func(bas, "KEY_RELEASED", 	keyReleased);
-	mb_register_func(bas, "KEY_UP", 		keyUp);
-	mb_register_func(bas, "KEY_GET", 		getKey);
-	mb_register_func(bas, "KEY_CHAR", 		getKeyChar);
-
-	//Joy inpust
-	mb_register_func(bas, "JOY_ISAVIABLE",  isGamepadAvailable);
-	mb_register_func(bas, "JOY_NAME", 		getGamepadName);
-	mb_register_func(bas, "JOY_PRESSED",	buttonPressed);
-	mb_register_func(bas, "JOY_DOWN",		buttonDown);
-	mb_register_func(bas, "JOY_RELEASED", 	buttonReleased);
-	mb_register_func(bas, "JOY_UP",			buttonUp);
-	mb_register_func(bas, "JOY_GET",		getButton);
-
-	mb_register_func(bas, "JOY_AXISCOUNT", getAxisCount);
-	mb_register_func(bas, "JOY_AXISVALUE", axisValue);
-	
-	//Text tools
-
-	mb_register_func(bas, "FORMATTEXT", formatText);
-	mb_register_func(bas, "FONTSPACE",  setFontSpacing);
-	mb_register_func(bas, "TEXTSIZE",   measureText);
 /*
 	mb_reg_fun(bas, getChar);
 	mb_reg_fun(bas, setSprite);

@@ -1,3 +1,8 @@
+def playSound(s)
+	ch_set(2,s)
+	ch_play(2) 
+enddef
+
 class pad
 	x = 108
 	y = 180
@@ -6,8 +11,17 @@ class pad
 	
 	speed = 0
 	acc = 0.5
+	dec = 0.93
 	
 	def update()
+		s = (1+size)*8
+		if gameBall.y > y-2 then
+			if gameBall.x > x and gameBall.x < s + x then
+				v = (gameBall.x - x - s/2)/7
+				print v
+				gameBall.hit(v)
+			endif
+		endif
 		if key_down(65) or key_down(263) then
 			speed = speed - acc
 		endif
@@ -27,7 +41,7 @@ class pad
 			speed = -abs(speed * 0.5)
 		endif
 		
-		speed = speed * 0.98
+		speed = speed * dec
 	enddef
 	
 	def draw()
@@ -51,27 +65,40 @@ endclass
 
 class ball
 	x = 124
-	y = 60
-	dy = 1
-	dx = 0.5
+	y = 160
+	dy = -2
+	dx = 0.0
+	sWallHit = "@0v100L16o5C>g"
+	padHit = "@0v100L16o4gv50c"
 	def update()
+		if dx < -2.5 then dx = -2.5
+		if dx > 2.5 then dx = 2.5
 		y = y + dy
 		x = x + dx
 		if y>190 then 
-			dy = -1
+			dy = dy * -1
 		endif
-		if y < 8 then 
-			dy = 1
+		if y < 10 then 
+			dy = dy * -1
+			playSound(sWallHit)
 		endif
-		if x < 8 then
+		if x < 10 then
 			dx = dx * -1
+			playSound(sWallHit)
 		endif
-		if x>240 then
+		if x>238 then
 			dx = dx * -1
+			playSound(sWallHit)
 		endif
 	enddef
 	def draw()
 		circle(x,y,2,0,3)
+	enddef
+	
+	def Hit(vx)
+		dy = dy * -1
+		dx = dx + vx
+		playSound(padHit)
 	enddef
 endclass
 

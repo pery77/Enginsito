@@ -25,5 +25,5 @@ def pause()
 enddef
 
 def close()
-	print inttotext("Exit counter: %i",c)
+	print formattext("Exit counter: %i",c)
 enddef

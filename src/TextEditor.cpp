@@ -2820,7 +2820,10 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 		
 		static const char* const keywords3[] = {
 			"CLS", "PIXEL", "LINE", "CIRCLE", "RING", "ELLIPSE", "TRIANGLE", "RECT", "RECTROUND", "POLY", "TEXT", "SPRITE", "META",
-			"MOUSE_WHEEL", "MOUSE_PRESSED", "MOUSE_DOWN", "MOUSE_RELEASED", "MOUSE_UP", "MOUSE_SETPOS"
+			"MOUSE_WHEEL", "MOUSE_PRESSED", "MOUSE_DOWN", "MOUSE_RELEASED", "MOUSE_UP", "MOUSE_SETPOS",
+			"KEY_PRESSED", "KEY_DOWN", "KEY_RELEASED", "KEY_UP", "KEY_GET", "KEY_CHAR",
+			"JOY_ISAVIABLE", "JOY_NAME", "JOY_PRESSED",	"JOY_DOWN",	"JOY_RELEASED", "JOY_UP", "JOY_GET","JOY_AXISCOUNT", "JOY_AXISVALUE",			
+			"FORMATTEXT", "FONTSPACE", "TEXTSIZE" 
 		};
 
 		for (auto& k : keywords3)

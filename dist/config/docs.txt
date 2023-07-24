@@ -150,8 +150,30 @@ Mouse_X -> 'position x of mouse
 Mouse_Y -> 'position y of mouse 
 
     * Keys
+KEY_PRESSED(key)    -> ' return true if key is pressed
+KEY_DOWN(key)       -> ' return true if key is down
+KEY_RELEASED(key)   -> ' return true if key is released
+KEY_UP(key)         -> ' return true if key is up
+KEY_GET()           -> ' return the key code pressed
+KEY_CHAR()          -> ' return the char pressed
 
     * Joystics
+JOY_ISAVIABLE()       -> ' return true if
+JOY_NAME()            -> ' return true if
+JOY_PRESSED()         -> ' return true if
+JOY_DOWN()            -> ' return true if
+JOY_RELEASED()        -> ' return true if
+JOY_UP()              -> ' return true if
+JOY_GET()             -> ' return true if
+JOY_AXISCOUNT()
+JOY_AXISVALUE()
+
+Tools
+-----
+
+FORMATTEXT()
+FONTSPACE()
+TEXTSIZE()
 
 - DRAW -
 -======-
