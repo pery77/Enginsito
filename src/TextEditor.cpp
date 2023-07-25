@@ -1079,7 +1079,7 @@ void TextEditor::Render()
 
 			++lineNo;
 		}
-
+/*
 		// Draw a tooltip on known identifiers/preprocessor symbols
 		if (ImGui::IsMousePosValid())
 		{
@@ -1106,6 +1106,7 @@ void TextEditor::Render()
 				}
 			}
 		}
+*/
 	}
 
 
