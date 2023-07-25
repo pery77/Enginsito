@@ -1,12 +1,17 @@
+REM Global 
 def playSound(s)
 	ch_set(2,s)
 	ch_play(2) 
 enddef
 
+currentScore = 0
+lifes = 3
+
+REM Classes
 class pad
 	x = 108
 	y = 180
-	col = 13
+	col = 14
 	size = 3
 	
 	speed = 0
@@ -18,8 +23,8 @@ class pad
 		if gameBall.y > y-2 then
 			if gameBall.x > x and gameBall.x < s + x then
 				v = (gameBall.x - x - s/2)/7
-				print v
 				gameBall.hit(v)
+				playSound(gameBall.padHit)
 			endif
 		endif
 		if key_down(65) or key_down(263) then
@@ -57,9 +62,24 @@ endclass
 class block
 	x = 0
 	y = 0
-	col = 4
+	col = 8
+	mustDelete = 0
+	def update()
+		if gameBall.x > x and gameBall.x < 17 + x then
+			if gameBall.y > y and gameBall.y < y+8 then
+				v = (gameBall.x - x - 8)/7
+				gameBall.hit(v)
+				playSound(gameBall.brickHit)
+				currentScore = currentScore + 1
+				mustDelete = 1
+			endif
+		endif
+
+	enddef
 	def draw()
-		sprite(5,x,y,col)
+		rect(x+1,y+1,14,6,0,col)
+		sprite(5,x,y,2)
+		sprite(5,x+8,y,2,2)
 	enddef
 endclass
 
@@ -70,6 +90,7 @@ class ball
 	dx = 0.0
 	sWallHit = "@0v100L16o5C>g"
 	padHit = "@0v100L16o4gv50c"
+	brickHit = "@0v100L32o7g"
 	def update()
 		if dx < -2.5 then dx = -2.5
 		if dx > 2.5 then dx = 2.5
@@ -98,8 +119,8 @@ class ball
 	def Hit(vx)
 		dy = dy * -1
 		dx = dx + vx
-		playSound(padHit)
 	enddef
+	
 endclass
 
 def drawBorder()
@@ -127,18 +148,21 @@ def background()
 enddef
 
 gamePad = new(pad)
-currentScore = 0
-lifes = 3
 gameBall = new(ball)
 
 
 blocks = list()
-for b = 0 to 10
-	cb = new(block)
-	cb.x = b*8 + 16
-	cb.y = 32
+for l = 0 to 5
+	for b = 0 to 13
+		cb = new(block)
+		cb.x = b*16+12
+		cb.y = l*8+32
+		cb.col = l+8
+		push(blocks,cb)
+	next
 next
 
+REM Draws
 def drawScore()
 	sc =formatText("%05i00",currentScore)
 	text("8888888",256,16,1,1)
@@ -153,9 +177,16 @@ def drawLifes()
 	next
 enddef
 
+REM main loops
 def tick()
 	gamePad.update()
 	gameBall.update()
+	for b in blocks
+		b.update()
+		if b.mustDelete then
+			remove(blocks, index_of(blocks, b))
+		endif
+	next
 enddef
 
 def draw()
@@ -167,5 +198,9 @@ def draw()
 	drawLifes()
 	gameBall.draw()
 	gamePad.draw()
+	
+	for b in blocks
+		b.draw()
+	next
 
 enddef
