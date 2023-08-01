@@ -1,0 +1,20 @@
+{
+    "name": "peryEngine",
+    "scopeName": "source.peryEngine",
+    "fileTypes": ["bas"],
+    "patterns": [
+      {
+        "match": "\\b(if|endif|keyword3)\\b",
+        "name": "keyword"
+      },
+      {
+        "match": "\".*?\"",
+        "name": "string"
+      },
+      {
+        "match": "\\d+",
+        "name": "number"
+      }
+    ]
+  }
+  

@@ -7,6 +7,12 @@ enddef
 currentScore = 0
 lifes = 3
 
+MENU = 0
+GAME = 1
+GAMEOVER = 2
+
+state = MENU
+
 REM Classes
 class pad
 	x = 108
@@ -20,6 +26,7 @@ class pad
 	
 	def update()
 		s = (1+size)*8
+		'Ball collision
 		if gameBall.y > y-2 then
 			if gameBall.x > x and gameBall.x < s + x then
 				v = (gameBall.x - x - s/2)/7
@@ -27,6 +34,7 @@ class pad
 				playSound(gameBall.padHit)
 			endif
 		endif
+		'Inputs
 		if key_down(65) or key_down(263) then
 			speed = speed - acc
 		endif
@@ -36,7 +44,9 @@ class pad
 		
 		x = x + speed 
 		
+		'walls collision
 		xlimit = 232 - (8 * size)
+ 
 		if x < 8 then 
 			x = 8
 			speed = abs(speed * 0.5)
@@ -65,9 +75,10 @@ class block
 	col = 8
 	mustDelete = 0
 	def update()
+		'Ball collision
 		if gameBall.x > x and gameBall.x < 17 + x then
 			if gameBall.y > y and gameBall.y < y+8 then
-				v = (gameBall.x - x - 8)/7
+				v = (gameBall.x - x - 8)/20
 				gameBall.hit(v)
 				playSound(gameBall.brickHit)
 				currentScore = currentScore + 1
@@ -123,6 +134,7 @@ class ball
 	
 endclass
 
+REM Draw UI
 def drawBorder()
 	col = 7
 	for x = 1 to 29
@@ -145,7 +157,7 @@ def background()
 			meta(0,x*16,y*16)
 		next
 	next
-enddef
+enddef 
 
 gamePad = new(pad)
 gameBall = new(ball)
@@ -168,6 +180,8 @@ def drawScore()
 	text("8888888",256,16,1,1)
 	text(sc,256,16,1,3)
 	text("Score",256,26,1,10)
+	text("8888888",256,116,1,1)
+	text("h-Score",256,126,1,6)
 enddef
 
 def drawLifes()
@@ -179,28 +193,45 @@ enddef
 
 REM main loops
 def tick()
-	gamePad.update()
-	gameBall.update()
-	for b in blocks
-		b.update()
-		if b.mustDelete then
-			remove(blocks, index_of(blocks, b))
+	if state = MENU then
+		if key_released(257) then
+			state = GAME
 		endif
-	next
+	endif 
+	if state = GAME then
+		gamePad.update()
+		gameBall.update()
+		for b in blocks
+			b.update()
+			if b.mustDelete then
+				remove(blocks, index_of(blocks, b))
+			endif
+		next
+	endif
 enddef
 
 def draw()
 	cls(0)
-	background()
-	drawBorder()
-	drawScore()
-	drawBlocks()
-	drawLifes()
-	gameBall.draw()
-	gamePad.draw()
-	
-	for b in blocks
-		b.draw()
-	next
+
+	if state = MENU then
+		text("zNoi",112,20,3,6)
+		line(0,16,320,16,3,6)
+		line(0,44,320,44,3,6)
+		text("Press enter",116,160,1,sin (frame*0.14)+4)
+	endif
+
+	if state = GAME then
+		background()
+		drawBorder()
+		drawScore()
+		drawBlocks()
+		drawLifes()
+		gameBall.draw()
+		gamePad.draw()
+		
+		for b in blocks
+			b.draw()
+		next
+	endif
 
 enddef

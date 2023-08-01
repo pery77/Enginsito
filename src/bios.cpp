@@ -294,16 +294,24 @@ void Bios::SetProgram(std::string file)
 
 void Bios::SetFile(std::string filePath)
 {
-
-    //TODO CHECK THIS
     namespace fs = std::filesystem;
     fs::path file = filePath;
 
-    CurrentProject.name = file.stem().string();
+    // Remove the "./assets/" prefix from the path (if present)
+    std::string assetsPrefix = std::string("./") + ASSETS_FOLDER + "/";
+    if (file.has_relative_path() && file.relative_path().string().substr(0, assetsPrefix.length()) == assetsPrefix)
+    {
+        file = file.lexically_relative(assetsPrefix);
+    }
+
     CurrentPath = file.parent_path().string();
-    CurrentPath = CurrentPath.erase(0, 9); //Delete > ./assets/ bye the dirty way. :(
+
     std::replace(CurrentPath.begin(), CurrentPath.end(), '\\', '/');
-    printf("Set file> %s\n",file.string().c_str());
+    Tools::console->AddLog("Set file> %s\n",file.string().c_str());
+
+    //biosEngineRef->editor->SaveCurrentFile();
+    SetProgram(file.stem().string());
+    biosEngineRef->editor->OpenFile();
 }
 
 void Bios::AddSubPath(std::string subPath)

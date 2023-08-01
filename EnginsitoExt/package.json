@@ -1,0 +1,34 @@
+{
+    "name": "enginsitoExt",
+    "displayName": "Enginsito Ext",
+    "version": "0.1.0",
+    "description": "Enginsito syntaxes",
+    "publisher": "pery",
+    "engines": {
+      "vscode": "^1.60.0"
+    },
+    "categories": [
+      "Languages"
+    ],
+    "contributes": {
+      "languages": [
+        {
+          "id": "peryEngine",
+          "aliases": [
+            "peryEngine"
+          ],
+          "extensions": [
+            ".bas"
+          ]
+        }
+      ],
+      "grammars": [
+        {
+          "language": "peryEngine",
+          "scopeName": "source.peryEngine",
+          "path": "./syntaxes/peryEngine.tmLanguage.json"
+        }
+      ]
+    }
+  }
+  
