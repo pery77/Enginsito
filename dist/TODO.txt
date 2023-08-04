@@ -1,0 +1,4 @@
+Recordar monitor para F1
+Cargar CRT rejilla png al cargar basic
+Acabar documentacion
+Mirar con filewatcher no guarda la memoria si se cambia en el editor

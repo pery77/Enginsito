@@ -6,12 +6,47 @@ enddef
 
 currentScore = 0
 lifes = 3
+blocks = list()
+currentLevel = 0
 
-MENU = 0
-GAME = 1
-GAMEOVER = 2
+MENU 	 = 0
+LAUNCH 	 = 1
+GAME 	 = 2
+GAMEOVER = 3
 
 state = MENU
+launchTime = 0
+
+def launchGame()
+	launchTime = 0
+	state = LAUNCH
+enddef
+
+def loseLife()
+	lifes = lifes - 1
+	if lifes < 0 then 
+		state = GAMEOVER
+	else
+		launchGame()
+	endif
+enddef
+
+def start()
+	blocks = list()
+	state = MENU
+	lifes = 3
+	currentScore = 0
+	currentLevel = 0
+	loadLevel()
+enddef
+
+levels = list()
+'levels(0) = list(0,0,8190,8190,8190,8190)
+'levels(1) = list(1008,1032,1320,1032,1512,1032,1008)
+push(levels, list(0,0,0,0,0,0,16))
+push(levels, list(0,0,0,0,0,0,15))
+push(levels, list(0,0,0,0,0,7,7))
+
 
 REM Classes
 class pad
@@ -102,13 +137,21 @@ class ball
 	sWallHit = "@0v100L16o5C>g"
 	padHit = "@0v100L16o4gv50c"
 	brickHit = "@0v100L32o7g"
+
+	def setup()
+		x = pad.x + pad.size * 4 + 4
+		y = 178
+		dy = -2
+		dx = rnd(-10,10) * 0.1
+	enddef
+
 	def update()
 		if dx < -2.5 then dx = -2.5
 		if dx > 2.5 then dx = 2.5
 		y = y + dy
 		x = x + dx
 		if y>190 then 
-			dy = dy * -1
+			loseLife()
 		endif
 		if y < 10 then 
 			dy = dy * -1
@@ -133,6 +176,35 @@ class ball
 	enddef
 	
 endclass
+
+gamePad = new(pad)
+gameBall = new(ball)
+
+def loadLevel()
+	lvl =  get(levels, currentLevel)
+	blocks = list()
+	it = iterator(lvl)
+	l = 0
+	while move_next(it)
+		dec = get(it)
+		b = 0
+		for p = 0 to 13
+			r = dec mod 2
+			if r = 1 then
+				cb = new(block)
+				cb.x = b*16+12
+				cb.y = l*8+24
+				cb.col = l+8
+				cb.mustDelete = 0
+				push(blocks,cb)
+			endif
+			dec = floor(dec / 2)
+			b = b + 1
+		next
+		l = l + 1
+	wend
+enddef
+
 
 REM Draw UI
 def drawBorder()
@@ -159,21 +231,6 @@ def background()
 	next
 enddef 
 
-gamePad = new(pad)
-gameBall = new(ball)
-
-
-blocks = list()
-for l = 0 to 5
-	for b = 0 to 13
-		cb = new(block)
-		cb.x = b*16+12
-		cb.y = l*8+32
-		cb.col = l+8
-		push(blocks,cb)
-	next
-next
-
 REM Draws
 def drawScore()
 	sc =formatText("%05i00",currentScore)
@@ -185,9 +242,11 @@ def drawScore()
 enddef
 
 def drawLifes()
-	for l=0 to lifes-1
-	sprite(4,260+l*16,180,13)
-	sprite(4,268+l*16,180,13,8)
+	for l = 0 to 2
+	col = 13
+	if l>=lifes then col = 1
+	sprite(4,260+l*16,180,col)
+	sprite(4,268+l*16,180,col,8)
 	next
 enddef
 
@@ -195,9 +254,22 @@ REM main loops
 def tick()
 	if state = MENU then
 		if key_released(257) then
+			currentLevel = 0
+			loadLevel()
+			launchGame()
+		endif
+	endif
+
+	if state = LAUNCH then
+		launchTime = launchTime + 1
+		gameBall.setup()
+		gamePad.update()
+		if launchTime > 60 then
+			launchTime = 0
 			state = GAME
 		endif
-	endif 
+	endif
+
 	if state = GAME then
 		gamePad.update()
 		gameBall.update()
@@ -205,13 +277,29 @@ def tick()
 			b.update()
 			if b.mustDelete then
 				remove(blocks, index_of(blocks, b))
+				if len(blocks) = 0 then
+					currentLevel =  currentLevel + 1
+					loadLevel()
+					launchGame()
+				endif
 			endif
 		next
+	endif
+
+	if state = GAMEOVER then
+		if key_released(257) then
+			start()
+		endif
 	endif
 enddef
 
 def draw()
-	cls(0)
+	if state = GAMEOVER then
+		text("GAME OVER",56,110,2,sin (frame*0.1)+2)
+		text("Press enter",84,126,1,sin (frame*0.1)+6)
+	else
+		cls(0)
+	endif
 
 	if state = MENU then
 		text("zNoi",112,20,3,6)
@@ -220,7 +308,7 @@ def draw()
 		text("Press enter",116,160,1,sin (frame*0.14)+4)
 	endif
 
-	if state = GAME then
+	if state = GAME or state = LAUNCH then
 		background()
 		drawBorder()
 		drawScore()
