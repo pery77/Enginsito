@@ -442,7 +442,6 @@ void Editor::DrawSprites()
 
 void Editor::DrawCRT()
 {
-    //TODO: usar :    editorEngineRef->postProcessing->Refresh();
     bool ppState = editorEngineRef->Peek(4091);
     ImGui::Checkbox("Enabled", &ppState);
     editorEngineRef->postProcessing->SetState(ppState);
