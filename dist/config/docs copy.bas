@@ -126,20 +126,21 @@ MOVE_NEXT    -> ' Moves an iterator to next position over a list or a dictionary
 
 - FLOW -
 -======-
- * Gameflow Functions
+ * Gameflow Functions *
  INIT()     -> ' When the program start
  TICK()     -> ' In each frame if not paused
  DRAW()     -> ' In each frame after tick if not paused
  PAUSE()    -> ' In each frame only in pause mode
  CLOSE()      -> ' When the program end
 
-  * Time
+* Time *
 frame       -> ' number of frame since game started
 delta       -> ' return the millisecond frame duration
 
 -INPUTS-
 -======-
-    * Mouse
+
+* Mouse *
 MOUSE_WHEEL()           -> ' get the whell value
 MOUSE_PRESSED(button)	-> ' true if button is pressed
 MOUSE_DOWN(button)      -> ' true if button is down
@@ -151,7 +152,7 @@ MOUSE_SETPOS(x, y)      -> ' set the cursor at position x, y
 Mouse_X -> 'position x of mouse 
 Mouse_Y -> 'position y of mouse 
 
-    * Keys
+* Keys *
 KEY_PRESSED(key)    -> ' return true if key is pressed
 KEY_DOWN(key)       -> ' return true if key is down
 KEY_RELEASED(key)   -> ' return true if key is released
@@ -159,7 +160,7 @@ KEY_UP(key)         -> ' return true if key is up
 KEY_GET()           -> ' return the key code pressed
 KEY_CHAR()          -> ' return the char pressed
 
-    * Joystics
+* Joystics *
 JOY_ISAVIABLE()       -> ' return true if
 JOY_NAME()            -> ' return true if
 JOY_PRESSED()         -> ' return true if

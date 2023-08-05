@@ -8,14 +8,26 @@ currentScore = 0
 lifes = 3
 blocks = list()
 currentLevel = 0
+nextLevel = 0
 
 MENU 	 = 0
 LAUNCH 	 = 1
 GAME 	 = 2
 GAMEOVER = 3
+WIN 	 = 4
 
 state = MENU
 launchTime = 0
+
+def getHi()
+	hc = peek(0xfe0) * 256 + peek(0xfe1)
+	return hc
+enddef
+
+def setHi()
+    poke(0xfe0, currentScore / 256)
+    poke(0xfe1, currentScore mod 256)
+enddef
 
 def launchGame()
 	launchTime = 0
@@ -37,16 +49,16 @@ def start()
 	lifes = 3
 	currentScore = 0
 	currentLevel = 0
+	nextLevel = 0
 	loadLevel()
 enddef
 
 levels = list()
-'levels(0) = list(0,0,8190,8190,8190,8190)
-'levels(1) = list(1008,1032,1320,1032,1512,1032,1008)
-push(levels, list(0,0,0,0,0,0,16))
-push(levels, list(0,0,0,0,0,0,15))
-push(levels, list(0,0,0,0,0,7,7))
-
+push(levels, list(0,0,8190,8190,8190,8190))
+push(levels, list(9417,4626,2340,1224,1560,2340,4290,9945))
+push(levels, list(1008,1032,1320,1032,1320,1512,1032,1008))
+push(levels, list(9417,4626,2340,1224,1560,2340,4290,9945))
+push(levels, list(192,480,2772,6138,1008,1008,1224,2340))
 
 REM Classes
 class pad
@@ -117,6 +129,7 @@ class block
 				gameBall.hit(v)
 				playSound(gameBall.brickHit)
 				currentScore = currentScore + 1
+				if getHi() < currentScore then setHi()
 				mustDelete = 1
 			endif
 		endif
@@ -134,7 +147,7 @@ class ball
 	y = 160
 	dy = -2
 	dx = 0.0
-	sWallHit = "@0v100L16o5C>g"
+	sWallHit = "@0v40L16o5C>v20g"
 	padHit = "@0v100L16o4gv50c"
 	brickHit = "@0v100L32o7g"
 
@@ -181,8 +194,8 @@ gamePad = new(pad)
 gameBall = new(ball)
 
 def loadLevel()
-	lvl =  get(levels, currentLevel)
 	blocks = list()
+	lvl =  levels(currentLevel)
 	it = iterator(lvl)
 	l = 0
 	while move_next(it)
@@ -204,7 +217,6 @@ def loadLevel()
 		l = l + 1
 	wend
 enddef
-
 
 REM Draw UI
 def drawBorder()
@@ -234,11 +246,13 @@ enddef
 REM Draws
 def drawScore()
 	sc =formatText("%05i00",currentScore)
+	hsc =formatText("%05i00",getHi())
 	text("8888888",256,16,1,1)
 	text(sc,256,16,1,3)
 	text("Score",256,26,1,10)
-	text("8888888",256,116,1,1)
-	text("h-Score",256,126,1,6)
+	text("8888888",256,56,1,1)
+	text(hsc,256,56,1,3)
+	text("h-Score",256,66,1,6)
 enddef
 
 def drawLifes()
@@ -278,15 +292,22 @@ def tick()
 			if b.mustDelete then
 				remove(blocks, index_of(blocks, b))
 				if len(blocks) = 0 then
-					currentLevel =  currentLevel + 1
-					loadLevel()
-					launchGame()
+					nextLevel =  currentLevel + 1
 				endif
 			endif
 		next
+		if nextLevel > currentLevel then
+			currentLevel = nextLevel
+			if currentLevel < len(levels) then
+				loadLevel()
+				launchGame()
+			else
+				state = WIN
+			endif
+		endif
 	endif
 
-	if state = GAMEOVER then
+	if state = GAMEOVER or state = WIN then
 		if key_released(257) then
 			start()
 		endif
@@ -294,8 +315,10 @@ def tick()
 enddef
 
 def draw()
-	if state = GAMEOVER then
-		text("GAME OVER",56,110,2,sin (frame*0.1)+2)
+	if state = GAMEOVER or state = WIN then
+		msg = "GAME OVER"
+		if state = WIN then msg = "YOU WIN!!"
+		text(msg,56,110,2,sin (frame*0.1)+2)
 		text("Press enter",84,126,1,sin (frame*0.1)+6)
 	else
 		cls(0)
