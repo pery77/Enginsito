@@ -5,6 +5,11 @@ s1(c+180) = 1
 next
 s1(76) = 2
 
+class metaLine
+	id = 0
+	n = 0
+endclass
+
 class screen
 
 	def draw(s)

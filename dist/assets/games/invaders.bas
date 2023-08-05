@@ -1,26 +1,9 @@
-' First program for testing the engine
-' 
-
-def setSprite(id,a,b,c,d,e,f,g,h)
-    i = id * 8 + 48
-    poke (i   ,a)
-    poke (i +1,b)
-    poke (i +2,c)
-    poke (i +3,d)
-    poke (i +4,e)
-    poke (i +5,f)
-    poke (i +6,g)
-    poke (i +7,h)
-enddef
-
-import "assets/games/invaders_data.dat"
-'Global Variables
 bullets = list()
 rocks = list()
 aliens = list()
 aliensBullets = list()
 
-hiScore = 0 'readed from invader_data.dat
+hiScore = 0 
 score = nil ' overwrited in startGame()
 lives = nil ' overwrited in startGame()
 maxbullets = 1
@@ -49,80 +32,6 @@ gameOverTime = 0
 menuTime = 0
 waveInfoTime = 0
 
-'Set sounds
-'shot
-'sfx.env(0, 0, 61, 0, 44)
-'sfx.freq(0, 16, -64, 0, 0)
-'sfx.tone(0, 0, 0, 0, 0)
-'sfx.repeat(0, 0, 0, 0)
-'sfx.filter(0, 125, 127, 0, 106, -55)
-'sfx.wave(0, 2)
-'sfx.render(0, 88)
-'explosion
-'sfx.env(1, 0, 35, 53, 138)
-'sfx.freq(1, 5, -61, 51, 240)
-'sfx.tone(1, 0, 0, 0, 0)
-'sfx.repeat(1, 0, 0, 0)
-'sfx.filter(1, 139, -4, 0, 0, 0)
-'sfx.wave(1, 3)
-'sfx.render(1, 26)
-'alien steps
-'sfx.env(2, 0, 40, 0, 27)
-'sfx.freq(2, 0, -11, 0, 0)
-'sfx.tone(2, 0, 0, 0, 0)
-'sfx.repeat(2, 0, 0, 0)
-'sfx.filter(2, 255, 0, 0, 0, 0)
-'sfx.wave(2, 1)
-'sfx.render(2, 44)
-
-'alien ship
-'sfx.env(3, 255, 255, 0, 255)
-'sfx.freq(3, 0, 19, 0, 0)
-'sfx.tone(3, 0, 0, 0, 0)
-'sfx.repeat(3, 50, -1, 0)
-'sfx.filter(3, 34, 127, 0, 0, 0)
-'sfx.wave(3, 1)
-'sfx.render(3, 69)
-
-'alien shot
-'sfx.env(4, 0, 104, 86, 65)
-'sfx.freq(4, 0, 58, 0, 0)
-'sfx.tone(4, 0, 0, 0, 0)
-'sfx.repeat(4, 0, 0, 0)
-'sfx.filter(4, 48, -13, 208, 102, 109)
-'sfx.wave(4, 3)
-'sfx.render(4, 64)
-
-'player explosion
-'sfx.env(5, 0, 79, 203, 255)
-'sfx.freq(5, -10, -63, 0, 0)
-'sfx.tone(5, 37, 121, 211, 88)
-'sfx.repeat(5, 12, -3, -15)
-'sfx.filter(5, 154, 53, 71, 0, 0)
-'sfx.wave(5, 3)
-'sfx.render(5, 39)
-
-'Set graphics
-setSprite(0,15,31,63,127,255,255,255,255)    'rock square
-setSprite(1,255,255,255,255,240,224,192,128) 'rock square down
-setSprite(2,255,255,255,255,255,255,255,255) 'rock full
-setSprite(3,222,124,58,125,126,123,254,255)  'rock damange 3
-setSprite(4,0,148,24,93,58,58,60,126)        'rock damange 2
-setSprite(5,0,0,16,72,16,26,24,60)           'rock damange 1
-
-setSprite(6,3,15,31,57,63,14,25,12)      'alien 1a
-setSprite(7,3,15,31,57,63,15,10,20)      'alien 1b
-setSprite(8,4,2,7,13,31,47,36,2)         'alien 2a
-setSprite(9,4,2,7,13,31,47,66,4)         'alien 2b
-setSprite(10,3,7,13,31,15,4,2,4)         'alien 3a
-setSprite(11,3,7,15,29,15,4,8,4)         'alien 3b
-
-setSprite(16,16,9,0,84,0,9,16,0)         'explosion
-
-setSprite(17,128,128,64,64,128,128,64,64)     'alien bullet
-setSprite(18,0,7,31,63,109,255,59,16)         'alien ship
-
-
 'Tools
 'Collision
 def checkCollisionAABB(x1, y1, w1, h1, x2, y2, w2, h2)
@@ -130,19 +39,29 @@ def checkCollisionAABB(x1, y1, w1, h1, x2, y2, w2, h2)
     yOverlap = (y1 + h1 >= y2) and (y2 + h2 >= y1)
     return xOverlap and yOverlap
 enddef
+
 'Score
+def getHi()
+	hc = peek(0xfe0) * 256 + peek(0xfe1)
+	return hc
+enddef
+
+def setHi()
+    poke(0xfe0, score / 256)
+    poke(0xfe1, score mod 256)
+enddef
+
 def addScore(s)
     score = score + s
-    if hiScore < score then ' a realy dirty way to save data.
+    if getHi() < score then ' a realy dirty way to save data.
         hiScore = score
-        t$ = intToText("hiScore = %i", hiScore) + Chr(13)
-        savefile("assets/games/invaders_data.dat", t$)
+        setHi()
     endif
 enddef
 
+
 'Classes
 class bullet
-
     x = 0
     y = 0
     speed = 0
@@ -155,17 +74,16 @@ class bullet
             f = (explosionFrame/10.0)
             flag = 0
             if f > 4 then flag = 1 endif
-            draw.sprite(frames(f),x-3,y,4,flag)
-            'draw.text(intToText("%i",f), x + 4, y, 1,3) 'a debug print
+            sprite(frames(f),x-3,y,4,flag)
             speed = 0
             return
         endif
 
         if speed < 0 then
-            draw.rect(x,y,2,4,0,10) ' is a player bullet
+            rect(x,y,2,4,0,10) ' is a player bullet
         endif
         if speed > 0 then
-            draw.sprite(17,x,y,6) ' is an alien bullet
+            sprite(17,x,y,6) ' is an alien bullet
         endif
 
     enddef
@@ -191,7 +109,6 @@ class bullet
 endclass
 
 class player
-
     x = 152
     y = 188
     speed = 2
@@ -216,26 +133,26 @@ class player
             endif
         endif
 
-        draw.rect(x,y,16,5,0,col)
-        draw.rect(x+1,y-1,14,1,0,col)
-        draw.rect(x+6,y-3,4,2,0,col)
-        draw.rect(x+7,y-4,2,1,0,col)
+        rect(x,y,16,5,0,col)
+        rect(x+1,y-1,14,1,0,col)
+        rect(x+6,y-3,4,2,0,col)
+        rect(x+7,y-4,2,1,0,col)
 
     enddef
 
     def update()
 
-        if key.down(65) or pad.down(0, 4) then ' key A move left also pad left 
+        if key_down(65) or joy_down(0, 4) then ' key A move left also pad left 
             x = x - speed
             if x < 0 then x = 0 endif
         endif
 
-        if key.down(68) or pad.down(0, 2) then ' key D move right also pad right
+        if key_down(68) or joy_down(0, 2) then ' key D move right also pad right
             x = x + speed
             if x > 303 then x = 303 endif
         endif
 
-        if key.pressed(32) or pad.pressed(0, 6) then ' key Space shot also pad button 6
+        if key_pressed(32) or joy_pressed(0, 6) then ' key Space shot also pad button 6
             if len(bullets) < maxbullets then
                 b = new (bullet)
                 b.x = x + 7 
@@ -243,7 +160,6 @@ class player
                 b.speed = -2
                 b.explosionFrame = 0
                 push(bullets, b)
-                'sfx.play(0, 127)
             endif
         endif
 
@@ -256,7 +172,6 @@ class player
                     gameState = GAME_OVER
                 endif
                 remove(aliensBullets, index_of(aliensBullets, b))
-                'sfx.play(5, 99)
             endif
         next
 
@@ -314,9 +229,9 @@ class rock
             sp = 1 
             flag = 8
         endif
-        draw.sprite(sp,x,y,14,flag)
+        sprite(sp,x,y,14,flag)
         if state < 4 then
-            draw.sprite(state+2,x,y,0, breakType)
+            sprite(state+2,x,y,0, breakType)
         endif
     enddef
 
@@ -353,7 +268,6 @@ class alien
             b.speed = 1
             b.explosionFrame = 0
             push(aliensBullets, b)
-            'sfx.play(4, 97)
         endif
     enddef
 
@@ -381,7 +295,6 @@ class alien
             if checkCollisionAABB(b.x,b.y,2,4,x+2,y,11,8) then
                 remove(bullets, index_of(bullets, b))
                 dead = 1
-                'sfx.play(1,127)
                 addScore((shape + 1) * 10)
             endif
         next
@@ -389,12 +302,12 @@ class alien
     enddef
     def draw()
         if dead then
-            draw.sprite(16,x,y,4)
-            draw.sprite(16,x+8,y,4,8)
+            sprite(16,x,y,4)
+            sprite(16,x+8,y,4,8)
         else
             an = alienStep mod 2 = 0 
-            draw.sprite(2 * shape + 6 + an,x,y,3)
-            draw.sprite(2 * shape + 6 + an,x+8,y,3,8)
+            sprite(2 * shape + 6 + an,x,y,3)
+            sprite(2 * shape + 6 + an,x+8,y,3,8)
         endif
     enddef
     def isDead()
@@ -420,7 +333,6 @@ class ship
             if checkCollisionAABB(b.x,b.y,2,4,x,y,16,8) then
                 remove(bullets, index_of(bullets, b))
                 dead = 1
-                'sfx.play(1,127)
                 price = priceList(rnd(0,len(priceList)))
                 addScore(price)
             endif
@@ -429,16 +341,15 @@ class ship
     def draw()
         if dead then
             if deadCounter < 10 then
-                draw.sprite(16,x,y,4)
-                draw.sprite(16,x+8,y,4,8)
-                'sfx.stop(3)
+                sprite(16,x,y,4)
+                sprite(16,x+8,y,4,8)
             elseif
-                draw.text(intToText("%03i",price),x-4,y,1,3)
+                text(intToText("%03i",price),x-4,y,1,3)
             endif
         endif
         if dead = 0 then
-            draw.sprite(18,x,y,6)
-            draw.sprite(18,x+8,y,6,8)
+            sprite(18,x,y,6)
+            sprite(18,x+8,y,6,8)
         endif
     enddef
 endclass
@@ -520,26 +431,26 @@ enddef
 
 'UI
 def drawUI()
-    draw.rect(0,0,320,13,0,11)
-    draw.line(0,12,320,12,1,4)
-    draw.line(0,196,320,196,2,15)
-    draw.text(intToText("SCORE %06i",score), 3,3,1,3)
-    draw.text(intToText("LIVES %i",lives), 128,3,1,3)
-    draw.text(intToText("HIGH %06i",hiScore), 224,3,1,3)
+    rect(0,0,320,13,0,11)
+    line(0,12,320,12,1,4)
+    line(0,196,320,196,2,15)
+    text(formatText("SCORE %06i",score), 3,3,1,3)
+    text(formatText("LIVES %i",lives), 128,3,1,3)
+    text(formatText("HIGH %06i",hiScore), 224,3,1,3)
 enddef
 
 def drawGameOver()
         for i = 0 to 20
             y = i * 2 + 70
-            draw.line(0, y, 320, y, 1, 1)
+            line(0, y, 320, y, 1, 1)
         next
-        draw.text("GAME OVER", 55, 75, 3, 4)
+        text("GAME OVER", 55, 75, 3, 4)
         if gameOverTime > 1000 then
             col = 13
             if sin(gameOverTime * 0.02) < 0 then
                 col = 9
             endif
-            draw.text("Press -ENTER- to exit.", 75, 102, 1, col)
+            text("Press -ENTER- to exit.", 75, 102, 1, col)
         endif
 enddef
 
@@ -547,49 +458,48 @@ def drawWaveInfo()
 
     height = waveInfoTime * 0.03
     if height > 50 then height = 50 endif
-    draw.rect(0,85-height * 0.5,320,height,0,8)
-    draw.rect(-10,85-height*0.5,350,height,3,10)
-    draw.text(intToText("WAVE > %i", wave), 53, 77, 3, 10)
-    draw.text(intToText("WAVE > %i", wave), 57, 73, 3, 10)
-    draw.text(intToText("WAVE > %i", wave), 57, 77, 3, 10)
-    draw.text(intToText("WAVE > %i", wave), 53, 73, 3, 10)
-    draw.text(intToText("WAVE > %i", wave), 55, 75, 3, 0)
+    rect(0,85-height * 0.5,320,height,0,8)
+    rect(-10,85-height*0.5,350,height,3,10)
+    text(formatText("WAVE > %i", wave), 53, 77, 3, 10)
+    text(formatText("WAVE > %i", wave), 57, 73, 3, 10)
+    text(formatText("WAVE > %i", wave), 57, 77, 3, 10)
+    text(formatText("WAVE > %i", wave), 53, 73, 3, 10)
+    text(formatText("WAVE > %i", wave), 55, 75, 3, 0)
 
 enddef
 
 def alienInfo(x,y,sp,txt,col)
-        draw.sprite(sp,x,y,col)
-        draw.sprite(sp,x+8,y,col,8)
-        draw.text(txt, x+24,y,1,3)
+    sprite(sp,x,y,col)
+    sprite(sp,x+8,y,col,8)
+    text(txt, x+24,y,1,3)
 enddef
 
 def drawMenu()
-        for i = 0 to 15
-            y = i * 2
-            draw.line(0, y, 320, y, 1, 7)
-        next
-        draw.text("INVADERS", 68, 6, 3, 5)
-        draw.text("INVADERS", 66, 4, 3, 4)
-        if menuTime > 1000 then
-            col = 13
-            if sin(menuTime * 0.02) < 0 then
-                col = 9
-            endif
-            draw.text("Press -ENTER- to start.", 80, 182, 1, col)
+    for i = 0 to 15
+        y = i * 2
+        line(0, y, 320, y, 1, 7)
+    next
+    text("INVADERS", 68, 6, 3, 5)
+    text("INVADERS", 66, 4, 3, 4)
+    if menuTime > 1000 then
+        col = 13
+        if sin(menuTime * 0.02) < 0 then
+            col = 9
         endif
-
-        if menuTime > 3000 then
-            alienInfo(120,100,10,"x 30 pts.",3)
-        endif
-        if menuTime > 4000 then
-            alienInfo(120,120,8,"x 20 pts.",3)
-        endif
-        if menuTime > 5000 then
-            alienInfo(120,140,6,"x 10 pts.",3)
-        endif
-        if menuTime > 6500 then
-            alienInfo(120,70,18," mystery.",6)
-        endif
+        text("Press -ENTER- to start.", 80, 182, 1, col)
+    endif
+    if menuTime > 3000 then
+        alienInfo(120,100,10,"x 30 pts.",3)
+    endif
+    if menuTime > 4000 then
+        alienInfo(120,120,8,"x 20 pts.",3)
+    endif
+    if menuTime > 5000 then
+        alienInfo(120,140,6,"x 10 pts.",3)
+    endif
+    if menuTime > 6500 then
+        alienInfo(120,70,18," mystery.",6)
+    endif
 
 enddef
 
@@ -603,11 +513,7 @@ def alienMovement()
     if alienTick > stepSpeed then
         alienTick = 0
         alienStep = alienStep + 1
-       
-        'sfx.stop(2)
-        'sfx.play(2,80)
-        'sfx.render(2, 44 - alienStep mod 4)
-
+    
         maxX = 0
         minX = 320
         maxY = 0
@@ -649,7 +555,7 @@ def alienMovement()
 enddef
 
 def alienShipUpdate()
-    alienShipTime = alienShipTime + delta()
+    alienShipTime = alienShipTime + delta
     if alienShipTime > 6000 then
         alienShipTime = 0
         r = rnd(0,99)
@@ -658,7 +564,6 @@ def alienShipUpdate()
             alienShip.x = 320
             alienShip.dead = 0
             alienShip.deadCounter = 0
-            'sfx.play(3,90)
         endif
     endif
 
@@ -674,7 +579,7 @@ enddef
 def tick()
 
     if gameState = WAVE_INFO then
-        waveInfoTime = waveInfoTime + delta()
+        waveInfoTime = waveInfoTime + delta
         if waveInfoTime > 3000 then
             waveInfoTime = 0
             gameState = PLAYING
@@ -682,7 +587,7 @@ def tick()
     endif
 
     if gameState = PLAYER_DEAD then
-        recoveryPlayerTick = recoveryPlayerTick + delta()
+        recoveryPlayerTick = recoveryPlayerTick + delta
         if recoveryPlayerTick > 4000 then
             recoveryPlayerTick = 0
             playerShip.dead = 0
@@ -691,15 +596,15 @@ def tick()
     endif
 
     if gameState = MENU then
-        menuTime = menuTime + delta()
-         if key.released(257) or pad.released(0, 15) and menuTime > 1000 then
+        menuTime = menuTime + delta
+         if key_released(257) or joy_released(0, 15) and menuTime > 1000 then
             startGame()
          endif
     endif
 
     if gameState = GAME_OVER then
-        gameOverTime = gameOverTime + delta()
-        if key.released(257) or pad.released(0, 15) then
+        gameOverTime = gameOverTime + delta
+        if key_released(257) or joy_released(0, 15) then
             gameState = MENU
         endif
     endif
