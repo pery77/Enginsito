@@ -83,7 +83,8 @@ class PostProcessing
 
     void SetCRTValue(CRTProperty property, uint8_t value);
     void SetGrilleTexture(int newTextureId);
-
+    void Refresh();
+    
     private:
     
     bool enabled = true;

@@ -280,3 +280,33 @@ float PostProcessing::GetCRTFloat(CRTProperty property)
     return LoadTextureFromImage(img);
 
 }
+
+void PostProcessing::Refresh()
+{
+    bool ppState = postProEngineRef->Peek(4091);
+    SetState(ppState);
+
+    int blurPower    = postProEngineRef->Peek(4080);
+    int blurFactor   = postProEngineRef->Peek(4081);
+    int chromatic    = postProEngineRef->Peek(4082);
+    int curvature    = postProEngineRef->Peek(4083);
+    int vignetting   = postProEngineRef->Peek(4084);
+    int scanLine     = postProEngineRef->Peek(4085);
+    int verticalLine = postProEngineRef->Peek(4086);
+    int grilleForce  = postProEngineRef->Peek(4087);
+    int noise        = postProEngineRef->Peek(4088);
+    int fliker       = postProEngineRef->Peek(4089);
+    int grille       = postProEngineRef->Peek(4090);
+
+    SetCRTValue(CRTProperty::BlurPower, blurPower);
+    SetCRTValue(CRTProperty::BlurFactor, blurFactor);
+    SetCRTValue(CRTProperty::Chromatic, chromatic);
+    SetCRTValue(CRTProperty::Curvature, curvature);
+    SetCRTValue(CRTProperty::Vignetting, vignetting);
+    SetCRTValue(CRTProperty::ScanLine, scanLine);
+    SetCRTValue(CRTProperty::VerticalLine, verticalLine);
+    SetCRTValue(CRTProperty::GrilleForce, grilleForce);
+    SetCRTValue(CRTProperty::Noise, noise);
+    SetCRTValue(CRTProperty::Fliker, fliker);
+    SetGrilleTexture(grille);
+}

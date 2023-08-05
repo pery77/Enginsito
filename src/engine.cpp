@@ -102,8 +102,10 @@ void Engine::UpdateFileWatcher()
             case FileStatus::modified:
                 Tools::console->AddLog("File modified: %s",path_to_watch.c_str());
                 if (IsFileExtension(path_to_watch.c_str(),".bas")) {
+                    bios->TryToSaveMemory();
                     bios->SetFile(path_to_watch);
                     bios->ShouldRun = true;
+                    postProcessing->Refresh();
                 }
                 else{
                     Tools::console->AddLog("Is not a .bas");

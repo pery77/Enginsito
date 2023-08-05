@@ -442,6 +442,7 @@ void Editor::DrawSprites()
 
 void Editor::DrawCRT()
 {
+    //TODO: usar :    editorEngineRef->postProcessing->Refresh();
     bool ppState = editorEngineRef->Peek(4091);
     ImGui::Checkbox("Enabled", &ppState);
     editorEngineRef->postProcessing->SetState(ppState);
@@ -1326,6 +1327,8 @@ void Editor::Draw()
                 ImGui::MenuItem("Meta Sprite", NULL, &show_metaSprite);
                 ImGui::Separator();
                 ImGui::MenuItem("SFX", NULL, &show_sfx);
+                ImGui::Separator();
+                ImGui::MenuItem("Docs", NULL, &show_docs);
 
                 #ifdef DEBUG
                 ImGui::MenuItem("Demo", NULL, &show_demo);
