@@ -1318,7 +1318,6 @@ int MBManager::stopNote(struct mb_interpreter_t* s, void** l){
 	mb_assert(s && l);
 
     int channel;
-	int voice;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 	if(mb_has_arg(s, l)) {
@@ -1335,15 +1334,20 @@ int MBManager::musicPlay(struct mb_interpreter_t* s, void** l){
 	mb_assert(s && l);
 
     int channel;
+	char* arg = 0;
 
 	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) 
-	{
 		mb_check(mb_pop_int(s, l, &channel));
-	}
+		if(mb_has_arg(s, l)) 
+		{
+			mb_check(mb_pop_string(s, l, &arg));
+		}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-    basicEngineRef->audioManager->ChannelPlay(channel);
+	if (arg == 0)
+    	basicEngineRef->audioManager->ChannelPlay(channel);
+	else
+    	basicEngineRef->audioManager->ChannelPlay(channel, arg);
 	
 	return result;
 }

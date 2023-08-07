@@ -161,24 +161,24 @@ KEY_GET()           -> ' return the key code pressed
 KEY_CHAR()          -> ' return the char pressed
 
 * Joystics *
-JOY_ISAVIABLE()       -> ' return true if
-JOY_NAME()            -> ' return true if
-JOY_PRESSED()         -> ' return true if
-JOY_DOWN()            -> ' return true if
-JOY_RELEASED()        -> ' return true if
-JOY_UP()              -> ' return true if
-JOY_GET()             -> ' return true if
-JOY_AXISCOUNT()
-JOY_AXISVALUE()
-
+JOY_ISAVIABLE(id)           -> ' return true if the joy id is ok
+JOY_NAME(id)                -> ' return the name of the joystic id
+JOY_PRESSED(id, button)     -> ' return true if button is pressed
+JOY_DOWN(id, button)        -> ' return true if button is down
+JOY_RELEASED(id, button)    -> ' return true if button is released
+JOY_UP(id, button)          -> ' return true if button is up
+JOY_GET()                   -> ' return the last joy button pressed
+JOY_AXISCOUNT(id)           -> ' return how many axis the joy have
+JOY_AXISVALUE(id, axisId)   -> ' return axis value
 Tools
 -----
 
-FORMATTEXT()
-FONTSPACE()
-TEXTSIZE()
-PEEK()
-POKE()
+FORMATTEXT(txt, value)  -> ' return formated text "%i" interger "%f" float
+FONTSPACE(space)        -> ' set font separation in pixels
+TEXTSIZE(txt, size)     -> ' return the size in pixels of the text at current text size (1 - 4)
+
+PEEK(direction)           -> 'return the memory value at this direction
+POKE(direction, newValue) -> 'set the memory value at this direction
 
 - DRAW -
 -======-
@@ -205,16 +205,37 @@ META(id, x, y)
 - SOUND -
 -=======-
 
-CH_PRESET()
-CH_SET()
-CH_ON()  
-CH_OFF()  
-CH_PLAY() 
-CH_STOP() 
-CH_POS() 
-CH_SIZE() 
-CH_FRAME()
-CH_GETNOTE()
+CH_PRESET(ch, preset)   -> 'Set channel preset 
+CH_SET(ch, sequence)    -> 'Set sequence in this channel
+CH_ON(ch, note, volume) -> 'Start sound until stop it whit ch_off()
+CH_OFF(ch)              -> 'Stop note in this channel
+CH_PLAY(ch, [sequence]) -> 'Play Channel optional -> and set [sequence] optional
+CH_STOP(ch)             -> 'Stop Channel
+CH_POS(ch)              -> 'Return current song position
+CH_SIZE(ch)             -> 'Return channel song size
+CH_FRAME(ch, frame)     -> 'Return average chanel frame
+CH_GETNOTE(ch)          -> 'Return last note name
+
+'sequence is a string in format MML (Music Macro Language)
+
+' A - G	    note on	        C(C4) D4.(D4+8) C12C12C12(triplets)
+' + or #	sharp	
+' -	        flat	
+' =	        natural	
+' R	        rest	        R1 (whole rest)
+' O	        octave	        O0 ... O8 (O4 default)
+' > <	    octave up/down	
+' L	        length	        L4 default
+' Q	        note off ratio	n/8 (Q8 default)
+' ^	        tie	            C4^16
+' &	        no note off	
+' T	        tempo	        T120 default
+' V	        volume	        V0 ... V127(max) V+10 V-10
+' KJ KI	    transpose(maJor/mInor)	KJg(G major)
+' [ ]	    loop	        [...]4 (repeat 4 times)
+' :	        skip on the last loop	
+' @	        program change
+
 
 
 - EDITOR KEYS -

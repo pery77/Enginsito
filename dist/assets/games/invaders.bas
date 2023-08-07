@@ -32,6 +32,9 @@ gameOverTime = 0
 menuTime = 0
 waveInfoTime = 0
 
+CH_PRESET(2,5) 'alien ship
+CH_PRESET(3,4) 'alien steps
+
 'Tools
 'Collision
 def checkCollisionAABB(x1, y1, w1, h1, x2, y2, w2, h2)
@@ -160,6 +163,7 @@ class player
                 b.speed = -2
                 b.explosionFrame = 0
                 push(bullets, b)
+                ch_play(0, "@0o5c")
             endif
         endif
 
@@ -172,6 +176,7 @@ class player
                     gameState = GAME_OVER
                 endif
                 remove(aliensBullets, index_of(aliensBullets, b))
+                ch_play(0, "@1o2g")
             endif
         next
 
@@ -268,6 +273,7 @@ class alien
             b.speed = 1
             b.explosionFrame = 0
             push(aliensBullets, b)
+            ch_play(1, "@3o6d")
         endif
     enddef
 
@@ -296,6 +302,7 @@ class alien
                 remove(bullets, index_of(bullets, b))
                 dead = 1
                 addScore((shape + 1) * 10)
+                ch_play(1, "@2o3c")
             endif
         next
 
@@ -320,7 +327,6 @@ class ship
     y = 14
     speed = -1
     deadCounter = 0
-    priceList = list(50,100,150,200,250,300)
     price = 0
     dead = 0
     def update()
@@ -333,8 +339,10 @@ class ship
             if checkCollisionAABB(b.x,b.y,2,4,x,y,16,8) then
                 remove(bullets, index_of(bullets, b))
                 dead = 1
-                price = priceList(rnd(0,len(priceList)))
+                price = rnd(1,3) * 50
                 addScore(price)
+                ch_off(2)
+                ch_play(1, "@2o3c")
             endif
         next
     enddef
@@ -344,7 +352,7 @@ class ship
                 sprite(16,x,y,4)
                 sprite(16,x+8,y,4,8)
             elseif
-                text(intToText("%03i",price),x-4,y,1,3)
+                text(formatText("%03i",price),x-4,y,1,3)
             endif
         endif
         if dead = 0 then
@@ -410,6 +418,7 @@ def startGame()
     wave = 0
     lives = 3
     score = 0
+    hiScore = getHi()
     gameOverTime = 0
     menuTime = 0
 
@@ -426,6 +435,7 @@ def startGame()
 
     makeAlienWave()
     gameState = WAVE_INFO
+    ch_off(2)
 
 enddef
 
@@ -514,6 +524,9 @@ def alienMovement()
         alienTick = 0
         alienStep = alienStep + 1
     
+        'alien sound steps if ship is not present
+         ch_on(3, 44 - alienStep mod 4, 30)
+
         maxX = 0
         minX = 320
         maxY = 0
@@ -564,12 +577,16 @@ def alienShipUpdate()
             alienShip.x = 320
             alienShip.dead = 0
             alienShip.deadCounter = 0
+            ch_on(2,78,50)
         endif
     endif
 
     if alienShip then
         alienShip.update()
-        if alienShip.x < -16 or alienShip.deadCounter > 60 then 
+        if alienShip.x < -16 then 
+            alienShip = nil
+            ch_off(2)
+        elseif alienShip.deadCounter > 60 then
             alienShip = nil
         endif
     endif
@@ -577,7 +594,6 @@ enddef
 
 'Main update
 def tick()
-
     if gameState = WAVE_INFO then
         waveInfoTime = waveInfoTime + delta
         if waveInfoTime > 3000 then
@@ -672,14 +688,11 @@ def tick()
         wave = wave + 1
         makeAlienWave()
     endif 
-
 enddef
 
 'Main draw
 def draw()
-
     cls(0)
-
     if gameState = MENU then
         drawMenu()
         return
@@ -717,5 +730,4 @@ def draw()
     if gameState = GAME_OVER then
         drawGameOver()
     endif
-
 enddef
