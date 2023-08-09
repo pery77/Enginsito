@@ -6,6 +6,8 @@ COLS = 12
 POSX = 20
 POSY = 8
 
+DELAY_DOWN = 400
+
 offsetX = POSX + 8
 offsetY = POSY + 8
 
@@ -23,7 +25,7 @@ rotation = 0
 color = 0
 
 timer = 0
-delay = 200
+delayFall = DELAY_DOWN
 delayMove = 70
 
 a = list()
@@ -79,7 +81,7 @@ def drawField()
             if field(r, c) = 0 then
                 sprite(3, x + POSX, y + POSY, 1)
             else
-                drawBlock(c * 8 + offsetX, r * 8 + offsetY, field(r, c) + 8)
+                drawBlock(c * 8 + offsetX, r * 8 + offsetY, field(r, c))
             endif
         next
     next    
@@ -88,27 +90,28 @@ enddef
 
 
 def setFigure(f)
-    color = f
+    color = f + 8
     c = 0
     for i in a
-        i.x = (figures(color,c) mod 2)
-        i.y = floor(figures(color,c) / 2)
+        i.x = (figures(f,c) mod 2)
+        i.y = floor(figures(f,c) / 2)
         c = c + 1
     next
 enddef
 
 def drawFigure()
     for i in a
-        drawBlock(i.x * 8 + offsetX, i.y * 8 + offsetY, color + 8)
+        drawBlock(i.x * 8 + offsetX, i.y * 8 + offsetY, color)
     next
 enddef
 
 def check()
-    r = 1
     for i in a 
         if i.x < 0 or i.x > COLS-1 or i.y > ROWS-1 then 
             return 0
-        elseif 
+        elseif field(i.y, i.x) <> 0 then
+            return 0
+        endif
     next
     return 1
 enddef
@@ -123,6 +126,7 @@ def tick()
 
     if key_down(65) then dx =-1
     if key_down(68) then dx = 1
+    if key_down(83) then delayFall = 20
     if key_pressed(32) then rotate = 1
 
     'MOVE
@@ -164,7 +168,7 @@ def tick()
     endif
 
     'TICK
-    if timer > delay then
+    if timer > delayFall then
         c=0
         for i in a 
             set(b,c,i)
@@ -179,8 +183,9 @@ def tick()
         endif
         timer = 0
     endif
+    'CHECK
     
-    dx = 0; rotate = 0;
+    dx = 0; rotate = 0; delayFall = DELAY_DOWN
 enddef
 
 
