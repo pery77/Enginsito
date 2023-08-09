@@ -3,7 +3,7 @@
     "tasks": [
         {
             "label": "task-my-rc-build",
-            "command": "windres ${workspaceFolder}/src/my.rc ${workspaceFolder}/src/my.o",
+            "command": "windres ${workspaceFolder}/src/resource.rc ${workspaceFolder}/obj/resource.o",
             "type": "shell",
             "group": "build"
         },
@@ -33,7 +33,8 @@
             "problemMatcher": "$gcc",        
             "dependsOrder": "sequence",
             "dependsOn": [
-                "task-clean"
+                "task-clean",
+                "task-my-rc-build" 
             ]
         },
         {
