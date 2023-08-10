@@ -71,5 +71,5 @@ def draw()
 		s.draw()
 	next
 	
-	drawShip(120,80)
+	drawShip(120,mouse_y)
 enddef
