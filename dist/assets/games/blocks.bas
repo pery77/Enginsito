@@ -8,6 +8,12 @@ POSY = 8
 
 DELAY_DOWN = 400
 
+MENU = 0
+PLAY = 1
+GAMEOVER = 2
+
+state = MENU
+
 offsetX = POSX + 8
 offsetY = POSY + 8
 
@@ -30,11 +36,11 @@ delayMove = 70
 
 a = list()
 b = list()
-for c = 0 to 3
-    push(a, new(point))
-    push(b, new(point))
-next
 
+for c = 0 to 3
+    push(a, new (point))
+    push(b, new (point))
+next
 shapeData = list(    
     1,3,5,7, ' I    [0][1]  T > [-][-]
     2,4,5,7, ' Z    [2][3]      [-][3]
@@ -87,29 +93,32 @@ def drawField()
     next    
 enddef
 
-
-
-def setFigure(f)
+def setFigure()
+    f = rnd(0,6)
     color = f + 8
     c = 0
     for i in a
-        i.x = (figures(f,c) mod 2)
-        i.y = floor(figures(f,c) / 2)
+        i.x = (figures(f,c) mod 2) + floor(COLS / 2) - 1
+        i.y = floor(figures(f,c) / 2) - 4
         c = c + 1
     next
 enddef
 
 def drawFigure()
     for i in a
-        drawBlock(i.x * 8 + offsetX, i.y * 8 + offsetY, color)
+        if i.y >= 0 then 
+            drawBlock(i.x * 8 + offsetX, i.y * 8 + offsetY, color)
+    endif
     next
 enddef
 
 def check()
-    for i in a 
-        if i.x < 0 or i.x > COLS-1 or i.y > ROWS-1 then 
+    for i in a
+        fy = i.y 
+        if fy < 0 then fy = 0
+        if i.x < 0 or i.x >= COLS + 1 or i.y >= ROWS+1 then 
             return 0
-        elseif field(i.y, i.x) <> 0 then
+        elseif field(fy, i.x) then
             return 0
         endif
     next
@@ -117,7 +126,7 @@ def check()
 enddef
 
 def init()
-    setFigure(rnd(0,6))
+    setFigure()
 enddef
 
 def tick()
@@ -131,18 +140,23 @@ def tick()
 
     'MOVE
     if moveTick > delayMove then
-        c=0
-        for i in a 
-            set(b,c,i)
-            i.x = i.x + dx
-            c = c + 1
+     
+        for i = 0 to 3
+            _a = get(a, i)
+            _a2 = new(point)
+            _a2.x = _a.x 
+            _a2.y = _a.y
+            set(b, i, _a2)
+            _a.x = _a.x + dx
         next
 
         if not check() then
-            c = 0
-            for i in b 
-                set(a,c,i)
-                c = c + 1
+            for i = 0 to 3
+                _b = get(b, i)
+                _b2 = new(point)
+                _b2.x = _b.x 
+                _b2.y = _b.y
+                set(a, i, _b2)
             next
         endif
         moveTick = 0
@@ -151,43 +165,59 @@ def tick()
     'ROTATION
     if rotate then
         p = get(a, 1)
-        for i in a 
-            x = i.y - p.y
-            y = i.x - p.x
-            i.x = p.x - x
-            i.y = p.y + y
+        for i = 0 to 3
+            _a = get(a, i)
+            x = _a.y - p.y
+            y = _a.x - p.x
+            _a.x = p.x - x
+            _a.y = p.y + y
         next
 
         if not check() then
-            c = 0
-            for i in b 
-                set(a,c,i)
-                c = c + 1
+            for i = 0 to 3
+                _b = get(b, i)
+                _b2 = new(point)
+                _b2.x = _b.x 
+                _b2.y = _b.y
+                set(a, i, _b2)              
             next
         endif
     endif
 
     'TICK
     if timer > delayFall then
-        c=0
-        for i in a 
-            set(b,c,i)
-            i.y = i.y + 1
-            c = c + 1
+        for i = 0 to 3
+            _a = get(a, i)
+            _a2 = new(point)
+            _a2.x = _a.x 
+            _a2.y = _a.y
+            set(b, i, _a2)
+            _a.y = _a.y + 1
         next
         if not check() then
-            for i in b 
-                field(i.y, i.x) = color
+            for i in b
+            	if i.y >= 0 then 
+                	field(i.y, i.x) = color
+                else
+                	state = GAMEOVER
+                endif
             next
-            setFigure(rnd(0,6))
+           setFigure()
         endif
         timer = 0
     endif
-    'CHECK
-    
+    'CHECK LINE
+    k=ROWS;
+    for i= ROWS to 0 step -1
+        count=0
+        for j = 0 to COLS 
+            if field(i,j) then count = count + 1
+            field(k,j)=field(i,j)
+        next
+        if count <= COLS then k = k - 1
+    next
     dx = 0; rotate = 0; delayFall = DELAY_DOWN
 enddef
-
 
 def draw()
     'Only draw deco and clear screen first time
@@ -196,9 +226,11 @@ def draw()
         drawDeco()
         drawed = 1
         line(160,0,160,200,1,9)
+        line(0,100,320,100,1,9)
     endif
 
     drawField()
     drawFigure()
-
+    
+    if state = GAMEOVER then cls(1)
 enddef
