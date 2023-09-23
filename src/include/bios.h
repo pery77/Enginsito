@@ -52,7 +52,7 @@ class Bios {
         std::string screenLines = 
 R"|(
 ****************************************
-*       Wecolome to PeryEngine         *
+*        Welcome to PeryEngine         *
 * Press F1 to open editor or type HELP *
 ****************************************
 )|";

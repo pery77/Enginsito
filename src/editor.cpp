@@ -30,6 +30,11 @@ static float mouseEditorPositionY;
 static float mouseEditorOffset;
 static float iScale;
 
+#define STOPED  0
+#define PLAYING 1
+
+static uint8_t gameState = STOPED;
+
 Editor::Editor(Engine* _engine)
 {
     editorEngineRef = _engine;
@@ -511,45 +516,70 @@ void Editor::DrawPlayer()
     ImGuiIO& io = ImGui::GetIO();
     ImVec2 playerSize = ImGui::GetWindowSize();
     ImVec2 buttonSize = ImVec2(32.0f * io.FontGlobalScale, 32.0f * io.FontGlobalScale);
+    int numButtons = 1;
+    if (gameState == PLAYING)
+        numButtons = 2;
+    if (Paused)
+        numButtons = 3;     
+    float totalButtonWidth = buttonSize.x * numButtons;
 
-    float buttonPosX = (playerSize.x - buttonSize.x * 5) / 2;
+    float buttonPosX = (playerSize.x - totalButtonWidth) / 2;
     float buttonPosY = (playerSize.y - buttonSize.y) / 2;
 
     ImGui::SetCursorPosX(buttonPosX);
-    //ImGui::SetCursorPosY(buttonPosY);
 
-    if(ImGui::Button(ICON_FA_PLAY, buttonSize))
+    if (gameState == STOPED)
     {
-        if (!Paused)
+        if(ImGui::Button(ICON_FA_PLAY, buttonSize))
         {
-            SaveCurrentFile();
-            editorEngineRef->bios->ShouldRun = true;
+            if (!Paused)
+            {
+                SaveCurrentFile();
+                editorEngineRef->bios->ShouldRun = true;
+            }
+
+            Paused = false;
+            DoStep = false;
+            gameState = PLAYING;
+        }
+    }
+    else if (gameState == PLAYING)
+    {
+        if(ImGui::Button(ICON_FA_STOP, buttonSize))
+        {
+            Paused = false;
+            DoStep = false;
+            editorEngineRef->basicIntepreter->close();
+            editorEngineRef->currentState = Off;
+            editorEngineRef->basicIntepreter->CloseBas();
+            editorEngineRef->audioManager->StopAll();
+            gameState = STOPED;
         }
 
-        Paused = false;
-        DoStep = false;
-    }
-
-    ImGui::SameLine();
-    if(ImGui::Button(ICON_FA_PAUSE, buttonSize))
-    {
-        Paused = !Paused;
-    }
-    ImGui::SameLine();
-    if(ImGui::Button(ICON_FA_FORWARD_STEP, buttonSize))
-    {
-        Paused = true;
-         DoStep = true;
-    }
-    ImGui::SameLine();
-    if(ImGui::Button(ICON_FA_STOP, buttonSize))
-    {
-        Paused = false;
-        DoStep = false;
-        editorEngineRef->basicIntepreter->close();
-        editorEngineRef->currentState = Off;
-        editorEngineRef->basicIntepreter->CloseBas();
-        editorEngineRef->audioManager->StopAll();
+        ImGui::SameLine();
+        bool popColor = false;
+        if (Paused)
+        {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.929f, 0.216f, 0.216f, 1.0f));
+            popColor = true;
+        }
+        if(ImGui::Button(Paused ? ICON_FA_PLAY : ICON_FA_PAUSE, buttonSize))
+        {
+            Paused = !Paused;
+        }
+        if (popColor)
+        {
+            ImGui::PopStyleColor();
+        }
+        if (Paused)
+        {
+            ImGui::SameLine();
+            if(ImGui::Button(ICON_FA_FORWARD_STEP, buttonSize))
+            {
+                Paused = true;
+                DoStep = true;
+            }
+        }
     }
 }
 

@@ -9,13 +9,13 @@
     "show_memory": true,
     "show_metaSprite": true,
     "show_palette": true,
-    "show_player": true,
+    "show_player": false,
     "show_screen": true,
     "show_sfx": true,
     "show_sprites": true,
     "show_tools": false,
-    "window_height": 1001,
+    "window_height": 1017,
     "window_position_x": 0,
-    "window_position_y": 29,
-    "window_width": 1920
+    "window_position_y": 23,
+    "window_width": 2560
 }
