@@ -21,8 +21,8 @@ dim field(21, 13)
 dim figures(7,4)
 
 class point
-    x = 0
-    y = 0
+    var x = 0
+    var y = 0
 endclass
 
 drawed = 0

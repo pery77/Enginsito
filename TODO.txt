@@ -1,0 +1,33 @@
+Main
+
+	Controlar pantalla por consola, maximizar por linea de comandos.
+
+
+Editor
+	
+	Marcar play, pause, stop
+	Acabar sonidos, piano, más info.
+	Gestionar modo sin editor, (borrar archivos de editor, fuente, inis etc...)
+	
+
+Editor Code
+
+	CTRL+F 
+	Duplicar linea
+	Mover linea
+	Bug copy paste salto de linea
+
+Documentación
+
+	Pantalla, tamaño, origen
+	FPS
+	Faltas de ortografia
+
+
+Basic
+
+	Investigar cuelges con recursivas
+	que avise si se intenta dibujar fuera de def draw
+	instruccion grafica para hacer scroll de la pantalla completa un numero determinado de pixeles en X y en Y
+	(acceso a la memoria de pantalla)
+
