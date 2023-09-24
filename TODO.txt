@@ -5,7 +5,6 @@ Main
 
 Editor
 	
-	Marcar play, pause, stop
 	Acabar sonidos, piano, más info.
 	Gestionar modo sin editor, (borrar archivos de editor, fuente, inis etc...)
 	

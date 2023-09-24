@@ -351,7 +351,7 @@ void Editor::DrawPalette()
         if (ImGui::IsItemHovered())
         {
             HighLightMemory(c*3,3);
-        }
+        }    
     }
 }
 
@@ -1043,56 +1043,64 @@ void Editor::DrawMetaLine(int id)
     const char* posIdName = TextFormat("pos_%04i", dir + 4);
 
     ImGui::BeginGroup();
-
-        if(ImGui::Button(TextFormat("%03i###%03i", spID, dir)))
-        {
-            ImGui::OpenPopup(spIdName); 
-        }
-
-        if (ImGui::BeginPopup(spIdName))
-        {
-
-            if (metaSpriteRectSelected == -1)
-            {
-                GetSpritePopup();
-            }
-            else
-            {
-                editorEngineRef->Poke(dir, metaSpriteRectSelected);
-                metaSpriteRectSelected = -1;
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
-        }
-        ImGui::SameLine();
-
-        Color bcol = editorEngineRef->spriteManager->GetColor(editorEngineRef->Peek(dir + 3));
-        ImVec4 color = ImVec4(bcol.r / 255.0f, bcol.g / 255.0f, bcol.b / 255.0f, 1.0f);
-        ImGui::PushStyleColor(ImGuiCol_Button, color);
-        if(ImGui::Button(TextFormat("%02i###%04i", col, dir + 3)))
-        {
-            ImGui::OpenPopup(colIdName);
-        }
-        ImGui::PopStyleColor(1);
-        ImGui::SameLine();
-
-        static int selected_color = -1;
-        if (ImGui::BeginPopup(colIdName))
-        {
-            ImGui::SeparatorText("Select Color");
-            selected_color = GetColorPopup();
-            if (selected_color != -1)
-            {
-                editorEngineRef->Poke(dir + 3, selected_color);
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::EndPopup();
-        }
-        ImGui::SameLine();
-
         int flag = editorEngineRef->Peek(dir + 4);
+        
+        if (!((flag >> 7) & 1)) //If not disabled
+        {
+            if(ImGui::Button(TextFormat("%03i###%03i", spID, dir)))
+            {
+                ImGui::OpenPopup(spIdName); 
+            }
 
-        if (!((flag >> 7) & 1)) {
+            if (ImGui::BeginPopup(spIdName))
+            {
+
+                if (metaSpriteRectSelected == -1)
+                {
+                    GetSpritePopup();
+                }
+                else
+                {
+                    editorEngineRef->Poke(dir, metaSpriteRectSelected);
+                    metaSpriteRectSelected = -1;
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+            ImGui::SameLine();
+
+            Color bcol = editorEngineRef->spriteManager->GetColor(editorEngineRef->Peek(dir + 3));
+            float luminance = 0.299f * bcol.r  + 0.587f * bcol.g  + 0.114f * bcol.b;
+            float vCol = luminance < 128 ? 0.9f : 0.1f;
+
+            ImVec4 textColor = ImVec4(vCol, vCol, vCol, 1.0f);
+            ImVec4 color = ImVec4(bcol.r / 255.0f, bcol.g / 255.0f, bcol.b / 255.0f, 1.0f);
+            ImGui::PushStyleColor(ImGuiCol_Button, color);
+            ImGui::PushStyleColor(ImGuiCol_Text, textColor);
+            if(ImGui::Button(TextFormat("%02i###%04i", col, dir + 3)))
+            {
+                ImGui::OpenPopup(colIdName);
+            }
+            ImGui::PopStyleColor(2);
+            ImGui::SameLine();
+
+            static int selected_color = -1;
+            if (ImGui::BeginPopup(colIdName))
+            {
+                ImGui::SeparatorText("Select Color");
+                selected_color = GetColorPopup();
+                if (selected_color != -1)
+                {
+                    editorEngineRef->Poke(dir + 3, selected_color);
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::EndPopup();
+            }
+            ImGui::SameLine();
+
+       
+
+
             bool h = (flag & (1 << 3));
             bool v = (flag & (1 << 4));
 
@@ -1108,23 +1116,15 @@ void Editor::DrawMetaLine(int id)
             }
             ImGui::SameLine();
 
-            if(ImGui::Button(TextFormat("Pos###pos_%04i", id)))
-            {
-                ImGui::OpenPopup(posIdName);
-            }
-            ImGui::SameLine();
-        }
-        int offsetPos[2] = { editorEngineRef->Peek(dir + 1), editorEngineRef->Peek(dir + 2)};
-        if (ImGui::BeginPopup(posIdName))
-        {
-            ImGui::PushItemWidth(100);
+            int offsetPos[2] = { editorEngineRef->Peek(dir + 1), editorEngineRef->Peek(dir + 2)};
+            ImGui::PushItemWidth(64);
             if (ImGui::InputInt2(TextFormat("###offset_%i", id), offsetPos))
             {
                 editorEngineRef->Poke(dir + 1, offsetPos[0]);
                 editorEngineRef->Poke(dir + 2, offsetPos[1]);
             }
             ImGui::PopItemWidth();
-            ImGui::EndPopup();
+            ImGui::SameLine();
         }
 
         ImGui::PushItemWidth(100);
@@ -1207,6 +1207,8 @@ void Editor::DrawMetaExample()
     ImVec2 size = ImVec2(64.0f *  io.FontGlobalScale, 64.0f * io.FontGlobalScale);
     pos = ImGui::GetCursorScreenPos();
 
+    draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x*2, pos.y + size.y*2), IM_COL32(70, 50, 40, 255));
+
     for (int id= 0; id<4; id++)
     {
         int dir = (currentMetaSprite * 20 + 2096);
@@ -1270,6 +1272,8 @@ void Editor::DrawMetaSprites(int metaId)
     ImGui::EndGroup();
     ImGui::SameLine();
     ImGui::BeginGroup();
+    ImGui::Text("Sprite   Flags Position");
+    ImGui::Text("ID  Col  H  V  X  Y  Mode");
     for ( int i = 0; i<4; i++)
     {
         DrawMetaLine(i);

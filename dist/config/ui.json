@@ -13,7 +13,7 @@
     "show_screen": true,
     "show_sfx": true,
     "show_sprites": true,
-    "show_tools": false,
+    "show_tools": true,
     "window_height": 1017,
     "window_position_x": 0,
     "window_position_y": 23,
