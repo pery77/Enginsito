@@ -21,6 +21,10 @@ MBManager::MBManager(Engine* _engine){
 
 MBManager::~MBManager(){
 }
+uint32_t MBManager::GetCurrentFrame()
+{
+	return currentframe;
+}
 
 void MBManager::managerError(int state){
 	int pos;

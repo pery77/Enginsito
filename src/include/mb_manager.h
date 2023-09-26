@@ -32,6 +32,8 @@ class MBManager{
         void UpdateAudio();
         void UpdateVars();
 
+        uint32_t GetCurrentFrame();
+
     private:
         mb_value_t nullArg[1];
         mb_value_t initRoutine;

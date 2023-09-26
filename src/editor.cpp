@@ -520,72 +520,71 @@ void Editor::DrawPlayer()
     ImGuiIO& io = ImGui::GetIO();
     ImVec2 playerSize = ImGui::GetWindowSize();
     ImVec2 buttonSize = ImVec2(32.0f * io.FontGlobalScale, 32.0f * io.FontGlobalScale);
-    int numButtons = 1;
-    if (gameState == PLAYING)
-        numButtons = 2;
-    if (Paused)
-        numButtons = 3;     
-    float totalButtonWidth = buttonSize.x * numButtons;
+   
+    float totalButtonWidth = buttonSize.x * 4;
 
     float buttonPosX = (playerSize.x - totalButtonWidth) / 2;
     float buttonPosY = (playerSize.y - buttonSize.y) / 2;
 
+    ImGui::Text(TextFormat("Frame: %06i", editorEngineRef->basicIntepreter->GetCurrentFrame()));
+    ImGui::SameLine();
     ImGui::SetCursorPosX(buttonPosX);
 
-    if (gameState == STOPED)
+    ImGui::BeginDisabled(gameState == PLAYING);
+    //PLAY
+    if(ImGui::Button(ICON_FA_PLAY, buttonSize))
     {
-        if(ImGui::Button(ICON_FA_PLAY, buttonSize))
-        {
-            if (!Paused)
-            {
-                SaveCurrentFile();
-                editorEngineRef->bios->ShouldRun = true;
-            }
-
-            Paused = false;
-            DoStep = false;
-            gameState = PLAYING;
-        }
+        SaveCurrentFile();
+        editorEngineRef->bios->ShouldRun = true;
+        
+        Paused = false;
+        DoStep = false;
+        gameState = PLAYING;
     }
-    else if (gameState == PLAYING)
+    ImGui::EndDisabled();
+
+    ImGui::BeginDisabled(gameState == STOPED);
+    ImGui::SameLine();
+    //STOP
+    if(ImGui::Button(ICON_FA_STOP, buttonSize))
     {
-        if(ImGui::Button(ICON_FA_STOP, buttonSize))
-        {
-            Paused = false;
-            DoStep = false;
-            editorEngineRef->basicIntepreter->close();
-            editorEngineRef->currentState = Off;
-            editorEngineRef->basicIntepreter->CloseBas();
-            editorEngineRef->audioManager->StopAll();
-            gameState = STOPED;
-        }
-
-        ImGui::SameLine();
-        bool popColor = false;
-        if (Paused)
-        {
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.929f, 0.216f, 0.216f, 1.0f));
-            ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.929f, 0.316f, 0.316f, 1.0f));
-            popColor = true;
-        }
-        if(ImGui::Button(Paused ? ICON_FA_PLAY : ICON_FA_PAUSE, buttonSize))
-        {
-            Paused = !Paused;
-        }
-        if (popColor)
-        {
-            ImGui::PopStyleColor(2);
-        }
-        if (Paused)
-        {
-            ImGui::SameLine();
-            if(ImGui::Button(ICON_FA_FORWARD_STEP, buttonSize))
-            {
-                Paused = true;
-                DoStep = true;
-            }
-        }
+        Paused = false;
+        DoStep = false;
+        editorEngineRef->basicIntepreter->close();
+        editorEngineRef->currentState = Off;
+        editorEngineRef->basicIntepreter->CloseBas();
+        editorEngineRef->audioManager->StopAll();
+        gameState = STOPED;
     }
+
+    //PAUSE
+    ImGui::SameLine();
+    bool popColor = false;
+    if (Paused)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.929f, 0.216f, 0.216f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.929f, 0.316f, 0.316f, 1.0f));
+        popColor = true;
+    }
+    if(ImGui::Button(ICON_FA_PAUSE, buttonSize))
+    {
+        Paused = !Paused;
+    }
+    if (popColor)
+    {
+        ImGui::PopStyleColor(2);
+    }
+
+    ImGui::BeginDisabled(!Paused);
+    ImGui::SameLine();
+    //STEP
+    if(ImGui::Button(ICON_FA_FORWARD_STEP, buttonSize))
+    {
+        DoStep = true;
+    }
+    ImGui::EndDisabled();
+    ImGui::EndDisabled();
+    
 }
 
 void Editor::DrawMemory()
