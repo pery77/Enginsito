@@ -908,22 +908,26 @@ inline unsigned char setBit(unsigned char byte, int position, bool newState) {
 
 void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state) 
 {
-    //ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    //draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y - 2), ImGui::IsItemHovered() ?  IM_COL32(100, 100, 100, 255) : IM_COL32(20, 20, 20, 255), 2.0f, 0, 10);
-
-    ImVec4 color = state ? ImVec4(.9f, .9f, .9f, 1.0f) : ImVec4(.1f, .1f, .1f, 1.0f);
-
-    ImGui::SetCursorScreenPos(pos);
-
-    ImGui::PushStyleColor(ImGuiCol_Button, color);
-
-    //if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
-    if (ImGui::Button("###", size)) 
+    bool isMouseOverRect;
+    ImVec2 posRect = ImVec2(pos.x + size.x, pos.y + size.y);
+    if (ImGui::IsMouseHoveringRect(pos, posRect)) 
     {
         HighLightMemory(dir, 1);
-        editorEngineRef->Poke(dir,setBit(editorEngineRef->Peek(dir), bit, !state));
+        isMouseOverRect = true;
+        if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) 
+            state = true;
+        if (ImGui::IsMouseDown(ImGuiMouseButton_Right)) 
+            state = false;
+
+        editorEngineRef->Poke(dir,setBit(editorEngineRef->Peek(dir), bit, state));
+
     }
-    ImGui::PopStyleColor();
+    else {
+        isMouseOverRect = false;
+    }
+    ImU32 color = state ? IM_COL32(240, 240, 240, 255) : IM_COL32(40, 40, 40, 255);
+    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+    draw_list->AddRectFilled(pos, posRect, isMouseOverRect ?  IM_COL32(33, 150, 240, 255) : color);
 }
 
 void Editor::MakeSprite(int spriteId)
@@ -931,7 +935,7 @@ void Editor::MakeSprite(int spriteId)
     ImGuiIO& io = ImGui::GetIO();
     ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);             
     ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
-    ImVec2 size = ImVec2(32.0f,32.0f);
+    ImVec2 size = ImVec2(32.0f * io.FontGlobalScale,32.0f * io.FontGlobalScale);
     uint8_t byte = 0;
 
     ImGui::Text("Sprite ID: %03i Address:%.3X", currentSprite, currentSprite * 8 + 48);
@@ -950,7 +954,7 @@ void Editor::MakeSprite(int spriteId)
             int id = x + y * 8;
             byte = editorEngineRef->Peek((currentSprite * 8 + 48) + y);
 
-            ImGui::PushID(id);
+            ImGui::PushID(TextFormat("pixel_rect_###%i",id));
 
             unsigned char mascara = 1 << 7-x;
 
@@ -959,20 +963,20 @@ void Editor::MakeSprite(int spriteId)
             
             ImGui::PopID();
         }
-
-        ImGui::SameLine();
+        ImGui::SetCursorScreenPos(ImVec2(pos.x + size.x, pos.y + size.y - (size.y)));
+        //ImGui::SameLine();
         ImGui::BeginGroup();
         ImGui::Text("%.2X", byte);
         ImGui::SameLine();
-        ImGui::PushID(y);
-        if(ImGui::SmallButton("Copy"))
+        ImGui::PushID(TextFormat("pixel_rect_copy###%i",y));
+        if(ImGui::SmallButton("C"))
         {
             copyByte = byte;
         }
         ImGui::PopID();
         ImGui::SameLine();
-        ImGui::PushID(y+8);
-        if(ImGui::SmallButton("Paste"))
+        ImGui::PushID(TextFormat("pixel_rect_paste###%i",y));
+        if(ImGui::SmallButton("P"))
         {
             editorEngineRef->Poke((currentSprite * 8 + 48) + y, copyByte);
         }
@@ -1221,10 +1225,23 @@ void Editor::DrawMetaExample()
     ImTextureID my_tex_id = &editorEngineRef->spriteManager->spriteTexture.id;
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
     ImVec2 pos = ImVec2(0.0f, 0.0f);
-    ImVec2 size = ImVec2(64.0f *  io.FontGlobalScale, 64.0f * io.FontGlobalScale);
+    ImVec2 size = ImVec2(64.0f * io.FontGlobalScale, 64.0f * io.FontGlobalScale);
     pos = ImGui::GetCursorScreenPos();
+    
+    ImVec2 backSize = ImVec2(0, 0);
+    for (int id= 0; id<4; id++)
+    {
+        int dir = (currentMetaSprite * 20 + 2096);
+        dir += id * 5;
+        float maxX= ((editorEngineRef->Peek(dir + 1)+8) * 8 )* io.FontGlobalScale;
+        float maxY= ((editorEngineRef->Peek(dir + 2)+8) * 8 )* io.FontGlobalScale;
+        if(maxX>backSize.y)
+            backSize.x = maxX;
+        if(maxY>backSize.y)
+            backSize.y = maxY;
+    }
 
-    draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x*2, pos.y + size.y*2), 
+    draw_list->AddRectFilled(pos, ImVec2(pos.x + backSize.x, pos.y + backSize.y), 
                             IM_COL32(drawMetaExampleColor.r, drawMetaExampleColor.g, drawMetaExampleColor.b , 255));
 
     for (int id= 0; id<4; id++)
@@ -1248,7 +1265,10 @@ void Editor::DrawMetaExample()
         uv0.y =  v ?  y * 0.0625f + 0.0625f : y * 0.0625f;
         uv1.y = !v ?  y * 0.0625f + 0.0625f : y * 0.0625f;
 
-        ImVec2 spritePos = ImVec2(pos.x + editorEngineRef->Peek(dir + 1) * 8, pos.y + editorEngineRef->Peek(dir + 2) * 8);
+        float px = (editorEngineRef->Peek(dir + 1) * 8 )* io.FontGlobalScale;
+        float py = (editorEngineRef->Peek(dir + 2) * 8 )* io.FontGlobalScale;
+
+        ImVec2 spritePos = ImVec2(pos.x + px, pos.y + py);
 
         Color bcol = editorEngineRef->spriteManager->GetColor(editorEngineRef->Peek(dir + 3));
         ImVec4 color = ImVec4(bcol.r / 255.0f, bcol.g / 255.0f, bcol.b / 255.0f, 1.0f);
