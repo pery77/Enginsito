@@ -429,6 +429,7 @@ void Editor::DrawSprites()
     ImGui::SameLine();
 
     ImGui::BeginGroup();
+    ImGui::Text("ID: %03i", currentSprite);
     if(ImGui::Button("Copy",ImVec2(size.x*2.5,size.y)))
     { 
         for (int c = 0; c < 8; c++)
@@ -520,7 +521,7 @@ void Editor::DrawPlayer()
     float buttonPosX = (playerSize.x - totalButtonWidth) / 2;
     float buttonPosY = (playerSize.y - buttonSize.y) / 2;
 
-    ImGui::Text(TextFormat("Frame: %06i", editorEngineRef->basicIntepreter->GetCurrentFrame()));
+    ImGui::Text(TextFormat("F: %07i", editorEngineRef->basicIntepreter->GetCurrentFrame()));
     ImGui::SameLine();
     ImGui::SetCursorPosX(buttonPosX);
 
@@ -1403,8 +1404,11 @@ void Editor::Draw()
                 if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
                     codeEditor.Paste();
                 ImGui::Separator();
-                if (ImGui::MenuItem("Select all", nullptr, nullptr))
+                if (ImGui::MenuItem("Select all", "Ctrl-A", nullptr, true))
                     codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
+                ImGui::Separator();
+                if (ImGui::MenuItem("Exit", "Alt+F4", nullptr, true))
+                    editorEngineRef->bios->ShouldClose = true;
                 ImGui::EndMenu();
             }
                 

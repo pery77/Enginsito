@@ -16,7 +16,8 @@ def draw()
 	meta(2,220,150,flag)
 		
 	meta(3,80,80,flag)
-	
+	meta(4,80,100,flag)
+		
 	meta(0,mouse_X,mouse_y,flag)	
 	meta(0,mouse_X,mouse_y,flag+1)
 enddef

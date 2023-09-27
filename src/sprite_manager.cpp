@@ -133,7 +133,15 @@ std::array<int,20> SpriteManager::GetMetaSprite(uint8_t id)
 void SpriteManager::DrawMetaSprite(int id, int x, int y, int metaFlag = 0) 
 {
     id = Tools::IntClamp(id, 0, 63);
+    metaFlag = Tools::IntClamp(metaFlag, 0, 255);
+
     unsigned int dir = (id * 20) + 2096;
+    int h = 0;
+    for ( uint8_t i=0; i<=3; i++) 
+    {
+        if (spriteEngineRef->Peek(dir + 2 + i * 5) > h) 
+            h = spriteEngineRef->Peek(dir + 2 + i * 5);
+    }
     for ( uint8_t i=0; i<=3; i++) 
     {
         if ((spriteEngineRef->Peek(dir + 4) >> 7) & 1) continue;

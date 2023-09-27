@@ -122,7 +122,7 @@ void Engine::UpdateFileWatcher()
 
 const char* Engine::GetEngineName()
 {
-    return TextFormat("peryEngine v: %.3f", PE_VERSION / 1000.0f);
+    return TextFormat("Enginsito v: %.3f", PE_VERSION / 1000.0f);
 }
 
 unsigned char* Engine::GetMemory()

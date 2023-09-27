@@ -1,4 +1,4 @@
-GLFW_ICON ICON "../icon.ico"
+GLFW_ICON ICON "../resources/icon.ico"
 
 1 VERSIONINFO
 FILEVERSION     0,1,0,0
@@ -10,12 +10,12 @@ BEGIN
     BLOCK "040904E4"	// English US
     BEGIN
       VALUE "Zaroa", "Zaroa"
-      VALUE "FileDescription", "peryEngine"
+      VALUE "FileDescription", "Enginsito"
       VALUE "FileVersion", "1.0.0"
-      VALUE "InternalName", "peryEngine"
+      VALUE "InternalName", "Enginsito"
       VALUE "LegalCopyright", "pery"
-      VALUE "OriginalFilename", "peryEngine.exe"
-      VALUE "ProductName", "peryEngine"
+      VALUE "OriginalFilename", "Enginsito.exe"
+      VALUE "ProductName", "Enginsito"
       VALUE "ProductVersion", "0.1.0"
     END
   END

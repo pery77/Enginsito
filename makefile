@@ -24,7 +24,7 @@ OBJECTS = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(filter %.cpp,$(SOURCES)))
 
 OBJECTS += $(OBJ_DIR)/resource.o
 
-EXECUTABLE = $(BUILD_DIR)/peryEngine.exe
+EXECUTABLE = $(BUILD_DIR)/Enginsito.exe
 
 .PHONY: all clean
 
