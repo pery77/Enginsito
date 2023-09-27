@@ -109,8 +109,9 @@ int main(int argc, char *argv[])
         if (IsKeyReleased(KEY_F5) || engine->bios->ShouldRun)
         { 
             engine->bios->ShouldRun = false;
+            engine->editor->PlayerState = Running;
 
-            if ( engine->currentState == Running)
+            if (engine->currentState == Running)
             {
                 engine->basicIntepreter->close();
                 engine->basicIntepreter->Reset();
@@ -123,6 +124,7 @@ int main(int argc, char *argv[])
                 engine->basicIntepreter->Run();
                 engine->basicIntepreter->init();
                 engine->currentState = Running;
+                engine->editor->PlayerState = Running;
             }
             else
             {
@@ -135,10 +137,12 @@ int main(int argc, char *argv[])
             {
                 case Running:
                     engine->currentState = Paused;
+                    engine->editor->PlayerState = Paused;
                     break;
                 case Paused:
                     engine->basicIntepreter->close();
                     engine->currentState = Off;
+                    engine->editor->PlayerState = Off;
                     engine->basicIntepreter->CloseBas();
                     engine->audioManager->StopAll();
                     break;
@@ -150,7 +154,11 @@ int main(int argc, char *argv[])
         if (engine->currentState == Paused)
         {
             int anyKey = GetKeyPressed();
-            if (anyKey != 0 && anyKey != 256) engine->currentState = Running; // key 256 is Escape key
+            if (anyKey != 0 && anyKey != 256) // key 256 is Escape key
+            {
+                engine->currentState = Running; 
+                engine->editor->PlayerState = Running;
+            }
             engine->basicIntepreter->pause();
         }
 
@@ -161,7 +169,7 @@ int main(int argc, char *argv[])
         if (engine->currentState == Running)
         {
             engine->basicIntepreter->UpdateVars();
-            if (!engine->editor->Paused)
+            if (engine->editor->PlayerState == Running)
             {
                 engine->basicIntepreter->tick();
             }
@@ -194,7 +202,7 @@ int main(int argc, char *argv[])
                         }
                         break;
                     case Running:
-                        if (!engine->editor->Paused)
+                        if (engine->editor->PlayerState == Running)
                         {
                             engine->basicIntepreter->draw();
                         }

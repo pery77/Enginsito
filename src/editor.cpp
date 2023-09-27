@@ -34,11 +34,6 @@ static float iScale;
 
 static Color drawMetaExampleColor;
 
-#define STOPED  0
-#define PLAYING 1
-
-static uint8_t gameState = STOPED;
-
 Editor::Editor(Engine* _engine)
 {
     editorEngineRef = _engine;
@@ -183,7 +178,7 @@ void Editor::Credits()
 
     if(ImGui::BeginPopupModal("Credits", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {    
-        ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), "Programed by Pery - 2023");
+        ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), "Programmed by Pery - 2023");
         ImGui::Separator();
         ImGui::Text("Credits:");
         ImGui::Text("This application utilizes the following open-source libraries:");
@@ -227,7 +222,6 @@ void Editor::OpenFile()
     //std::cout << str << "\n";
     codeEditor.SetText(str);
     editorFile = editorEngineRef->bios->CurrentProject.name;
-    Paused = false;
     DoStep = false;
 }
 
@@ -530,37 +524,34 @@ void Editor::DrawPlayer()
     ImGui::SameLine();
     ImGui::SetCursorPosX(buttonPosX);
 
-    ImGui::BeginDisabled(gameState == PLAYING);
+    ImGui::BeginDisabled(PlayerState != Off);
     //PLAY
     if(ImGui::Button(ICON_FA_PLAY, buttonSize))
     {
-        SaveCurrentFile();
+        if (!editorEngineRef->FileWatcherEnabled) SaveCurrentFile();
         editorEngineRef->bios->ShouldRun = true;
-        
-        Paused = false;
+        PlayerState = Running;
         DoStep = false;
-        gameState = PLAYING;
     }
     ImGui::EndDisabled();
 
-    ImGui::BeginDisabled(gameState == STOPED);
+    ImGui::BeginDisabled(!PlayerState == Running);
     ImGui::SameLine();
     //STOP
     if(ImGui::Button(ICON_FA_STOP, buttonSize))
     {
-        Paused = false;
+        PlayerState = Off;
         DoStep = false;
         editorEngineRef->basicIntepreter->close();
         editorEngineRef->currentState = Off;
         editorEngineRef->basicIntepreter->CloseBas();
         editorEngineRef->audioManager->StopAll();
-        gameState = STOPED;
     }
 
     //PAUSE
     ImGui::SameLine();
     bool popColor = false;
-    if (Paused)
+    if (PlayerState == Paused)
     {
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.929f, 0.216f, 0.216f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.929f, 0.316f, 0.316f, 1.0f));
@@ -568,14 +559,15 @@ void Editor::DrawPlayer()
     }
     if(ImGui::Button(ICON_FA_PAUSE, buttonSize))
     {
-        Paused = !Paused;
+        if (PlayerState == Paused) PlayerState = Running;
+        else if (PlayerState == Running) PlayerState = Paused;
     }
     if (popColor)
     {
         ImGui::PopStyleColor(2);
     }
 
-    ImGui::BeginDisabled(!Paused);
+    ImGui::BeginDisabled(PlayerState != Paused);
     ImGui::SameLine();
     //STEP
     if(ImGui::Button(ICON_FA_FORWARD_STEP, buttonSize))

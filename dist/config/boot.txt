@@ -1,1 +1,1 @@
-filewatcher 1
+filewatcher 0
