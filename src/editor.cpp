@@ -1,5 +1,6 @@
 #include "editor.h"
 #include "nlohmann/json.hpp"
+#include <cstdlib>
 
 static bool show_tools = false;
 static bool show_demo = false;
@@ -167,6 +168,13 @@ void Editor::DrawFPS()
     ImGui::PlotLines("", values, IM_ARRAYSIZE(values), values_offset,overlay ,0.0f, 60.0f, ImVec2(pw_size.x, pw_size.y - frameH));
     ImGui::PopStyleColor();  
 }
+void Editor::Link(const char* text, const char* link)
+{
+    if (ImGui::Button(text))
+    {
+        std::system((std::string("start ") + link).c_str());
+    }
+}
 
 void Editor::Credits()
 {
@@ -179,23 +187,29 @@ void Editor::Credits()
     if(ImGui::BeginPopupModal("Credits", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {    
         ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), "Programmed by Pery - 2023");
+        Link("Site", "https://zaroa.net/");
+        ImGui::SameLine();
+        Link(" X ", "https://x.com/pery36");
         ImGui::Separator();
         ImGui::Text("Credits:");
         ImGui::Text("This application utilizes the following open-source libraries:");
 
         ImGui::Spacing();
 
-        ImGui::BulletText("Raylib      - github.com/raysan5/raylib");
-        ImGui::BulletText("My-Basic    - github.com/paladin-t/my_basic/");
-        ImGui::BulletText("ImGui       - github.com/ocornut/imgui");
-        ImGui::BulletText("Json        - github.com/nlohmann/json");
-        ImGui::BulletText("Memory      - github.com/ocornut/imgui_club");
-        ImGui::BulletText("Text Editor - github.com/BalazsJako/ImGuiColorTextEdit");
-        ImGui::BulletText("Imgui Knobs - github.com/altschuler/imgui-knobs");
-        ImGui::BulletText("rlImGui     - github.com/raylib-extras/rlImGui");
-        ImGui::BulletText("MML_Parser  - github.com/vcraftjp/MML-Parser");
-        ImGui::BulletText("FontAwesome - fontawesome.com");
-        ImGui::BulletText("Font        - fontspace.com/mozart-nbp-font-f18977");
+        Link("Raylib      - github.com/raysan5/raylib", "https://github.com/raysan5/raylib");
+        Link("My-Basic    - github.com/paladin-t/my_basic/", "https://github.com/paladin-t/my_basic/");
+        Link("ImGui       - github.com/ocornut/imgui", "https://github.com/ocornut/imgui");
+        Link("Json        - github.com/nlohmann/json", "https://github.com/nlohmann/json");
+        Link("Memory      - github.com/ocornut/imgui_club", "https://github.com/ocornut/imgui_club");
+        Link("Text Editor - github.com/BalazsJako/ImGuiColorTextEdit", "https://github.com/BalazsJako/ImGuiColorTextEdit");
+        Link("Imgui Knobs - github.com/altschuler/imgui-knobs", "https://github.com/altschuler/imgui-knobs");
+        Link("rlImGui     - github.com/raylib-extras/rlImGui", "https://github.com/raylib-extras/rlImGui");
+        Link("MML_Parser  - github.com/vcraftjp/MML-Parser", "https://github.com/vcraftjp/MML-Parser");
+        Link("FontAwesome - fontawesome.com", "https://fontawesome.com/");
+        Link("Font        - fontspace.com/mozart-nbp-font-f18977", "https://www.fontspace.com/mozart-nbp-font-f18977");
+        ImGui::Spacing();
+        ImGui::Separator();
+        ImGui::Text("Thanks:");
 
         ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x + ImGui::GetWindowContentRegionMin().x - 120) * 0.5f);
         if (ImGui::Button("OK", ImVec2(120, 0))) 
