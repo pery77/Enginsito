@@ -1553,6 +1553,7 @@ int MBManager::drawMetaSprite(struct mb_interpreter_t* s, void** l){
 	int id = 0;
 	int x = 0;
 	int y = 0;
+	int f = 0;
 
 	mb_check(mb_attempt_open_bracket(s, l));
 		if(mb_has_arg(s, l)) {
@@ -1560,9 +1561,12 @@ int MBManager::drawMetaSprite(struct mb_interpreter_t* s, void** l){
 			mb_check(mb_pop_int(s, l, &x));
 			mb_check(mb_pop_int(s, l, &y));
 		}
+		if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &f));
+		}
 	mb_check(mb_attempt_close_bracket(s, l));
 
-	basicEngineRef->spriteManager->DrawMetaSprite(id, x, y);
+	basicEngineRef->spriteManager->DrawMetaSprite(id, x, y, f);
 	
 	return result;
 }

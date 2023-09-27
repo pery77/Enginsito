@@ -25,7 +25,7 @@ class SpriteManager
                      uint8_t b3, uint8_t b4, uint8_t b5, uint8_t b6,
                      uint8_t b7);
     void DrawSprite(int id, int x, int y, int col, int flag);
-    void DrawMetaSprite(int id, int x, int y);
+    void DrawMetaSprite(int id, int x, int y, int metaFlag);
     uint8_t GetSpriteByte(unsigned int id, uint8_t byte);
 
     void AddMetaSprite(uint8_t id, uint8_t postition, uint8_t sprite_id, uint8_t offset_x, uint8_t offset_y, 

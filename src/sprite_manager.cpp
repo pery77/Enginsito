@@ -130,16 +130,42 @@ std::array<int,20> SpriteManager::GetMetaSprite(uint8_t id)
     return r;
 }
 
-void SpriteManager::DrawMetaSprite(int id, int x, int y) 
+void SpriteManager::DrawMetaSprite(int id, int x, int y, int metaFlag = 0) 
 {
     id = Tools::IntClamp(id, 0, 63);
     unsigned int dir = (id * 20) + 2096;
     for ( uint8_t i=0; i<=3; i++) 
     {
-        int flag = spriteEngineRef->Peek(dir + 4);
-        if ((flag >> 7) & 1) continue;
-        DrawSprite(spriteEngineRef->Peek(dir + i * 5), spriteEngineRef->Peek(dir + 1 + i * 5) + x, spriteEngineRef->Peek(dir + 2 + i * 5) + y,
-                    spriteEngineRef->Peek(dir + 3 + i * 5), spriteEngineRef->Peek(dir + 4 + i * 5));
+        if ((spriteEngineRef->Peek(dir + 4) >> 7) & 1) continue;
+
+        int spId   = spriteEngineRef->Peek(dir + i * 5);
+        int spX    = spriteEngineRef->Peek(dir + 1 + i * 5);
+        int spY    = spriteEngineRef->Peek(dir + 2 + i * 5);
+        int spCol  = spriteEngineRef->Peek(dir + 3 + i * 5);
+        int spFlag = spriteEngineRef->Peek(dir + 4 + i * 5);
+        
+        int rotatedX, rotatedY;
+	    switch ((metaFlag & 0b11))
+	    {
+            case 1: //90
+                rotatedX = spY;
+                rotatedY = spX;
+                break;
+            case 2: //180
+                rotatedX = -spX;
+                rotatedY = -spY;
+                break;
+            case 3: //270
+                rotatedX = -spY;
+                rotatedY = -spX;
+                break;
+            default: //0
+                rotatedX = spX;
+                rotatedY = spY;
+            break;
+	    }
+
+        DrawSprite(spId, rotatedX + x, rotatedY + y, spCol, spFlag + metaFlag);
     }
 }
 

@@ -37,8 +37,8 @@ Engine::Engine()
 
 Engine::~Engine()
 {
-    delete editor;
     basicIntepreter->CloseBas();
+    delete editor;
     delete postProcessing;
     delete basicIntepreter;
     delete bios;
