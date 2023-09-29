@@ -151,27 +151,35 @@ void SpriteManager::DrawMetaSprite(int id, int x, int y, int metaFlag = 0)
         int spY    = spriteEngineRef->Peek(dir + 2 + i * 5);
         int spCol  = spriteEngineRef->Peek(dir + 3 + i * 5);
         int spFlag = spriteEngineRef->Peek(dir + 4 + i * 5);
-        
+        // X = x*cos(θ) - y*sin(θ) 
+        // Y = x*sin(θ) + y*cos(θ)
+        //cos(0)   =  1 | sin(90)   =  0
+        //cos(90)  =  0 | sin(90)   =  1
+        //cos(180) = -1 | sin(180)  =  0
+        //cos(270) =  0 | sin(270)  = -1
         int rotatedX, rotatedY;
 	    switch ((metaFlag & 0b11))
 	    {
             case 1: //90
-                rotatedX = spY;
-                rotatedY = spX;
+                rotatedX = -spY;
+                rotatedY = +spX;
                 break;
             case 2: //180
                 rotatedX = -spX;
                 rotatedY = -spY;
                 break;
             case 3: //270
-                rotatedX = -spY;
+                rotatedX = +spY;
                 rotatedY = -spX;
                 break;
             default: //0
-                rotatedX = spX;
-                rotatedY = spY;
+                rotatedX = +spX;
+                rotatedY = +spY;
             break;
 	    }
+
+        if(metaFlag & (1 << 3)) rotatedX*=-1;
+        if(metaFlag & (1 << 4)) rotatedY*=-1;
 
         DrawSprite(spId, rotatedX + x, rotatedY + y, spCol, spFlag + metaFlag);
     }
