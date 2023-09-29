@@ -53,6 +53,7 @@ class Editor
     std::string editorFile = "";
 
     MemoryEditor mem_edit; 
+    Texture2D iconTexture;
 
     bool ScreenWindowHasFocus = false;
     bool MouseInsideScreenWindow = false;

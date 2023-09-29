@@ -77,12 +77,14 @@ Editor::Editor(Engine* _engine)
     show_sfx            = data["show_sfx"].get<bool>();
     show_docs           = data["show_docs"].get<bool>();
 
+    iconTexture = LoadTexture("config/icon.png");
     SetMainWindow();
 }
 
 Editor::~Editor()
 {
     SaveCurrentFile();
+    UnloadTexture(iconTexture);
 
     std::stringstream ss;
 	ss << CONFIG_FOLDER << "/ui.json";
@@ -186,6 +188,7 @@ void Editor::Credits()
 
     if(ImGui::BeginPopupModal("Credits", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {    
+        ImGui::Image(&iconTexture, ImVec2(80,80));
         ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), "Programmed by Pery - 2023");
         Link("Site", "https://zaroa.net/");
         ImGui::SameLine();

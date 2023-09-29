@@ -1,7 +1,11 @@
 Main
 
 	Controlar pantalla por consola, maximizar por linea de comandos.
-
+	copy paste control c v en todos sitios
+	soporte control z...
+	entrada salida pause custom
+	copy log secciones
+	quitar prinst consola
 
 Editor
 	
@@ -9,6 +13,14 @@ Editor
 	Gestionar modo sin editor, (borrar archivos de editor, fuente, inis etc...)
 	Links docs
 	Links credits ,agradecimientos
+	layouts , save, load, presets
+	borrar screen en stop
+	editar colores en pause no actualiza
+	mejor file explorer , carpeta, borrar, mover...
+	sacar code editor fuera
+	crt presets
+	palette presets
+	makesprite, flip mover borrar, fill,....
 
 Editor Code
 
@@ -16,12 +28,19 @@ Editor Code
 	Duplicar linea
 	Mover linea
 	Bug copy paste salto de linea
+	shift + mover no selecciona
+	borrar tabuladores fallo 
+	deselecionar script al salir 
+	scroll horizontal
 
 Documentación
 
 	Pantalla, tamaño, origen
 	FPS
 	Faltas de ortografia
+	mas ayuda (¿web?)
+	reflejar limitaciones 4000 string, orden declaraciones if multininea
+	consola comandos
 
 
 Basic
@@ -31,4 +50,7 @@ Basic
 	instruccion grafica para hacer scroll de la pantalla completa un numero determinado de pixeles en X y en Y
 	(acceso a la memoria de pantalla)
 	Metasprites flag
+	api save load values de memory
+	elseif <<<< peligro (elif)
+	NOT () mirar
 
