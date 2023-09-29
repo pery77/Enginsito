@@ -218,17 +218,17 @@ void Editor::Credits()
         ImGui::Text("This application utilizes the following open-source libraries:");
         ImGui::Spacing();
         c = 700;
-        Link("Raylib      - github.com/raysan5/raylib", "https://github.com/raysan5/raylib", c);
-        Link("My-Basic    - github.com/paladin-t/my_basic/", "https://github.com/paladin-t/my_basic/", c);
-        Link("ImGui       - github.com/ocornut/imgui", "https://github.com/ocornut/imgui", c);
-        Link("Json        - github.com/nlohmann/json", "https://github.com/nlohmann/json", c);
-        Link("Memory      - github.com/ocornut/imgui_club", "https://github.com/ocornut/imgui_club", c);
-        Link("Text Editor - github.com/BalazsJako/ImGuiColorTextEdit", "https://github.com/BalazsJako/ImGuiColorTextEdit", c);
-        Link("Imgui Knobs - github.com/altschuler/imgui-knobs", "https://github.com/altschuler/imgui-knobs", c);
-        Link("rlImGui     - github.com/raylib-extras/rlImGui", "https://github.com/raylib-extras/rlImGui", c);
-        Link("MML_Parser  - github.com/vcraftjp/MML-Parser", "https://github.com/vcraftjp/MML-Parser", c);
-        Link("FontAwesome - fontawesome.com", "https://fontawesome.com/", c);
-        Link("Font        - fontspace.com/mozart-nbp-font-f18977", "https://www.fontspace.com/mozart-nbp-font-f18977", c);
+        Link("Raylib", "https://github.com/raysan5/raylib", c);
+        Link("My-Basic", "https://github.com/paladin-t/my_basic/", c);
+        Link("ImGui", "https://github.com/ocornut/imgui", c);
+        Link("Json", "https://github.com/nlohmann/json", c);
+        Link("Memory", "https://github.com/ocornut/imgui_club", c);
+        Link("Text Editor", "https://github.com/BalazsJako/ImGuiColorTextEdit", c);
+        Link("Imgui Knobs", "https://github.com/altschuler/imgui-knobs", c);
+        Link("rlImGui", "https://github.com/raylib-extras/rlImGui", c);
+        Link("MML_Parser", "https://github.com/vcraftjp/MML-Parser", c);
+        Link("FontAwesome", "https://fontawesome.com/", c);
+        Link("Font", "https://www.fontspace.com/mozart-nbp-font-f18977", c);
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Text("Thanks to:");
@@ -1014,6 +1014,49 @@ void Editor::MakeSprite(int spriteId)
         pos.x = p.x;
         pos.y += size.y + 1; 
     }
+    ImGui::EndGroup();
+    ImGui::Text("");
+    if(ImGui::SmallButton(ICON_FA_ARROW_UP))
+    {
+        uint8_t byte0 = editorEngineRef->Peek((currentSprite * 8 + 48));
+        for (int b = 0; b < 7; b++)
+        {
+            uint8_t byteN = editorEngineRef->Peek((currentSprite * 8 + 48) + b + 1);
+            editorEngineRef->Poke((currentSprite * 8 + 48) + b, byteN);
+        }
+        editorEngineRef->Poke((currentSprite * 8 + 48) + 7, byte0);
+    }
+    ImGui::SameLine();
+    if(ImGui::SmallButton(ICON_FA_ARROW_LEFT))
+    {
+        for (int b = 0; b < 8; b++)
+        {
+            uint8_t byteN = editorEngineRef->Peek((currentSprite * 8 + 48) + b);
+            editorEngineRef->Poke((currentSprite * 8 + 48) + b, (byteN << 1) | (byteN >> 7));
+        }
+    }
+    ImGui::SameLine();
+    if(ImGui::SmallButton(ICON_FA_ARROW_RIGHT))
+    {
+        for (int b = 0; b < 8; b++)
+        {
+            uint8_t byteN = editorEngineRef->Peek((currentSprite * 8 + 48) + b);
+            editorEngineRef->Poke((currentSprite * 8 + 48) + b, (byteN >> 1) | (byteN << 7));
+        }
+    }
+    ImGui::SameLine();
+    if(ImGui::SmallButton(ICON_FA_ARROW_DOWN))
+    {
+        uint8_t byte7 = editorEngineRef->Peek((currentSprite * 8 + 48) + 7);
+        for (int b = 7; b > 0; b--)
+        {
+            uint8_t byteN = editorEngineRef->Peek((currentSprite * 8 + 48) + b - 1);
+            editorEngineRef->Poke((currentSprite * 8 + 48) + b, byteN);
+        }
+        editorEngineRef->Poke((currentSprite * 8 + 48), byte7);
+    }
+
+    ImGui::BeginGroup();
     ImGui::EndGroup();
 }
 
