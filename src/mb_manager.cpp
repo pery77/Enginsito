@@ -1909,7 +1909,7 @@ int MBManager::my_print(struct mb_interpreter_t* s, const char* fmt, ...) {
 	va_end(argptr);
 	if(result >= 0)
 		Tools::console->AddLog(ptr); 
-		basicEngineRef->bios->Print(ptr);
+
 	if(ptr != buf)
 		free(ptr);
 

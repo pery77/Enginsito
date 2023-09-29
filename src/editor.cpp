@@ -366,6 +366,9 @@ void Editor::DrawDocs()
     ImGui::End();
 }
 
+static ImVec4 selectedColor;
+static ImVec4 oldColor;
+static int selectedId = -1;
 void Editor::DrawPalette()
 {
     for (char c = 0; c<16; c++)
@@ -376,17 +379,45 @@ void Editor::DrawPalette()
         Color col = editorEngineRef->spriteManager->GetColor(c);
         ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
         ImGui::BeginGroup();
-        ImGui::ColorEdit3(buffer, (float*)&color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoBorder);
-        ImGui::Text(buffer);
+        ImGui::PushStyleColor(ImGuiCol_Border, c == selectedId ? IM_COL32_WHITE : IM_COL32_BLACK);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, c == selectedId ? 4.0f : 0.0f);
+        if (ImGui::ColorButton(buffer, color, ImGuiColorEditFlags_NoTooltip, ImVec2(30,30)))
+        {
+            selectedColor = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
+            oldColor = selectedColor;
+            selectedId = c;
+        }
+        ImGui::PopStyleVar();
+        ImGui::PopStyleColor();;
         ImGui::EndGroup();
         if((c+1) % 8 != 0) ImGui::SameLine();
-
-        editorEngineRef->spriteManager->SetColor(c, color.x * 255, color.y * 255, color.z * 255);
 
         if (ImGui::IsItemHovered())
         {
             HighLightMemory(c*3,3);
         }    
+    }
+    if (selectedId < 0)
+    {
+        selectedId = 0;
+        Color col = editorEngineRef->spriteManager->GetColor(selectedId);
+        ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
+        selectedColor = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
+    };
+    char buffer [11];
+    sprintf (buffer, "Color: %i", selectedId);
+    ImGui::Text(buffer);
+    if(ImGui::ColorPicker3("", (float*)&selectedColor, ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_NoSidePreview 
+        | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex
+        | ImGuiColorEditFlags_NoSmallPreview))
+    {
+        editorEngineRef->spriteManager->SetColor(selectedId, selectedColor.x * 255, selectedColor.y * 255, selectedColor.z * 255);
+    }
+    ImGui::SameLine();
+    if (ImGui::ColorButton("Previus", oldColor, 0, ImVec2(40,40)))
+    {
+        selectedColor = oldColor;
+        editorEngineRef->spriteManager->SetColor(selectedId, selectedColor.x * 255, selectedColor.y * 255, selectedColor.z * 255);
     }
 }
 

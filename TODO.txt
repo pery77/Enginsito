@@ -5,7 +5,7 @@ Main
 	soporte control z...
 	entrada salida pause custom
 	copy log secciones
-	quitar prinst consola
+	maximizar bug en mi pantalla grande
 
 Editor
 	
