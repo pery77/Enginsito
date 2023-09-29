@@ -110,5 +110,5 @@ class Editor
     void SaveCurrentFile();
     void SetMousePosInEditor(int x, int y);
 
-    void Link(const char* text, const char* link);
+    void Link(const char* text, const char* link, float size);
 };

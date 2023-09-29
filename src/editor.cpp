@@ -170,49 +170,69 @@ void Editor::DrawFPS()
     ImGui::PlotLines("", values, IM_ARRAYSIZE(values), values_offset,overlay ,0.0f, 60.0f, ImVec2(pw_size.x, pw_size.y - frameH));
     ImGui::PopStyleColor();  
 }
-void Editor::Link(const char* text, const char* link)
-{
-    if (ImGui::Button(text))
+void Editor::Link(const char* text, const char* link, float size)
+{ 
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    ImGuiStyle previousStyle = style;
+
+    style.FrameRounding = 5.0f;
+    style.FramePadding = ImVec2(1.0f, 1.0f); 
+    style.ItemSpacing = ImVec2(1.0f, 1.0f);
+    style.Colors[ImGuiCol_Button].w = 0.1f;
+
+    if (ImGui::Button(text, ImVec2(size, 0.0f)))
     {
         std::system((std::string("start ") + link).c_str());
     }
+
+    // Restaura el estilo anterior
+    style = previousStyle;
 }
 
 void Editor::Credits()
 {
     ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+    
 
     if (!ImGui::IsPopupOpen("Credits"))
         ImGui::OpenPopup("Credits");
-
+    float c;
     if(ImGui::BeginPopupModal("Credits", NULL, ImGuiWindowFlags_AlwaysAutoResize))
     {    
+        c = ImGui::GetWindowWidth() / 2.0f;
+
+        ImGui::SetCursorPosX(c - 40);
         ImGui::Image(&iconTexture, ImVec2(80,80));
-        ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), "Programmed by Pery - 2023");
-        Link("Site", "https://zaroa.net/");
+
+        const char * pbp = "Programmed by Pery - 2023";
+        ImGui::SetCursorPosX(c - ImGui::CalcTextSize(pbp).x / 2.0f);
+        ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), pbp);
+        ImGui::SetCursorPosX(c - 80);
+        Link("Site", "https://zaroa.net/", 80);
         ImGui::SameLine();
-        Link(" X ", "https://x.com/pery36");
+        Link("  X  ", "https://x.com/pery36", 80);
         ImGui::Separator();
-        ImGui::Text("Credits:");
+
         ImGui::Text("This application utilizes the following open-source libraries:");
-
         ImGui::Spacing();
-
-        Link("Raylib      - github.com/raysan5/raylib", "https://github.com/raysan5/raylib");
-        Link("My-Basic    - github.com/paladin-t/my_basic/", "https://github.com/paladin-t/my_basic/");
-        Link("ImGui       - github.com/ocornut/imgui", "https://github.com/ocornut/imgui");
-        Link("Json        - github.com/nlohmann/json", "https://github.com/nlohmann/json");
-        Link("Memory      - github.com/ocornut/imgui_club", "https://github.com/ocornut/imgui_club");
-        Link("Text Editor - github.com/BalazsJako/ImGuiColorTextEdit", "https://github.com/BalazsJako/ImGuiColorTextEdit");
-        Link("Imgui Knobs - github.com/altschuler/imgui-knobs", "https://github.com/altschuler/imgui-knobs");
-        Link("rlImGui     - github.com/raylib-extras/rlImGui", "https://github.com/raylib-extras/rlImGui");
-        Link("MML_Parser  - github.com/vcraftjp/MML-Parser", "https://github.com/vcraftjp/MML-Parser");
-        Link("FontAwesome - fontawesome.com", "https://fontawesome.com/");
-        Link("Font        - fontspace.com/mozart-nbp-font-f18977", "https://www.fontspace.com/mozart-nbp-font-f18977");
+        c = 700;
+        Link("Raylib      - github.com/raysan5/raylib", "https://github.com/raysan5/raylib", c);
+        Link("My-Basic    - github.com/paladin-t/my_basic/", "https://github.com/paladin-t/my_basic/", c);
+        Link("ImGui       - github.com/ocornut/imgui", "https://github.com/ocornut/imgui", c);
+        Link("Json        - github.com/nlohmann/json", "https://github.com/nlohmann/json", c);
+        Link("Memory      - github.com/ocornut/imgui_club", "https://github.com/ocornut/imgui_club", c);
+        Link("Text Editor - github.com/BalazsJako/ImGuiColorTextEdit", "https://github.com/BalazsJako/ImGuiColorTextEdit", c);
+        Link("Imgui Knobs - github.com/altschuler/imgui-knobs", "https://github.com/altschuler/imgui-knobs", c);
+        Link("rlImGui     - github.com/raylib-extras/rlImGui", "https://github.com/raylib-extras/rlImGui", c);
+        Link("MML_Parser  - github.com/vcraftjp/MML-Parser", "https://github.com/vcraftjp/MML-Parser", c);
+        Link("FontAwesome - fontawesome.com", "https://fontawesome.com/", c);
+        Link("Font        - fontspace.com/mozart-nbp-font-f18977", "https://www.fontspace.com/mozart-nbp-font-f18977", c);
         ImGui::Spacing();
         ImGui::Separator();
-        ImGui::Text("Thanks:");
+        ImGui::Text("Thanks to:");
+        ImGui::Text("Deebrol, David, Alberto, Maza");
 
         ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x + ImGui::GetWindowContentRegionMin().x - 120) * 0.5f);
         if (ImGui::Button("OK", ImVec2(120, 0))) 
