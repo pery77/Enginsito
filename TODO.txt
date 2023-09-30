@@ -4,8 +4,9 @@ Main
 	copy paste control c v en todos sitios
 	soporte control z...
 	entrada salida pause custom
-	copy log secciones
-	maximizar bug en mi pantalla grande
+	copy log secciones (casi mirar)
+	quitar audio prints
+	quitar filewatcher po
 
 Editor
 	

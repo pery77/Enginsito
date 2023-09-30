@@ -147,7 +147,6 @@ void Editor::HighLightMemory(uint16_t address, uint16_t size)
 void Editor::DrawFPS()
 {
     ImVec2 pw_size = ImGui::GetWindowSize();
-    int frameH = ImGui::GetFrameHeight() + 5;
     ImGui::PushStyleColor(ImGuiCol_PlotLines, IM_COL32(40,255,0,255));
     static float values[90] = {};
     static int values_offset = 0;
@@ -168,7 +167,8 @@ void Editor::DrawFPS()
     average /= (float)IM_ARRAYSIZE(values);
     char overlay[32];
     sprintf(overlay, "avg: %.2f fps", average);
-    ImGui::PlotLines("", values, IM_ARRAYSIZE(values), values_offset,overlay ,0.0f, 60.0f, ImVec2(pw_size.x, pw_size.y - frameH));
+    ImGui::PlotLines("", values, IM_ARRAYSIZE(values), values_offset,overlay ,
+                        0.0f, 60.0f, ImVec2(pw_size.x, pw_size.y-20));
     ImGui::PopStyleColor();  
 }
 void Editor::Link(const char* text, const char* link, float size)
@@ -187,7 +187,6 @@ void Editor::Link(const char* text, const char* link, float size)
         std::system((std::string("start ") + link).c_str());
     }
 
-    // Restaura el estilo anterior
     style = previousStyle;
 }
 
@@ -1637,7 +1636,7 @@ void Editor::Draw()
         if (show_screen)
         {
             ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-            ImGui::Begin("Screen", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar);
+            ImGui::Begin("Screen", &show_screen, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar);
                 ScreenWindowHasFocus = ImGui::IsWindowFocused();
                 ImVec2 windowSize = ImGui::GetWindowSize();
 
@@ -1672,14 +1671,14 @@ void Editor::Draw()
             
         if(show_palette)
         {
-            ImGui::Begin("Palette", NULL, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Palette", &show_palette, ImGuiWindowFlags_NoCollapse);
                 DrawPalette();
             ImGui::End();
         }
 
         if (show_crt)
         {
-            ImGui::Begin("CRT", NULL, ImGuiWindowFlags_NoCollapse); 
+            ImGui::Begin("CRT", &show_crt, ImGuiWindowFlags_NoCollapse); 
                 DrawCRT();
             ImGui::End();
         }
@@ -1696,14 +1695,14 @@ void Editor::Draw()
 
         if(show_memory)
         {
-            ImGui::Begin("Memory", NULL, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Memory", &show_memory, ImGuiWindowFlags_NoCollapse);
                 DrawMemory();
             ImGui::End();
         }
 
         if (show_sprites)
         {
-            ImGui::Begin("Sprites", NULL, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Sprites", &show_sprites, ImGuiWindowFlags_NoCollapse);
                 ImGui::BeginGroup();
                     DrawSprites();
                 ImGui::EndGroup();
@@ -1712,21 +1711,21 @@ void Editor::Draw()
 
         if (show_makeSprite)
         {
-            ImGui::Begin("Make Sprite", NULL, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Make Sprite", &show_makeSprite, ImGuiWindowFlags_NoCollapse);
                 MakeSprite(currentSprite);
             ImGui::End(); 
         }
 
         if (show_metaSprite)
         {
-            ImGui::Begin("Meta Sprite", NULL, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Meta Sprite", &show_metaSprite, ImGuiWindowFlags_NoCollapse);
                DrawMetaSprites(currentMetaSprite);
             ImGui::End(); 
         }
 
         if (show_sfx)
         {
-            ImGui::Begin("SFX", NULL, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("SFX", &show_sfx, ImGuiWindowFlags_NoCollapse);
                 DrawSFX();
             ImGui::End();
         }
