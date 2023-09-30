@@ -1,6 +1,7 @@
 #include "editor.h"
 #include "nlohmann/json.hpp"
 #include <cstdlib>
+#include <iostream>
 
 static bool show_tools = false;
 static bool show_demo = false;
@@ -229,10 +230,11 @@ void Editor::Credits()
         Link("MML_Parser", "https://github.com/vcraftjp/MML-Parser", c);
         Link("FontAwesome", "https://fontawesome.com/", c);
         Link("Font", "https://www.fontspace.com/mozart-nbp-font-f18977", c);
+        Link("Palettes", "https://lospec.com/palette-list", c);
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Text("Thanks to:");
-        ImGui::Text("Deebrol, David, Alberto, Maza");
+        ImGui::Text("Deebrol, David, Alberto, Maza, ChatGPT,\nand all the people who ask and answer things on the internet.");
 
         ImGui::SetCursorPosX((ImGui::GetWindowContentRegionMax().x + ImGui::GetWindowContentRegionMin().x - 120) * 0.5f);
         if (ImGui::Button("OK", ImVec2(120, 0))) 
@@ -267,7 +269,7 @@ void Editor::DrawshowFileBrowser()
     ImGuiStyle& style = ImGui::GetStyle();
     ImVec2 pw_size = ImGui::GetWindowSize();
     float list_item_height = ImGui::CalcTextSize("").y + (style.ItemSpacing.y * 4.0f);
-    float input_bar_ypos = pw_size.y - ImGui::GetFrameHeightWithSpacing() * 2.5f - style.WindowPadding.y;
+    float input_bar_ypos = pw_size.y - ImGui::GetFrameHeightWithSpacing() * 3.5f - style.WindowPadding.y;
     float window_height = input_bar_ypos - ImGui::GetCursorPosY() - style.ItemSpacing.y;
     float window_content_height = window_height - style.WindowPadding.y * 6.0f;
     float min_content_size = pw_size.x - style.WindowPadding.x * 4.0f;
@@ -319,16 +321,34 @@ void Editor::DrawshowFileBrowser()
         ImGui::Text("Current program: %s", editorEngineRef->bios->CurrentProject.name.c_str());
     ImGui::EndChild();
     ImGui::BeginChild("#Foot2",ImVec2(0, list_item_height*2), true, ImGuiWindowFlags_NoScrollWithMouse);
+        ImGui::Text("Create");
         static char str0[128] = "new";
-        if(ImGui::SmallButton("New file"))
+        if(ImGui::SmallButton("File"))
         {
             SaveCurrentFile();
             editorEngineRef->bios->SetProgram(str0);
             codeEditor.SetText("");
             SaveCurrentFile();
         }
+        
         ImGui::SameLine();
-        ImGui::InputText("New File", str0, IM_ARRAYSIZE(str0));
+        if(ImGui::SmallButton("Folder"))
+        {
+            std::string path = "assets/" + editorEngineRef->bios->CurrentPath + "/" + str0;
+            int status = mkdir(path.c_str());
+
+            if (status == 0) 
+            {
+                Tools::console->AddLog("[Info] Folder %s created successfully.", path.c_str());
+            } 
+            else 
+            {
+                Tools::console->AddLog("[Error] Failed to create %s", path.c_str());
+            }
+        }
+        
+        ImGui::SameLine();
+        ImGui::InputText("###inputName", str0, IM_ARRAYSIZE(str0));
     ImGui::EndChild(); 
 }
 

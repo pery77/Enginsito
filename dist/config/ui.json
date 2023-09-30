@@ -2,7 +2,7 @@
     "show_code": true,
     "show_console": true,
     "show_crt": true,
-    "show_docs": true,
+    "show_docs": false,
     "show_filebrowser": true,
     "show_fps": false,
     "show_makeSprite": true,
@@ -15,7 +15,7 @@
     "show_sprites": true,
     "show_tools": true,
     "window_height": 917,
-    "window_position_x": 243,
-    "window_position_y": 57,
-    "window_width": 1783
+    "window_position_x": 190,
+    "window_position_y": 60,
+    "window_width": 1664
 }
