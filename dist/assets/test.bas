@@ -1,3 +1,7 @@
+def tick()
+
+enddef
+
 def draw()
 	cls(0)
 	text(str(frame),10,10,1,3)

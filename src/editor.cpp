@@ -1086,6 +1086,15 @@ void Editor::MakeSprite(int spriteId)
         }
         editorEngineRef->Poke((currentSprite * 8 + 48), byte7);
     }
+    ImGui::SameLine();
+    if(ImGui::SmallButton(ICON_FA_MASK))
+    {
+        for (int b = 0; b < 8; b++)
+        {
+            uint8_t byteN = editorEngineRef->Peek((currentSprite * 8 + 48) + b);
+            editorEngineRef->Poke((currentSprite * 8 + 48) + b, ~byteN);
+        }
+    }
 
     ImGui::BeginGroup();
     ImGui::EndGroup();

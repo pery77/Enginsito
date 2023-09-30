@@ -12,7 +12,6 @@ Editor
 	Acabar sonidos, piano, más info.
 	Gestionar modo sin editor, (borrar archivos de editor, fuente, inis etc...)
 	Links docs
-	Links credits ,agradecimientos
 	layouts , save, load, presets
 	borrar screen en stop
 	editar colores en pause no actualiza
@@ -47,9 +46,7 @@ Basic
 
 	Investigar cuelges con recursivas
 	que avise si se intenta dibujar fuera de def draw
-	instruccion grafica para hacer scroll de la pantalla completa un numero determinado de pixeles en X y en Y
 	(acceso a la memoria de pantalla)
-	Metasprites flag
 	api save load values de memory
 	elseif <<<< peligro (elif)
 	NOT () mirar

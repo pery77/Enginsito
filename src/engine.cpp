@@ -80,7 +80,50 @@ void Engine::DropFileUpdate()
     {
         char* firstFilePath = droppedFiles.paths[0];
         Tools::console->AddLog("[WARN] Dropped file: %s\n", firstFilePath);
+
+        const char* fileExtension = strrchr(firstFilePath, '.');
+        if (strcmp(fileExtension, ".hex") == 0)
+        {
+            // El archivo tiene extensión .hex, ahora puedes leerlo línea por línea.
+            ReadHexFile(firstFilePath);
+        }
     }
+}
+void Engine::ReadHexFile(const char* filePath)
+{
+    FILE* file = fopen(filePath, "r");
+    if (file == nullptr)
+    {
+        Tools::console->AddLog("[ERROR] Failed to open .hex file: %s\n", filePath);
+        return;
+    }
+
+    char line[7];
+    int id = 0;
+
+    while (fgets(line, sizeof(line), file) != nullptr && id<16)
+    {
+        unsigned int colorValue;
+        if (sscanf(line, "%x", &colorValue) != 1)
+        {
+            Tools::console->AddLog("[ERROR] Invalid color format in .hex file: %s", line);
+            continue;
+        }
+
+        unsigned char r = (colorValue >> 16) & 0xFF;
+        unsigned char g = (colorValue >> 8) & 0xFF;
+        unsigned char b = colorValue & 0xFF;
+
+        int dir = id * 3;
+        Poke(dir, r);
+        Poke(dir + 1, g);
+        Poke(dir + 2, b);
+
+        Tools::console->AddLog("[INFO] Line %i from .hex file: %s", id, line);
+        id++;
+    }
+
+    fclose(file);
 }
 
 void Engine::UpdateFileWatcher()
