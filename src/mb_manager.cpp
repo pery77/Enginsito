@@ -177,6 +177,7 @@ int MBManager::OpenBas(const char *file){
 	//Memory
 	mb_register_func(bas, "PEEK", peek);
 	mb_register_func(bas, "POKE", poke);
+	mb_register_func(bas, "QUIT", quit);
 	//mb_register_func(bas, "SAVE", dumpMemory);
 	//mb_register_func(bas, "LOAD", loadMemory);
 
@@ -1706,7 +1707,17 @@ int MBManager::loadMemory(struct mb_interpreter_t* s, void** l) {
 	
 	return result;
 }
+int MBManager::quit(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
 
+	mb_check(mb_attempt_open_bracket(s, l));
+	mb_check(mb_attempt_close_bracket(s, l));
+	
+	basicEngineRef->bios->ShouldClose = true;
+	
+	return result;
+}
 // CRT
 int MBManager::crtEnabled(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;

@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 {
     Engine* engine = new Engine();
 
-    Tools::console->AddLog("Welcolme to %s", engine->GetEngineName());
+    Tools::console->AddLog("Welcome to %s", engine->GetEngineName());
     SetTraceLogCallback(raylibLog);
 
 	SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
 
     engine->Init();
     
-    bool showImgui = true;
+    bool showImgui = engine->editor->Enabled;
     const char * pauseMessage = "Paused, press ESC again to exit.";
     int pauseMessageSize = MeasureTextEx(engine->spriteManager->font,"Paused, press ESC again to exit.", 8,0).x * 0.5f;
 
@@ -68,8 +68,13 @@ int main(int argc, char *argv[])
     {
         engine->UpdateFileWatcher();
 
+        if (!engine->editor->Enabled) 
+        {
+            showImgui = false;
+            engine->isInImGui = false;
+        }
         // Engine keys
-        if(IsKeyReleased(KEY_F1))
+        if(IsKeyReleased(KEY_F1) && engine->editor->Enabled)
         {
             showImgui = !showImgui;
             engine->isInImGui = showImgui;

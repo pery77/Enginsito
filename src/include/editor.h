@@ -57,6 +57,7 @@ class Editor
 
     bool ScreenWindowHasFocus = false;
     bool MouseInsideScreenWindow = false;
+    bool Enabled = true;
     GameState PlayerState = Off;
    
     bool DoStep  = false;

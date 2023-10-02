@@ -79,6 +79,7 @@ class MBManager{
         static int toSigned(struct mb_interpreter_t* s, void** l);
         static int dumpMemory(struct mb_interpreter_t* s, void** l);
         static int loadMemory(struct mb_interpreter_t* s, void** l);
+        static int quit(struct mb_interpreter_t* s, void** l);
 
         static int saveFile(struct mb_interpreter_t* s, void** l);
         //Input

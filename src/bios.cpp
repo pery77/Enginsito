@@ -230,6 +230,20 @@ void Bios::ProcessCommand()
         return;
     }
 
+    if (checkCommand(lastCommand.command,"EDITOR"))
+    {
+        if (lastCommand.args[0] != "" )
+        {
+            biosEngineRef->editor->Enabled = (lastCommand.args[0] != "0");
+        }
+
+        std::string temp = (biosEngineRef->editor->Enabled) ? "enabled." : "disabled.";
+        screenLines += "Editor is " + temp + "\n";
+        
+    }
+
+    if (checkCommand(lastCommand.command,"FULLSCREEN")) biosEngineRef->postProcessing->FullScreen();
+
     if (checkCommand(lastCommand.command,"FILEWATCHER"))
     {
         if (lastCommand.args[0] != "" )

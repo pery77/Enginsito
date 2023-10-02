@@ -10,5 +10,10 @@ def draw()
 
 	sprite(0,mouse_x+2,mouse_y+2,1)
 	sprite(0,mouse_x,mouse_y,3)
-	print frame
+
+enddef
+
+def close()
+	print "bye"
+	'quit()
 enddef

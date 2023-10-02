@@ -77,6 +77,8 @@ CD. - directory up.
 PRINT p - print p in screen.
 MEM  - print loaded program in memory.
 LOAD - load program in memory.
+EDITOR 0|1 - enable disable editor
+FULLSCREEN - toggle fullscreen
 FILEWATCHER 0|1 - on off filewatcher 
 system.
 )|";

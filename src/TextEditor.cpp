@@ -2813,7 +2813,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 		}
 
 		static const char* const keywords2[] = {
-			"INIT", "TICK", "PAUSE", "DRAW", "CLOSE", "FRAME", "DELTA", "MOUSE_X", "MOUSE_Y"
+			"INIT", "TICK", "PAUSE", "DRAW", "CLOSE", "FRAME", "DELTA", "MOUSE_X", "MOUSE_Y", "QUIT"
 		};
 
 		for (auto& k : keywords2)
