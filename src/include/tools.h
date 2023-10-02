@@ -74,4 +74,5 @@ class Tools{
         static unsigned char ToUnsigned(int8_t value);
 
         static Console* console;
+        static Texture TextureFromCode(int format, int height, int width, void* data, int mips);
 };

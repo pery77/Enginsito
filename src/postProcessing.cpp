@@ -24,9 +24,9 @@ void PostProcessing::setUpShaders()
 	SetTextureFilter(bufferTexture.texture, TEXTURE_FILTER_BILINEAR);
 	SetTextureWrap(bufferTexture.texture,TEXTURE_WRAP_MIRROR_REPEAT);
 
-    grilleTextures[0] = textureFromCode(GRILLE1_FORMAT, GRILLE1_HEIGHT, GRILLE1_HEIGHT, GRILLE1_DATA);
-    grilleTextures[1] = textureFromCode(GRILLE2_FORMAT, GRILLE2_HEIGHT, GRILLE2_HEIGHT, GRILLE2_DATA);
-    grilleTextures[2] = textureFromCode(GRILLE3_FORMAT, GRILLE3_HEIGHT, GRILLE3_HEIGHT, GRILLE3_DATA);
+    grilleTextures[0] = Tools::TextureFromCode(GRILLE1_FORMAT, GRILLE1_HEIGHT, GRILLE1_HEIGHT, GRILLE1_DATA, 3);
+    grilleTextures[1] = Tools::TextureFromCode(GRILLE2_FORMAT, GRILLE2_HEIGHT, GRILLE2_HEIGHT, GRILLE2_DATA, 3);
+    grilleTextures[2] = Tools::TextureFromCode(GRILLE3_FORMAT, GRILLE3_HEIGHT, GRILLE3_HEIGHT, GRILLE3_DATA, 3);
 
 /* //Image to Code
     Image i1 = LoadImage("assets/grille1.png");
@@ -267,19 +267,7 @@ float PostProcessing::GetCRTFloat(CRTProperty property)
     currentGrilleTexture = newTextureId;
  }
 
- Texture PostProcessing::textureFromCode(int format, int height, int width, void* data)
- {
-    
-    Image img = {0};
-    img.format = format;
-    img.height = height;
-    img.width = width;
-    img.data = data;
-    img.mipmaps = 2;
 
-    return LoadTextureFromImage(img);
-
-}
 
 void PostProcessing::Refresh()
 {

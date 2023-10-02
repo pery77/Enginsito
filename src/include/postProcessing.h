@@ -126,10 +126,8 @@ class PostProcessing
     int grilleForceLoc;
     int noiseLoc;
     int flikerLoc;
-
-
+    
     Vector2 resolution {(float)GetScreenWidth(), (float)GetScreenHeight()};
-    Texture textureFromCode(int format, int height, int width, void* data);
 
     const char* blurShaderCode = R"|(
 #version 330

@@ -180,3 +180,15 @@ unsigned char Tools::ToUnsigned(int8_t value)
     if (value<0) result = value + 256;
     return result;
 }
+
+Texture Tools::TextureFromCode(int format, int height, int width, void* data, int mips)
+{
+    Image img = {0};
+    img.format = format;
+    img.height = height;
+    img.width = width;
+    img.data = data;
+    img.mipmaps = mips;
+
+    return LoadTextureFromImage(img);
+}

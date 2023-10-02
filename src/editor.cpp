@@ -2,6 +2,7 @@
 #include "nlohmann/json.hpp"
 #include <cstdlib>
 #include <iostream>
+#include "iconTexture.h"
 
 static bool show_tools = false;
 static bool show_demo = false;
@@ -55,6 +56,7 @@ Editor::Editor(Engine* _engine)
 
     Image hackImage = GenImageColor(1,1,(Color){0,0,0,0});
     hackTexture = LoadTextureFromImage(hackImage);
+    UnloadImage(hackImage);
 
 	std::stringstream ss;
 	ss << CONFIG_FOLDER << "/ui.json";
@@ -78,7 +80,9 @@ Editor::Editor(Engine* _engine)
     show_sfx            = data["show_sfx"].get<bool>();
     show_docs           = data["show_docs"].get<bool>();
 
-    iconTexture = LoadTexture("config/icon.png");
+    //ExportImageAsCode(LoadImage("icon.png"), "iconTexture.h");
+    iconTexture = Tools::TextureFromCode(ICONTEXTURE_FORMAT, ICONTEXTURE_HEIGHT, ICONTEXTURE_WIDTH, ICONTEXTURE_DATA, 1); 
+    SetTextureFilter(iconTexture, TEXTURE_FILTER_POINT);
     SetMainWindow();
 }
 
