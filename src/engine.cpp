@@ -11,8 +11,11 @@
 //0    - 47     Palette (Color C -> R G B) (Color 0 -> 0 1 2) (Color 1 -> 3 4 5)
 //48   - 2088   Graphics (8 bytes per sprite, 256 sprites)
 //2096 - 3375   MetaSprites   (20 bytes per meta, 64 metas)
-//3376 - ---   Sfx (11 bytes per sfx, 16 sfx)
-//--- - 4079   Unused
+//3376 - 3551   Sfx (11 bytes per sfx, 16 sfx)
+//3552 - 3583   Save data 2 bytes 0 -  15 slots
+//3584 - 3647   Save data 4 bytes 16 - 31 slots
+//3648 - 4079   Unused 
+//3648 - 4079   Unused 
 //4080 - 4090   CRT 4080 Blur, 4081 BlurFactor, 4082 Chromatic, 4083 Curvature, 
 //                  4084 Vignetting, 4085 ScanLine, 4086 VerticalLine, 4087 GrilleForce
 //                  4088 Noise, 4089 Fliker, 4090 Grille

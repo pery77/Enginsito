@@ -178,6 +178,8 @@ int MBManager::OpenBas(const char *file){
 	mb_register_func(bas, "PEEK", peek);
 	mb_register_func(bas, "POKE", poke);
 	mb_register_func(bas, "QUIT", quit);
+	mb_register_func(bas, "SAVEDATA", savedata);
+	mb_register_func(bas, "LOADDATA", loaddata);
 	//mb_register_func(bas, "SAVE", dumpMemory);
 	//mb_register_func(bas, "LOAD", loadMemory);
 
@@ -1707,6 +1709,81 @@ int MBManager::loadMemory(struct mb_interpreter_t* s, void** l) {
 	
 	return result;
 }
+int MBManager::savedata(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	int slot = 0;
+	int data = 0;
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_int(s, l, &slot));
+		mb_check(mb_pop_int(s, l, &data));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	if (slot < 0) slot = 0;
+	if (slot > 31) slot = 31;
+
+	unsigned char byte0 = (data >> 0) & 0xFF;
+	unsigned char byte1 = (data >> 8) & 0xFF;
+	unsigned char byte2 = (data >> 16) & 0xFF;
+	unsigned char byte3 = (data >> 24) & 0xFF;
+
+	if (slot < 16)
+	{
+		int dir = 3552 + (slot * 2);
+		basicEngineRef->Poke(dir    , byte0);
+		basicEngineRef->Poke(dir + 1, byte1);
+	}
+	else
+	{
+		int dir = 3584 + ((slot - 16) * 4);
+		basicEngineRef->Poke(dir    , byte0);
+		basicEngineRef->Poke(dir + 1, byte1);
+		basicEngineRef->Poke(dir + 2, byte2);
+		basicEngineRef->Poke(dir + 3, byte3);
+	}
+
+	return result;
+}
+
+int MBManager::loaddata(struct mb_interpreter_t* s, void** l) {
+	int result = MB_FUNC_OK;
+	int slot = 0;
+	int data = 0;
+
+	mb_assert(s && l);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_int(s, l, &slot));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	if (slot < 0) slot = 0;
+	if (slot > 31) slot = 31;
+	int value = 0;
+
+	if (slot < 16)
+	{
+		int dir = 3552 + (slot * 2);
+		unsigned char byte0 = basicEngineRef->Peek(dir);
+		unsigned char byte1 = basicEngineRef->Peek(dir + 1);
+		value = (byte0) | (byte1 << 8);
+	}
+	else
+	{
+		int dir = 3584 + ((slot - 16) * 4);
+		unsigned char byte0 = basicEngineRef->Peek(dir);
+		unsigned char byte1 = basicEngineRef->Peek(dir + 1);
+		unsigned char byte2 = basicEngineRef->Peek(dir + 2);
+		unsigned char byte3 = basicEngineRef->Peek(dir + 3);
+		value = (byte0) | (byte1 << 8) | (byte2 << 16) | (byte3 << 24);
+	}
+
+	mb_check(mb_push_int(s, l, value));
+
+	return result;
+}
+
 int MBManager::quit(struct mb_interpreter_t* s, void** l) {
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
