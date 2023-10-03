@@ -34,7 +34,7 @@
 #include "rlgl.h"
 
 #ifdef PLATFORM_DESKTOP
-#include <GLFW/glfw3.h>
+//#include <GLFW/glfw3.h>
 #endif
 
 #include <math.h>
@@ -45,6 +45,7 @@
 #endif
 
 #include "../include/tools.h"
+#include "../include/font.h"
 
 static Texture2D FontTexture;
 
@@ -93,7 +94,7 @@ static void rlImGuiNewFrame()
 
 	int width = int(io.DisplaySize.x), height = int(io.DisplaySize.y);
 #ifdef PLATFORM_DESKTOP
-	glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
+	//glfwGetFramebufferSize(glfwGetCurrentContext(), &width, &height);
 #endif
 	if (width > 0 && height > 0) {
 		io.DisplayFramebufferScale = ImVec2(width / io.DisplaySize.x, height / io.DisplaySize.y);
@@ -465,9 +466,10 @@ void rlImGuiSetup(bool dark)
 
 	io.IniFilename = "config/editor.ini";
 
-	std::stringstream ss;
-	ss << CONFIG_FOLDER << "/font.ttf";
-    io.Fonts->AddFontFromFileTTF(ss.str().c_str(), 24.0f);
+	//std::stringstream ss;
+	//ss << CONFIG_FOLDER << "/font.ttf";
+    //io.Fonts->AddFontFromFileTTF(ss.str().c_str(), 24.0f);
+    io.Fonts->AddFontFromMemoryCompressedTTF((void*)font_cpp_compressed_data, font_cpp_compressed_size, 24.0f);
 
 #ifndef NO_FONT_AWESOME
 	static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
