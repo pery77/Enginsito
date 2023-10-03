@@ -50,8 +50,6 @@ Engine::~Engine()
 
 void Engine::Init()
 {
-    LoadDefaultMemory();
-
     postProcessing = new PostProcessing(this);
     audioManager = new AudioManager(this);
     basicIntepreter = new MBManager(this);
@@ -64,12 +62,6 @@ void Engine::Init()
     //WrenManager* wren = new WrenManager();
 }
 
-void Engine::LoadDefaultMemory()
-{
-    std::stringstream ss;
-    ss << CONFIG_FOLDER << "/default" << MEM_EXTENSION;
-    LoadMemory(ss.str().c_str());
-}
 
 void Engine::DropFileUpdate()
 {
@@ -88,6 +80,25 @@ void Engine::DropFileUpdate()
         if (strcmp(fileExtension, ".hex") == 0)
         {
             ReadHexFile(firstFilePath);
+        }
+
+        if (strcmp(fileExtension, ".data") == 0)
+        {
+            std::ifstream input(firstFilePath, std::ios::binary);
+            std::ofstream output("data.txt",  std::ios::binary);
+            std::vector<unsigned char> buffer(std::istreambuf_iterator<char>(input), {});
+            input.close();
+            output << "static unsigned char FILE_DATA[" << buffer.size() << "] = { ";
+            for (std::size_t i = 0; i < buffer.size(); ++i) {
+                if (i > 0) {
+                    output << ", ";
+                }
+                output << "0x" << std::hex << static_cast<int>(buffer[i]);
+            }
+            output << " };" << std::endl;
+
+            output.close();
+
         }
     }
 }
