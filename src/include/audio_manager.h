@@ -1,7 +1,6 @@
 #pragma once
 #include "../../libs/raylib/include/raylib.h"
 
-#include "rfxgen.h"
 #include <math.h>
 #include "MMLParser.h"
 #include "tools.h"
@@ -25,7 +24,6 @@ class AudioManager
     AudioManager(Engine* _engine);
     ~AudioManager();
 
-    WaveParams params[MAX_WAVE_SLOTS] = { 0 }; // Wave parameters for generation
     Wave wave[MAX_WAVE_SLOTS] = { 0 };
     Sound sound[MAX_WAVE_SLOTS] = { 0 };
 

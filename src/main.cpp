@@ -58,9 +58,7 @@ int main(int argc, char *argv[])
     engine->Init();
     
     bool showImgui = engine->editor->Enabled;
-    const char * pauseMessage = "Paused, press ESC again to exit.";
-    int pauseMessageSize = MeasureTextEx(engine->spriteManager->font,"Paused, press ESC again to exit.", 8,0).x * 0.5f;
-
+    
     engine->bios->LoadBoot();
     
     // Game Loop
@@ -219,9 +217,6 @@ int main(int argc, char *argv[])
                         break;
                     case Paused:
                         engine->basicIntepreter->pause();
-                        //DrawRectangle(0,88,320,12,Tools::GetBiosColor(2));
-                        //DrawRectangle(0,89,320,10,Tools::GetBiosColor(1));
-                        //DrawTextEx(Tools::GetFont(), pauseMessage,(Vector2){160 - pauseMessageSize, 90},8,0,Tools::GetBiosColor(3));
                         break;    
                     default:
                         break;
