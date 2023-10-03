@@ -71,12 +71,12 @@ struct Console
 
     }
 
-    void    Draw()
+    void    Draw(bool* p_open)
     {
 
         ImGui::SetNextWindowSize(ImVec2(670, 500),ImGuiCond_FirstUseEver);
         ImGui::SetNextWindowPos(ImVec2(280, 20),ImGuiCond_FirstUseEver);
-        if (!ImGui::Begin("Console", NULL))
+        if (!ImGui::Begin("Console", p_open))
         {
             ImGui::End();
             return;

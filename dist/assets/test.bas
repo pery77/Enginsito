@@ -1,6 +1,6 @@
 
 for c = 0 to 31
-	'savedata(c,c)
+	savedata(c,c)
 next
 for c = 0 to 31
 	print loaddata(c)

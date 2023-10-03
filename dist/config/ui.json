@@ -70,23 +70,23 @@
     },
     "layout_5": {
         "show_code": false,
-        "show_console": false,
+        "show_console": true,
         "show_crt": false,
-        "show_docs": false,
+        "show_docs": true,
         "show_filebrowser": false,
         "show_fps": false,
         "show_makeSprite": false,
-        "show_memory": true,
+        "show_memory": false,
         "show_metaSprite": false,
         "show_palette": false,
         "show_player": false,
         "show_screen": false,
-        "show_sfx": true,
+        "show_sfx": false,
         "show_sprites": false,
-        "show_tools": false
+        "show_tools": true
     },
-    "window_height": 839,
-    "window_position_x": 281,
-    "window_position_y": 106,
-    "window_width": 1340
+    "window_height": 898,
+    "window_position_x": 561,
+    "window_position_y": 91,
+    "window_width": 1438
 }

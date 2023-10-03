@@ -268,7 +268,7 @@ void Editor::Credits()
         ImGui::SetCursorPosX(c - ImGui::CalcTextSize(pbp).x / 2.0f);
         ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), pbp);
         ImGui::SetCursorPosX(c - 80);
-        Link("Site", "https://zaroa.net/", 80);
+        Link("Site", "https://zaroa.net/Enginsito", 80);
         ImGui::SameLine();
         Link("  X  ", "https://x.com/pery36", 80);
         ImGui::Separator();
@@ -423,11 +423,11 @@ void Editor::ClearError()
     codeEditor.SetErrorMarkers(markers);
 }
 
-void Editor::DrawCode()
+void Editor::DrawCode(bool* p_open)
 {
     auto cpos = codeEditor.GetCursorPosition();
 
-    ImGui::Begin("Code Editor", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::Begin("Code Editor", p_open, ImGuiWindowFlags_HorizontalScrollbar);
 		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, codeEditor.GetTotalLines(),
 			        codeEditor.IsOverwrite() ? "Ovr" : "Ins", codeEditor.CanUndo() ? "*" : " ",
                     editorEngineRef->bios->CurrentProject.name.c_str());
@@ -436,9 +436,9 @@ void Editor::DrawCode()
     ImGui::End();
 }
 
-void Editor::DrawDocs()
+void Editor::DrawDocs(bool* p_open)
 {
-    ImGui::Begin("Documentation", nullptr, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::Begin("Documentation", p_open, ImGuiWindowFlags_HorizontalScrollbar);
         docs.Render("Documentation");
     ImGui::End();
 }
@@ -1712,7 +1712,7 @@ void Editor::Draw()
         //Console
         if (show_console)
         {
-            Tools::console->Draw();
+            Tools::console->Draw(&show_console);
         }
 
         if (show_filebrowser)
@@ -1828,12 +1828,12 @@ void Editor::Draw()
 
         if (show_code)
         {
-            DrawCode();
+            DrawCode(&show_code);
         }
 
         if (show_docs)
         {
-            DrawDocs();
+            DrawDocs(&show_docs);
         }
         
         //Hack ¿?¿?¿?, if you remove this, ImGui fails. ¯\_(ツ)_/¯
