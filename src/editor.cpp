@@ -168,10 +168,9 @@ Editor::Editor(Engine* _engine)
 
 Editor::~Editor()
 {
+    SaveUIJson();
     SaveCurrentFile();
     UnloadTexture(iconTexture);
-
-    SaveUIJson();
 }
 
 void Editor::SaveCurrentFile()

@@ -1,5 +1,5 @@
 {
-    "currentLayout": 2,
+    "currentLayout": 4,
     "layout_1": {
         "show_code": true,
         "show_console": true,
@@ -76,12 +76,12 @@
         "show_filebrowser": false,
         "show_fps": false,
         "show_makeSprite": false,
-        "show_memory": false,
+        "show_memory": true,
         "show_metaSprite": false,
         "show_palette": false,
         "show_player": false,
         "show_screen": false,
-        "show_sfx": false,
+        "show_sfx": true,
         "show_sprites": false,
         "show_tools": false
     },

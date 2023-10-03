@@ -262,10 +262,11 @@ int main(int argc, char *argv[])
         EndDrawing();
     }
 
+    delete engine;
+    
     rlImGuiShutdown();
     CloseWindow();
 
-    delete engine;
 
     return 0;
 }
