@@ -1,6 +1,7 @@
 #include "tools.h"
 
 Console* Tools::console = new Console();
+static const char* layouts[5] = {"config/layout_1.ini", "config/layout_2.ini", "config/layout_3.ini", "config/layout_4.ini", "config/layout_5.ini"};
 
 int Tools::IntClamp(int value, int min, int max)
 {
@@ -191,4 +192,9 @@ Texture Tools::TextureFromCode(int format, int height, int width, void* data, in
     img.mipmaps = mips;
 
     return LoadTextureFromImage(img);
+}
+
+const char* Tools::GetCurrentLayout(int currentLayout)
+{
+    return layouts[currentLayout];
 }

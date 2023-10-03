@@ -112,4 +112,8 @@ class Editor
     void SetMousePosInEditor(int x, int y);
 
     void Link(const char* text, const char* link, float size);
+    void ChangeLayout(uint8_t layout);
+    void LoadUIJson();
+    void SaveUIJson();
+    void CloseAll();
 };

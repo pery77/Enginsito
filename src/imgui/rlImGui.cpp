@@ -462,13 +462,7 @@ void rlImGuiSetup(bool dark)
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; 
 
-	//io.Fonts->AddFontDefault();
-
-	io.IniFilename = "config/editor.ini";
-
-	//std::stringstream ss;
-	//ss << CONFIG_FOLDER << "/font.ttf";
-    //io.Fonts->AddFontFromFileTTF(ss.str().c_str(), 24.0f);
+	io.IniFilename = Tools::GetCurrentLayout(0);
     io.Fonts->AddFontFromMemoryCompressedTTF((void*)font_cpp_compressed_data, font_cpp_compressed_size, 24.0f);
 
 #ifndef NO_FONT_AWESOME

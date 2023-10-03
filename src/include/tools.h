@@ -75,4 +75,6 @@ class Tools{
 
         static Console* console;
         static Texture TextureFromCode(int format, int height, int width, void* data, int mips);
+        
+        static const char* GetCurrentLayout(int currentLayout);
 };

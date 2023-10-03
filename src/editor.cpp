@@ -36,6 +36,99 @@ static float mouseEditorOffset;
 static float iScale;
 
 static Color drawMetaExampleColor;
+int currentLayout = 0;
+
+void Editor::LoadUIJson()
+{
+	std::stringstream ss;
+	ss << CONFIG_FOLDER << "/ui.json";
+
+    std::ifstream f(ss.str().c_str());
+    data = nlohmann::json::parse(f);
+
+    static const char* layouts[5] = {"layout_1", "layout_2", "layout_3", "layout_4", "layout_5"};
+    const char* layout = layouts[currentLayout];
+
+    show_player         = data[layout]["show_player"].get<bool>();
+    show_FPS            = data[layout]["show_fps"].get<bool>();
+    show_tools          = data[layout]["show_tools"].get<bool>();
+    show_screen         = data[layout]["show_screen"].get<bool>();
+    show_code           = data[layout]["show_code"].get<bool>();
+    show_console        = data[layout]["show_console"].get<bool>();
+    show_palette        = data[layout]["show_palette"].get<bool>();
+    show_crt            = data[layout]["show_crt"].get<bool>();
+    show_memory         = data[layout]["show_memory"].get<bool>();
+    show_filebrowser    = data[layout]["show_filebrowser"].get<bool>();
+    show_sprites        = data[layout]["show_sprites"].get<bool>();
+    show_makeSprite     = data[layout]["show_makeSprite"].get<bool>();
+    show_metaSprite     = data[layout]["show_metaSprite"].get<bool>();
+    show_sfx            = data[layout]["show_sfx"].get<bool>();
+    show_docs           = data[layout]["show_docs"].get<bool>();
+    
+    f.close();
+
+    ImGui::LoadIniSettingsFromDisk(Tools::GetCurrentLayout(currentLayout));
+}
+
+void Editor::SaveUIJson()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    io.WantSaveIniSettings = true;
+    ImGui::SaveIniSettingsToDisk(Tools::GetCurrentLayout(currentLayout));
+    io.WantSaveIniSettings = false;
+
+    std::stringstream ss;
+	ss << CONFIG_FOLDER << "/ui.json";
+    static const char* layouts[5] = {"layout_1", "layout_2", "layout_3", "layout_4", "layout_5"};
+    const char* layout = layouts[currentLayout];
+
+    data["window_width"]        = GetScreenWidth();
+    data["window_height"]       = GetScreenHeight();
+    data["window_position_x"]   = window_position_x;
+    data["window_position_y"]   = window_position_y;
+    data["currentLayout"]       = currentLayout;
+
+    data[layout]["show_player"]         = show_player;
+    data[layout]["show_fps"]            = show_FPS;
+    data[layout]["show_tools"]          = show_tools;
+    data[layout]["show_screen"]         = show_screen;
+    data[layout]["show_code"]           = show_code;
+    data[layout]["show_console"]        = show_console;
+    data[layout]["show_palette"]        = show_palette;
+    data[layout]["show_crt"]            = show_crt;
+    data[layout]["show_memory"]         = show_memory;
+    data[layout]["show_filebrowser"]    = show_filebrowser;
+    data[layout]["show_sprites"]        = show_sprites;
+    data[layout]["show_makeSprite"]     = show_makeSprite;
+    data[layout]["show_metaSprite"]     = show_metaSprite;
+    data[layout]["show_sfx"]            = show_sfx;
+    data[layout]["show_docs"]           = show_docs;
+
+    std::ofstream o(ss.str().c_str());
+    o << std::setw(4) << data << std::endl;
+    o.close();
+}
+
+void Editor::CloseAll()
+{
+    show_tools = false;
+    show_demo = false;
+    show_FPS = false;
+    show_filebrowser = false;
+    show_code = false;
+    show_palette = false;
+    show_crt = false;
+    show_console = false;
+    show_sfx = false;
+    show_sprites = false;
+    show_makeSprite = false;
+    show_metaSprite = false;
+    show_screen = false;
+    show_player = false;
+    show_memory = false;
+    show_credits = false;
+    show_docs = false;
+}
 
 Editor::Editor(Engine* _engine)
 {
@@ -58,32 +151,19 @@ Editor::Editor(Engine* _engine)
     hackTexture = LoadTextureFromImage(hackImage);
     UnloadImage(hackImage);
 
-	std::stringstream ss;
+    std::stringstream ss;
 	ss << CONFIG_FOLDER << "/ui.json";
-
     std::ifstream f(ss.str().c_str());
     data = nlohmann::json::parse(f);
+    currentLayout       = data["currentLayout"].get<int>();
+    f.close();
 
-    show_player         = data["show_player"].get<bool>();
-    show_FPS            = data["show_fps"].get<bool>();
-    show_tools          = data["show_tools"].get<bool>();
-    show_screen         = data["show_screen"].get<bool>();
-    show_code           = data["show_code"].get<bool>();
-    show_console        = data["show_console"].get<bool>();
-    show_palette        = data["show_palette"].get<bool>();
-    show_crt            = data["show_crt"].get<bool>();
-    show_memory         = data["show_memory"].get<bool>();
-    show_filebrowser    = data["show_filebrowser"].get<bool>();
-    show_sprites        = data["show_sprites"].get<bool>();
-    show_makeSprite     = data["show_makeSprite"].get<bool>();
-    show_metaSprite     = data["show_metaSprite"].get<bool>();
-    show_sfx            = data["show_sfx"].get<bool>();
-    show_docs           = data["show_docs"].get<bool>();
-
+    LoadUIJson();
     //ExportImageAsCode(LoadImage("icon.png"), "iconTexture.h");
     iconTexture = Tools::TextureFromCode(ICONTEXTURE_FORMAT, ICONTEXTURE_HEIGHT, ICONTEXTURE_WIDTH, ICONTEXTURE_DATA, 1); 
     SetTextureFilter(iconTexture, TEXTURE_FILTER_POINT);
     SetMainWindow();
+    ChangeLayout(currentLayout);
 }
 
 Editor::~Editor()
@@ -91,32 +171,7 @@ Editor::~Editor()
     SaveCurrentFile();
     UnloadTexture(iconTexture);
 
-    std::stringstream ss;
-	ss << CONFIG_FOLDER << "/ui.json";
-
-    data["window_width"]        = GetScreenWidth();
-    data["window_height"]       = GetScreenHeight();
-    data["window_position_x"]   = window_position_x;
-    data["window_position_y"]   = window_position_y;
-
-    data["show_player"]         = show_player;
-    data["show_fps"]            = show_FPS;
-    data["show_tools"]          = show_tools;
-    data["show_screen"]         = show_screen;
-    data["show_code"]           = show_code;
-    data["show_console"]        = show_console;
-    data["show_palette"]        = show_palette;
-    data["show_crt"]            = show_crt;
-    data["show_memory"]         = show_memory;
-    data["show_filebrowser"]    = show_filebrowser;
-    data["show_sprites"]        = show_sprites;
-    data["show_makeSprite"]     = show_makeSprite;
-    data["show_metaSprite"]     = show_metaSprite;
-    data["show_sfx"]            = show_sfx;
-    data["show_docs"]           = show_docs;
-
-    std::ofstream o(ss.str().c_str());
-    o << std::setw(4) << data << std::endl;
+    SaveUIJson();
 }
 
 void Editor::SaveCurrentFile()
@@ -411,7 +466,7 @@ void Editor::DrawPalette()
             selectedId = c;
         }
         ImGui::PopStyleVar();
-        ImGui::PopStyleColor();;
+        ImGui::PopStyleColor();
         ImGui::EndGroup();
         if((c+1) % 8 != 0) ImGui::SameLine();
 
@@ -1504,6 +1559,12 @@ void Editor::SetMousePosInEditor(int x, int y)
     y = ((y / iScale) + mouseEditorPositionY) - mouseEditorOffset;
     SetMousePosition(x,y);
 }
+void Editor::ChangeLayout(uint8_t layout)
+{
+    SaveUIJson();
+    currentLayout = layout;
+    LoadUIJson();
+}
 
 void Editor::Draw()
 {
@@ -1527,6 +1588,14 @@ void Editor::Draw()
 
     if (ImGui::BeginMenuBar())
     {
+        if (io.KeyCtrl && io.KeyAlt) {
+            if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_1))) ChangeLayout(0);
+            if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_2))) ChangeLayout(1);
+            if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_3))) ChangeLayout(2);
+            if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_4))) ChangeLayout(3);
+            if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_5))) ChangeLayout(4);
+
+        }
             if (ImGui::BeginMenu("Edit"))
             {
                 bool ro = codeEditor.IsReadOnly();
@@ -1586,11 +1655,35 @@ void Editor::Draw()
                 ImGui::EndMenu();
             }
             
+            if (ImGui::BeginMenu(TextFormat("Layouts(%i)", currentLayout + 1)))
+            {
+                if(ImGui::MenuItem("Layout 1", "Ctrl-Alt-1", currentLayout == 0)) {
+                    ChangeLayout(0);
+                }  
+                if(ImGui::MenuItem("Layout 2", "Ctrl-Alt-2", currentLayout == 1)) {      
+                    ChangeLayout(1);
+                }       
+                if(ImGui::MenuItem("Layout 3", "Ctrl-Alt-3", currentLayout == 2)) {
+                    ChangeLayout(2);
+                } 
+                if(ImGui::MenuItem("Layout 4", "Ctrl-Alt-4", currentLayout == 3)) {
+                    ChangeLayout(3);
+                } 
+                if(ImGui::MenuItem("Layout 5", "Ctrl-Alt-5", currentLayout == 4)) {
+                    ChangeLayout(4);
+                } 
+                ImGui::Separator();
+                if(ImGui::MenuItem("Close All", NULL)) {
+                    CloseAll();
+                }
+                ImGui::EndMenu();
+            }   
+
             if (ImGui::BeginMenu("Help"))
             {
                 ImGui::MenuItem("About", NULL, &show_credits);        
                 ImGui::EndMenu();
-            }   
+            }  
 
             ImGui::EndMenuBar();
         }
