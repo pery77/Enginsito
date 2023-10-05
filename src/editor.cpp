@@ -73,12 +73,10 @@ void Editor::LoadUIJson()
 void Editor::SaveUIJson()
 {
     ImGuiIO& io = ImGui::GetIO();
-    io.WantSaveIniSettings = true;
-    ImGui::SaveIniSettingsToDisk(Tools::GetCurrentLayout(currentLayout));
+    const char* layoutFilename = Tools::GetCurrentLayout(currentLayout);
+    ImGui::SaveIniSettingsToDisk(layoutFilename);
     io.WantSaveIniSettings = false;
-
-    std::stringstream ss;
-	ss << CONFIG_FOLDER << "/ui.json";
+    
     static const char* layouts[5] = {"layout_1", "layout_2", "layout_3", "layout_4", "layout_5"};
     const char* layout = layouts[currentLayout];
 
@@ -104,6 +102,8 @@ void Editor::SaveUIJson()
     data[layout]["show_sfx"]            = show_sfx;
     data[layout]["show_docs"]           = show_docs;
 
+    std::stringstream ss;
+	ss << CONFIG_FOLDER << "/ui.json";
     std::ofstream o(ss.str().c_str());
     o << std::setw(4) << data << std::endl;
     o.close();
@@ -163,12 +163,13 @@ Editor::Editor(Engine* _engine)
     iconTexture = Tools::TextureFromCode(ICONTEXTURE_FORMAT, ICONTEXTURE_HEIGHT, ICONTEXTURE_WIDTH, ICONTEXTURE_DATA, 1); 
     SetTextureFilter(iconTexture, TEXTURE_FILTER_POINT);
     SetMainWindow();
-    ChangeLayout(currentLayout);
+    
+    LoadUIJson();
 }
 
 Editor::~Editor()
 {
-    SaveUIJson();
+    ChangeLayout(0);
     SaveCurrentFile();
     UnloadTexture(iconTexture);
 }
@@ -1597,27 +1598,30 @@ void Editor::Draw()
         }
             if (ImGui::BeginMenu("Edit"))
             {
-                bool ro = codeEditor.IsReadOnly();
-                if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
-                    codeEditor.SetReadOnly(ro);
-                ImGui::Separator();
-                if (ImGui::MenuItem("Undo", "Ctrl-Z", nullptr, !ro && codeEditor.CanUndo()))
-                    codeEditor.Undo();
-                if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && codeEditor.CanRedo()))
-                    codeEditor.Redo();
-                ImGui::Separator();
-                if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, codeEditor.HasSelection()))
-                    codeEditor.Copy();
-                if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && codeEditor.HasSelection()))
-                    codeEditor.Cut();
-                if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && codeEditor.HasSelection()))
-                    codeEditor.Delete();
-                if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
-                    codeEditor.Paste();
-                ImGui::Separator();
-                if (ImGui::MenuItem("Select all", "Ctrl-A", nullptr, true))
-                    codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
-                ImGui::Separator();
+                if (show_code)
+                {
+                    bool ro = codeEditor.IsReadOnly();
+                    if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
+                        codeEditor.SetReadOnly(ro);
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Undo", "Ctrl-Z", nullptr, !ro && codeEditor.CanUndo()))
+                        codeEditor.Undo();
+                    if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && codeEditor.CanRedo()))
+                        codeEditor.Redo();
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, codeEditor.HasSelection()))
+                        codeEditor.Copy();
+                    if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && codeEditor.HasSelection()))
+                        codeEditor.Cut();
+                    if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && codeEditor.HasSelection()))
+                        codeEditor.Delete();
+                    if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
+                        codeEditor.Paste();
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Select all", "Ctrl-A", nullptr, true))
+                        codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
+                    ImGui::Separator();
+                }
                 if (ImGui::MenuItem("Exit", "Alt+F4", nullptr, true))
                     editorEngineRef->bios->ShouldClose = true;
                 ImGui::EndMenu();

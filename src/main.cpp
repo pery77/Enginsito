@@ -267,6 +267,5 @@ int main(int argc, char *argv[])
     rlImGuiShutdown();
     CloseWindow();
 
-
     return 0;
 }
