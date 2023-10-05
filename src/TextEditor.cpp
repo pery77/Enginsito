@@ -2792,7 +2792,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 	if (!inited)
 	{
 		static const char* const keywords[] = {
-			"REM", "NIL", "MOD", "AND", "OR", "NOT", "IS", "LET", "DIM", "IF", "THEN", "ELSEIF", "ELSE", "ENDIF", "FOR", "IN", "TO",
+			"REM", "NIL", "MOD", "AND", "OR", "NOT", "IS", "LET", "DIM", "IF", "THEN", "ELSEIF", "ELIF", "ELSE", "ENDIF", "FOR", "IN", "TO",
 			"STEP", "NEXT", "WHILE", "WEND", "DO", "UNTIL", "EXIT", "GOTO", "GOSUB", "RETURN",
 			"CALL", "DEF", "ENDDEF", "CLASS", "ENDCLASS", "ME", "NEW", "VAR", "REFLECT", "MEM", "TYPE", "END"
 		};

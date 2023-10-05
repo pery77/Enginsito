@@ -3,23 +3,18 @@ Main
 	copy paste control c v en todos sitios
 	soporte control z...
 	entrada salida pause custom
-	copy log secciones (casi mirar)
+	copy log secciones (casi, mirar)
 	quitar audio prints
 	quitar filewatcher poner alternativa
+	Audio deltatime
 
 Editor
 	
 	Acabar sonidos, piano, más info.
-	Gestionar modo sin editor, (borrar archivos de editor, fuente, inis etc...)
 	Links docs
-	layouts , save, load, presets
-	borrar screen en stop
-	editar colores en pause no actualiza
-	mejor file explorer , carpeta, borrar, mover...
 	sacar code editor fuera
 	crt presets
 	palette presets
-	makesprite, flip mover borrar, fill,....
 
 Editor Code
 
@@ -45,9 +40,5 @@ Documentación
 Basic
 
 	Investigar cuelges con recursivas
-	que avise si se intenta dibujar fuera de def draw
-	(acceso a la memoria de pantalla)
-	api save load values de memory
-	elseif <<<< peligro (elif)
 	NOT () mirar
 

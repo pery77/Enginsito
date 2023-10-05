@@ -2224,6 +2224,7 @@ MBCONST static const _func_t _core_libs[] = {
 	{ "IF", _core_if },
 	{ "THEN", _core_then },
 	{ "ELSEIF", _core_elseif },
+	{ "ELIF", _core_elseif },
 	{ "ELSE", _core_else },
 	{ "ENDIF", _core_endif },
 
