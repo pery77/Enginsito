@@ -121,7 +121,7 @@ bool MMLParser::updateAll(unsigned long tick) {
 	return true;
 }
 
-bool MMLParser::update(unsigned long tick) {
+bool MMLParser::update(float tick) {
 	prevTick = tick;
 	if (!p || _isPaused) return true;
 	if (startTick == 0) {

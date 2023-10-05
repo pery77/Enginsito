@@ -23,7 +23,7 @@ typedef struct
 	double fltdp      = 0.0;
 	bool isPlaying	    = false;
     double sequenceTime = 0.0;
-	unsigned int tick   = 0;
+	float tick   = 0.0f;
 	uint8_t frame[441];
 	uint8_t currentPreset = 0;
 } Channel;

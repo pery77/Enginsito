@@ -43,7 +43,7 @@ public:
 	void pause(bool b);
 	bool isPlaying() { return _isPlaying; }
 	bool isPaused() { return _isPaused; }
-	bool update(unsigned long tick);
+	bool update(float tick);
 	unsigned int getSize() { return size; }
 	MMLPTR getErrorPoint() { return p - 1; }
 	int getTotalSteps() { return totalSteps; }
@@ -62,9 +62,9 @@ protected:
 	bool _isPlaying;
 	bool _isPaused;
 	bool isLoop;
-	unsigned long startTick = 0;
-	unsigned long prevTick = 0;
-	unsigned long pauseTick = 0;
+	float startTick = 0;
+	float prevTick = 0;
+	float pauseTick = 0;
 	unsigned int steps = 0;
 	unsigned int stepsGate = 0;
 	unsigned int totalSteps = 0;

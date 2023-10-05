@@ -65,7 +65,10 @@ void AudioManager::Update()
     for (int i = 0; i < TRACK_COUNT; i++) 
     {
         if (mml[i]->isPlaying()) 
-            mml[i]->update(synth->channels[i].tick++);
+        {
+            mml[i]->update(synth->channels[i].tick);
+            synth->channels[i].tick += 1.0f / ((float)GetFPS() / (float)GAME_FPS);
+        }
     }
 }
 
