@@ -1044,11 +1044,12 @@ inline unsigned char setBit(unsigned char byte, int position, bool newState) {
     return byte;
 }
 
+static int isMakeSpriteHovered;
 void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state) 
 {
     bool isMouseOverRect;
     ImVec2 posRect = ImVec2(pos.x + size.x, pos.y + size.y);
-    if (ImGui::IsMouseHoveringRect(pos, posRect)) 
+    if (ImGui::IsMouseHoveringRect(pos, posRect) && isMakeSpriteHovered) 
     {
         HighLightMemory(dir, 1);
         isMouseOverRect = true;
@@ -1084,7 +1085,7 @@ void Editor::MakeSprite(int spriteId)
     static unsigned char copyByte;
 
     ImGui::BeginGroup();
-
+    isMakeSpriteHovered = ImGui::IsWindowHovered();
     for (int y = 0; y < 8; y++)
     {
         for (int x = 0; x < 8; x++)
