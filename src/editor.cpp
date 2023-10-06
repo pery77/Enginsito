@@ -175,7 +175,8 @@ Editor::Editor(Engine* _engine)
     style.GrabMinSize = 20.0f;
     style.ScrollbarSize = 20.0f;
     style.ChildBorderSize = 0.0f;
-    style.PopupBorderSize = 0.0f;
+    style.PopupBorderSize = 1.0f;
+    style.PopupRounding = 6.0f;
     style.WindowMenuButtonPosition = ImGuiDir_Right;
 /*
 *** Primary color:
@@ -208,14 +209,14 @@ Editor::Editor(Engine* _engine)
     colors[ImGuiCol_WindowBg]               = ImVec4(0.04f, 0.13f, 0.16f, 1.00f);
     colors[ImGuiCol_ChildBg]                = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
     colors[ImGuiCol_PopupBg]                = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
-    colors[ImGuiCol_Border]                 = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
+    colors[ImGuiCol_Border]                 = ImVec4(0.08f, 0.18f, 0.22f, 1.00f);
     colors[ImGuiCol_FrameBg]                = ImVec4(0.08f, 0.18f, 0.22f, 1.00f);
     colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.14f, 0.23f, 0.27f, 1.00f);
     colors[ImGuiCol_FrameBgActive]          = ImVec4(0.23f, 0.35f, 0.38f, 1.00f);
     colors[ImGuiCol_TitleBg]                = ImVec4(0.35f, 0.18f, 0.13f, 1.00f);
     colors[ImGuiCol_TitleBgActive]          = ImVec4(0.42f, 0.26f, 0.21f, 1.00f);
     colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
-    colors[ImGuiCol_MenuBarBg]              = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
+    colors[ImGuiCol_MenuBarBg]              = ImVec4(0.15f, 0.10f, 0.01f, 1.00f);
     colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.15f, 0.10f, 0.01f, 1.00f);
     colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
     colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.42f, 0.36f, 0.21f, 1.00f);
@@ -419,7 +420,8 @@ void Editor::DrawshowFileBrowser()
 
     ImGui::BeginChild("#Files", ImVec2(0, window_content_height), true);
 
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.882f, 0.745f, 0.078f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.61f, 0.53f, 0.36f, 1.00f));
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.23f, 0.35f, 0.38f, 1.00f));
         std::stringstream ss = Tools::GetFolders(editorEngineRef->bios->CurrentPath.c_str());
         std::string temp;
         if(editorEngineRef->bios->CurrentPath.length() != 0)
@@ -437,9 +439,9 @@ void Editor::DrawshowFileBrowser()
                 break;
             }
         }
-        ImGui::PopStyleColor(1);
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.827f, 0.871f, 0.98f, 1.0f));
-
+        ImGui::PopStyleColor(2);
+    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.23f, 0.35f, 0.38f, 1.00f));
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.35f, 0.18f, 0.13f, 1.00f));
     ss = Tools::GetFiles(editorEngineRef->bios->CurrentPath.c_str());
     while (std::getline(ss, temp))
     {
@@ -452,7 +454,7 @@ void Editor::DrawshowFileBrowser()
         }
     }
         
-    ImGui::PopStyleColor(1);
+    ImGui::PopStyleColor(2);
     ImGui::EndChild();
     ImGui::BeginChild("#Foot",ImVec2(0, list_item_height), true, ImGuiWindowFlags_NoScrollWithMouse);
         ImGui::Text("Current program: %s", editorEngineRef->bios->CurrentProject.name.c_str());
@@ -460,7 +462,7 @@ void Editor::DrawshowFileBrowser()
     ImGui::BeginChild("#Foot2",ImVec2(0, list_item_height*2), true, ImGuiWindowFlags_NoScrollWithMouse);
         ImGui::Text("Create");
         static char str0[128] = "new";
-        if(ImGui::SmallButton("File"))
+        if(ImGui::Button("File"))
         {
             SaveCurrentFile();
             editorEngineRef->bios->SetProgram(str0);
@@ -469,7 +471,7 @@ void Editor::DrawshowFileBrowser()
         }
         
         ImGui::SameLine();
-        if(ImGui::SmallButton("Folder"))
+        if(ImGui::Button("Folder"))
         {
             std::string path = "assets/" + editorEngineRef->bios->CurrentPath + "/" + str0;
             int status = mkdir(path.c_str());

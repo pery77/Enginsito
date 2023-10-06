@@ -73,7 +73,7 @@
         "show_console": true,
         "show_crt": true,
         "show_docs": false,
-        "show_filebrowser": false,
+        "show_filebrowser": true,
         "show_fps": true,
         "show_makeSprite": false,
         "show_memory": true,
@@ -82,11 +82,11 @@
         "show_player": true,
         "show_screen": true,
         "show_sfx": false,
-        "show_sprites": false,
+        "show_sprites": true,
         "show_tools": true
     },
     "window_height": 834,
-    "window_position_x": 504,
-    "window_position_y": 155,
+    "window_position_x": 373,
+    "window_position_y": 216,
     "window_width": 1336
 }
