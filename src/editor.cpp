@@ -595,7 +595,7 @@ void Editor::DrawCRT()
     bool ppState = editorEngineRef->Peek(4091);
     ImGui::Checkbox("Enabled", &ppState);
     editorEngineRef->postProcessing->SetState(ppState);
-        
+
     int blurPower    = editorEngineRef->Peek(4080);
     int blurFactor   = editorEngineRef->Peek(4081);
     int chromatic    = editorEngineRef->Peek(4082);
@@ -631,11 +631,14 @@ void Editor::DrawCRT()
     ImGuiKnobs::KnobInt("Noise", &noise, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
     ImGui::SameLine();
     ImGuiKnobs::KnobInt("Flicker", &fliker, 0, 255, 1, "%03i", ImGuiKnobVariant_Wiper);
-    ImGui::SameLine();
+
     ImGui::BeginGroup();
-    ImGui::Text("Grille Mode");
-    const char* items[] = { "Dots", "TV", "LCD"};
-    ImGui::Combo("#grillemode", &grille, items, IM_ARRAYSIZE(items));
+    ImGui::Text("Grille Mode  ");
+    ImGui::RadioButton("Dots", &grille, 0);
+    ImGui::SameLine();
+    ImGui::RadioButton("TV", &grille, 1); 
+    ImGui::SameLine();
+    ImGui::RadioButton("LCD", &grille, 2);
     ImGui::EndGroup();
 
     if(ImGui::IsWindowFocused())
@@ -838,81 +841,7 @@ void Editor::DrawSFX()
         HighLightMemory(dir,11);
     }
 
-/*      
-        ImVec2 white_key_pos = ImGui::GetCursorScreenPos();
-        ImVec2 black_key_pos = white_key_pos;
-    
 
-        ImGui::BeginGroup();
-
-            for (int i = 48; i <= 84; i++) 
-            {
-                if (!IsBlack(i))
-                {
-                    PianoKey(white_key_pos, ImVec2(WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT), i, false, i == pressedKey);
-                    white_key_pos.x += WHITE_KEY_WIDTH;
-                } 
-            }
-        ImGui::EndGroup();        
-        ImGui::BeginGroup();
-            for (int i = 48; i <= 84; i++) 
-            {
-                if (IsBlack(i))
-                {
-                    PianoKey(ImVec2(black_key_pos.x - BLACK_KEY_WIDTH / 2, black_key_pos.y), 
-                    ImVec2(BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT), i, true, i == pressedKey);
-                    black_key_pos.x -= WHITE_KEY_WIDTH;
-                }
-
-                black_key_pos.x += WHITE_KEY_WIDTH;
-            }
-        ImGui::EndGroup();
-
-        ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
-*/
-        if (ImGui::CollapsingHeader("Info&Test") && ImGui::IsWindowFocused())
-        {
-            ImVec2 pos = ImGui::GetCursorScreenPos();
-/*
-            ImGui::BeginTooltip();
-            ImGui::Text(TextFormat("%f, %f", pos.x, pos.y));
-            ImGui::EndTooltip();
-*/            
-            DrawChannel(0, pos);
-            DrawChannel(1, pos);
-            DrawChannel(2, pos);
-            DrawChannel(3, pos);
-            
-            for (auto& key : keyCharToKey)
-            {
-                char thisChar = key.first;
-                int thisKey = key.second + keyboardOctave * 12;
-
-                if (IsKeyPressed(thisChar)) 
-                {
-                    editorEngineRef->audioManager->PlayNote(3, thisKey, 127);
-                    pressedKey = thisKey;
-
-                }
-
-                if (IsKeyReleased(thisChar)) 
-                {
-                    editorEngineRef->audioManager->StopNote(3);
-                    pressedKey = -1;
-                }
-            }
-            
-            // key input - octave control
-            if (IsKeyPressed('/') && keyboardOctave < 8) 
-            {
-                keyboardOctave++;
-            } 
-            else if (IsKeyPressed('.') && keyboardOctave > 0) 
-            {
-                keyboardOctave--;
-            }
-            
-        }
 
         static char str0[4096] = "@0cccc";
         static char str1[4096] = "@1eeee";
@@ -1703,8 +1632,95 @@ void Editor::Draw()
         if(show_tools)
         {
             ImGui::Begin("Tools", &show_tools, ImGuiWindowFlags_NoCollapse);
-                ImGui::DragFloat("Font", &io.FontGlobalScale, 0.05f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+            
+            if (ImGui::CollapsingHeader("Editor"))
+            {
+                ImGui::PushItemWidth(50.0f);
+                ImGui::DragFloat("Font size", &io.FontGlobalScale, 0.05f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+            }
+/*      
+        ImVec2 white_key_pos = ImGui::GetCursorScreenPos();
+        ImVec2 black_key_pos = white_key_pos;
+    
+
+        ImGui::BeginGroup();
+
+            for (int i = 48; i <= 84; i++) 
+            {
+                if (!IsBlack(i))
+                {
+                    PianoKey(white_key_pos, ImVec2(WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT), i, false, i == pressedKey);
+                    white_key_pos.x += WHITE_KEY_WIDTH;
+                } 
+            }
+        ImGui::EndGroup();        
+        ImGui::BeginGroup();
+            for (int i = 48; i <= 84; i++) 
+            {
+                if (IsBlack(i))
+                {
+                    PianoKey(ImVec2(black_key_pos.x - BLACK_KEY_WIDTH / 2, black_key_pos.y), 
+                    ImVec2(BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT), i, true, i == pressedKey);
+                    black_key_pos.x -= WHITE_KEY_WIDTH;
+                }
+
+                black_key_pos.x += WHITE_KEY_WIDTH;
+            }
+        ImGui::EndGroup();
+
+        ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
+*/
+        if (ImGui::CollapsingHeader("Synth tester"))
+        {
+            ImVec2 pos = ImGui::GetCursorScreenPos();
+/*
+            ImGui::BeginTooltip();
+            ImGui::Text(TextFormat("%f, %f", pos.x, pos.y));
+            ImGui::EndTooltip();
+*/            
+            DrawChannel(0, pos);
+            DrawChannel(1, pos);
+            DrawChannel(2, pos);
+            DrawChannel(3, pos);
+            
+            for (auto& key : keyCharToKey)
+            {
+                char thisChar = key.first;
+                int thisKey = key.second + keyboardOctave * 12;
+
+                if (IsKeyPressed(thisChar)) 
+                {
+                    editorEngineRef->audioManager->PlayNote(3, thisKey, 127);
+                    pressedKey = thisKey;
+
+                }
+
+                if (IsKeyReleased(thisChar)) 
+                {
+                    editorEngineRef->audioManager->StopNote(3);
+                    pressedKey = -1;
+                }
+            }
+            
+            // key input - octave control
+            if (IsKeyPressed('/') && keyboardOctave < 8) 
+            {
+                keyboardOctave++;
+            } 
+            else if (IsKeyPressed('.') && keyboardOctave > 0) 
+            {
+                keyboardOctave--;
+            }
+            
+        }
             ImGui::End(); 
+        }
+
+        if (show_FPS)
+        {
+            ImGui::Begin("FPS", &show_FPS, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
+                DrawFPS();
+            ImGui::End();
         }
 
         #ifdef DEBUG
@@ -1725,13 +1741,6 @@ void Editor::Draw()
             ImGui::Begin("File browser", &show_filebrowser, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
                 DrawshowFileBrowser();
             ImGui::End();    
-        }
-
-        if (show_FPS)
-        {
-            ImGui::Begin("FPS", &show_FPS, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollWithMouse);
-                DrawFPS();
-            ImGui::End();
         }
 
         if (show_screen)

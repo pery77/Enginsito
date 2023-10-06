@@ -6,7 +6,6 @@ Main
 	copy log secciones (casi, mirar)
 	quitar audio prints
 	quitar filewatcher poner alternativa
-	Audio deltatime
 
 Editor
 	
