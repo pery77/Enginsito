@@ -144,7 +144,7 @@ Editor::Editor(Engine* _engine)
     docs.SetText(docsText);
     docs.SetShowWhitespaces(false);
 
-    mem_edit.HighlightColor = IM_COL32(22, 110, 162, 255);
+    mem_edit.HighlightColor = IM_COL32(58, 88, 98, 255);
     mem_edit.OptShowAscii = false;
 
     Image hackImage = GenImageColor(1,1,(Color){0,0,0,0});
@@ -165,6 +165,87 @@ Editor::Editor(Engine* _engine)
     SetMainWindow();
     
     LoadUIJson();
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.FrameRounding = 6.0f;
+    style.WindowRounding = 6.0f;
+    style.TabRounding = 12.0f;
+    style.GrabRounding = 3.0f;
+    style.WindowBorderSize = 0.0f;
+    style.GrabMinSize = 20.0f;
+    style.ScrollbarSize = 20.0f;
+    style.ChildBorderSize = 0.0f;
+    style.PopupBorderSize = 0.0f;
+    style.WindowMenuButtonPosition = ImGuiDir_Right;
+/*
+*** Primary color:
+
+   shade 0 = #152F38 = rgb( 21, 47, 56) = rgba( 21, 47, 56,1) = rgb0(0.082,0.184,0.22)
+   shade 1 = #3A5862 = rgb( 58, 88, 98) = rgba( 58, 88, 98,1) = rgb0(0.227,0.345,0.384)
+   shade 2 = #233B44 = rgb( 35, 59, 68) = rgba( 35, 59, 68,1) = rgb0(0.137,0.231,0.267)
+   shade 3 = #0A2128 = rgb( 10, 33, 40) = rgba( 10, 33, 40,1) = rgb0(0.039,0.129,0.157)
+   shade 4 = #021218 = rgb(  2, 18, 24) = rgba(  2, 18, 24,1) = rgb0(0.008,0.071,0.094)
+
+*** Secondary color (1):
+
+   shade 0 = #5A2D20 = rgb( 90, 45, 32) = rgba( 90, 45, 32,1) = rgb0(0.353,0.176,0.125)
+   shade 1 = #9C6A5B = rgb(156,106, 91) = rgba(156,106, 91,1) = rgb0(0.612,0.416,0.357)
+   shade 2 = #6C4236 = rgb(108, 66, 54) = rgba(108, 66, 54,1) = rgb0(0.424,0.259,0.212)
+   shade 3 = #41190E = rgb( 65, 25, 14) = rgba( 65, 25, 14,1) = rgb0(0.255,0.098,0.055)
+   shade 4 = #260A02 = rgb( 38, 10,  2) = rgba( 38, 10,  2,1) = rgb0(0.149,0.039,0.008)
+
+*** Secondary color (2):
+
+   shade 0 = #5A4720 = rgb( 90, 71, 32) = rgba( 90, 71, 32,1) = rgb0(0.353,0.278,0.125)
+   shade 1 = #9C875B = rgb(156,135, 91) = rgba(156,135, 91,1) = rgb0(0.612,0.529,0.357)
+   shade 2 = #6C5B36 = rgb(108, 91, 54) = rgba(108, 91, 54,1) = rgb0(0.424,0.357,0.212)
+   shade 3 = #41300E = rgb( 65, 48, 14) = rgba( 65, 48, 14,1) = rgb0(0.255,0.188,0.055)
+   shade 4 = #261A02 = rgb( 38, 26,  2) = rgba( 38, 26,  2,1) = rgb0(0.149,0.102,0.008)
+   */
+    ImVec4* colors = ImGui::GetStyle().Colors;
+    colors[ImGuiCol_Text]                   = ImVec4(0.70f, 0.70f, 0.70f, 1.00f);
+    colors[ImGuiCol_TextDisabled]           = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
+    colors[ImGuiCol_WindowBg]               = ImVec4(0.04f, 0.13f, 0.16f, 1.00f);
+    colors[ImGuiCol_ChildBg]                = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
+    colors[ImGuiCol_PopupBg]                = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
+    colors[ImGuiCol_Border]                 = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
+    colors[ImGuiCol_FrameBg]                = ImVec4(0.08f, 0.18f, 0.22f, 1.00f);
+    colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.14f, 0.23f, 0.27f, 1.00f);
+    colors[ImGuiCol_FrameBgActive]          = ImVec4(0.23f, 0.35f, 0.38f, 1.00f);
+    colors[ImGuiCol_TitleBg]                = ImVec4(0.35f, 0.18f, 0.13f, 1.00f);
+    colors[ImGuiCol_TitleBgActive]          = ImVec4(0.42f, 0.26f, 0.21f, 1.00f);
+    colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
+    colors[ImGuiCol_MenuBarBg]              = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
+    colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.15f, 0.10f, 0.01f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.42f, 0.36f, 0.21f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
+    colors[ImGuiCol_CheckMark]              = ImVec4(0.61f, 0.42f, 0.36f, 1.00f);
+    colors[ImGuiCol_SliderGrab]             = ImVec4(0.35f, 0.18f, 0.13f, 1.00f);
+    colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.61f, 0.42f, 0.36f, 1.00f);
+    colors[ImGuiCol_Button]                 = ImVec4(0.35f, 0.18f, 0.13f, 1.00f);
+    colors[ImGuiCol_ButtonHovered]          = ImVec4(0.42f, 0.26f, 0.21f, 1.00f);
+    colors[ImGuiCol_ButtonActive]           = ImVec4(0.61f, 0.42f, 0.36f, 1.00f);
+    colors[ImGuiCol_Header]                 = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
+    colors[ImGuiCol_HeaderHovered]          = ImVec4(0.42f, 0.36f, 0.21f, 1.00f);
+    colors[ImGuiCol_HeaderActive]           = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
+    colors[ImGuiCol_Separator]              = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
+    colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.14f, 0.23f, 0.27f, 1.00f);
+    colors[ImGuiCol_SeparatorActive]        = ImVec4(0.23f, 0.35f, 0.38f, 1.00f);
+    colors[ImGuiCol_ResizeGrip]             = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
+    colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
+    colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
+    colors[ImGuiCol_Tab]                    = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
+    colors[ImGuiCol_TabHovered]             = ImVec4(0.42f, 0.36f, 0.21f, 1.00f);
+    colors[ImGuiCol_TabActive]              = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
+    colors[ImGuiCol_TabUnfocused]           = ImVec4(0.15f, 0.10f, 0.01f, 1.00f);
+    colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.25f, 0.19f, 0.05f, 1.00f);
+    colors[ImGuiCol_DockingPreview]         = ImVec4(0.23f, 0.35f, 0.38f, 1.00f);
+    colors[ImGuiCol_PlotLines]              = ImVec4(0.42f, 0.36f, 0.21f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered]       = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
+    colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
+    colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.23f, 0.35f, 0.38f, 1.00f);
+    
 }
 
 Editor::~Editor()
@@ -206,7 +287,6 @@ void Editor::HighLightMemory(uint16_t address, uint16_t size)
 void Editor::DrawFPS()
 {
     ImVec2 pw_size = ImGui::GetWindowSize();
-    ImGui::PushStyleColor(ImGuiCol_PlotLines, IM_COL32(40,255,0,255));
     static float values[90] = {};
     static int values_offset = 0;
     static double refresh_time = 0.0;
@@ -227,8 +307,7 @@ void Editor::DrawFPS()
     char overlay[32];
     sprintf(overlay, "avg: %.2f fps", average);
     ImGui::PlotLines("", values, IM_ARRAYSIZE(values), values_offset,overlay ,
-                        0.0f, 60.0f, ImVec2(pw_size.x, pw_size.y-20));
-    ImGui::PopStyleColor();  
+                        0.0f, 60.0f, ImVec2(pw_size.x, pw_size.y-20)); 
 }
 void Editor::Link(const char* text, const char* link, float size)
 { 
@@ -457,16 +536,19 @@ void Editor::DrawPalette()
         Color col = editorEngineRef->spriteManager->GetColor(c);
         ImVec4 color = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
         ImGui::BeginGroup();
-        ImGui::PushStyleColor(ImGuiCol_Border, c == selectedId ? IM_COL32_WHITE : IM_COL32_BLACK);
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, c == selectedId ? 4.0f : 0.0f);
-        if (ImGui::ColorButton(buffer, color, ImGuiColorEditFlags_NoTooltip, ImVec2(30,30)))
+
+        if (ImGui::ColorButton(buffer, color, ImGuiColorEditFlags_NoTooltip, ImVec2(30, c == selectedId ? 25 : 30)))
         {
             selectedColor = ImVec4(col.r / 255.0f, col.g / 255.0f, col.b / 255.0f, 1.0f);
             oldColor = selectedColor;
             selectedId = c;
         }
-        ImGui::PopStyleVar();
-        ImGui::PopStyleColor();
+        if (c == selectedId)
+        {
+            ImDrawList* draw_list = ImGui::GetWindowDrawList();
+            ImVec2 pos = ImGui::GetCursorScreenPos();
+            draw_list->AddRectFilled(ImVec2(pos.x+2, pos.y-5), ImVec2(pos.x+28 , pos.y+1.5f), IM_COL32(156,135,91,255));
+        }
         ImGui::EndGroup();
         if((c+1) % 8 != 0) ImGui::SameLine();
 
@@ -485,12 +567,14 @@ void Editor::DrawPalette()
     char buffer [11];
     sprintf (buffer, "Color: %i", selectedId);
     ImGui::Text(buffer);
+    ImGui::PushItemWidth(300);
     if(ImGui::ColorPicker3("", (float*)&selectedColor, ImGuiColorEditFlags_Uint8 | ImGuiColorEditFlags_NoSidePreview 
         | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex
         | ImGuiColorEditFlags_NoSmallPreview))
     {
         editorEngineRef->spriteManager->SetColor(selectedId, selectedColor.x * 255, selectedColor.y * 255, selectedColor.z * 255);
     }
+    ImGui::PopItemWidth();
     ImGui::SameLine();
     if (ImGui::ColorButton("Previus", oldColor, 0, ImVec2(40,40)))
     {
@@ -703,8 +787,8 @@ void Editor::DrawPlayer()
     bool popColor = false;
     if (PlayerState == Paused)
     {
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.929f, 0.216f, 0.216f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.929f, 0.316f, 0.316f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(194,40,40,255));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, IM_COL32(210,80,80,255));
         popColor = true;
     }
     if(ImGui::Button(ICON_FA_PAUSE, buttonSize))
@@ -952,31 +1036,48 @@ void Editor::DrawSFX()
         HighLightMemory(dir,11);
     }
 
-    if (ImGui::CollapsingHeader("Synth"))
-    {
-        if(ImGuiKnobs::KnobInt("Bank", &id, 0, 15, 0.1f, "%01i", ImGuiKnobVariant_Stepped))
-        {
-            editorEngineRef->audioManager->SetChannelPreset(3,id);
-        }
 
     ImGui::BeginGroup();
+        
+        ImGui::Text("Osc");
+        ImGui::RadioButton("Sqr", &osc, 0);
+        ImGui::SameLine();
+        ImGui::RadioButton("P12", &osc, 1); 
+        ImGui::SameLine();
+        ImGui::RadioButton("P25", &osc, 2);
+        ImGui::RadioButton("Tri", &osc, 3);
+        ImGui::SameLine();
+        ImGui::RadioButton("Saw", &osc, 4);
+        ImGui::SameLine();
+        ImGui::RadioButton("Noi", &osc, 5);
+
+        editorEngineRef->audioManager->SetOSC(id, osc);
+    ImGui::EndGroup();
+    ImGui::SameLine();
+    ImGui::Text("    ");
+    ImGui::SameLine();
+    if(ImGuiKnobs::KnobInt("Bank", &id, 0, 15, 0.1f, "%01i", ImGuiKnobVariant_Stepped))
+    {
+        editorEngineRef->audioManager->SetChannelPreset(3,id);
+    }
+    ImGui::BeginGroup();
             ImGui::Text("Envelope");
-            if (ImGuiKnobs::KnobInt("att", &attack, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("att", &attack, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
             {
                 editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("dec", &decay, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("dec", &decay, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
             {
                 editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("sus", &sustain, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("sus", &sustain, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
             {
                 editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
             }
             ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("rel", &release, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            if (ImGuiKnobs::KnobInt("rel", &release, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
             {
                 editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
             }
@@ -1025,13 +1126,9 @@ void Editor::DrawSFX()
         ImGui::Text("    ");
         ImGui::SameLine();
         ImGui::BeginGroup();
-        ImGui::Text("Wave Table");
-        if (ImGuiKnobs::KnobInt("osc", &osc, 0, 5, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
-        {
-            editorEngineRef->audioManager->SetOSC(id, osc);
-        }  
-        ImGui::EndGroup();
-    }
+
+    ImGui::EndGroup();
+    
 }
 
 inline unsigned char setBit(unsigned char byte, int position, bool newState) {
@@ -1584,7 +1681,6 @@ void Editor::Draw()
     if (ScreenWindowHasFocus) window_flags |= ImGuiWindowFlags_NoScrollWithMouse;
         
     ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_AutoHideTabBar;
-        
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("Main", NULL, window_flags);
     ImGui::PopStyleVar();

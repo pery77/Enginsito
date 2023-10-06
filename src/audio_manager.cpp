@@ -86,7 +86,6 @@ const char* AudioManager::GetSequence(uint8_t id)
 void AudioManager::PlayNote(uint8_t channel, uint8_t note, uint8_t volume)
 {
     if (channel > TRACK_COUNT) return;
-    printf("[CHAN: %i] %i\n", channel ,note);
     synth->channels[channel].note    = note;
     synth->channels[channel].volume  = volume * 0.007874; // 1/127
     synth->channels[channel].noteTimeOn  = synth->channels[channel].sequenceTime;
@@ -96,13 +95,11 @@ void AudioManager::PlayNote(uint8_t channel, uint8_t note, uint8_t volume)
 void AudioManager::StopNote(uint8_t channel)
 {
     if (channel > TRACK_COUNT) return;
-    printf("[STOP NOTE CHAN: %i]\n", channel);
     synth->channels[channel].noteTimeOff = synth->channels[channel].sequenceTime;
 }
 
 void AudioManager::SetChannelPreset(uint8_t channel, uint8_t preset)
 {
-    printf("[Program: %i in CH: %i]\n", preset, channel);
     synth->SetChannelPreset(channel, preset);
 }
 
