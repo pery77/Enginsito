@@ -815,6 +815,117 @@ void Editor::DrawChannel(uint8_t channel, ImVec2 pos)
     }
 }
 
+void Editor::DrawToolsPiano()
+{
+/*      
+        ImVec2 white_key_pos = ImGui::GetCursorScreenPos();
+        ImVec2 black_key_pos = white_key_pos;
+    
+
+        ImGui::BeginGroup();
+
+            for (int i = 48; i <= 84; i++) 
+            {
+                if (!IsBlack(i))
+                {
+                    PianoKey(white_key_pos, ImVec2(WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT), i, false, i == pressedKey);
+                    white_key_pos.x += WHITE_KEY_WIDTH;
+                } 
+            }
+        ImGui::EndGroup();        
+        ImGui::BeginGroup();
+            for (int i = 48; i <= 84; i++) 
+            {
+                if (IsBlack(i))
+                {
+                    PianoKey(ImVec2(black_key_pos.x - BLACK_KEY_WIDTH / 2, black_key_pos.y), 
+                    ImVec2(BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT), i, true, i == pressedKey);
+                    black_key_pos.x -= WHITE_KEY_WIDTH;
+                }
+
+                black_key_pos.x += WHITE_KEY_WIDTH;
+            }
+        ImGui::EndGroup();
+
+        ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
+*/
+
+            ImVec2 pos = ImGui::GetCursorScreenPos();
+/*
+            ImGui::BeginTooltip();
+            ImGui::Text(TextFormat("%f, %f", pos.x, pos.y));
+            ImGui::EndTooltip();
+*/            
+            DrawChannel(0, pos);
+            DrawChannel(1, pos);
+            DrawChannel(2, pos);
+            DrawChannel(3, pos);
+            
+            for (auto& key : keyCharToKey)
+            {
+                char thisChar = key.first;
+                int thisKey = key.second + keyboardOctave * 12;
+
+                if (IsKeyPressed(thisChar)) 
+                {
+                    editorEngineRef->audioManager->PlayNote(3, thisKey, 127);
+                    pressedKey = thisKey;
+
+                }
+
+                if (IsKeyReleased(thisChar)) 
+                {
+                    editorEngineRef->audioManager->StopNote(3);
+                    pressedKey = -1;
+                }
+            }
+            
+            // key input - octave control
+            if (IsKeyPressed('/') && keyboardOctave < 8) 
+            {
+                keyboardOctave++;
+            } 
+            else if (IsKeyPressed('.') && keyboardOctave > 0) 
+            {
+                keyboardOctave--;
+            }
+}
+
+void Editor::DrawToolsSequence()
+{
+    static char str0[4096] = "@0cccc";
+    static char str1[4096] = "@1eeee";
+    static char str2[4096] = "@2gggg";
+    static char str3[4096] = "@3O3cece";
+
+    if (ImGui::Button("Play")) 
+    {
+        editorEngineRef->audioManager->ChannelPlay(0, str0);
+        editorEngineRef->audioManager->ChannelPlay(1, str1);
+        editorEngineRef->audioManager->ChannelPlay(2, str2);
+        editorEngineRef->audioManager->ChannelPlay(3, str3);
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Stop")) 
+    {
+        editorEngineRef->audioManager->ChannelStop(0);
+        editorEngineRef->audioManager->ChannelStop(1);
+        editorEngineRef->audioManager->ChannelStop(2);
+        editorEngineRef->audioManager->ChannelStop(3);
+    }
+    ImGui::BeginGroup();
+    ImGui::Text("Channel 0");
+    ImGui::InputTextMultiline("##channel_00", str0, IM_ARRAYSIZE(str0), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
+    ImGui::Text("Channel 1");
+    ImGui::InputTextMultiline("##channel_01", str1, IM_ARRAYSIZE(str1), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
+    ImGui::Text("Channel 2");
+    ImGui::InputTextMultiline("##channel_02", str2, IM_ARRAYSIZE(str2), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
+    ImGui::Text("Channel 3");
+    ImGui::InputTextMultiline("##channel_03", str3, IM_ARRAYSIZE(str3), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
+    ImGui::EndGroup();
+    
+}
+
 void Editor::DrawSFX()
 {
     static int id = 0;
@@ -841,124 +952,86 @@ void Editor::DrawSFX()
         HighLightMemory(dir,11);
     }
 
-
-
-        static char str0[4096] = "@0cccc";
-        static char str1[4096] = "@1eeee";
-        static char str2[4096] = "@2gggg";
-        static char str3[4096] = "@3O3cece";
-
-        if (ImGui::CollapsingHeader("Sequence"))
+    if (ImGui::CollapsingHeader("Synth"))
+    {
+        if(ImGuiKnobs::KnobInt("Bank", &id, 0, 15, 0.1f, "%01i", ImGuiKnobVariant_Stepped))
         {
-            if (ImGui::Button("Play")) 
-            {
-                editorEngineRef->audioManager->ChannelPlay(0, str0);
-                editorEngineRef->audioManager->ChannelPlay(1, str1);
-                editorEngineRef->audioManager->ChannelPlay(2, str2);
-                editorEngineRef->audioManager->ChannelPlay(3, str3);
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Stop")) 
-            {
-                editorEngineRef->audioManager->ChannelStop(0);
-                editorEngineRef->audioManager->ChannelStop(1);
-                editorEngineRef->audioManager->ChannelStop(2);
-                editorEngineRef->audioManager->ChannelStop(3);
-            }
-
-            ImGui::BeginGroup();
-            ImGui::Text("Channel 0");
-            ImGui::InputTextMultiline("##channel_00", str0, IM_ARRAYSIZE(str0), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
-            ImGui::Text("Channel 1");
-            ImGui::InputTextMultiline("##channel_01", str1, IM_ARRAYSIZE(str1), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
-            ImGui::Text("Channel 2");
-            ImGui::InputTextMultiline("##channel_02", str2, IM_ARRAYSIZE(str2), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
-            ImGui::Text("Channel 3");
-            ImGui::InputTextMultiline("##channel_03", str3, IM_ARRAYSIZE(str3), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
-            ImGui::EndGroup();
-
+            editorEngineRef->audioManager->SetChannelPreset(3,id);
         }
 
-        if (ImGui::CollapsingHeader("Synth"))
-        {
-            if(ImGuiKnobs::KnobInt("Bank", &id, 0, 15, 0.1f, "%01i", ImGuiKnobVariant_Stepped))
+    ImGui::BeginGroup();
+            ImGui::Text("Envelope");
+            if (ImGuiKnobs::KnobInt("att", &attack, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
             {
-                editorEngineRef->audioManager->SetChannelPreset(3,id);
+                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
             }
+            ImGui::SameLine();
+            if (ImGuiKnobs::KnobInt("dec", &decay, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            {
+                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
+            }
+            ImGui::SameLine();
+            if (ImGuiKnobs::KnobInt("sus", &sustain, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            {
+                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
+            }
+            ImGui::SameLine();
+            if (ImGuiKnobs::KnobInt("rel", &release, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
+            {
+                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
+            }
+        ImGui::EndGroup();
+        ImGui::BeginGroup();
+        ImGui::Text("LFO");
+        if (ImGuiKnobs::KnobInt("speed", &lfoSpeed, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->audioManager->SetLFO(id, lfoSpeed, lfoDepth);
+        }  
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("depth", &lfoDepth, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->audioManager->SetLFO(id, lfoSpeed, lfoDepth);
+        }  
+        ImGui::EndGroup();
+        ImGui::SameLine();
+        ImGui::Text("    ");
+        ImGui::SameLine();
+        ImGui::BeginGroup();
+        ImGui::Text("LPF");
+        if (ImGuiKnobs::KnobInt("cut", &cut, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->audioManager->SetFilter(id, cut, res);
+        }  
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("res", &res, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->audioManager->SetFilter(id, cut, res);
+        }  
+        ImGui::EndGroup();
 
-            ImGui::BeginGroup();
-                ImGui::Text("Envelope");
-                if (ImGuiKnobs::KnobInt("att", &attack, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-                {
-                    editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
-                }
-                ImGui::SameLine();
-                if (ImGuiKnobs::KnobInt("dec", &decay, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-                {
-                    editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
-                }
-                ImGui::SameLine();
-                if (ImGuiKnobs::KnobInt("sus", &sustain, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-                {
-                    editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
-                }
-                ImGui::SameLine();
-                if (ImGuiKnobs::KnobInt("rel", &release, 0, 255, 1, "%03i", ImGuiKnobVariant_Stepped)) 
-                {
-                    editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
-                }
-            ImGui::EndGroup();
-            ImGui::BeginGroup();
-            ImGui::Text("LFO");
-            if (ImGuiKnobs::KnobInt("speed", &lfoSpeed, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->audioManager->SetLFO(id, lfoSpeed, lfoDepth);
-            }  
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("depth", &lfoDepth, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->audioManager->SetLFO(id, lfoSpeed, lfoDepth);
-            }  
-            ImGui::EndGroup();
-            ImGui::SameLine();
-            ImGui::Text("    ");
-            ImGui::SameLine();
-            ImGui::BeginGroup();
-            ImGui::Text("LPF");
-            if (ImGuiKnobs::KnobInt("cut", &cut, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->audioManager->SetFilter(id, cut, res);
-            }  
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("res", &res, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->audioManager->SetFilter(id, cut, res);
-            }  
-            ImGui::EndGroup();
-
-            ImGui::BeginGroup();
-            ImGui::Text("Slide");
-            if (ImGuiKnobs::KnobInt("slope", &slope, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->audioManager->SetSlide(id, slope, curve);
-            }  
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("curve", &curve, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
-                editorEngineRef->audioManager->SetSlide(id, slope, curve);
-            } 
-            ImGui::EndGroup();
-            ImGui::SameLine();
-            ImGui::Text("    ");
-            ImGui::SameLine();
-            ImGui::BeginGroup();
-            ImGui::Text("Wave Table");
-            if (ImGuiKnobs::KnobInt("osc", &osc, 0, 5, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
-            {
+        ImGui::BeginGroup();
+        ImGui::Text("Slide");
+        if (ImGuiKnobs::KnobInt("slope", &slope, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->audioManager->SetSlide(id, slope, curve);
+        }  
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("curve", &curve, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
+            editorEngineRef->audioManager->SetSlide(id, slope, curve);
+        } 
+        ImGui::EndGroup();
+        ImGui::SameLine();
+        ImGui::Text("    ");
+        ImGui::SameLine();
+        ImGui::BeginGroup();
+        ImGui::Text("Wave Table");
+        if (ImGuiKnobs::KnobInt("osc", &osc, 0, 5, 0.1f, "%03i", ImGuiKnobVariant_Stepped)) 
+        {
             editorEngineRef->audioManager->SetOSC(id, osc);
-            }  
-            ImGui::EndGroup();
-        }
+        }  
+        ImGui::EndGroup();
+    }
 }
 
 inline unsigned char setBit(unsigned char byte, int position, bool newState) {
@@ -1635,84 +1708,17 @@ void Editor::Draw()
             
             if (ImGui::CollapsingHeader("Editor"))
             {
-                ImGui::PushItemWidth(50.0f);
+                ImGui::PushItemWidth(120.0f);
                 ImGui::DragFloat("Font size", &io.FontGlobalScale, 0.05f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
             }
-/*      
-        ImVec2 white_key_pos = ImGui::GetCursorScreenPos();
-        ImVec2 black_key_pos = white_key_pos;
-    
-
-        ImGui::BeginGroup();
-
-            for (int i = 48; i <= 84; i++) 
+            if (ImGui::CollapsingHeader("Sequencer"))
             {
-                if (!IsBlack(i))
-                {
-                    PianoKey(white_key_pos, ImVec2(WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT), i, false, i == pressedKey);
-                    white_key_pos.x += WHITE_KEY_WIDTH;
-                } 
+                DrawToolsSequence();
             }
-        ImGui::EndGroup();        
-        ImGui::BeginGroup();
-            for (int i = 48; i <= 84; i++) 
+            if (ImGui::CollapsingHeader("Synth tester"))
             {
-                if (IsBlack(i))
-                {
-                    PianoKey(ImVec2(black_key_pos.x - BLACK_KEY_WIDTH / 2, black_key_pos.y), 
-                    ImVec2(BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT), i, true, i == pressedKey);
-                    black_key_pos.x -= WHITE_KEY_WIDTH;
-                }
-
-                black_key_pos.x += WHITE_KEY_WIDTH;
+                DrawToolsPiano();
             }
-        ImGui::EndGroup();
-
-        ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
-*/
-        if (ImGui::CollapsingHeader("Synth tester"))
-        {
-            ImVec2 pos = ImGui::GetCursorScreenPos();
-/*
-            ImGui::BeginTooltip();
-            ImGui::Text(TextFormat("%f, %f", pos.x, pos.y));
-            ImGui::EndTooltip();
-*/            
-            DrawChannel(0, pos);
-            DrawChannel(1, pos);
-            DrawChannel(2, pos);
-            DrawChannel(3, pos);
-            
-            for (auto& key : keyCharToKey)
-            {
-                char thisChar = key.first;
-                int thisKey = key.second + keyboardOctave * 12;
-
-                if (IsKeyPressed(thisChar)) 
-                {
-                    editorEngineRef->audioManager->PlayNote(3, thisKey, 127);
-                    pressedKey = thisKey;
-
-                }
-
-                if (IsKeyReleased(thisChar)) 
-                {
-                    editorEngineRef->audioManager->StopNote(3);
-                    pressedKey = -1;
-                }
-            }
-            
-            // key input - octave control
-            if (IsKeyPressed('/') && keyboardOctave < 8) 
-            {
-                keyboardOctave++;
-            } 
-            else if (IsKeyPressed('.') && keyboardOctave > 0) 
-            {
-                keyboardOctave--;
-            }
-            
-        }
             ImGui::End(); 
         }
 

@@ -107,6 +107,8 @@ class Editor
     void DrawChannel(uint8_t channel, ImVec2 pos);
 
     void DrawSFX();
+    void DrawToolsPiano();
+    void DrawToolsSequence();
     void Draw();
     void SaveCurrentFile();
     void SetMousePosInEditor(int x, int y);
