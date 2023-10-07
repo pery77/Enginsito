@@ -564,26 +564,26 @@ void Editor::DrawPalette()
 
 void Editor::SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id) 
 {
-    ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    ImVec4 bg_col = Col_S2_D2;
-    ImVec4 bg_col_selected = Col_P_B2;       
+    ImVec4 bg_col = Col_P_D2;
+    ImVec4 bg_col_selected = Col_S1_B1;       
 
     ImVec2 uv0 = ImVec2(x * 0.0625f, y * 0.0625f);
     ImVec2 uv1 = ImVec2(x * 0.0625f + 0.0625f, y * 0.0625f + 0.0625f);
     ImVec4 col = currentSprite == id ? bg_col_selected : bg_col;
 
-    draw_list->AddImage(my_tex_id, pos, ImVec2(pos.x + size.x, pos.y + size.y), uv0, uv1);
-    draw_list->AddRect(pos, ImVec2(pos.x + size.x + 2, pos.y + size.y + 2),IM_COL32(20, 20, 20, 255), 0, 0, 4);
-
     ImGui::SetCursorScreenPos(pos);
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
-    if (ImGui::ImageButton("###", my_tex_id, size, uv0, uv1, col))
+    ImGui::PushStyleColor(ImGuiCol_Button, Col_P_D1);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Col_S2_B1);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
+    if (ImGui::ImageButton("###", my_tex_id, size, uv0, uv1, col, Col_T_1))
     {
         HighLightMemory(id * 8 + 48, 8);
         currentSprite = id;
     }
     ImGui::PopStyleVar();
+    ImGui::PopStyleColor(2);
+
 }
 
 static int metaSpriteRectSelected = -1;
@@ -619,7 +619,7 @@ void Editor::DrawSprites()
     
     float my_tex_w = 128;
     float my_tex_h = 128;
-
+    float padding = 6;
     ImGui::BeginGroup();
     for (int y = 0; y < 16; y++)
     {
@@ -628,11 +628,11 @@ void Editor::DrawSprites()
             int id = x + y * 16;
             ImGui::PushID(id);
             SpriteRect(id, pos, size, x, y, my_tex_id);
-            pos.x += size.x + 4; 
+            pos.x += size.x + padding; 
             ImGui::PopID();
         }
         pos.x = p.x;
-        pos.y += size.y + 4; 
+        pos.y += size.y + padding; 
     }
     ImGui::EndGroup();
     ImGui::SameLine();

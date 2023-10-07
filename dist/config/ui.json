@@ -1,5 +1,5 @@
 {
-    "currentLayout": 0,
+    "currentLayout": 4,
     "layout_1": {
         "show_code": true,
         "show_console": true,
@@ -85,8 +85,8 @@
         "show_sprites": true,
         "show_tools": true
     },
-    "window_height": 958,
-    "window_position_x": 481,
-    "window_position_y": 40,
-    "window_width": 1314
+    "window_height": 1001,
+    "window_position_x": 0,
+    "window_position_y": 29,
+    "window_width": 1920
 }
