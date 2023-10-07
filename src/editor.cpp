@@ -289,21 +289,10 @@ void Editor::DrawFPS()
 }
 void Editor::Link(const char* text, const char* link, float size)
 { 
-    ImGuiStyle& style = ImGui::GetStyle();
-
-    ImGuiStyle previousStyle = style;
-
-    style.FrameRounding = 5.0f;
-    style.FramePadding = ImVec2(1.0f, 1.0f); 
-    style.ItemSpacing = ImVec2(1.0f, 1.0f);
-    style.Colors[ImGuiCol_Button].w = 0.1f;
-
     if (ImGui::Button(text, ImVec2(size, 0.0f)))
     {
         std::system((std::string("start ") + link).c_str());
     }
-
-    style = previousStyle;
 }
 
 void Editor::Credits()
@@ -595,19 +584,17 @@ void Editor::SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTexture
 static int metaSpriteRectSelected = -1;
 void Editor::MetaSpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id) 
 {
-    ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
     ImVec4 col = Col_S2_D2;
   
     ImVec2 uv0 = ImVec2(x * 0.0625f, y * 0.0625f);
     ImVec2 uv1 = ImVec2(x * 0.0625f + 0.0625f, y * 0.0625f + 0.0625f);
 
-    draw_list->AddImage(my_tex_id, pos, ImVec2(pos.x + size.x, pos.y + size.y), uv0, uv1);
-    draw_list->AddRect(pos, ImVec2(pos.x + size.x + 2, pos.y + size.y + 2),IM_COL32(255, 0, 0, 255), 0, 0, 4);
-
     ImGui::SetCursorScreenPos(pos);
 
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(1.0f, 1.0f));
-    if (ImGui::ImageButton("###", my_tex_id, size, uv0, uv1, col))
+
+    if (ImGui::ImageButton("###", my_tex_id, size, uv0, uv1, col, Col_T_1))
     {
         metaSpriteRectSelected = id;
     }
@@ -1214,14 +1201,14 @@ void Editor::MakeSprite(int spriteId)
         ImGui::Text("%.2X", byte);
         ImGui::SameLine();
         ImGui::PushID(TextFormat("pixel_rect_copy###%i",y));
-        if(ImGui::SmallButton("C"))
+        if(ImGui::Button(TextFormat("%s", ICON_FA_COPY)))
         {
             copyByte = byte;
         }
         ImGui::PopID();
         ImGui::SameLine();
         ImGui::PushID(TextFormat("pixel_rect_paste###%i",y));
-        if(ImGui::SmallButton("P"))
+        if(ImGui::Button(TextFormat("%s", ICON_FA_PASTE)))
         {
             editorEngineRef->Poke((currentSprite * 8 + 48) + y, copyByte);
         }
@@ -1232,7 +1219,7 @@ void Editor::MakeSprite(int spriteId)
     }
     ImGui::EndGroup();
     ImGui::Text("");
-    if(ImGui::SmallButton(ICON_FA_ARROW_UP))
+    if(ImGui::Button(ICON_FA_ARROW_UP))
     {
         uint8_t byte0 = editorEngineRef->Peek((currentSprite * 8 + 48));
         for (int b = 0; b < 7; b++)
@@ -1243,7 +1230,7 @@ void Editor::MakeSprite(int spriteId)
         editorEngineRef->Poke((currentSprite * 8 + 48) + 7, byte0);
     }
     ImGui::SameLine();
-    if(ImGui::SmallButton(ICON_FA_ARROW_LEFT))
+    if(ImGui::Button(ICON_FA_ARROW_LEFT))
     {
         for (int b = 0; b < 8; b++)
         {
@@ -1252,7 +1239,7 @@ void Editor::MakeSprite(int spriteId)
         }
     }
     ImGui::SameLine();
-    if(ImGui::SmallButton(ICON_FA_ARROW_RIGHT))
+    if(ImGui::Button(ICON_FA_ARROW_RIGHT))
     {
         for (int b = 0; b < 8; b++)
         {
@@ -1261,7 +1248,7 @@ void Editor::MakeSprite(int spriteId)
         }
     }
     ImGui::SameLine();
-    if(ImGui::SmallButton(ICON_FA_ARROW_DOWN))
+    if(ImGui::Button(ICON_FA_ARROW_DOWN))
     {
         uint8_t byte7 = editorEngineRef->Peek((currentSprite * 8 + 48) + 7);
         for (int b = 7; b > 0; b--)
@@ -1272,7 +1259,7 @@ void Editor::MakeSprite(int spriteId)
         editorEngineRef->Poke((currentSprite * 8 + 48), byte7);
     }
     ImGui::SameLine();
-    if(ImGui::SmallButton(ICON_FA_MASK))
+    if(ImGui::Button(ICON_FA_MASK))
     {
         for (int b = 0; b < 8; b++)
         {
@@ -1319,6 +1306,7 @@ void Editor::GetSpritePopup()
     
     float my_tex_w = 128;
     float my_tex_h = 128;
+    float padding = 5;
     static int value = -1;
     ImGui::BeginGroup();
     for (int y = 0; y < 16; y++)
@@ -1328,11 +1316,11 @@ void Editor::GetSpritePopup()
             int id = x + y * 16;
             ImGui::PushID(id);
             MetaSpriteRect(id, pos, size, x, y, my_tex_id);
-            pos.x += size.x + 4; 
+            pos.x += size.x + padding; 
             ImGui::PopID();
         }
         pos.x = p.x;
-        pos.y += size.y + 4; 
+        pos.y += size.y + padding; 
     }
     ImGui::EndGroup();
 }
@@ -1364,7 +1352,6 @@ void Editor::DrawMetaLine(int id)
 
             if (ImGui::BeginPopup(spIdName))
             {
-
                 if (metaSpriteRectSelected == -1)
                 {
                     GetSpritePopup();
@@ -1464,13 +1451,13 @@ void Editor::DrawMetaLine(int id)
         }
         ImGui::PopItemWidth();
         ImGui::SameLine();
-        if(ImGui::Button(TextFormat("C###copy_%i", id)))
+        if(ImGui::Button(TextFormat("%s###copy_%i", ICON_FA_COPY, id)))
         {
             for (int c = 0; c < 5; c++)
                 metaLineCopy[c] = editorEngineRef->Peek(dir + c);
         }
         ImGui::SameLine();
-        if(ImGui::Button(TextFormat("P###paste_%i", id)))
+        if(ImGui::Button(TextFormat("%s###paste_%i", ICON_FA_PASTE,id)))
         {
             for (int c = 0; c < 5; c++)
                 editorEngineRef->Poke(dir + c, metaLineCopy[c]);
@@ -1587,20 +1574,20 @@ void Editor::DrawMetaSprites(int metaId)
             sprintf(button_label, "%02i" , id);
             ImGui::PushID(id);
           
-            ImVec4 color = Col_S2_B2;
+            ImVec4 color = Col_S2_M;
 
             int dir = (id * 20 + 2096);
             int flag = editorEngineRef->Peek(dir + 4) + editorEngineRef->Peek(dir + 9) + 
                        editorEngineRef->Peek(dir + 14) + editorEngineRef->Peek(dir + 19);
         
             if (flag == 512) 
-                color = Col_S2_D1;
+                color = Col_S2_D2;
             
             if (currentMetaSprite == id) 
-                color = Col_P_B2;
+                color = Col_P_B1;
 
             ImGui::PushStyleColor(ImGuiCol_Button, color);
-            if(ImGui::Button(button_label))
+            if(ImGui::Button(button_label, ImVec2(40,40)))
             {
                 currentMetaSprite = id;
                 HighLightMemory(currentMetaSprite * 20 + 2096, 20);
@@ -1615,9 +1602,9 @@ void Editor::DrawMetaSprites(int metaId)
     ImGui::SameLine();
     ImGui::BeginGroup();
 
-    ImGui::PushStyleColor(ImGuiCol_Text, Col_T_1);
+    ImGui::PushStyleColor(ImGuiCol_Text, Col_T_2);
     ImGui::Text("Sprite   Flags Position");
-    ImGui::Text("ID  Col  H  V  X  Y  Mode  Copy Paste");
+    ImGui::Text("ID  Col  H  V  X  Y  Mode     Copy Paste");
     ImGui::PopStyleColor();
 
     for ( int i = 0; i<4; i++)
@@ -1683,7 +1670,7 @@ void Editor::Draw()
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;// | ImGuiWindowFlags_NoScrollbar;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoScrollbar;
 
     if (ScreenWindowHasFocus) window_flags |= ImGuiWindowFlags_NoScrollWithMouse;
         
