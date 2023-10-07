@@ -17,9 +17,9 @@
 
 class Editor
 {
-    #define WHITE_KEY_WIDTH 40
+    #define WHITE_KEY_WIDTH  40
     #define WHITE_KEY_HEIGHT 120
-    #define BLACK_KEY_WIDTH 30
+    #define BLACK_KEY_WIDTH  30
     #define BLACK_KEY_HEIGHT 60
 
     public:
@@ -118,4 +118,29 @@ class Editor
     void LoadUIJson();
     void SaveUIJson();
     void CloseAll();
+
+    //Text
+    ImVec4 Col_T_1 = ImVec4(0.70f, 0.70f, 0.70f, 1.00f);
+    ImVec4 Col_T_2 = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
+    //Primary
+    ImVec4 Col_P_M  = ImVec4(0.08f, 0.18f, 0.22f, 1.00f);
+    ImVec4 Col_P_B1 = ImVec4(0.23f, 0.35f, 0.38f, 1.00f);
+    ImVec4 Col_P_B2 = ImVec4(0.14f, 0.23f, 0.27f, 1.00f);
+    ImVec4 Col_P_D1 = ImVec4(0.04f, 0.13f, 0.16f, 1.00f);
+    ImVec4 Col_P_D2 = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
+
+    //Secondary 1
+    ImVec4 Col_S1_M  = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
+    ImVec4 Col_S1_B1 = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
+    ImVec4 Col_S1_B2 = ImVec4(0.42f, 0.36f, 0.21f, 1.00f);
+    ImVec4 Col_S1_D1 = ImVec4(0.25f, 0.19f, 0.05f, 1.00f);
+    ImVec4 Col_S1_D2 = ImVec4(0.15f, 0.10f, 0.01f, 1.00f);
+
+    //Secondary 2
+    ImVec4 Col_S2_M  = ImVec4(0.35f, 0.18f, 0.13f, 1.00f);
+    ImVec4 Col_S2_B1 = ImVec4(0.61f, 0.42f, 0.36f, 1.00f);
+    ImVec4 Col_S2_B2 = ImVec4(0.42f, 0.26f, 0.21f, 1.00f);
+    ImVec4 Col_S2_D1 = ImVec4(0.25f, 0.10f, 0.05f, 1.00f);
+    ImVec4 Col_S2_D2 = ImVec4(0.15f, 0.04f, 0.01f, 1.00f);
+
 };

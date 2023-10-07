@@ -1,5 +1,5 @@
 {
-    "currentLayout": 4,
+    "currentLayout": 0,
     "layout_1": {
         "show_code": true,
         "show_console": true,
@@ -75,9 +75,9 @@
         "show_docs": false,
         "show_filebrowser": true,
         "show_fps": true,
-        "show_makeSprite": false,
+        "show_makeSprite": true,
         "show_memory": true,
-        "show_metaSprite": false,
+        "show_metaSprite": true,
         "show_palette": true,
         "show_player": true,
         "show_screen": true,
@@ -85,8 +85,8 @@
         "show_sprites": true,
         "show_tools": true
     },
-    "window_height": 834,
-    "window_position_x": 373,
-    "window_position_y": 216,
-    "window_width": 1336
+    "window_height": 958,
+    "window_position_x": 481,
+    "window_position_y": 40,
+    "window_width": 1314
 }

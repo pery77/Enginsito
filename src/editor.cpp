@@ -144,7 +144,7 @@ Editor::Editor(Engine* _engine)
     docs.SetText(docsText);
     docs.SetShowWhitespaces(false);
 
-    mem_edit.HighlightColor = IM_COL32(58, 88, 98, 255);
+    mem_edit.HighlightColor = IM_COL32(58,88,98,255);
     mem_edit.OptShowAscii = false;
 
     Image hackImage = GenImageColor(1,1,(Color){0,0,0,0});
@@ -178,74 +178,51 @@ Editor::Editor(Engine* _engine)
     style.PopupBorderSize = 1.0f;
     style.PopupRounding = 6.0f;
     style.WindowMenuButtonPosition = ImGuiDir_Right;
-/*
-*** Primary color:
+    style.SelectableTextAlign = ImVec2(0.02f, 0.0f);
 
-   shade 0 = #152F38 = rgb( 21, 47, 56) = rgba( 21, 47, 56,1) = rgb0(0.082,0.184,0.22)
-   shade 1 = #3A5862 = rgb( 58, 88, 98) = rgba( 58, 88, 98,1) = rgb0(0.227,0.345,0.384)
-   shade 2 = #233B44 = rgb( 35, 59, 68) = rgba( 35, 59, 68,1) = rgb0(0.137,0.231,0.267)
-   shade 3 = #0A2128 = rgb( 10, 33, 40) = rgba( 10, 33, 40,1) = rgb0(0.039,0.129,0.157)
-   shade 4 = #021218 = rgb(  2, 18, 24) = rgba(  2, 18, 24,1) = rgb0(0.008,0.071,0.094)
-
-*** Secondary color (1):
-
-   shade 0 = #5A2D20 = rgb( 90, 45, 32) = rgba( 90, 45, 32,1) = rgb0(0.353,0.176,0.125)
-   shade 1 = #9C6A5B = rgb(156,106, 91) = rgba(156,106, 91,1) = rgb0(0.612,0.416,0.357)
-   shade 2 = #6C4236 = rgb(108, 66, 54) = rgba(108, 66, 54,1) = rgb0(0.424,0.259,0.212)
-   shade 3 = #41190E = rgb( 65, 25, 14) = rgba( 65, 25, 14,1) = rgb0(0.255,0.098,0.055)
-   shade 4 = #260A02 = rgb( 38, 10,  2) = rgba( 38, 10,  2,1) = rgb0(0.149,0.039,0.008)
-
-*** Secondary color (2):
-
-   shade 0 = #5A4720 = rgb( 90, 71, 32) = rgba( 90, 71, 32,1) = rgb0(0.353,0.278,0.125)
-   shade 1 = #9C875B = rgb(156,135, 91) = rgba(156,135, 91,1) = rgb0(0.612,0.529,0.357)
-   shade 2 = #6C5B36 = rgb(108, 91, 54) = rgba(108, 91, 54,1) = rgb0(0.424,0.357,0.212)
-   shade 3 = #41300E = rgb( 65, 48, 14) = rgba( 65, 48, 14,1) = rgb0(0.255,0.188,0.055)
-   shade 4 = #261A02 = rgb( 38, 26,  2) = rgba( 38, 26,  2,1) = rgb0(0.149,0.102,0.008)
-   */
     ImVec4* colors = ImGui::GetStyle().Colors;
-    colors[ImGuiCol_Text]                   = ImVec4(0.70f, 0.70f, 0.70f, 1.00f);
-    colors[ImGuiCol_TextDisabled]           = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);
-    colors[ImGuiCol_WindowBg]               = ImVec4(0.04f, 0.13f, 0.16f, 1.00f);
-    colors[ImGuiCol_ChildBg]                = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
-    colors[ImGuiCol_PopupBg]                = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
-    colors[ImGuiCol_Border]                 = ImVec4(0.08f, 0.18f, 0.22f, 1.00f);
-    colors[ImGuiCol_FrameBg]                = ImVec4(0.08f, 0.18f, 0.22f, 1.00f);
-    colors[ImGuiCol_FrameBgHovered]         = ImVec4(0.14f, 0.23f, 0.27f, 1.00f);
-    colors[ImGuiCol_FrameBgActive]          = ImVec4(0.23f, 0.35f, 0.38f, 1.00f);
-    colors[ImGuiCol_TitleBg]                = ImVec4(0.35f, 0.18f, 0.13f, 1.00f);
-    colors[ImGuiCol_TitleBgActive]          = ImVec4(0.42f, 0.26f, 0.21f, 1.00f);
-    colors[ImGuiCol_TitleBgCollapsed]       = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
-    colors[ImGuiCol_MenuBarBg]              = ImVec4(0.15f, 0.10f, 0.01f, 1.00f);
-    colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.15f, 0.10f, 0.01f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrab]          = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(0.42f, 0.36f, 0.21f, 1.00f);
-    colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
-    colors[ImGuiCol_CheckMark]              = ImVec4(0.61f, 0.42f, 0.36f, 1.00f);
-    colors[ImGuiCol_SliderGrab]             = ImVec4(0.35f, 0.18f, 0.13f, 1.00f);
-    colors[ImGuiCol_SliderGrabActive]       = ImVec4(0.61f, 0.42f, 0.36f, 1.00f);
-    colors[ImGuiCol_Button]                 = ImVec4(0.35f, 0.18f, 0.13f, 1.00f);
-    colors[ImGuiCol_ButtonHovered]          = ImVec4(0.42f, 0.26f, 0.21f, 1.00f);
-    colors[ImGuiCol_ButtonActive]           = ImVec4(0.61f, 0.42f, 0.36f, 1.00f);
-    colors[ImGuiCol_Header]                 = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
-    colors[ImGuiCol_HeaderHovered]          = ImVec4(0.42f, 0.36f, 0.21f, 1.00f);
-    colors[ImGuiCol_HeaderActive]           = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
-    colors[ImGuiCol_Separator]              = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
-    colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.14f, 0.23f, 0.27f, 1.00f);
-    colors[ImGuiCol_SeparatorActive]        = ImVec4(0.23f, 0.35f, 0.38f, 1.00f);
-    colors[ImGuiCol_ResizeGrip]             = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
-    colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
-    colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
-    colors[ImGuiCol_Tab]                    = ImVec4(0.35f, 0.28f, 0.13f, 1.00f);
-    colors[ImGuiCol_TabHovered]             = ImVec4(0.42f, 0.36f, 0.21f, 1.00f);
-    colors[ImGuiCol_TabActive]              = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
-    colors[ImGuiCol_TabUnfocused]           = ImVec4(0.15f, 0.10f, 0.01f, 1.00f);
-    colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.25f, 0.19f, 0.05f, 1.00f);
-    colors[ImGuiCol_DockingPreview]         = ImVec4(0.23f, 0.35f, 0.38f, 1.00f);
-    colors[ImGuiCol_PlotLines]              = ImVec4(0.42f, 0.36f, 0.21f, 1.00f);
-    colors[ImGuiCol_PlotLinesHovered]       = ImVec4(0.61f, 0.53f, 0.36f, 1.00f);
-    colors[ImGuiCol_DockingEmptyBg]         = ImVec4(0.01f, 0.07f, 0.09f, 1.00f);
-    colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.23f, 0.35f, 0.38f, 1.00f);
+    colors[ImGuiCol_Text]                   = Col_T_1;
+    colors[ImGuiCol_TextDisabled]           = Col_T_2;
+    colors[ImGuiCol_WindowBg]               = Col_P_D1;
+    colors[ImGuiCol_ChildBg]                = Col_P_D2;
+    colors[ImGuiCol_PopupBg]                = Col_P_D2;
+    colors[ImGuiCol_Border]                 = Col_P_M;
+    colors[ImGuiCol_FrameBg]                = Col_P_M;
+    colors[ImGuiCol_FrameBgHovered]         = Col_P_B2;
+    colors[ImGuiCol_FrameBgActive]          = Col_P_B1;
+    colors[ImGuiCol_TitleBg]                = Col_S2_M;
+    colors[ImGuiCol_TitleBgActive]          = Col_S2_B2;
+    colors[ImGuiCol_TitleBgCollapsed]       = Col_P_D2;
+    colors[ImGuiCol_MenuBarBg]              = Col_S1_D2;
+    colors[ImGuiCol_ScrollbarBg]            = Col_S1_D2;
+    colors[ImGuiCol_ScrollbarGrab]          = Col_S1_M;
+    colors[ImGuiCol_ScrollbarGrabHovered]   = Col_S1_B2;
+    colors[ImGuiCol_ScrollbarGrabActive]    = Col_S1_B1;
+    colors[ImGuiCol_CheckMark]              = Col_S2_B1;
+    colors[ImGuiCol_SliderGrab]             = Col_S2_M;
+    colors[ImGuiCol_SliderGrabActive]       = Col_S2_B1;
+    colors[ImGuiCol_Button]                 = Col_S2_M;
+    colors[ImGuiCol_ButtonHovered]          = Col_S2_B2;
+    colors[ImGuiCol_ButtonActive]           = Col_S2_B1;
+    colors[ImGuiCol_Header]                 = Col_S1_M;
+    colors[ImGuiCol_HeaderHovered]          = Col_S1_B2;
+    colors[ImGuiCol_HeaderActive]           = Col_S1_B1;
+    colors[ImGuiCol_Separator]              = Col_P_D2;
+    colors[ImGuiCol_SeparatorHovered]       = Col_P_B2;
+    colors[ImGuiCol_SeparatorActive]        = Col_P_B1;
+    colors[ImGuiCol_ResizeGrip]             = Col_S1_M;
+    colors[ImGuiCol_ResizeGripHovered]      = Col_S1_B1;
+    colors[ImGuiCol_ResizeGripActive]       = Col_S1_B1;
+    colors[ImGuiCol_Tab]                    = Col_S1_M;
+    colors[ImGuiCol_TabHovered]             = Col_S1_B2;
+    colors[ImGuiCol_TabActive]              = Col_S1_B1;
+    colors[ImGuiCol_TabUnfocused]           = Col_S1_D2;
+    colors[ImGuiCol_TabUnfocusedActive]     = Col_S1_D1;
+    colors[ImGuiCol_DockingPreview]         = Col_P_B1;
+    colors[ImGuiCol_PlotLines]              = Col_S1_B2;
+    colors[ImGuiCol_PlotLinesHovered]       = Col_S1_B1;
+    colors[ImGuiCol_DockingEmptyBg]         = Col_P_D2;
+    colors[ImGuiCol_TextSelectedBg]         = Col_P_B1;
     
 }
 
@@ -347,7 +324,7 @@ void Editor::Credits()
 
         const char * pbp = "Programmed by Pery - 2023";
         ImGui::SetCursorPosX(c - ImGui::CalcTextSize(pbp).x / 2.0f);
-        ImGui::TextColored(ImVec4(0.8f, 0.8f, 1.0f, 1.0f), pbp);
+        ImGui::TextColored(Col_S2_B1, pbp);
         ImGui::SetCursorPosX(c - 80);
         Link("Site", "https://zaroa.net/Enginsito", 80);
         ImGui::SameLine();
@@ -420,8 +397,8 @@ void Editor::DrawshowFileBrowser()
 
     ImGui::BeginChild("#Files", ImVec2(0, window_content_height), true);
 
-        ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.61f, 0.53f, 0.36f, 1.00f));
-        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.23f, 0.35f, 0.38f, 1.00f));
+        ImGui::PushStyleColor(ImGuiCol_Text, Col_S1_B1);
+        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Col_P_B1);
         std::stringstream ss = Tools::GetFolders(editorEngineRef->bios->CurrentPath.c_str());
         std::string temp;
         if(editorEngineRef->bios->CurrentPath.length() != 0)
@@ -440,8 +417,8 @@ void Editor::DrawshowFileBrowser()
             }
         }
         ImGui::PopStyleColor(2);
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.23f, 0.35f, 0.38f, 1.00f));
-    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.35f, 0.18f, 0.13f, 1.00f));
+    ImGui::PushStyleColor(ImGuiCol_Text, Col_P_B1);
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Col_S2_M);
     ss = Tools::GetFiles(editorEngineRef->bios->CurrentPath.c_str());
     while (std::getline(ss, temp))
     {
@@ -588,8 +565,8 @@ void Editor::DrawPalette()
 void Editor::SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id) 
 {
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    ImVec4 bg_col = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
-    ImVec4 bg_col_selected = ImVec4(0.1f, 0.5f, 0.9f, 1.0f);       
+    ImVec4 bg_col = Col_S2_D2;
+    ImVec4 bg_col_selected = Col_P_B2;       
 
     ImVec2 uv0 = ImVec2(x * 0.0625f, y * 0.0625f);
     ImVec2 uv1 = ImVec2(x * 0.0625f + 0.0625f, y * 0.0625f + 0.0625f);
@@ -613,13 +590,13 @@ static int metaSpriteRectSelected = -1;
 void Editor::MetaSpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id) 
 {
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    ImVec4 col = ImVec4(0.1f, 0.1f, 0.1f, 1.0f);
+    ImVec4 col = Col_S2_D2;
   
     ImVec2 uv0 = ImVec2(x * 0.0625f, y * 0.0625f);
     ImVec2 uv1 = ImVec2(x * 0.0625f + 0.0625f, y * 0.0625f + 0.0625f);
 
     draw_list->AddImage(my_tex_id, pos, ImVec2(pos.x + size.x, pos.y + size.y), uv0, uv1);
-    draw_list->AddRect(pos, ImVec2(pos.x + size.x + 2, pos.y + size.y + 2),IM_COL32(20, 20, 20, 255), 0, 0, 4);
+    draw_list->AddRect(pos, ImVec2(pos.x + size.x + 2, pos.y + size.y + 2),IM_COL32(255, 0, 0, 255), 0, 0, 4);
 
     ImGui::SetCursorScreenPos(pos);
 
@@ -1165,16 +1142,16 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
     else {
         isMouseOverRect = false;
     }
-    ImU32 color = state ? IM_COL32(240, 240, 240, 255) : IM_COL32(40, 40, 40, 255);
+    ImU32 color = state ? IM_COL32(Col_T_1.x * 255, Col_T_1.y * 255, Col_T_1.z * 255, 255) : IM_COL32(Col_P_D2.x * 255, Col_P_D2.y * 255, Col_P_D2.z * 255, 255);
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    draw_list->AddRectFilled(pos, posRect, isMouseOverRect ?  IM_COL32(33, 150, 240, 255) : color);
+    draw_list->AddRectFilled(pos, posRect, isMouseOverRect ?  IM_COL32(Col_S1_B1.x * 255, Col_S1_B1.y * 255, Col_S1_B1.z * 255, 255) : color);
 }
 
 void Editor::MakeSprite(int spriteId)
 {
     ImGuiIO& io = ImGui::GetIO();
-    ImVec4 bg_col = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);             
-    ImVec4 tint_col = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+    ImVec4 bg_col = Col_S2_D2;             
+    ImVec4 tint_col = Col_T_1;
     ImVec2 size = ImVec2(32.0f * io.FontGlobalScale,32.0f * io.FontGlobalScale);
     uint8_t byte = 0;
 
@@ -1582,17 +1559,17 @@ void Editor::DrawMetaSprites(int metaId)
             sprintf(button_label, "%02i" , id);
             ImGui::PushID(id);
           
-            ImVec4 color = ImVec4(0.15f, 0.35f, 0.15f, 1.0f);
+            ImVec4 color = Col_S2_B2;
 
             int dir = (id * 20 + 2096);
             int flag = editorEngineRef->Peek(dir + 4) + editorEngineRef->Peek(dir + 9) + 
                        editorEngineRef->Peek(dir + 14) + editorEngineRef->Peek(dir + 19);
         
             if (flag == 512) 
-                color = ImVec4(0.25f, 0.15f, 0.15f, 1.0f);
+                color = Col_S2_D1;
             
             if (currentMetaSprite == id) 
-                color = ImVec4(0.1f, 0.4f, 0.8f, 1.0f);
+                color = Col_P_B2;
 
             ImGui::PushStyleColor(ImGuiCol_Button, color);
             if(ImGui::Button(button_label))
@@ -1610,7 +1587,7 @@ void Editor::DrawMetaSprites(int metaId)
     ImGui::SameLine();
     ImGui::BeginGroup();
 
-    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_Text, Col_T_1);
     ImGui::Text("Sprite   Flags Position");
     ImGui::Text("ID  Col  H  V  X  Y  Mode  Copy Paste");
     ImGui::PopStyleColor();
