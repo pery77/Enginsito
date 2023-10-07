@@ -390,7 +390,7 @@ void Editor::DrawshowFileBrowser()
     float min_content_size = pw_size.x - style.WindowPadding.x * 4.0f;
 
     ImGui::BeginChild("#Head",ImVec2(0, list_item_height), true, ImGuiWindowFlags_NoScrollWithMouse);
-        ImGui::Text("Current path: %s", editorEngineRef->bios->CurrentPath.c_str());
+        ImGui::Text(" Current path: %s", editorEngineRef->bios->CurrentPath.c_str());
         ImGui::SameLine();
 
     ImGui::EndChild();
@@ -417,8 +417,8 @@ void Editor::DrawshowFileBrowser()
             }
         }
         ImGui::PopStyleColor(2);
-    ImGui::PushStyleColor(ImGuiCol_Text, Col_P_B1);
-    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Col_S2_M);
+    ImGui::PushStyleColor(ImGuiCol_Text, Col_T_1);
+    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, Col_P_B2);
     ss = Tools::GetFiles(editorEngineRef->bios->CurrentPath.c_str());
     while (std::getline(ss, temp))
     {
@@ -433,13 +433,17 @@ void Editor::DrawshowFileBrowser()
         
     ImGui::PopStyleColor(2);
     ImGui::EndChild();
+
     ImGui::BeginChild("#Foot",ImVec2(0, list_item_height), true, ImGuiWindowFlags_NoScrollWithMouse);
-        ImGui::Text("Current program: %s", editorEngineRef->bios->CurrentProject.name.c_str());
+        ImGui::Text(" Current program: %s", editorEngineRef->bios->CurrentProject.name.c_str());
     ImGui::EndChild();
+
     ImGui::BeginChild("#Foot2",ImVec2(0, list_item_height*2), true, ImGuiWindowFlags_NoScrollWithMouse);
-        ImGui::Text("Create");
+        ImGui::Text(" Create");
+        ImGui::Text(" ");
+        ImGui::SameLine();
         static char str0[128] = "new";
-        if(ImGui::Button("File"))
+        if(ImGui::Button(" File "))
         {
             SaveCurrentFile();
             editorEngineRef->bios->SetProgram(str0);
@@ -448,7 +452,7 @@ void Editor::DrawshowFileBrowser()
         }
         
         ImGui::SameLine();
-        if(ImGui::Button("Folder"))
+        if(ImGui::Button(" Folder "))
         {
             std::string path = "assets/" + editorEngineRef->bios->CurrentPath + "/" + str0;
             int status = mkdir(path.c_str());
@@ -464,7 +468,9 @@ void Editor::DrawshowFileBrowser()
         }
         
         ImGui::SameLine();
+        ImGui::PushItemWidth(200);
         ImGui::InputText("###inputName", str0, IM_ARRAYSIZE(str0));
+        ImGui::PopItemWidth();
     ImGui::EndChild(); 
 }
 
@@ -573,7 +579,7 @@ void Editor::SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTexture
 
     ImGui::SetCursorScreenPos(pos);
 
-    ImGui::PushStyleColor(ImGuiCol_Button, Col_P_D1);
+    ImGui::PushStyleColor(ImGuiCol_Button, Col_P_B2);
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, Col_S2_B1);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
     if (ImGui::ImageButton("###", my_tex_id, size, uv0, uv1, col, Col_T_1))
@@ -1029,39 +1035,49 @@ void Editor::DrawSFX()
         ImGui::RadioButton("Saw", &osc, 4);
         ImGui::SameLine();
         ImGui::RadioButton("Noi", &osc, 5);
+        ImGui::Text("____________________");
+        ImGui::Text("PRESET %i",id);
 
         editorEngineRef->audioManager->SetOSC(id, osc);
     ImGui::EndGroup();
+
     ImGui::SameLine();
-    ImGui::Text("    ");
+    ImGui::Text("  ");
     ImGui::SameLine();
+
     if(ImGuiKnobs::KnobInt("Bank", &id, 0, 15, 0.1f, "%01i", ImGuiKnobVariant_Stepped))
     {
         editorEngineRef->audioManager->SetChannelPreset(3,id);
     }
+
+    ImGui::SameLine();
+    ImGui::Text("  | ");
+    ImGui::SameLine();
+
     ImGui::BeginGroup();
-            ImGui::Text("Envelope");
-            if (ImGuiKnobs::KnobInt("att", &attack, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
-            {
-                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("dec", &decay, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
-            {
-                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("sus", &sustain, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
-            {
-                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
-            }
-            ImGui::SameLine();
-            if (ImGuiKnobs::KnobInt("rel", &release, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
-            {
-                editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
-            }
-        ImGui::EndGroup();
-        ImGui::BeginGroup();
+        ImGui::Text("Envelope");
+        if (ImGuiKnobs::KnobInt("att", &attack, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
+        {
+            editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
+        }
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("dec", &decay, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
+        {
+            editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
+        }
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("sus", &sustain, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
+        {
+            editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
+        }
+        ImGui::SameLine();
+        if (ImGuiKnobs::KnobInt("rel", &release, 0, 255, 1, "%03i", ImGuiKnobVariant_WiperDot)) 
+        {
+            editorEngineRef->audioManager->SetEnv(id, attack, decay, sustain, release); 
+        }
+    ImGui::EndGroup();
+
+    ImGui::BeginGroup();
         ImGui::Text("LFO");
         if (ImGuiKnobs::KnobInt("speed", &lfoSpeed, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
@@ -1071,12 +1087,14 @@ void Editor::DrawSFX()
         if (ImGuiKnobs::KnobInt("depth", &lfoDepth, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
             editorEngineRef->audioManager->SetLFO(id, lfoSpeed, lfoDepth);
-        }  
-        ImGui::EndGroup();
-        ImGui::SameLine();
-        ImGui::Text("    ");
-        ImGui::SameLine();
-        ImGui::BeginGroup();
+        }       
+    ImGui::EndGroup();
+
+    ImGui::SameLine();
+    ImGui::Text(" | ");
+    ImGui::SameLine();
+
+    ImGui::BeginGroup();
         ImGui::Text("LPF");
         if (ImGuiKnobs::KnobInt("cut", &cut, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
         {
@@ -1087,27 +1105,37 @@ void Editor::DrawSFX()
         {
             editorEngineRef->audioManager->SetFilter(id, cut, res);
         }  
-        ImGui::EndGroup();
+    ImGui::EndGroup();
 
-        ImGui::BeginGroup();
+    ImGui::SameLine();
+    ImGui::Text(" | ");
+    ImGui::SameLine();
+
+    ImGui::BeginGroup();
         ImGui::Text("Slide");
-        if (ImGuiKnobs::KnobInt("slope", &slope, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("slope", &slope, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Tick)) 
         {
             editorEngineRef->audioManager->SetSlide(id, slope, curve);
         }  
         ImGui::SameLine();
-        if (ImGuiKnobs::KnobInt("curve", &curve, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Stepped)) 
+        if (ImGuiKnobs::KnobInt("curve", &curve, 0, 255, 1.f, "%03i", ImGuiKnobVariant_Tick)) 
         {
             editorEngineRef->audioManager->SetSlide(id, slope, curve);
         } 
-        ImGui::EndGroup();
-        ImGui::SameLine();
-        ImGui::Text("    ");
-        ImGui::SameLine();
-        ImGui::BeginGroup();
-
     ImGui::EndGroup();
-    
+
+    ImGui::SameLine();
+    ImGui::Text(" | ");
+    ImGui::SameLine();
+
+    ImGui::BeginGroup();
+        ImGui::Text(" ");
+        ImGui::Text(" ");
+        if(ImGui::Button("Export", ImVec2(80,60)))
+        {
+
+        }
+    ImGui::EndGroup();
 }
 
 inline unsigned char setBit(unsigned char byte, int position, bool newState) {
@@ -1655,7 +1683,7 @@ void Editor::Draw()
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar;
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoScrollbar;
+    window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;// | ImGuiWindowFlags_NoScrollbar;
 
     if (ScreenWindowHasFocus) window_flags |= ImGuiWindowFlags_NoScrollWithMouse;
         
@@ -1869,7 +1897,7 @@ void Editor::Draw()
 
         if (show_crt)
         {
-            ImGui::Begin("CRT", &show_crt, ImGuiWindowFlags_NoCollapse); 
+            ImGui::Begin("CRT", &show_crt, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar); 
                 DrawCRT();
             ImGui::End();
         }
@@ -1886,14 +1914,14 @@ void Editor::Draw()
 
         if(show_memory)
         {
-            ImGui::Begin("Memory", &show_memory, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Memory", &show_memory, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar);
                 DrawMemory();
             ImGui::End();
         }
 
         if (show_sprites)
         {
-            ImGui::Begin("Sprites", &show_sprites, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Sprites", &show_sprites, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar);
                 ImGui::BeginGroup();
                     DrawSprites();
                 ImGui::EndGroup();
@@ -1902,21 +1930,21 @@ void Editor::Draw()
 
         if (show_makeSprite)
         {
-            ImGui::Begin("Make Sprite", &show_makeSprite, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Make Sprite", &show_makeSprite, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar);
                 MakeSprite(currentSprite);
             ImGui::End(); 
         }
 
         if (show_metaSprite)
         {
-            ImGui::Begin("Meta Sprite", &show_metaSprite, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("Meta Sprite", &show_metaSprite, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar);
                DrawMetaSprites(currentMetaSprite);
             ImGui::End(); 
         }
 
         if (show_sfx)
         {
-            ImGui::Begin("SFX", &show_sfx, ImGuiWindowFlags_NoCollapse);
+            ImGui::Begin("SFX", &show_sfx, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar);
                 DrawSFX();
             ImGui::End();
         }
