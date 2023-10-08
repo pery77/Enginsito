@@ -335,7 +335,7 @@ void Editor::Credits()
         Link("FontAwesome", "https://fontawesome.com/", c);
         Link("Font", "https://www.fontspace.com/mozart-nbp-font-f18977", c);
         Link("Palettes", "https://lospec.com/palette-list", c);
-        Link("Music", "https://archeagemmllibrary.com/", c);
+        Link("MML Music Library", "https://archeagemmllibrary.com/", c);
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Text("Thanks to:");
@@ -950,6 +950,36 @@ void Editor::DrawToolsPiano()
 
 void Editor::DrawToolsSequence()
 {
+
+    static char ex_str0[5][4096] = {
+        " ",
+        "@0t220L4O4V70t220d4e4f+4g4a4a+4b8b8b8&b32r16r32b8&b32r16r32b2r8g8>e2.d+2.e2.r8<g8a8b8>c8d8e2.d+2f4e2.r2r8<g8>d2.c+2.d2.r8<g8a8b8>c8c+8d2.<g2>f4e2.r2r8<g8>g2.g2.g2.g4a4r8g8f2.f2.f2.f4g4r8f8e2.<a4b4>f4e8e8e4.<b8>c2.",
+        "@0t150L4V30>e4<b8>c8d8e16d16c8<b8a4a8>c8e4d8c8<b4.>c8d4e4c4<a4a2&a8>d4f8a4g8f8e4.c8e4d8c8<b4b8>c8d4e4c4<a4a2>e4<b8>c8d8e16d16c8<b8a4a8>c8e4d8c8<b4.>c8d4e4c4<a4a2&a8>d4f8a4g8f8e4.c8e4d8c8<b4b8>c8d4e4c4<a4a2e2c2d2<b2>c2<a2g+2b2>e2c2d2<b2>c4e4a2g+1>e4<b8>c8d8e16d16c8<b8a4a8>c8e4d8c8<b4.>c8d4e4c4<a4a2&a8>d4f8a4g8f8e4.c8e4d8c8<b4b8>c8d4e4c4<a4a2>e4<b8>c8d8e16d16c8<b8a4a8>c8e4d8c8<b4.>c8d4e4c4<a4a2&a8>d4f8a4g8f8e4.c8e4d8c8<b4b8>c8d4e4c4<a4a4",
+        "@0t126L16v30a+f>f<f>d+<f>c+<f>c<f>c+<f>c<fa+f>c<f>c+<f>d+<f>c+<f>c<fg+f>c<fa+fa+f>f<f>d+<f>c+<f>c<f>c+<f>c<fa+f>c<f>c+<f>d+<f>c+<f>c<fg+f>c<fa+f>d+8g+f2&fd+8c+8d+8.g+8.f4.d+8c+8d+8g+f2&fd+4f+8.g+4&g+f8.f+4&f+d+8g+f2&fd+8c+8d+8.g+8.f4.d+8c+8d+8g+f2&fd+8f8f+8.g+4&g+f8g8a8>c8<c8.<a+8.>a+8c8.<a+8.>a+8c8.<a+8.>a+8c+>c+<c>c<<a+>a+<g+>g+c8<a+>a+4&a+c8<a+>a+4&a+c8<a+>a+4&a+>c+8d+8cc+8.<<",
+        "@0t90l16v80ga+>dd+<ga+>dd+<ga+>dd+<ga+>dd+<f+a>dd+<f+a>dd+<f+a>dd+<f+a>dd+<fg+>dd+<fg+>dd+<fg+>dd+<fg+>dd+<eg>dd+<eg>dd+<eg>dd+<eg>dd+<d+g>cd<d+g>cd<d+g>cd<d+g>cd<dg>cd<dg>cd<dg>cd<dg>cd<cf+ab+f+a>cd+<a>cd+cd+f+d+f+af+ab+g4"
+    };
+    static char ex_str1[5][4096] = {
+        " ",
+        "@1L4O4V70t220d4c+4c4<b4>c4c+4d8d8d4e4f2r4g2.f+2.g2.r2r4g2.f+2a4g2.r2r4f2.e2.f2.r2r4f2.<b2>a4g2.r2r4>e2.d2.c+2.r2r4d2.c+2.c2.r2r4<c2.f4g4b4b8b8b4r8f8e2.",
+        "@1V30b4g+8a8b4a8g+8e4e8a8>c4<b8a8g+8e8g+8a8b4>c4<a4e4e2&e8f4a8>c8c16c16<b8a8g4.e8g8a16g16f8e8g+8e8g+8a8b8g+8>c8<g+8a8e8e4e2b4g+8a8b4a8g+8e4e8a8>c4<b8a8g+8e8g+8a8b4>c4<a4e4e2&e8f4a8>c8c16c16<b8a8g4.e8g8a16g16f8e8g+8e8g+8a8b8g+8>c8<g+8a8e8e4e2c2<a2b2g+2a2e2e2g+2>c2<a2b2g+2a4>c4e2d1b4g+8a8b4a8g+8e4e8a8>c4<b8a8g+8e8g+8a8b4>c4<a4e4e2&e8f4a8>c8c16c16<b8a8g4.e8g8a16g16f8e8g+8e8g+8a8b8g+8>c8<g+8a8e8e4e2b4g+8a8b4a8g+8e4e8a8>c4<b8a8g+8e8g+8a8b4>c4<a4e4e2&e8f4a8>c8c16c16<b8a8g4.e8g8a16g16f8e8g+8e8g+8a8b8g+8>c8<g+8a8e8e4e4",
+        "@1t126L16v30c+<a+>g+<a+>f+<a+>f<a+>d+<a+>f<a+>d+<a+>c+<a+>d+<a+>f<a+>f+<a+>f<a+>d+<a+>c<a+>d+<a+>c+<a+>c+<a+>g+<a+>f+<a+>f<a+>d+<a+>f<a+>d+<a+>c+<a+>d+<a+>f<a+>f+<a+>f<a+>d+<a+>c<a+>d+<a+>c+<a+4.>c<a+>cc+8d+8f2&fc<a+>cc+8d+8f2&fd+c+d+f8f+8g+8a+8a2f8.d+2&d+8c<a+>cc+8d+8f2&fc<a+>cc+8d+8f2&fd+c+d+f8f+8g+8a+8a2f8.d+4&d+g+8.f4&fg+8.f4&fg+8.f4&ff>f<d+>d+<c+>c+<c>c<g+8f>f4&f<g+8f>f4&f<g+8f>f4&ff8f+8d+f8.",
+        "@1t90l16v80o5<g2a+4>d4c+4<f+2.f2&fg+4>c+8c4<e2.l16d+dd+4.g8.>d+8.d8<dc+d4.g8.>d8.c+8<df+af+ab+a>cd+cd+f+af+d+cd+c<af+g4;"
+    };
+    static char ex_str2[5][4096] = {
+        " ",
+        "@2L4O4V70t220r1r1<g4g2.c4g4>c4<<b4>g4b4c4g4>c4<e4g4>c4<c4g4>c4<<b4>g4b4c4g4>c4<e4g4>c4<d4g4b4c+4f+4a+4d4g4b4<b4>g4b4d4g4b4<b4>g4b4c4g4>c4<<g4>g4>c4<c4g4>e4<<b4>g4>d4<<a+4>g4>c+4<c+4g4>e4<d4a4>f4<c+4a4>f4<c4a4>f4<<b4>g4>f4<<c4>g4>e4<<g4>g4g4f8f8f4r8<b8>c2.",
+        "@2V30o3e8>e8<e8>e8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<a8>a8<g+8>g+8<g+8>g+8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<b8>c8d8<d4d4d8a8f8c8>c4c8<c8g8g4b8>b4b4e4g+8<a8>e8<a8>e8<a2e8>e8<e8>e8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<a8>a8<g+8>g+8<g+8>g+8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<b8>c8d8<d4d4d8a8f8c8>c4c8<c8g8g4b8>b4b4e4g+8<a8>e8<a8>e8<a2>a8>e8<a8>e8<a8>e8<a8>e8<g+8>e8<g+8>e8<g+8>e8<g+8>e8<a8>e8<a8>e8<a8>e8<a8>e8<g+8>e8<g+8>e2&e8<a8>e8<a8>e8<a8>e8<a8>e8<g+8>e8<g+8>e8<g+8>e8<g+8>e8<a8>e8<a8>e8<a8>e8<a8>e8<g+8>e8<g+8>e2&e8<<e8>e8<e8>e8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<a8>a8<g+8>g+8<g+8>g+8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<b8>c8d8<d4d4d8a8f8c8>c4c8<c8g8g4b8>b4b4e4g+8<a8>e8<a8>e8<a2e8>e8<e8>e8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<a8>a8<g+8>g+8<g+8>g+8<e8>e8<e8>e8<a8>a8<a8>a8<a8>a8<b8>c8d8<d4d4d8a8f8c8>c4c8<c8g8g4b8>b4b4e4g+8<a8>e8<a8>e8<a4",
+        "@2t126L16v60o2a+1>f1a+1>f1<<a+1g+1f+1f1a+1g+1f+1f2f>f<g>g<a>ac>c<<a+2g+2f+2g+2a+2g+2f+2g+2",
+        " "
+    };
+    static char ex_str3[5][4096] = {
+        " ",
+        "@3L4O4V70t220r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4r4g8r8g4r4g8g8g4",
+        " ",
+        " ",
+        " "
+    };
+
     static char str0[4096] = "";
     static char str1[4096] = "";
     static char str2[4096] = "";
@@ -971,20 +1001,13 @@ void Editor::DrawToolsSequence()
         editorEngineRef->audioManager->ChannelStop(3);
     }
     ImGui::SameLine();
-    if (ImGui::Button("Clear")) 
-    {
-        strcpy(str0, "");
-        strcpy(str1, "");
-        strcpy(str2, "");
-        strcpy(str3, "");
-    }
-    ImGui::SameLine();
-    ImGui::PushItemWidth(200);
-    const char* items[] = {  "Mario Water", "Tetris", "Bloody", "XXX", "YYY" };
+
+    ImGui::PushItemWidth(300);
+    const char* items[] = {  "Clear", "Mario-Underwater (Vycaon)", "Tetris (Debbi)", "Bloody Tears (Agor)", "Zelda Dungeon (Caymen)" };
     static int item_current_idx =  0;
     const char* combo_preview_value = items[item_current_idx];
 
-    if (ImGui::BeginCombo("Song Examples", combo_preview_value, ImGuiComboFlags_NoArrowButton))
+    if (ImGui::BeginCombo("Songs Examples", combo_preview_value, ImGuiComboFlags_NoArrowButton))
     {
         for (int n = 0; n < IM_ARRAYSIZE(items); n++)
         {
@@ -992,7 +1015,10 @@ void Editor::DrawToolsSequence()
             if (ImGui::Selectable(items[n], is_selected))
             {
                 item_current_idx = n;
-                strcpy(str0, "xxxxx");
+                strcpy(str0, ex_str0[n]);
+                strcpy(str1, ex_str1[n]);
+                strcpy(str2, ex_str2[n]);
+                strcpy(str3, ex_str3[n]);
             }
 
             // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)

@@ -61,7 +61,6 @@ void MMLParser::play(MMLPTR mml, bool _isLoop) {
 	isLoop = _isLoop;
 	startup();
 	size = measure();
-	printf("Size: %i\n" , size);
 	startup();
 //	tempo = 120;
 	_isPlaying = true;
