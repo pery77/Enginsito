@@ -69,7 +69,7 @@
         "show_tools": false
     },
     "layout_5": {
-        "show_code": false,
+        "show_code": true,
         "show_console": true,
         "show_crt": true,
         "show_docs": false,

@@ -335,6 +335,7 @@ void Editor::Credits()
         Link("FontAwesome", "https://fontawesome.com/", c);
         Link("Font", "https://www.fontspace.com/mozart-nbp-font-f18977", c);
         Link("Palettes", "https://lospec.com/palette-list", c);
+        Link("Music", "https://archeagemmllibrary.com/", c);
         ImGui::Spacing();
         ImGui::Separator();
         ImGui::Text("Thanks to:");
@@ -949,10 +950,10 @@ void Editor::DrawToolsPiano()
 
 void Editor::DrawToolsSequence()
 {
-    static char str0[4096] = "@0cccc";
-    static char str1[4096] = "@1eeee";
-    static char str2[4096] = "@2gggg";
-    static char str3[4096] = "@3O3cece";
+    static char str0[4096] = "";
+    static char str1[4096] = "";
+    static char str2[4096] = "";
+    static char str3[4096] = "";
 
     if (ImGui::Button("Play")) 
     {
@@ -969,14 +970,62 @@ void Editor::DrawToolsSequence()
         editorEngineRef->audioManager->ChannelStop(2);
         editorEngineRef->audioManager->ChannelStop(3);
     }
+    ImGui::SameLine();
+    if (ImGui::Button("Clear")) 
+    {
+        strcpy(str0, "");
+        strcpy(str1, "");
+        strcpy(str2, "");
+        strcpy(str3, "");
+    }
+    ImGui::SameLine();
+    ImGui::PushItemWidth(200);
+    const char* items[] = {  "Mario Water", "Tetris", "Bloody", "XXX", "YYY" };
+    static int item_current_idx =  0;
+    const char* combo_preview_value = items[item_current_idx];
+
+    if (ImGui::BeginCombo("Song Examples", combo_preview_value, ImGuiComboFlags_NoArrowButton))
+    {
+        for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+        {
+            const bool is_selected = (item_current_idx == n);
+            if (ImGui::Selectable(items[n], is_selected))
+            {
+                item_current_idx = n;
+                strcpy(str0, "xxxxx");
+            }
+
+            // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+            if (is_selected)
+                ImGui::SetItemDefaultFocus();
+        }
+        ImGui::EndCombo();
+    }
+    ImGui::PopItemWidth();
+
     ImGui::BeginGroup();
-    ImGui::Text("Channel 0");
+    ImGui::Text(TextFormat("Channel 0 %04i/%04i - %s", 
+        editorEngineRef->audioManager->GetChannelPosition(0), 
+        editorEngineRef->audioManager->GetChannelSize(0), 
+        editorEngineRef->audioManager->GetNoteName(0)));
     ImGui::InputTextMultiline("##channel_00", str0, IM_ARRAYSIZE(str0), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
-    ImGui::Text("Channel 1");
+    
+    ImGui::Text(TextFormat("Channel 1 %04i/%04i - %s", 
+        editorEngineRef->audioManager->GetChannelPosition(1), 
+        editorEngineRef->audioManager->GetChannelSize(1), 
+        editorEngineRef->audioManager->GetNoteName(1)));
     ImGui::InputTextMultiline("##channel_01", str1, IM_ARRAYSIZE(str1), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
-    ImGui::Text("Channel 2");
+    
+    ImGui::Text(TextFormat("Channel 2 %04i/%04i - %s", 
+        editorEngineRef->audioManager->GetChannelPosition(2), 
+        editorEngineRef->audioManager->GetChannelSize(2), 
+        editorEngineRef->audioManager->GetNoteName(2)));
     ImGui::InputTextMultiline("##channel_02", str2, IM_ARRAYSIZE(str2), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
-    ImGui::Text("Channel 3");
+    
+    ImGui::Text(TextFormat("Channel 3 %04i/%04i - %s", 
+        editorEngineRef->audioManager->GetChannelPosition(3), 
+        editorEngineRef->audioManager->GetChannelSize(3), 
+        editorEngineRef->audioManager->GetNoteName(3)));
     ImGui::InputTextMultiline("##channel_03", str3, IM_ARRAYSIZE(str3), ImVec2(-FLT_MIN, ImGui::GetTextLineHeight() * 5));
     ImGui::EndGroup();
     
