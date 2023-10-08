@@ -482,11 +482,42 @@ void Editor::DrawCode(bool* p_open)
 {
     auto cpos = codeEditor.GetCursorPosition();
 
-    ImGui::Begin("Code Editor", p_open, ImGuiWindowFlags_HorizontalScrollbar);
+    ImGui::Begin("Code Editor", p_open, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("Edit"))
+            {
+                bool ro = codeEditor.IsReadOnly();
+                if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
+                    codeEditor.SetReadOnly(ro);
+                ImGui::Separator();
+                if (ImGui::MenuItem("Undo", "Ctrl-Z", nullptr, !ro && codeEditor.CanUndo()))
+                    codeEditor.Undo();
+                if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && codeEditor.CanRedo()))
+                    codeEditor.Redo();
+                ImGui::Separator();
+                if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, codeEditor.HasSelection()))
+                    codeEditor.Copy();
+                if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && codeEditor.HasSelection()))
+                    codeEditor.Cut();
+                if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && codeEditor.HasSelection()))
+                    codeEditor.Delete();
+                if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
+                    codeEditor.Paste();
+                ImGui::Separator();
+                if (ImGui::MenuItem("Select all", "Ctrl-A", nullptr, true))
+                    codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
+                ImGui::Separator();
+                
+                ImGui::EndMenu();
+            }
+        ImGui::EndMenuBar();
+    }
+
 		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, codeEditor.GetTotalLines(),
 			        codeEditor.IsOverwrite() ? "Ovr" : "Ins", codeEditor.CanUndo() ? "*" : " ",
                     editorEngineRef->bios->CurrentProject.name.c_str());
-
+        ImGui::Separator();
         codeEditor.Render("TextEditor");
     ImGui::End();
 }
@@ -956,14 +987,14 @@ void Editor::DrawToolsSequence()
         "@0t220L4O4V70t220d4e4f+4g4a4a+4b8b8b8&b32r16r32b8&b32r16r32b2r8g8>e2.d+2.e2.r8<g8a8b8>c8d8e2.d+2f4e2.r2r8<g8>d2.c+2.d2.r8<g8a8b8>c8c+8d2.<g2>f4e2.r2r8<g8>g2.g2.g2.g4a4r8g8f2.f2.f2.f4g4r8f8e2.<a4b4>f4e8e8e4.<b8>c2.",
         "@0t150L4V30>e4<b8>c8d8e16d16c8<b8a4a8>c8e4d8c8<b4.>c8d4e4c4<a4a2&a8>d4f8a4g8f8e4.c8e4d8c8<b4b8>c8d4e4c4<a4a2>e4<b8>c8d8e16d16c8<b8a4a8>c8e4d8c8<b4.>c8d4e4c4<a4a2&a8>d4f8a4g8f8e4.c8e4d8c8<b4b8>c8d4e4c4<a4a2e2c2d2<b2>c2<a2g+2b2>e2c2d2<b2>c4e4a2g+1>e4<b8>c8d8e16d16c8<b8a4a8>c8e4d8c8<b4.>c8d4e4c4<a4a2&a8>d4f8a4g8f8e4.c8e4d8c8<b4b8>c8d4e4c4<a4a2>e4<b8>c8d8e16d16c8<b8a4a8>c8e4d8c8<b4.>c8d4e4c4<a4a2&a8>d4f8a4g8f8e4.c8e4d8c8<b4b8>c8d4e4c4<a4a4",
         "@0t126L16v30a+f>f<f>d+<f>c+<f>c<f>c+<f>c<fa+f>c<f>c+<f>d+<f>c+<f>c<fg+f>c<fa+fa+f>f<f>d+<f>c+<f>c<f>c+<f>c<fa+f>c<f>c+<f>d+<f>c+<f>c<fg+f>c<fa+f>d+8g+f2&fd+8c+8d+8.g+8.f4.d+8c+8d+8g+f2&fd+4f+8.g+4&g+f8.f+4&f+d+8g+f2&fd+8c+8d+8.g+8.f4.d+8c+8d+8g+f2&fd+8f8f+8.g+4&g+f8g8a8>c8<c8.<a+8.>a+8c8.<a+8.>a+8c8.<a+8.>a+8c+>c+<c>c<<a+>a+<g+>g+c8<a+>a+4&a+c8<a+>a+4&a+c8<a+>a+4&a+>c+8d+8cc+8.<<",
-        "@0t90l16v80ga+>dd+<ga+>dd+<ga+>dd+<ga+>dd+<f+a>dd+<f+a>dd+<f+a>dd+<f+a>dd+<fg+>dd+<fg+>dd+<fg+>dd+<fg+>dd+<eg>dd+<eg>dd+<eg>dd+<eg>dd+<d+g>cd<d+g>cd<d+g>cd<d+g>cd<dg>cd<dg>cd<dg>cd<dg>cd<cf+ab+f+a>cd+<a>cd+cd+f+d+f+af+ab+g4"
+        "@1t90l16v30ga+>dd+<ga+>dd+<ga+>dd+<ga+>dd+<f+a>dd+<f+a>dd+<f+a>dd+<f+a>dd+<fg+>dd+<fg+>dd+<fg+>dd+<fg+>dd+<eg>dd+<eg>dd+<eg>dd+<eg>dd+<d+g>cd<d+g>cd<d+g>cd<d+g>cd<dg>cd<dg>cd<dg>cd<dg>cd<cf+ab+f+a>cd+<a>cd+cd+f+d+f+af+ab+g4"
     };
     static char ex_str1[5][4096] = {
         " ",
         "@1L4O4V70t220d4c+4c4<b4>c4c+4d8d8d4e4f2r4g2.f+2.g2.r2r4g2.f+2a4g2.r2r4f2.e2.f2.r2r4f2.<b2>a4g2.r2r4>e2.d2.c+2.r2r4d2.c+2.c2.r2r4<c2.f4g4b4b8b8b4r8f8e2.",
         "@1V30b4g+8a8b4a8g+8e4e8a8>c4<b8a8g+8e8g+8a8b4>c4<a4e4e2&e8f4a8>c8c16c16<b8a8g4.e8g8a16g16f8e8g+8e8g+8a8b8g+8>c8<g+8a8e8e4e2b4g+8a8b4a8g+8e4e8a8>c4<b8a8g+8e8g+8a8b4>c4<a4e4e2&e8f4a8>c8c16c16<b8a8g4.e8g8a16g16f8e8g+8e8g+8a8b8g+8>c8<g+8a8e8e4e2c2<a2b2g+2a2e2e2g+2>c2<a2b2g+2a4>c4e2d1b4g+8a8b4a8g+8e4e8a8>c4<b8a8g+8e8g+8a8b4>c4<a4e4e2&e8f4a8>c8c16c16<b8a8g4.e8g8a16g16f8e8g+8e8g+8a8b8g+8>c8<g+8a8e8e4e2b4g+8a8b4a8g+8e4e8a8>c4<b8a8g+8e8g+8a8b4>c4<a4e4e2&e8f4a8>c8c16c16<b8a8g4.e8g8a16g16f8e8g+8e8g+8a8b8g+8>c8<g+8a8e8e4e4",
         "@1t126L16v30c+<a+>g+<a+>f+<a+>f<a+>d+<a+>f<a+>d+<a+>c+<a+>d+<a+>f<a+>f+<a+>f<a+>d+<a+>c<a+>d+<a+>c+<a+>c+<a+>g+<a+>f+<a+>f<a+>d+<a+>f<a+>d+<a+>c+<a+>d+<a+>f<a+>f+<a+>f<a+>d+<a+>c<a+>d+<a+>c+<a+4.>c<a+>cc+8d+8f2&fc<a+>cc+8d+8f2&fd+c+d+f8f+8g+8a+8a2f8.d+2&d+8c<a+>cc+8d+8f2&fc<a+>cc+8d+8f2&fd+c+d+f8f+8g+8a+8a2f8.d+4&d+g+8.f4&fg+8.f4&fg+8.f4&ff>f<d+>d+<c+>c+<c>c<g+8f>f4&f<g+8f>f4&f<g+8f>f4&ff8f+8d+f8.",
-        "@1t90l16v80o5<g2a+4>d4c+4<f+2.f2&fg+4>c+8c4<e2.l16d+dd+4.g8.>d+8.d8<dc+d4.g8.>d8.c+8<df+af+ab+a>cd+cd+f+af+d+cd+c<af+g4;"
+        "@3t90l16v90o5<g2a+4>d4c+4<f+2.f2&fg+4>c+8c4<e2.l16d+dd+4.g8.>d+8.d8<dc+d4.g8.>d8.c+8<df+af+ab+a>cd+cd+f+af+d+cd+c<af+g4;"
     };
     static char ex_str2[5][4096] = {
         " ",
@@ -1774,47 +1805,24 @@ void Editor::Draw()
 
     if (ImGui::BeginMenuBar())
     {
-        if (io.KeyCtrl && io.KeyAlt) {
+        if (io.KeyCtrl && io.KeyAlt) 
+        {
             if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_1))) ChangeLayout(0);
             if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_2))) ChangeLayout(1);
             if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_3))) ChangeLayout(2);
             if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_4))) ChangeLayout(3);
             if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_5))) ChangeLayout(4);
-
         }
-            if (ImGui::BeginMenu("Edit"))
-            {
-                if (show_code)
-                {
-                    bool ro = codeEditor.IsReadOnly();
-                    if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
-                        codeEditor.SetReadOnly(ro);
-                    ImGui::Separator();
-                    if (ImGui::MenuItem("Undo", "Ctrl-Z", nullptr, !ro && codeEditor.CanUndo()))
-                        codeEditor.Undo();
-                    if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && codeEditor.CanRedo()))
-                        codeEditor.Redo();
-                    ImGui::Separator();
-                    if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, codeEditor.HasSelection()))
-                        codeEditor.Copy();
-                    if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && codeEditor.HasSelection()))
-                        codeEditor.Cut();
-                    if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && codeEditor.HasSelection()))
-                        codeEditor.Delete();
-                    if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
-                        codeEditor.Paste();
-                    ImGui::Separator();
-                    if (ImGui::MenuItem("Select all", "Ctrl-A", nullptr, true))
-                        codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
-                    ImGui::Separator();
-                }
-                if (ImGui::MenuItem("Exit", "Alt+F4", nullptr, true))
-                    editorEngineRef->bios->ShouldClose = true;
-                ImGui::EndMenu();
-            }
+
+        if (ImGui::BeginMenu("Exit"))
+        {
+            if (ImGui::MenuItem("Quit", "Alt+F4", nullptr, true))
+                editorEngineRef->bios->ShouldClose = true;
+            ImGui::EndMenu();
+        }
                 
-            if (ImGui::BeginMenu("View"))
-            {
+        if (ImGui::BeginMenu("View"))
+        {
                 ImGui::MenuItem("Tools", NULL, &show_tools);
                 ImGui::MenuItem("FPS", NULL, &show_FPS);
                 ImGui::Separator();
@@ -1842,10 +1850,10 @@ void Editor::Draw()
                 #endif
 
                 ImGui::EndMenu();
-            }
+        }
             
-            if (ImGui::BeginMenu(TextFormat("Layouts(%i)", currentLayout + 1)))
-            {
+        if (ImGui::BeginMenu(TextFormat("Layouts(%i)", currentLayout + 1)))
+        {
                 if(ImGui::MenuItem("Layout 1", "Ctrl-Alt-1", currentLayout == 0)) {
                     ChangeLayout(0);
                 }  
@@ -1866,16 +1874,16 @@ void Editor::Draw()
                     CloseAll();
                 }
                 ImGui::EndMenu();
-            }   
+        }   
 
-            if (ImGui::BeginMenu("Help"))
-            {
-                ImGui::MenuItem("About", NULL, &show_credits);        
-                ImGui::EndMenu();
-            }  
+        if (ImGui::BeginMenu("Help"))
+        {
+            ImGui::MenuItem("About", NULL, &show_credits);        
+            ImGui::EndMenu();
+        }  
 
-            ImGui::EndMenuBar();
-        }
+        ImGui::EndMenuBar();
+    }
         
         ImGuiID dockspace_id = ImGui::GetID("DockId");
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f),dockspace_flags);

@@ -59,10 +59,10 @@ struct Console
 
          ImVec4 color;
          bool has_color = false;
-         if (strstr(item, "[ERROR]")) { color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f); has_color = true; }
-         else if (strncmp(item, "# ", 2) == 0) { color = ImVec4(1.0f, 0.8f, 0.6f, 1.0f); has_color = true; }
-         else if (strstr(item, "[INFO]")) { color = ImVec4(0.6f, 0.8f, 1.0f, 1.0f); has_color = true; }
-         else if (strstr(item, "[WARN]")) { color = ImVec4(1.0f, 0.8f, 0.6f, 1.0f); has_color = true; }
+         if (strstr(item, "[ERROR]")) { color = ImVec4(0.8f, 0.4f, 0.4f, 1.0f); has_color = true; }
+         else if (strncmp(item, "# ", 2) == 0) { color = ImVec4(0.8f, 0.7f, 0.6f, 1.0f); has_color = true; }
+         else if (strstr(item, "[INFO]")) { color = ImVec4(0.23f, 0.35f, 0.38f, 1.00f); has_color = true; }
+         else if (strstr(item, "[WARN]")) { color = ImVec4(0.35f, 0.28f, 0.13f, 1.00f); has_color = true; }
          if (has_color)
              ImGui::PushStyleColor(ImGuiCol_Text, color);
          ImGui::TextUnformatted(item);

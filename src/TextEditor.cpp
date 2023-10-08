@@ -2104,7 +2104,7 @@ const TextEditor::Palette & TextEditor::GetBasicPalette()
 			0xff000000, // Preproc identifier
 		0xff55996a, // Comment (single line)
 		0xff55996a, // Comment (multi line)
-		0x221e1e1e, // Background
+		0xff181202, // Background
 		0xffd6d6d6, // Cursor
 		0xff784f26, // Selection
 		0xa0000099, // ErrorMarker
