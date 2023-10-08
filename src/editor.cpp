@@ -193,7 +193,7 @@ Editor::Editor(Engine* _engine)
     colors[ImGuiCol_TitleBg]                = Col_S2_M;
     colors[ImGuiCol_TitleBgActive]          = Col_S2_B2;
     colors[ImGuiCol_TitleBgCollapsed]       = Col_P_D2;
-    colors[ImGuiCol_MenuBarBg]              = Col_S1_D2;
+    colors[ImGuiCol_MenuBarBg]              = Col_S2_D2;
     colors[ImGuiCol_ScrollbarBg]            = Col_S1_D2;
     colors[ImGuiCol_ScrollbarGrab]          = Col_S1_M;
     colors[ImGuiCol_ScrollbarGrabHovered]   = Col_S1_B2;
@@ -1118,7 +1118,7 @@ void Editor::DrawSFX()
     ImGui::BeginGroup();
         ImGui::Text(" ");
         ImGui::Text(" ");
-        if(ImGui::Button("Export", ImVec2(80,60)))
+        if(ImGui::Button("Export", ImVec2(80,90)))
         {
 
         }
@@ -1205,12 +1205,20 @@ void Editor::MakeSprite(int spriteId)
         {
             copyByte = byte;
         }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Copy");
+        }
         ImGui::PopID();
         ImGui::SameLine();
         ImGui::PushID(TextFormat("pixel_rect_paste###%i",y));
         if(ImGui::Button(TextFormat("%s", ICON_FA_PASTE)))
         {
             editorEngineRef->Poke((currentSprite * 8 + 48) + y, copyByte);
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Paste");
         }
         ImGui::PopID();
         ImGui::EndGroup();
@@ -1374,10 +1382,12 @@ void Editor::DrawMetaLine(int id)
             ImVec4 color = ImVec4(bcol.r / 255.0f, bcol.g / 255.0f, bcol.b / 255.0f, 1.0f);
             ImGui::PushStyleColor(ImGuiCol_Button, color);
             ImGui::PushStyleColor(ImGuiCol_Text, textColor);
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 3.0f);
             if(ImGui::Button(TextFormat("%02i###%04i", col, dir + 3)))
             {
                 ImGui::OpenPopup(colIdName);
             }
+            ImGui::PopStyleVar();
             ImGui::PopStyleColor(2);
             ImGui::SameLine();
 
@@ -1456,11 +1466,19 @@ void Editor::DrawMetaLine(int id)
             for (int c = 0; c < 5; c++)
                 metaLineCopy[c] = editorEngineRef->Peek(dir + c);
         }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Copy");
+        }
         ImGui::SameLine();
         if(ImGui::Button(TextFormat("%s###paste_%i", ICON_FA_PASTE,id)))
         {
             for (int c = 0; c < 5; c++)
                 editorEngineRef->Poke(dir + c, metaLineCopy[c]);
+        }
+        if (ImGui::IsItemHovered())
+        {
+            ImGui::SetTooltip("Paste");
         }
     ImGui::EndGroup();
 }
@@ -1604,7 +1622,7 @@ void Editor::DrawMetaSprites(int metaId)
 
     ImGui::PushStyleColor(ImGuiCol_Text, Col_T_2);
     ImGui::Text("Sprite   Flags Position");
-    ImGui::Text("ID  Col  H  V  X  Y  Mode     Copy Paste");
+    ImGui::Text("ID  Col  H  V   X  Y  Mode");
     ImGui::PopStyleColor();
 
     for ( int i = 0; i<4; i++)
