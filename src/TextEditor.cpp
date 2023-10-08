@@ -104,7 +104,8 @@ std::string TextEditor::GetText(const Coordinates & aStart, const Coordinates & 
 		{
 			istart = 0;
 			++lstart;
-			if(lstart < lend) result += '\n';
+			//if(lstart < lend) result += '\n'; //OHHH SHIT, I CHANGED THIS AND NO REMEMBER WHY :( restored->
+			result += '\n';
 		}
 	}
 
@@ -2106,7 +2107,7 @@ const TextEditor::Palette & TextEditor::GetBasicPalette()
 		0xff55996a, // Comment (multi line)
 		0xff181202, // Background
 		0xffd6d6d6, // Cursor
-		0xff784f26, // Selection
+		0xff62583a, // Selection
 		0xa0000099, // ErrorMarker
 			0x80007777, // Breakpoint
 		0xff696969, // Line number
