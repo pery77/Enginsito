@@ -2093,12 +2093,12 @@ const TextEditor::Palette & TextEditor::GetRetroBluePalette()
 const TextEditor::Palette & TextEditor::GetBasicPalette()
 {
 	const static Palette p = { {
-			0xffffffff,	// None
+			0xffb2b2b2,	// None
 		0xffc586c0,	// Keyword	
 		0xffa8ceb5,	// Number
 		0xff5b91ce,	// String
 			0xff000000, // Char literal
-		0xffd4d4d4, // Punctuation
+		0xffb2b2b2, // Punctuation
 			0xff000000,	// Preprocessor
 		0xffaadcdc, // Identifier
 		0xffd69c56, // Known identifier
@@ -2107,10 +2107,10 @@ const TextEditor::Palette & TextEditor::GetBasicPalette()
 		0xff55996a, // Comment (multi line)
 		0xff181202, // Background
 		0xffd6d6d6, // Cursor
-		0xff62583a, // Selection
+		0xff382f15, // Selection
 		0xa0000099, // ErrorMarker
 			0x80007777, // Breakpoint
-		0xff696969, // Line number
+		0xff28210a, // Line number
 		0x40343434, // Current line fill
 		0x40221114, // Current line fill (inactive)
 		0x40aaaaaa, // Current line edge
