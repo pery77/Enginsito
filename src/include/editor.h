@@ -19,6 +19,7 @@ class Editor
 {
     public:
     #define IM_COL32Vec4(c)    (((ImU32)(255)<<IM_COL32_A_SHIFT) | ((ImU32)(c.z * 255)<<IM_COL32_B_SHIFT) | ((ImU32)(c.y * 255)<<IM_COL32_G_SHIFT) | ((ImU32)(c.x * 255)<<IM_COL32_R_SHIFT))
+    #define IM_COL32Col(c)    (((ImU32)(255)<<IM_COL32_A_SHIFT) | ((ImU32)(c.b)<<IM_COL32_B_SHIFT) | ((ImU32)(c.g)<<IM_COL32_G_SHIFT) | ((ImU32)(c.r)<<IM_COL32_R_SHIFT))
 
     int keyboardOctave = 4;
     int pressedKey = -1;

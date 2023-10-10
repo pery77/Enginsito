@@ -144,7 +144,7 @@ Editor::Editor(Engine* _engine)
     docs.SetText(docsText);
     docs.SetShowWhitespaces(false);
 
-    mem_edit.HighlightColor = IM_COL32(58,88,98,255);
+    mem_edit.HighlightColor = IM_COL32Vec4(Col_P_B1);
     mem_edit.OptShowAscii = false;
 
     Image hackImage = GenImageColor(1,1,(Color){0,0,0,0});
@@ -563,7 +563,7 @@ void Editor::DrawPalette()
         {
             ImDrawList* draw_list = ImGui::GetWindowDrawList();
             ImVec2 pos = ImGui::GetCursorScreenPos();
-            draw_list->AddRectFilled(ImVec2(pos.x+2, pos.y-5), ImVec2(pos.x+28 , pos.y+1.5f), IM_COL32(156,135,91,255));
+            draw_list->AddRectFilled(ImVec2(pos.x+2, pos.y-5), ImVec2(pos.x+28 , pos.y+1.5f), IM_COL32Vec4(Col_S1_B1));
         }
         ImGui::EndGroup();
         if((c+1) % 8 != 0) ImGui::SameLine();
@@ -1316,9 +1316,9 @@ void Editor::PixelRect(int dir, uint8_t bit, ImVec2 pos, ImVec2 size, bool state
     else {
         isMouseOverRect = false;
     }
-    ImU32 color = state ? IM_COL32(Col_T_1.x * 255, Col_T_1.y * 255, Col_T_1.z * 255, 255) : IM_COL32(Col_P_D2.x * 255, Col_P_D2.y * 255, Col_P_D2.z * 255, 255);
+    ImU32 color = state ? IM_COL32Vec4(Col_T_1) : IM_COL32Vec4(Col_P_D2);
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    draw_list->AddRectFilled(pos, posRect, isMouseOverRect ?  IM_COL32(Col_S1_B1.x * 255, Col_S1_B1.y * 255, Col_S1_B1.z * 255, 255) : color);
+    draw_list->AddRectFilled(pos, posRect, isMouseOverRect ?  IM_COL32Vec4(Col_S1_B1) : color);
 }
 
 void Editor::MakeSprite(int spriteId)
@@ -1703,7 +1703,7 @@ void Editor::DrawMetaExample()
     }
 
     draw_list->AddRectFilled(pos, ImVec2(pos.x + backSize.x, pos.y + backSize.y), 
-                            IM_COL32(drawMetaExampleColor.r, drawMetaExampleColor.g, drawMetaExampleColor.b , 255));
+                            IM_COL32Col(drawMetaExampleColor));
 
     for (int id= 0; id<4; id++)
     {
