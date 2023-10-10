@@ -17,16 +17,13 @@
 
 class Editor
 {
-    #define WHITE_KEY_WIDTH  40
-    #define WHITE_KEY_HEIGHT 120
-    #define BLACK_KEY_WIDTH  30
-    #define BLACK_KEY_HEIGHT 60
-
     public:
+    #define IM_COL32Vec4(c)    (((ImU32)(255)<<IM_COL32_A_SHIFT) | ((ImU32)(c.z * 255)<<IM_COL32_B_SHIFT) | ((ImU32)(c.y * 255)<<IM_COL32_G_SHIFT) | ((ImU32)(c.x * 255)<<IM_COL32_R_SHIFT))
 
     int keyboardOctave = 4;
-    int keyboardBaseKey = 96;
     int pressedKey = -1;
+    int currentNote = -1;
+    int pianoVolume = 127;
 
     Texture hackTexture;
 
@@ -101,7 +98,7 @@ class Editor
     void DrawMemory();
     void DrawMetaExample();
     
-    void PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack, bool pressed) ;
+    void PianoKey(ImVec2 size, int note, bool isBlack);
     bool IsBlack(int note);
 
     void DrawChannel(uint8_t channel, ImVec2 pos);

@@ -15,7 +15,7 @@
         "show_screen": true,
         "show_sfx": false,
         "show_sprites": false,
-        "show_tools": true
+        "show_tools": false
     },
     "layout_2": {
         "show_code": false,
@@ -72,7 +72,7 @@
         "show_code": true,
         "show_console": true,
         "show_crt": true,
-        "show_docs": false,
+        "show_docs": true,
         "show_filebrowser": true,
         "show_fps": true,
         "show_makeSprite": true,
@@ -85,8 +85,8 @@
         "show_sprites": true,
         "show_tools": true
     },
-    "window_height": 929,
-    "window_position_x": 204,
-    "window_position_y": 76,
-    "window_width": 1545
+    "window_height": 1001,
+    "window_position_x": 0,
+    "window_position_y": 29,
+    "window_width": 1920
 }

@@ -104,7 +104,6 @@ std::string TextEditor::GetText(const Coordinates & aStart, const Coordinates & 
 		{
 			istart = 0;
 			++lstart;
-			//if(lstart < lend) result += '\n'; //OHHH SHIT, I CHANGED THIS AND NO REMEMBER WHY :( restored->
 			result += '\n';
 		}
 	}
@@ -2481,7 +2480,7 @@ void TextEditor::EnsureCursorVisible()
 	float scrollY = ImGui::GetScrollY();
 
 	auto height = ImGui::GetWindowHeight();
-	auto width = ImGui::GetWindowWidth();
+	auto width = ImGui::GetWindowContentRegionMax().x;
 
 	auto top = 1 + (int)ceil(scrollY / mCharAdvance.y);
 	auto bottom = (int)ceil((scrollY + height) / mCharAdvance.y);

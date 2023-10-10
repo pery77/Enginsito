@@ -239,6 +239,14 @@ void Editor::SaveCurrentFile()
     {
         Tools::console->AddLog("Autosaving: [%s]", editorEngineRef->bios->CurrentProject.programFile.c_str());
         auto textToSave = codeEditor.GetText();
+
+        size_t lastChar = textToSave.find_last_not_of('\n');
+
+        if (lastChar != std::string::npos)
+        {
+            textToSave = textToSave.substr(0, lastChar + 1);
+        }
+
         SaveFileText(editorEngineRef->bios->CurrentProject.programFile.c_str(), (char *)textToSave.c_str());
         editorEngineRef->bios->TryToSaveMemory();
     }
@@ -284,8 +292,10 @@ void Editor::DrawFPS()
     average /= (float)IM_ARRAYSIZE(values);
     char overlay[32];
     sprintf(overlay, "avg: %.2f fps", average);
+    ImGui::PushStyleColor(ImGuiCol_FrameBg, Col_P_D2);
     ImGui::PlotLines("", values, IM_ARRAYSIZE(values), values_offset,overlay ,
                         0.0f, 60.0f, ImVec2(pw_size.x, pw_size.y-20)); 
+    ImGui::PopStyleColor();
 }
 void Editor::Link(const char* text, const char* link, float size)
 { 
@@ -840,39 +850,57 @@ void Editor::DrawMemory()
     mem_edit.DrawContents(editorEngineRef->GetMemory(), 4096);
 }
 
-void Editor::PianoKey(ImVec2 pos, ImVec2 size, int note, bool isBlack, bool pressed) 
+
+void Editor::PianoKey(ImVec2 size, int note, bool isBlack) 
 {
-        ImVec4 color = pressed ? ImVec4(.9f, .2f, .2f, 1.0f) : ImVec4(.9f, .9f, .9f, 1.0f);
-        ImVec4 colorText = ImVec4(.1f, .1f, .1f, 1.0f);
-        const char* formatText = "\n\n\n%d";
+    ImVec4 color = Col_S2_B1;
+    ImVec4 colorHover = Col_S2_B2;
+    ImVec4 colorActive = Col_P_B1;
+    char c;
 
-        if (isBlack)
-        {
-            color = pressed ? ImVec4(.6f, .2f, .2f, 1.0f) : ImVec4(.1f, .1f, .1f, 1.0f);
-            colorText = ImVec4(.9f, .9f, .9f, 1.0f);
-            formatText = "\n%d";
-        }
-        else
-        {
-            ImGui::SetItemAllowOverlap();
-        }
+    for (const auto& kv : keyCharToKey)
+        if (kv.second == note) { c = kv.first; break; }
+        
+    const char* formatText = "\n\n\n%c";
 
-        char button_label[32];
-        sprintf(button_label, formatText , note + ((keyboardOctave - 4) * 12));
+    if (isBlack)
+    {
+        color = Col_S1_D2;
+        colorHover = Col_S1_D1;
+        formatText = "\n%c";
+    }
 
-        ImDrawList* draw_list = ImGui::GetWindowDrawList();
-        draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y - 2), ImGui::IsItemHovered() ?  IM_COL32(100, 100, 100, 255) : IM_COL32(20, 20, 20, 255), 2.0f, 0, 10);
+    ImGui::SetItemAllowOverlap();
 
-        ImGui::SetCursorScreenPos(pos);
+    char button_label[32];
+    sprintf(button_label, formatText , c);
 
-        ImGui::PushStyleColor(ImGuiCol_Button, color);
-        ImGui::PushStyleColor(ImGuiCol_Text, colorText);
-        if (ImGui::Button(button_label, size)) 
-        {
-            editorEngineRef->audioManager->PlayNote(0, note, 127);
-        }
-        ImGui::PopStyleColor();
-        ImGui::PopStyleColor();
+    int finalNote = note + keyboardOctave * 12;
+
+    if (finalNote == pressedKey)
+    {
+        color = colorActive;
+    }
+
+    ImGui::PushStyleColor(ImGuiCol_Button, color);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, colorHover);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, colorActive);
+
+    ImGui::Button(button_label, size);
+        
+    ImGui::PopStyleColor(3);
+    ImGui::SameLine();
+
+    if (ImGui::IsItemHovered() && IsMouseButtonDown(0) && currentNote == -1)
+    {
+        currentNote = finalNote;
+        editorEngineRef->audioManager->PlayNote(3, currentNote, pianoVolume);
+    }
+    if (IsMouseButtonReleased(0) && currentNote != -1)
+    {
+        currentNote = -1;
+        editorEngineRef->audioManager->StopNote(3);
+    }
 }
 
 bool Editor::IsBlack(int note)
@@ -884,99 +912,124 @@ bool Editor::IsBlack(int note)
 void Editor::DrawChannel(uint8_t channel, ImVec2 pos)
 {
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
-    float step = 3.0f;
+    float step = 2.0f;
     ImVec2 init = pos, end;
-    float separation = 200;
 
+    draw_list->AddRectFilled(pos, ImVec2((pos.x + (63 * step)), pos.y + 128), 
+                                IM_COL32Vec4(Col_P_D2), 12.0f);
+    float s = 8*step;
+    for (int c = 1; c < 8; c++)
+    {
+        draw_list->AddLine(ImVec2(pos.x, pos.y + c*s), ImVec2(pos.x + 63 * step, pos.y + c * s), IM_COL32Vec4(Col_P_D1));
+        draw_list->AddLine(ImVec2(pos.x + c*s, pos.y), ImVec2(pos.x + c * s, pos.y + 128), IM_COL32Vec4(Col_P_D1));
+    }
+
+    pos.x += step;
     for (int i = 0; i < 63; i++)
     {
-        float h = editorEngineRef->audioManager->GetSynth()->GetFrameAverage(channel ,i);
-        if (i==0) init = ImVec2(pos.x+ (channel * separation), pos.y + h);
+        float h = editorEngineRef->audioManager->GetSynth()->GetFrameAverage(channel ,i)/2;
+        if (i==0) init = ImVec2(pos.x, pos.y + h);
         
         if (i>0)
         {
-            draw_list->AddLine(init, end, IM_COL32(200, 200, 100, 255));
+            draw_list->AddLine(init, end, IM_COL32Vec4(Col_S1_B1), 2.0f);
             init = end;
         }
 
-        end = ImVec2((pos.x + (i * step)) + (channel * separation), pos.y + h);
+        end = ImVec2((pos.x + (i * step)), pos.y + h);
     }
 }
 
 void Editor::DrawToolsPiano()
-{
-/*      
-        ImVec2 white_key_pos = ImGui::GetCursorScreenPos();
-        ImVec2 black_key_pos = white_key_pos;
+{  
+    float keyWidth = ImGui::CalcTextSize("    ").x;
+    float keyHeight = ImGui::CalcTextSize(" ").y;
+    ImVec2 top_pos = ImGui::GetCursorScreenPos();
+    ImGui::Text("Octave %i  |  ", keyboardOctave);
+    ImGui::SameLine();
+
+    if (currentNote >= 0)
+        ImGui::Text("Note %03i - %s", currentNote, editorEngineRef->audioManager->GetNoteName(3));
+    else if (pressedKey >= 0)
+        ImGui::Text("Note %03i - %s", pressedKey, editorEngineRef->audioManager->GetNoteName(3));
+    else
+        ImGui::Text("Note --- - ---");
+
+    ImGui::SameLine();
+    ImGui::Text("  ");
+    ImGui::SameLine();
+    if (ImGui::Button(ICON_FA_ANGLES_LEFT) && keyboardOctave > 0) 
+        keyboardOctave--;
+    ImGui::SameLine();
+    if (ImGui::Button(ICON_FA_ANGLES_RIGHT) && keyboardOctave < 8) 
+        keyboardOctave++;
     
-
-        ImGui::BeginGroup();
-
-            for (int i = 48; i <= 84; i++) 
+    ImVec2 white_key_pos = ImGui::GetCursorScreenPos();
+    ImVec2 black_key_pos = ImVec2(white_key_pos.x + keyWidth / 2.f ,white_key_pos.y);
+    
+    ImGui::BeginGroup();
+        for (int i = 0; i <= 12; i++) 
+        {
+            if (!IsBlack(i))
             {
-                if (!IsBlack(i))
-                {
-                    PianoKey(white_key_pos, ImVec2(WHITE_KEY_WIDTH, WHITE_KEY_HEIGHT), i, false, i == pressedKey);
-                    white_key_pos.x += WHITE_KEY_WIDTH;
-                } 
-            }
-        ImGui::EndGroup();        
-        ImGui::BeginGroup();
-            for (int i = 48; i <= 84; i++) 
-            {
-                if (IsBlack(i))
-                {
-                    PianoKey(ImVec2(black_key_pos.x - BLACK_KEY_WIDTH / 2, black_key_pos.y), 
-                    ImVec2(BLACK_KEY_WIDTH, BLACK_KEY_HEIGHT), i, true, i == pressedKey);
-                    black_key_pos.x -= WHITE_KEY_WIDTH;
-                }
-
-                black_key_pos.x += WHITE_KEY_WIDTH;
-            }
-        ImGui::EndGroup();
-
-        ImGui::SetCursorPos(ImVec2(10,WHITE_KEY_HEIGHT + 50));
-*/
-
-            ImVec2 pos = ImGui::GetCursorScreenPos();
-/*
-            ImGui::BeginTooltip();
-            ImGui::Text(TextFormat("%f, %f", pos.x, pos.y));
-            ImGui::EndTooltip();
-*/            
-            DrawChannel(0, pos);
-            DrawChannel(1, pos);
-            DrawChannel(2, pos);
-            DrawChannel(3, pos);
-            
-            for (auto& key : keyCharToKey)
-            {
-                char thisChar = key.first;
-                int thisKey = key.second + keyboardOctave * 12;
-
-                if (IsKeyPressed(thisChar)) 
-                {
-                    editorEngineRef->audioManager->PlayNote(3, thisKey, 127);
-                    pressedKey = thisKey;
-
-                }
-
-                if (IsKeyReleased(thisChar)) 
-                {
-                    editorEngineRef->audioManager->StopNote(3);
-                    pressedKey = -1;
-                }
-            }
-            
-            // key input - octave control
-            if (IsKeyPressed('/') && keyboardOctave < 8) 
-            {
-                keyboardOctave++;
+                PianoKey(ImVec2(keyWidth, keyHeight * 5), i, false);
+                white_key_pos.x += keyWidth;
             } 
-            else if (IsKeyPressed('.') && keyboardOctave > 0) 
+        }
+    ImGui::EndGroup();
+
+    ImGui::SetCursorScreenPos(black_key_pos);       
+    
+    ImGui::BeginGroup();
+        for (int i = 0; i <= 12; i++) 
+        {
+            if (i == 5) 
             {
-                keyboardOctave--;
+                ImGui::Text("    ");
+                ImGui::SameLine();
             }
+            if (IsBlack(i))
+            {
+                PianoKey(ImVec2(keyWidth, keyHeight * 3), i, true);
+            }
+        }
+    ImGui::EndGroup();
+    ImGui::BeginGroup(); 
+    ImGui::SetCursorScreenPos(ImVec2(keyWidth * 10, top_pos.y));   
+    ImGuiKnobs::KnobInt("Vol", &pianoVolume, 0, 127, 1.0f, "%03i", ImGuiKnobVariant_Stepped);
+    ImGui::EndGroup();
+
+    ImGui::SetCursorPos(ImVec2(10,white_key_pos.y + keyHeight + 10));
+
+    ImVec2 pos = ImGui::GetCursorScreenPos();
+       
+    DrawChannel(0, ImVec2(pos.x, pos.y));
+    DrawChannel(1, ImVec2(pos.x + 140, pos.y));
+    DrawChannel(2, ImVec2(pos.x + 280, pos.y));
+    DrawChannel(3, ImVec2(pos.x + 420, pos.y));
+            
+    for (auto& key : keyCharToKey)
+    {
+        char thisChar = key.first;
+        int thisKey = key.second + keyboardOctave * 12;
+
+        if (IsKeyPressed(thisChar)) 
+        {
+            editorEngineRef->audioManager->PlayNote(3, thisKey, pianoVolume);
+            pressedKey = thisKey;
+        }
+
+        if (IsKeyReleased(thisChar)) 
+        {
+            editorEngineRef->audioManager->StopNote(3);
+            pressedKey = -1;
+        }
+    }
+    if (IsKeyPressed('.') && keyboardOctave > 0) 
+        keyboardOctave--;
+    
+    if (IsKeyPressed('/') && keyboardOctave < 8) 
+        keyboardOctave++;
 }
 
 void Editor::DrawToolsSequence()
