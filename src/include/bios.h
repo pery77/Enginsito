@@ -32,6 +32,7 @@ class Bios {
 
         bool ShouldClose = false;
         bool ShouldRun = false;
+        bool ShouldRecenter = false;
 
         void SetFile(std::string file);
         void LoadBoot();

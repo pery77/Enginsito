@@ -135,6 +135,7 @@ Editor::Editor(Engine* _engine)
     editorEngineRef = _engine;
     codeEditor.SetLanguageDefinition(lang);
     codeEditor.SetPalette(TextEditor::GetBasicPalette()); 
+    codeEditor.SetTabSize(2);
 
     docs.SetLanguageDefinition(lang);
     docs.SetPalette(TextEditor::GetBasicPalette()); 
@@ -518,7 +519,8 @@ void Editor::DrawCode(bool* p_open)
                 if (ImGui::MenuItem("Select all", "Ctrl-A", nullptr, true))
                     codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
                 ImGui::Separator();
-                
+                if (ImGui::MenuItem("Duplicate line", "Ctrl-D", nullptr, !ro))
+                    codeEditor.DuplicateLine();
                 ImGui::EndMenu();
             }
         ImGui::EndMenuBar();
@@ -527,6 +529,7 @@ void Editor::DrawCode(bool* p_open)
 		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, codeEditor.GetTotalLines(),
 			        codeEditor.IsOverwrite() ? "Ovr" : "Ins", codeEditor.CanUndo() ? "*" : " ",
                     editorEngineRef->bios->CurrentProject.name.c_str());
+        ImGui::Text(codeEditor.GetCurrentLineText().c_str());
         ImGui::Separator();
         codeEditor.Render("TextEditor");
     ImGui::End();
@@ -1867,8 +1870,18 @@ void Editor::Draw()
             if (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_5))) ChangeLayout(4);
         }
 
-        if (ImGui::BeginMenu("Exit"))
+        if (ImGui::BeginMenu("Editor"))
         {
+            if (ImGui::MenuItem("Toggle editor", "F1", nullptr, true))
+                editorEngineRef->bios->ShouldRecenter = true;
+            if (ImGui::MenuItem("Run", "F5", nullptr, true))
+                editorEngineRef->bios->ShouldRun = true;
+            ImGui::Separator();
+            if (ImGui::MenuItem("Recenter window", "F2", nullptr, true))
+                editorEngineRef->postProcessing->UpdateWindowSize();
+            if (ImGui::MenuItem("Toogle FullScreen", "F11", nullptr, true))
+                editorEngineRef->postProcessing->FullScreen();
+            ImGui::Separator();
             if (ImGui::MenuItem("Quit", "Alt+F4", nullptr, true))
                 editorEngineRef->bios->ShouldClose = true;
             ImGui::EndMenu();

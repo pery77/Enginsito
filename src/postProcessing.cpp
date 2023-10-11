@@ -201,8 +201,11 @@ void PostProcessing::UpdateWindowSize()
     previusWindowsX = GetWindowPosition().x;
     previusWindowsY = GetWindowPosition().y;
 
-	SetWindowSize((currentAspectRatio > GAME_RATIO) ? GAME_SCREEN_W * screenScale : GetScreenWidth(), 
-					 (currentAspectRatio > GAME_RATIO) ? GetScreenHeight() : GAME_SCREEN_H * screenScale);
+    int w = (currentAspectRatio > GAME_RATIO) ? GAME_SCREEN_W * screenScale : GetScreenWidth();
+    int h = (currentAspectRatio > GAME_RATIO) ? GetScreenHeight(): GAME_SCREEN_H * screenScale;
+
+	SetWindowSize(w,h);
+
     int monitor = GetCurrentMonitor();
     SetWindowPosition(GetMonitorWidth(monitor) / 2 - GetScreenWidth() / 2, GetMonitorHeight(monitor) / 2 - GetScreenHeight() / 2 );
 }

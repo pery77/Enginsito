@@ -28,8 +28,6 @@ void raylibLog(int msgType, const char *text, va_list args)
     Tools::console->AddLog(buffer);
 }
 
-
-
 int main(int argc, char *argv[])
 {
     Engine* engine = new Engine();
@@ -72,8 +70,9 @@ int main(int argc, char *argv[])
             engine->isInImGui = false;
         }
         // Engine keys
-        if(IsKeyReleased(KEY_F1) && engine->editor->Enabled)
+        if((IsKeyReleased(KEY_F1) || engine->bios->ShouldRecenter) && engine->editor->Enabled)
         {
+            engine->bios->ShouldRecenter = false;
             showImgui = !showImgui;
             engine->isInImGui = showImgui;
             if (!showImgui)
