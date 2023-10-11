@@ -256,6 +256,9 @@ public:
 	void Paste();
 	void Delete();
 
+	void DuplicateLine();
+	void MoveLine(ImGuiDir direction);
+
 	bool CanUndo() const;
 	bool CanRedo() const;
 	void Undo(int aSteps = 1);

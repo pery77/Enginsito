@@ -761,6 +761,13 @@ void TextEditor::HandleKeyboardInputs()
 			EnterCharacter('\n', false);
 		else if (!IsReadOnly() && !ctrl && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Tab)))
 			EnterCharacter('\t', shift);
+		//Custom
+		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)))
+			DuplicateLine();
+		else if (!ctrl && !shift && alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_UpArrow)))
+			MoveLine(ImGuiDir_Up);
+		else if (!ctrl && !shift && alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_DownArrow)))
+			MoveLine(ImGuiDir_Down);
 
 		if (!IsReadOnly() && !io.InputQueueCharacters.empty())
 		{
@@ -2005,6 +2012,38 @@ void TextEditor::Redo(int aSteps)
 		mUndoBuffer[mUndoIndex++].Redo(this);
 }
 
+void TextEditor::DuplicateLine()
+{
+	if (IsReadOnly())
+		return;
+	
+	auto lineLength = GetLineMaxColumn(mState.mCursorPosition.mLine);
+	SetSelection(Coordinates(mState.mCursorPosition.mLine, 0), Coordinates(mState.mCursorPosition.mLine, lineLength));
+	Copy();
+
+	auto clipText = ImGui::GetClipboardText();
+	SetCursorPosition(Coordinates(mState.mCursorPosition.mLine, lineLength));
+	auto pos = GetActualCursorCoordinates();
+	SetSelection(pos, pos);
+
+	InsertText(std::string("\n") + clipText);
+	pos.mLine++;
+
+	SetCursorPosition(pos);
+
+}
+void TextEditor::MoveLine(ImGuiDir direction)
+{
+	if (direction == ImGuiDir_Up)
+	{
+
+	}
+	else
+	{
+
+	}
+
+}
 const TextEditor::Palette & TextEditor::GetDarkPalette()
 {
 	const static Palette p = { {
