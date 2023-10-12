@@ -127,7 +127,11 @@ public:
 		Coordinates mLocation;
 		std::string mDeclaration;
 	};
-
+	struct FindWord
+	{
+		int line; int column;
+		FindWord(int l, int c) : line(l), column(c) {}
+	};
 	typedef std::string String;
 	typedef std::unordered_map<std::string, Identifier> Identifiers;
 	typedef std::unordered_set<std::string> Keywords;
@@ -259,6 +263,9 @@ public:
 	void DuplicateLine();
 	void MoveLine(ImGuiDir direction);
 
+	std::vector<FindWord> findWordsPositions;
+	int findWordIndex = 0;
+
 	void Find(std::string find);
 	std::string GetFindWord();
 	void FindNext();
@@ -269,9 +276,6 @@ public:
 	void Undo(int aSteps = 1);
 	void Redo(int aSteps = 1);
 
-	static const Palette& GetDarkPalette();
-	static const Palette& GetLightPalette();
-	static const Palette& GetRetroBluePalette();
 	static const Palette& GetBasicPalette();
 
 	std::string findWord;

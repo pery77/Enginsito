@@ -134,11 +134,9 @@ Editor::Editor(Engine* _engine)
 {
     editorEngineRef = _engine;
     codeEditor.SetLanguageDefinition(lang);
-    codeEditor.SetPalette(TextEditor::GetBasicPalette()); 
     codeEditor.SetTabSize(1);
 
     docs.SetLanguageDefinition(lang);
-    docs.SetPalette(TextEditor::GetBasicPalette()); 
     docs.SetReadOnly(true);
 
     char* docsText = LoadFileText(DOCS_FILE);
@@ -561,7 +559,9 @@ void Editor::DrawCode(bool* p_open)
         {
 
         }
-        ImGui::Text(codeEditor.findWord.c_str());
+        ImGui::SameLine();
+        ImGui::Text("%i/%i",codeEditor.findWordIndex, codeEditor.findWordsPositions.size());
+
         ImGui::Separator();
         codeEditor.Render("TextEditor");
     ImGui::End();
