@@ -768,8 +768,6 @@ void TextEditor::HandleKeyboardInputs()
 			MoveLine(ImGuiDir_Up);
 		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_DownArrow)))
 			MoveLine(ImGuiDir_Down);
-		else if (!ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Home)))
-			SetCursorPosition(Coordinates(0, mState.mCursorPosition.mColumn));
 
 		if (!IsReadOnly() && !io.InputQueueCharacters.empty())
 		{
