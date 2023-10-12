@@ -259,6 +259,11 @@ public:
 	void DuplicateLine();
 	void MoveLine(ImGuiDir direction);
 
+	void Find();
+	std::string GetFindWord();
+	void FindNext();
+	void FindPrev();
+
 	bool CanUndo() const;
 	bool CanRedo() const;
 	void Undo(int aSteps = 1);

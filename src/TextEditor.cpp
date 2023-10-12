@@ -764,10 +764,12 @@ void TextEditor::HandleKeyboardInputs()
 		//Custom
 		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_D)))
 			DuplicateLine();
-		else if (!ctrl && !shift && alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_UpArrow)))
+		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_UpArrow)))
 			MoveLine(ImGuiDir_Up);
-		else if (!ctrl && !shift && alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_DownArrow)))
+		else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_DownArrow)))
 			MoveLine(ImGuiDir_Down);
+		else if (!ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Home)))
+			SetCursorPosition(Coordinates(0, mState.mCursorPosition.mColumn));
 
 		if (!IsReadOnly() && !io.InputQueueCharacters.empty())
 		{
@@ -2016,6 +2018,9 @@ void TextEditor::DuplicateLine()
 {
 	if (IsReadOnly())
 		return;
+
+	UndoRecord u;
+	u.mBefore = mState;	
 	
 	auto lineLength = GetLineMaxColumn(mState.mCursorPosition.mLine);
 	SetSelection(Coordinates(mState.mCursorPosition.mLine, 0), Coordinates(mState.mCursorPosition.mLine, lineLength));
@@ -2026,24 +2031,43 @@ void TextEditor::DuplicateLine()
 	auto pos = GetActualCursorCoordinates();
 	SetSelection(pos, pos);
 
+	u.mAdded = clipText;
+	u.mAddedStart = pos;
+
 	InsertText(std::string("\n") + clipText);
 	pos.mLine++;
 
-	SetCursorPosition(pos);
+	u.mAddedEnd = pos;
+	u.mAfter = mState;
 
+	SetCursorPosition(pos);
+	AddUndo(u);
 }
+
 void TextEditor::MoveLine(ImGuiDir direction)
 {
+	if (IsReadOnly())
+		return;
+
+	int dir = 1;
+
 	if (direction == ImGuiDir_Up)
-	{
+		dir = -1;
+	
+	if (mState.mCursorPosition.mLine + dir < 0 || mState.mCursorPosition.mLine + dir > (int)mLines.size()-1)
+		return;
 
-	}
-	else
-	{
-
-	}
-
+	TextEditor::Line temp  = mLines[mState.mCursorPosition.mLine];
+	mLines[mState.mCursorPosition.mLine] = mLines[mState.mCursorPosition.mLine + dir];
+	mLines[mState.mCursorPosition.mLine + dir] = temp;
+	SetCursorPosition(Coordinates(mState.mCursorPosition.mLine + dir, mState.mCursorPosition.mColumn));
 }
+
+std::string TextEditor::GetFindWord()
+{
+	return GetWordUnderCursor();
+}
+
 const TextEditor::Palette & TextEditor::GetDarkPalette()
 {
 	const static Palette p = { {

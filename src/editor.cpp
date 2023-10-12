@@ -135,7 +135,7 @@ Editor::Editor(Engine* _engine)
     editorEngineRef = _engine;
     codeEditor.SetLanguageDefinition(lang);
     codeEditor.SetPalette(TextEditor::GetBasicPalette()); 
-    codeEditor.SetTabSize(2);
+    codeEditor.SetTabSize(1);
 
     docs.SetLanguageDefinition(lang);
     docs.SetPalette(TextEditor::GetBasicPalette()); 
@@ -490,46 +490,76 @@ void Editor::ClearError()
 }
 
 void Editor::DrawCode(bool* p_open)
-{
-    auto cpos = codeEditor.GetCursorPosition();
+{	
+    ImGuiIO& io = ImGui::GetIO();
+	auto shift = io.KeyShift;
+	auto ctrl = io.ConfigMacOSXBehaviors ? io.KeySuper : io.KeyCtrl;
+	auto alt = io.ConfigMacOSXBehaviors ? io.KeyCtrl : io.KeyAlt;
 
     ImGui::Begin("Code Editor", p_open, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::BeginMenu("Edit"))
-            {
-                bool ro = codeEditor.IsReadOnly();
-                if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
-                    codeEditor.SetReadOnly(ro);
-                ImGui::Separator();
-                if (ImGui::MenuItem("Undo", "Ctrl-Z", nullptr, !ro && codeEditor.CanUndo()))
-                    codeEditor.Undo();
-                if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && codeEditor.CanRedo()))
-                    codeEditor.Redo();
-                ImGui::Separator();
-                if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, codeEditor.HasSelection()))
-                    codeEditor.Copy();
-                if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && codeEditor.HasSelection()))
-                    codeEditor.Cut();
-                if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && codeEditor.HasSelection()))
-                    codeEditor.Delete();
-                if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
-                    codeEditor.Paste();
-                ImGui::Separator();
-                if (ImGui::MenuItem("Select all", "Ctrl-A", nullptr, true))
-                    codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
-                ImGui::Separator();
-                if (ImGui::MenuItem("Duplicate line", "Ctrl-D", nullptr, !ro))
-                    codeEditor.DuplicateLine();
-                ImGui::EndMenu();
-            }
-        ImGui::EndMenuBar();
-    }
+        if (ImGui::BeginMenuBar())
+        {
+            if (ImGui::BeginMenu("Edit"))
+                {
+                    bool ro = codeEditor.IsReadOnly();
+                    if (ImGui::MenuItem("Read-only mode", nullptr, &ro))
+                        codeEditor.SetReadOnly(ro);
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Undo", "Ctrl-Z", nullptr, !ro && codeEditor.CanUndo()))
+                        codeEditor.Undo();
+                    if (ImGui::MenuItem("Redo", "Ctrl-Y", nullptr, !ro && codeEditor.CanRedo()))
+                        codeEditor.Redo();
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Copy", "Ctrl-C", nullptr, codeEditor.HasSelection()))
+                        codeEditor.Copy();
+                    if (ImGui::MenuItem("Cut", "Ctrl-X", nullptr, !ro && codeEditor.HasSelection()))
+                        codeEditor.Cut();
+                    if (ImGui::MenuItem("Delete", "Del", nullptr, !ro && codeEditor.HasSelection()))
+                        codeEditor.Delete();
+                    if (ImGui::MenuItem("Paste", "Ctrl-V", nullptr, !ro && ImGui::GetClipboardText() != nullptr))
+                        codeEditor.Paste();
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Select all", "Ctrl-A", nullptr, true))
+                        codeEditor.SetSelection(TextEditor::Coordinates(), TextEditor::Coordinates(codeEditor.GetTotalLines(), 0));
+                    ImGui::Separator();
+                    if (ImGui::MenuItem("Duplicate line", "Ctrl-D", nullptr, !ro))
+                        codeEditor.DuplicateLine();
+                    if (ImGui::MenuItem("Move line up", "Ctrl-Up", nullptr, !ro))
+                        codeEditor.MoveLine(ImGuiDir_Up);
+                    if (ImGui::MenuItem("Move line down", "Ctrl-Down", nullptr, !ro))
+                        codeEditor.MoveLine(ImGuiDir_Down);
+                    ImGui::EndMenu();
+                }
+            ImGui::EndMenuBar();
+        }
 
+        static char str0[128] = "";
+        if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_F)))
+        {
+            const char* findWord = codeEditor.GetFindWord().c_str();
+            strncpy(str0, findWord, sizeof(str0));
+            str0[sizeof(str0) - 1] = '\0';
+        }
+        auto cpos = codeEditor.GetCursorPosition();
 		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, codeEditor.GetTotalLines(),
 			        codeEditor.IsOverwrite() ? "Ovr" : "Ins", codeEditor.CanUndo() ? "*" : " ",
                     editorEngineRef->bios->CurrentProject.name.c_str());
-        ImGui::Text(codeEditor.GetCurrentLineText().c_str());
+        ImGui::Text("Find");
+        ImGui::SameLine();
+        if (ImGui::InputText("###find", str0, IM_ARRAYSIZE(str0)))
+        {
+            
+        }
+        ImGui::SameLine();
+        if(ImGui::Button(ICON_FA_ARROW_UP))
+        {
+
+        }
+        ImGui::SameLine();
+        if(ImGui::Button(ICON_FA_ARROW_DOWN))
+        {
+
+        }
         ImGui::Separator();
         codeEditor.Render("TextEditor");
     ImGui::End();
