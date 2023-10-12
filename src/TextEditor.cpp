@@ -2070,7 +2070,23 @@ void TextEditor::Find(std::string find)
 {
 	std::transform(find.begin(), find.end(), find.begin(), ::toupper);
 	findWord = find;
+	findWordsPositions.clear();
+	findWordIndex = 0;
 	ColorizeRange(0, (int)mLines.size());
+}
+void TextEditor::FindPrev()
+{
+	findWordIndex--;
+	if (findWordIndex < 0)
+		findWordIndex = 0;
+	SetCursorPosition(Coordinates(findWordsPositions[findWordIndex].line, findWordsPositions[findWordIndex].column));
+}
+void TextEditor::FindNext()
+{
+	findWordIndex++;
+	if (findWordIndex > findWordsPositions.size()-1)
+		findWordIndex = findWordsPositions.size()-1;
+	SetCursorPosition(Coordinates(findWordsPositions[findWordIndex].line, findWordsPositions[findWordIndex].column));
 }
 
 const TextEditor::Palette & TextEditor::GetBasicPalette()
@@ -2157,8 +2173,6 @@ void TextEditor::Colorize(int aFromLine, int aLines)
 
 void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 {
-	findWordsPositions.clear();
-
 	if (mLines.empty() || aFromLine >= aToLine)
 		return;
 
@@ -2167,6 +2181,8 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 	std::string id;
 
 	int endLine = std::max(0, std::min((int)mLines.size(), aToLine));
+	int col = 0;
+
 	for (int i = aFromLine; i < endLine; ++i)
 	{
 		auto& line = mLines[i];
@@ -2186,6 +2202,7 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 		const char * bufferEnd = bufferBegin + buffer.size();
 
 		auto last = bufferEnd;
+		
 
 		for (auto first = bufferBegin; first != last; )
 		{
@@ -2240,7 +2257,7 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 					if(id == findWord)
 					{
 						token_color = PaletteIndex::ErrorMarker;
-						FindWord f(0,0);
+						FindWord f(i, col);
 						findWordsPositions.push_back(f);
 					}	
 					else if (!line[first - bufferBegin].mPreprocessor)

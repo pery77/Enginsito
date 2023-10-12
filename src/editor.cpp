@@ -543,6 +543,7 @@ void Editor::DrawCode(bool* p_open)
 		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, codeEditor.GetTotalLines(),
 			        codeEditor.IsOverwrite() ? "Ovr" : "Ins", codeEditor.CanUndo() ? "*" : " ",
                     editorEngineRef->bios->CurrentProject.name.c_str());
+                    
         ImGui::Text("Find");
         ImGui::SameLine();
         if (ImGui::InputText("###find", str0, IM_ARRAYSIZE(str0)))
@@ -550,17 +551,23 @@ void Editor::DrawCode(bool* p_open)
             codeEditor.Find(str0);
         }
         ImGui::SameLine();
+
         if(ImGui::Button(ICON_FA_ARROW_UP))
         {
-
+            codeEditor.FindPrev();
         }
         ImGui::SameLine();
+
         if(ImGui::Button(ICON_FA_ARROW_DOWN))
         {
-
+            codeEditor.FindNext();
         }
         ImGui::SameLine();
-        ImGui::Text("%i/%i",codeEditor.findWordIndex, codeEditor.findWordsPositions.size());
+
+        if(codeEditor.findWordsPositions.size() > 0)
+            ImGui::Text("%i/%i",codeEditor.findWordIndex + 1, codeEditor.findWordsPositions.size());
+        else
+            ImGui::Text("?/0");
 
         ImGui::Separator();
         codeEditor.Render("TextEditor");
