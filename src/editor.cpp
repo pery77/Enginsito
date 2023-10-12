@@ -539,6 +539,7 @@ void Editor::DrawCode(bool* p_open)
             const char* findWord = codeEditor.GetFindWord().c_str();
             strncpy(str0, findWord, sizeof(str0));
             str0[sizeof(str0) - 1] = '\0';
+            codeEditor.Find(str0);
         }
         auto cpos = codeEditor.GetCursorPosition();
 		ImGui::Text("%6d/%-6d %6d lines  | %s | %s | %s", cpos.mLine + 1, cpos.mColumn + 1, codeEditor.GetTotalLines(),
@@ -548,7 +549,7 @@ void Editor::DrawCode(bool* p_open)
         ImGui::SameLine();
         if (ImGui::InputText("###find", str0, IM_ARRAYSIZE(str0)))
         {
-            
+            codeEditor.Find(str0);
         }
         ImGui::SameLine();
         if(ImGui::Button(ICON_FA_ARROW_UP))
@@ -560,6 +561,7 @@ void Editor::DrawCode(bool* p_open)
         {
 
         }
+        ImGui::Text(codeEditor.findWord.c_str());
         ImGui::Separator();
         codeEditor.Render("TextEditor");
     ImGui::End();

@@ -259,7 +259,7 @@ public:
 	void DuplicateLine();
 	void MoveLine(ImGuiDir direction);
 
-	void Find();
+	void Find(std::string find);
 	std::string GetFindWord();
 	void FindNext();
 	void FindPrev();
@@ -273,6 +273,8 @@ public:
 	static const Palette& GetLightPalette();
 	static const Palette& GetRetroBluePalette();
 	static const Palette& GetBasicPalette();
+
+	std::string findWord;
 
 private:
 	typedef std::vector<std::pair<std::regex, PaletteIndex>> RegexList;

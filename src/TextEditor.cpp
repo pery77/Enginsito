@@ -2066,6 +2066,13 @@ std::string TextEditor::GetFindWord()
 	return GetWordUnderCursor();
 }
 
+void TextEditor::Find(std::string find)
+{
+	std::transform(find.begin(), find.end(), find.begin(), ::toupper);
+	findWord = find;
+	ColorizeRange(0, (int)mLines.size());
+}
+
 const TextEditor::Palette & TextEditor::GetDarkPalette()
 {
 	const static Palette p = { {
@@ -2330,6 +2337,14 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 						if (mLanguageDefinition.mPreprocIdentifiers.count(id) != 0)
 							token_color = PaletteIndex::PreprocIdentifier;
 					}
+				}
+
+				if(id == findWord)
+				{
+					token_color = PaletteIndex::ErrorMarker;
+					// add to list
+					// add counter
+					// store position
 				}
 
 				for (size_t j = 0; j < token_length; ++j)
