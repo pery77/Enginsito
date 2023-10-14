@@ -21,8 +21,8 @@ def drawPad(id)
             col = 1
             colT = 0
         endif
-        circle(x + (b - 1) * 18,y + id * 40, 8, 1,col)
-        circle(x + (b - 1) * 18,y + id * 40, 8, 0, 2)
+        circle(x + (b - 1) * 18,y + id * 40, 8, 0,col)
+        circle(x + (b - 1) * 18,y + id * 40, 8, 1, 2)
         text(formattext("%02i",b), x+(b-1)*18-7,y + id*40-4, 1,colT)
     next
     axCount = joy_AxisCount(id)
@@ -49,5 +49,5 @@ def draw()
     for p = 0 to nPads - 1
         drawpad(p)
     next
-    text(formattext("Last Pressed: %02i",joy_get()), 0, 0, 1, 3)
+    text(formattext("Last Pressed: %02i",joy_get()), 2, 2, 1, 3)
 enddef
