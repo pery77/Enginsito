@@ -1,6 +1,4 @@
 #include "raylib.h"
-
-#define RFXGEN_IMPLEMENTATION
 #include "engine.h"
 
 #include "wren_manager.h"

@@ -1,28 +1,18 @@
 Main
 
-	copy paste control c v en todos sitios
-	soporte control z...
-	entrada salida pause custom
-	copy log secciones (casi, mirar)
-	quitar audio prints
 	quitar filewatcher poner alternativa
-
+	Boton build falso
+	
 Editor
 	
-	Acabar sonidos, piano, más info.
-	Links docs
-	sacar code editor fuera
+	Nueva Documentación como Demo
 	crt presets
 	palette presets
+	sfx presets
 
 Editor Code
 
-	CTRL+F 
-	Duplicar linea
-	Mover linea
-	Bug copy paste salto de linea
 	shift + mover no selecciona
-	borrar tabuladores fallo 
 	deselecionar script al salir 
 	scroll horizontal
 
@@ -35,9 +25,7 @@ Documentación
 	reflejar limitaciones 4000 string, orden declaraciones if multininea
 	consola comandos
 
-
 Basic
 
 	Investigar cuelges con recursivas
 	NOT () mirar
-

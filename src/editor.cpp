@@ -570,7 +570,10 @@ void Editor::DrawCode(bool* p_open)
             ImGui::Text("?/0");
 
         ImGui::Separator();
-        codeEditor.Render("TextEditor");
+        if (editorEngineRef->bios->CurrentProject.name != "")
+            codeEditor.Render("TextEditor");
+        else
+            ImGui::Text("Load or create a program in File Browser");
     ImGui::End();
 }
 
@@ -810,11 +813,11 @@ void Editor::DrawPlayer()
     float buttonPosX = (playerSize.x - totalButtonWidth) / 2;
     float buttonPosY = (playerSize.y - buttonSize.y) / 2;
 
-    ImGui::Text(TextFormat("F: %07i", editorEngineRef->basicIntepreter->GetCurrentFrame()));
+    ImGui::Text(TextFormat("Frame: %07i", editorEngineRef->basicIntepreter->GetCurrentFrame()));
     ImGui::SameLine();
     ImGui::SetCursorPosX(buttonPosX);
 
-    ImGui::BeginDisabled(PlayerState != Off);
+    ImGui::BeginDisabled(PlayerState != Off || editorEngineRef->bios->CurrentProject.name == "");
     //PLAY
     if(ImGui::Button(ICON_FA_PLAY, buttonSize))
     {
@@ -2090,7 +2093,7 @@ void Editor::Draw()
 
         if (show_crt)
         {
-            ImGui::Begin("CRT", &show_crt, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar); 
+            ImGui::Begin("Crt", &show_crt, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar); 
                 DrawCRT();
             ImGui::End();
         }
