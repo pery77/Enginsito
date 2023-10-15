@@ -120,6 +120,7 @@ class Editor
     void CloseAll();
 
     void Package();
+    bool CheckJsonFile();
     
     //Text
     ImVec4 Col_T_1 = ImVec4(0.70f, 0.70f, 0.70f, 1.00f);

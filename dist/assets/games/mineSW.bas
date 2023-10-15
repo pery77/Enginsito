@@ -136,6 +136,6 @@ def draw()
 
     text(formatText("%i", levelstate),200,16,1,3)
 
-    meta(3, mouse_x, mouse_y,3)
-    meta(2, mouse_x, mouse_y,3)
+    meta(3, mouse_x, mouse_y)
+    meta(2, mouse_x, mouse_y)
 enddef

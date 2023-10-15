@@ -1,11 +1,10 @@
 Main
-	Boton build falso
-	
+
 Editor
-	Nueva Documentación como Demo
-	crt presets
-	palette presets
-	sfx presets
+				presets save, drop
+	crt 				x      x
+	palette             x      v .hex
+	sfx 				x      x
 
 Editor Code
 

@@ -40,15 +40,26 @@ int currentLayout = 0;
 
 Documentation docs;
 
-void Editor::LoadUIJson()
+bool Editor::CheckJsonFile()
 {
-    if(!Enabled) return;
-
 	std::stringstream ss;
 	ss << CONFIG_FOLDER << "/ui.json";
 
     std::ifstream f(ss.str().c_str());
-    data = nlohmann::json::parse(f);
+    if (FileExists(ss.str().c_str()))
+    {
+        data = nlohmann::json::parse(f);
+        f.close();
+        return true;
+    }
+    Enabled = false;
+    return false;
+}
+
+void Editor::LoadUIJson()
+{
+    if(!Enabled) return;
+    if (!CheckJsonFile()) return;
 
     static const char* layouts[5] = {"layout_1", "layout_2", "layout_3", "layout_4", "layout_5"};
     const char* layout = layouts[currentLayout];
@@ -69,14 +80,13 @@ void Editor::LoadUIJson()
     show_sfx            = data[layout]["show_sfx"].get<bool>();
     show_docs           = data[layout]["show_docs"].get<bool>();
     
-    f.close();
-
     ImGui::LoadIniSettingsFromDisk(Tools::GetCurrentLayout(currentLayout));
 }
 
 void Editor::SaveUIJson()
 {
     if(!Enabled) return;
+    if (!CheckJsonFile()) return;
 
     ImGuiIO& io = ImGui::GetIO();
     const char* layoutFilename = Tools::GetCurrentLayout(currentLayout);
@@ -149,19 +159,11 @@ Editor::Editor(Engine* _engine)
     hackTexture = LoadTextureFromImage(hackImage);
     UnloadImage(hackImage);
 
-    std::stringstream ss;
-	ss << CONFIG_FOLDER << "/ui.json";
-    if (FileExists(ss.str().c_str()))
+    if (CheckJsonFile()) 
     {
-        std::ifstream f(ss.str().c_str());
-        data = nlohmann::json::parse(f);
-        currentLayout       = data["currentLayout"].get<int>();
-        f.close();
+        currentLayout = data["currentLayout"].get<int>();
     }
-    else
-    {
-        Enabled = false;
-    }
+
     //ExportImageAsCode(LoadImage("icon.png"), "iconTexture.h");
     iconTexture = Tools::TextureFromCode(ICONTEXTURE_FORMAT, ICONTEXTURE_HEIGHT, ICONTEXTURE_WIDTH, ICONTEXTURE_DATA, 1); 
     SetTextureFilter(iconTexture, TEXTURE_FILTER_POINT);
@@ -1899,41 +1901,50 @@ void Editor::ChangeLayout(uint8_t layout)
 
 void Editor::Package()
 {
+    std::string buildFolder = "build/";
     std::string name = editorEngineRef->bios->CurrentProject.name;
 
-    if (!std::filesystem::exists(name)) {
-        std::filesystem::create_directory(name);
+    if (!std::filesystem::exists(buildFolder + name)) 
+    {
         Tools::console->AddLog( "Packaging: %s", name.c_str());
-        std::filesystem::create_directory(name + "/" + ASSETS_FOLDER);
-        std::filesystem::create_directory(name + "/" + CONFIG_FOLDER);
-    } else {
-        Tools::console->AddLog( "[ERROR] Folder %s is already exist, please, delete it.", name.c_str());
+        std::filesystem::create_directory(buildFolder);
+        std::filesystem::create_directory(buildFolder + name);
+        std::filesystem::create_directory(buildFolder + name + "/" + ASSETS_FOLDER);
+        std::filesystem::create_directory(buildFolder + name + "/" + CONFIG_FOLDER);
+    } 
+    else 
+    {
+        Tools::console->AddLog( "[ERROR] Folder %s is already exist, please, delete it.", (buildFolder + name).c_str());
         return;
     }
 
     std::string exe = name + "/" + name +".exe";
     std::string bas = editorEngineRef->bios->CurrentProject.programFile;
-    std::string data = editorEngineRef->bios->CurrentProject.memoryFile;
+    std::string dataFile = editorEngineRef->bios->CurrentProject.memoryFile;
 
     try {
         Tools::console->AddLog( "Copying: %s", name.c_str());
-        std::filesystem::copy("enginsito.exe", exe);
-        std::filesystem::copy(bas,  name + "/" + ASSETS_FOLDER + "/" + name + PROGRAM_EXTENSION);
-        std::filesystem::copy(data, name + "/" + ASSETS_FOLDER + "/" + name + MEM_EXTENSION);
+        std::filesystem::copy("enginsito.exe", buildFolder + exe);
+        std::filesystem::copy(bas,  buildFolder +name + "/" + ASSETS_FOLDER + "/" + name + PROGRAM_EXTENSION);
+        std::filesystem::copy(dataFile, buildFolder +name + "/" + ASSETS_FOLDER + "/" + name + MEM_EXTENSION);
     } catch (const std::filesystem::filesystem_error& e) {
         Tools::console->AddLog( "[ERROR] Error copying: %s, %s", name.c_str(), e.what());
         return;
     }
     
-    std::string bootFile = name + "/" + BOOT_FILE;
+    std::string bootFile = buildFolder + name + "/" + BOOT_FILE;
     std::string bootText = "editor 0\nfullscreen\nload "+ name +"\nrun";
     std::ofstream outputFile(bootFile);
-    if (outputFile.is_open()) {
+    if (outputFile.is_open()) 
+    {
         outputFile << bootText << std::endl;
         outputFile.close(); 
         Tools::console->AddLog("Boot file OK:");
-    } else {
+    } 
+    else 
+    {
         Tools::console->AddLog("[ERROR] Boot file Error");
+        return;
     }
 }
 
