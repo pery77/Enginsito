@@ -42,6 +42,8 @@ Documentation docs;
 
 void Editor::LoadUIJson()
 {
+    if(!Enabled) return;
+
 	std::stringstream ss;
 	ss << CONFIG_FOLDER << "/ui.json";
 
@@ -74,6 +76,8 @@ void Editor::LoadUIJson()
 
 void Editor::SaveUIJson()
 {
+    if(!Enabled) return;
+
     ImGuiIO& io = ImGui::GetIO();
     const char* layoutFilename = Tools::GetCurrentLayout(currentLayout);
     ImGui::SaveIniSettingsToDisk(layoutFilename);
@@ -147,12 +151,17 @@ Editor::Editor(Engine* _engine)
 
     std::stringstream ss;
 	ss << CONFIG_FOLDER << "/ui.json";
-    std::ifstream f(ss.str().c_str());
-    data = nlohmann::json::parse(f);
-    currentLayout       = data["currentLayout"].get<int>();
-    f.close();
-
-    LoadUIJson();
+    if (FileExists(ss.str().c_str()))
+    {
+        std::ifstream f(ss.str().c_str());
+        data = nlohmann::json::parse(f);
+        currentLayout       = data["currentLayout"].get<int>();
+        f.close();
+    }
+    else
+    {
+        Enabled = false;
+    }
     //ExportImageAsCode(LoadImage("icon.png"), "iconTexture.h");
     iconTexture = Tools::TextureFromCode(ICONTEXTURE_FORMAT, ICONTEXTURE_HEIGHT, ICONTEXTURE_WIDTH, ICONTEXTURE_DATA, 1); 
     SetTextureFilter(iconTexture, TEXTURE_FILTER_POINT);
@@ -252,8 +261,18 @@ void Editor::SetMainWindow()
     BeginDrawing();
         ClearBackground(BLACK);
     EndDrawing();
-    SetWindowPosition(data["window_position_x"].get<int>(), data["window_position_y"].get<int>());
-    SetWindowSize(data["window_width"].get<int>(), data["window_height"].get<int>());
+    if(Enabled)
+    {
+        SetWindowPosition(data["window_position_x"].get<int>(), data["window_position_y"].get<int>());
+        SetWindowSize(data["window_width"].get<int>(), data["window_height"].get<int>());
+    }
+    else
+    {
+        SetWindowSize(GAME_SCREEN_W*4, GAME_SCREEN_H*4);
+        int monitor = GetCurrentMonitor();
+        SetWindowPosition(GetMonitorWidth(monitor) / 2 - GetScreenWidth() / 2, 
+            GetMonitorHeight(monitor) / 2 - GetScreenHeight() / 2 );
+    }
 }
 
 void Editor::HighLightMemory(uint16_t address, uint16_t size)
