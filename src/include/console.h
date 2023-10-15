@@ -3,7 +3,7 @@
 #include <cctype>
 #include <cstdio>
 
-#include "imgui/rlImGui.h"
+#include "imgui/imgui.h"
 
 struct Console
 {
