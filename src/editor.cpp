@@ -1901,7 +1901,7 @@ void Editor::ChangeLayout(uint8_t layout)
 
 void Editor::Package()
 {
-    std::string buildFolder = "build/";
+    std::string buildFolder = "builds/";
     std::string name = editorEngineRef->bios->CurrentProject.name;
 
     if (!std::filesystem::exists(buildFolder + name)) 
