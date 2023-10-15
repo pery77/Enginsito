@@ -251,6 +251,7 @@ public:
 	void SetSelectionStart(const Coordinates& aPosition);
 	void SetSelectionEnd(const Coordinates& aPosition);
 	void SetSelection(const Coordinates& aStart, const Coordinates& aEnd, SelectionMode aMode = SelectionMode::Normal);
+	void Deselect();
 	void SelectWordUnderCursor();
 	void SelectAll();
 	bool HasSelection() const;
