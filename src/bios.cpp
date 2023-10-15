@@ -243,7 +243,7 @@ void Bios::ProcessCommand()
     }
 
     if (checkCommand(lastCommand.command,"FULLSCREEN")) biosEngineRef->postProcessing->FullScreen();
-
+/*
     if (checkCommand(lastCommand.command,"FILEWATCHER"))
     {
         if (lastCommand.args[0] != "" )
@@ -264,6 +264,7 @@ void Bios::ProcessCommand()
             screenLines += "FileWatcher is " + temp + "\n";
         }
     }
+*/
 }
 
 void Bios::TryToSaveMemory()

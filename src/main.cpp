@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     // Game Loop
     while (!(engine->bios->ShouldClose || WindowShouldClose()))
     {
-        engine->UpdateFileWatcher();
+        //engine->UpdateFileWatcher();
 
         if (!engine->editor->Enabled) 
         {
@@ -77,7 +77,6 @@ int main(int argc, char *argv[])
             {
                 engine->postProcessing->UpdateGameScreenRects();
                 engine->postProcessing->UpdateWindowSize();
-                
             }
             else
             {

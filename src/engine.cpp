@@ -3,7 +3,7 @@
 #include "mb_manager.h"
 #include "postProcessing.h"
 #include "bios.h"
-#include "FileWatcher.h"
+//#include "FileWatcher.h"
 #include "editor.h"
 #include "sprite_manager.h"
 
@@ -27,7 +27,7 @@ FilePathList droppedFiles = { 0 };
 MBManager* basicIntepreter;
 PostProcessing* postProcessing;
 Bios* bios;
-FileWatcher* fw;
+//FileWatcher* fw;
 Editor* editor;
 SpriteManager* spriteManager;
 
@@ -35,7 +35,7 @@ Engine::Engine()
 {
     std::stringstream ss;
     ss << "./" << ASSETS_FOLDER << "/";
-    fw = new FileWatcher{ss.str(), 3.0f};
+    //fw = new FileWatcher{ss.str(), 3.0f};
 }
 
 Engine::~Engine()
@@ -81,7 +81,7 @@ void Engine::DropFileUpdate()
         {
             ReadHexFile(firstFilePath);
         }
-
+#ifdef DEBUG
         if (strcmp(fileExtension, ".data") == 0)
         {
             std::ifstream input(firstFilePath, std::ios::binary);
@@ -100,6 +100,7 @@ void Engine::DropFileUpdate()
             output.close();
 
         }
+#endif        
     }
 }
 void Engine::ReadHexFile(const char* filePath)
@@ -134,7 +135,7 @@ void Engine::ReadHexFile(const char* filePath)
 
     fclose(file);
 }
-
+/*
 void Engine::UpdateFileWatcher()
 {
     if (!FileWatcherEnabled) return;
@@ -169,9 +170,9 @@ void Engine::UpdateFileWatcher()
             default:
                 Tools::console->AddLog("Error! Unknown file status.");
         }
-    });
+    });   
 }
-
+*/
 const char* Engine::GetEngineName()
 {
     return TextFormat("Enginsito v: %.3f", PE_VERSION / 1000.0f);
