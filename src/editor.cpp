@@ -168,14 +168,15 @@ Editor::Editor(Engine* _engine)
     ImGuiStyle& style = ImGui::GetStyle();
     style.FrameRounding = 6.0f;
     style.WindowRounding = 6.0f;
+    style.ChildRounding = 6.0f;
+    style.PopupRounding = 6.0f;
+    style.WindowBorderSize = 1.0f;
+    style.ChildBorderSize = 1.0f;
+    style.PopupBorderSize = 1.0f;
     style.TabRounding = 12.0f;
     style.GrabRounding = 3.0f;
-    style.WindowBorderSize = 0.0f;
     style.GrabMinSize = 20.0f;
     style.ScrollbarSize = 20.0f;
-    style.ChildBorderSize = 0.0f;
-    style.PopupBorderSize = 1.0f;
-    style.PopupRounding = 6.0f;
     style.WindowMenuButtonPosition = ImGuiDir_Right;
     style.SelectableTextAlign = ImVec2(0.02f, 0.0f);
 
@@ -426,6 +427,7 @@ void Editor::DrawshowFileBrowser()
             ClearError();
             SaveCurrentFile();
             editorEngineRef->bios->SetProgram(temp);  
+            codeEditor.Deselect();
             OpenFile();
         }
     }
@@ -989,7 +991,7 @@ void Editor::DrawToolsPiano()
 {  
     float keyWidth = ImGui::CalcTextSize("    ").x;
     float keyHeight = ImGui::CalcTextSize(" ").y;
-    ImVec2 top_pos = ImGui::GetCursorScreenPos();
+    ImVec2 top_pos = ImGui::GetCursorPos();
     ImGui::Text("Octave %i  |  ", keyboardOctave);
     ImGui::SameLine();
 
@@ -1040,14 +1042,13 @@ void Editor::DrawToolsPiano()
         }
     ImGui::EndGroup();
     ImGui::BeginGroup(); 
-    ImGui::SetCursorScreenPos(ImVec2(keyWidth * 10, top_pos.y));   
+    ImGui::SetCursorPos(ImVec2(keyWidth * 10, top_pos.y));  
     ImGuiKnobs::KnobInt("Vol", &pianoVolume, 0, 127, 1.0f, "%03i", ImGuiKnobVariant_Stepped);
     ImGui::EndGroup();
 
-    ImGui::SetCursorPos(ImVec2(10,white_key_pos.y + keyHeight + 10));
-
+    ImGui::Text("Oscilloscope");
     ImVec2 pos = ImGui::GetCursorScreenPos();
-       
+    
     DrawChannel(0, ImVec2(pos.x, pos.y));
     DrawChannel(1, ImVec2(pos.x + 140, pos.y));
     DrawChannel(2, ImVec2(pos.x + 280, pos.y));
