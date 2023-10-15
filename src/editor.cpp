@@ -1899,7 +1899,6 @@ void Editor::ChangeLayout(uint8_t layout)
 
 void Editor::Package()
 {
-
     std::string name = editorEngineRef->bios->CurrentProject.name;
 
     if (!std::filesystem::exists(name)) {
@@ -2047,7 +2046,7 @@ void Editor::Draw()
         }  
         if(editorEngineRef->bios->CurrentProject.name != "")
         {
-            if (ImGui::BeginMenu("Package"))
+            if (ImGui::BeginMenu("Build"))
             {                
                 if(ImGui::MenuItem("Package", NULL, nullptr))
                     Package();       
