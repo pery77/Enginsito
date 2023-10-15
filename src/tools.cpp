@@ -79,10 +79,11 @@ std::vector<std::string> Tools::Split(const std::string& str, const char sep)
 
 std::stringstream Tools::GetFiles(const char *path) 
 {
-    
+    std::stringstream result;
+    if(!CheckAssetsFolder()) return result;
+
     namespace fs = std::filesystem;
     const fs::path current_path = fs::current_path() / ASSETS_FOLDER / path;
-    std::stringstream result;
 
     DIR *dir = opendir(current_path.string().c_str());
    
@@ -103,10 +104,11 @@ std::stringstream Tools::GetFiles(const char *path)
 }
 std::stringstream Tools::GetFolders(const char *path) 
 {
-    
+    std::stringstream result;
+    if(!CheckAssetsFolder()) return result;
+
     namespace fs = std::filesystem;
     const fs::path current_path = fs::current_path() / ASSETS_FOLDER / path;
-    std::stringstream result;
 
     DIR *dir = opendir(current_path.string().c_str());
    
@@ -127,14 +129,22 @@ std::stringstream Tools::GetFolders(const char *path)
 
 std::stringstream Tools::GetDir(const char *path) 
 {
-    
     std::stringstream folders = GetFolders(path);
     std::stringstream files = GetFiles(path);
     std::stringstream result;
     result << folders.str() << files.str();
     return result;
 }
+bool Tools::CheckAssetsFolder() 
+{
+    namespace fs = std::filesystem;
+    const fs::path current_path = fs::current_path() / ASSETS_FOLDER;
+    bool result = fs::exists(current_path);
+    if (!result)
+        printf("No /assets folder found.\n");
 
+    return result;
+}
 
 bool Tools::DirExist(std::string path) 
 {

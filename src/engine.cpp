@@ -33,8 +33,8 @@ SpriteManager* spriteManager;
 
 Engine::Engine()
 {
-    std::stringstream ss;
-    ss << "./" << ASSETS_FOLDER << "/";
+    //std::stringstream ss;
+    //ss << "./" << ASSETS_FOLDER << "/";
     //fw = new FileWatcher{ss.str(), 3.0f};
 }
 

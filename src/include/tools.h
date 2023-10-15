@@ -63,6 +63,7 @@ class Tools{
         static std::stringstream GetFiles(const char *path);
         static std::stringstream GetFolders(const char *path);
         static std::stringstream GetDir(const char *path);
+        static bool CheckAssetsFolder();
         static bool DirExist(std::string path);
         static bool FileExist(std::string path, std::string file);
         static bool FileMemoryExist(std::string memoryFile);

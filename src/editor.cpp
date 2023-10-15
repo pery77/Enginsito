@@ -1897,6 +1897,47 @@ void Editor::ChangeLayout(uint8_t layout)
     LoadUIJson();
 }
 
+void Editor::Package()
+{
+
+    std::string name = editorEngineRef->bios->CurrentProject.name;
+
+    if (!std::filesystem::exists(name)) {
+        std::filesystem::create_directory(name);
+        Tools::console->AddLog( "Packaging: %s", name.c_str());
+        std::filesystem::create_directory(name + "/" + ASSETS_FOLDER);
+        std::filesystem::create_directory(name + "/" + CONFIG_FOLDER);
+    } else {
+        Tools::console->AddLog( "[ERROR] Folder %s is already exist, please, delete it.", name.c_str());
+        return;
+    }
+
+    std::string exe = name + "/" + name +".exe";
+    std::string bas = editorEngineRef->bios->CurrentProject.programFile;
+    std::string data = editorEngineRef->bios->CurrentProject.memoryFile;
+
+    try {
+        Tools::console->AddLog( "Copying: %s", name.c_str());
+        std::filesystem::copy("enginsito.exe", exe);
+        std::filesystem::copy(bas,  name + "/" + ASSETS_FOLDER + "/" + name + PROGRAM_EXTENSION);
+        std::filesystem::copy(data, name + "/" + ASSETS_FOLDER + "/" + name + MEM_EXTENSION);
+    } catch (const std::filesystem::filesystem_error& e) {
+        Tools::console->AddLog( "[ERROR] Error copying: %s, %s", name.c_str(), e.what());
+        return;
+    }
+    
+    std::string bootFile = name + "/" + BOOT_FILE;
+    std::string bootText = "editor 0\nfullscreen\nload "+ name +"\nrun";
+    std::ofstream outputFile(bootFile);
+    if (outputFile.is_open()) {
+        outputFile << bootText << std::endl;
+        outputFile.close(); 
+        Tools::console->AddLog("Boot file OK:");
+    } else {
+        Tools::console->AddLog("[ERROR] Boot file Error");
+    }
+}
+
 void Editor::Draw()
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -2004,7 +2045,15 @@ void Editor::Draw()
             ImGui::MenuItem("About", NULL, &show_credits);        
             ImGui::EndMenu();
         }  
-
+        if(editorEngineRef->bios->CurrentProject.name != "")
+        {
+            if (ImGui::BeginMenu("Package"))
+            {                
+                if(ImGui::MenuItem("Package", NULL, nullptr))
+                    Package();       
+                ImGui::EndMenu();
+            }  
+        }
         ImGui::EndMenuBar();
     }
         
