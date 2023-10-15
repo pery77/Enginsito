@@ -15,6 +15,8 @@
 #include "mb_manager.h"
 #include "sprite_manager.h"
 
+#include "documentation.h"
+
 class Editor
 {
     public:
@@ -46,7 +48,7 @@ class Editor
 
     Engine* editorEngineRef;
     TextEditor codeEditor;
-    TextEditor docs;
+    Documentation docs;
     TextEditor::LanguageDefinition lang = TextEditor::LanguageDefinition::Basic();
     std::string editorFile = "";
 

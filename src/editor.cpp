@@ -38,6 +38,8 @@ static float iScale;
 static Color drawMetaExampleColor;
 int currentLayout = 0;
 
+Documentation docs;
+
 void Editor::LoadUIJson()
 {
 	std::stringstream ss;
@@ -135,13 +137,6 @@ Editor::Editor(Engine* _engine)
     editorEngineRef = _engine;
     codeEditor.SetLanguageDefinition(lang);
     codeEditor.SetTabSize(1);
-
-    docs.SetLanguageDefinition(lang);
-    docs.SetReadOnly(true);
-
-    char* docsText = LoadFileText(DOCS_FILE);
-    docs.SetText(docsText);
-    docs.SetShowWhitespaces(false);
 
     mem_edit.HighlightColor = IM_COL32Vec4(Col_P_B1);
     mem_edit.OptShowAscii = false;
@@ -582,7 +577,7 @@ void Editor::DrawCode(bool* p_open)
 void Editor::DrawDocs(bool* p_open)
 {
     ImGui::Begin("Documentation", p_open, ImGuiWindowFlags_HorizontalScrollbar);
-        docs.Render("Documentation");
+        docs.Draw(p_open);
     ImGui::End();
 }
 
@@ -1951,8 +1946,6 @@ void Editor::Draw()
                 ImGui::MenuItem("Meta Sprite", NULL, &show_metaSprite);
                 ImGui::Separator();
                 ImGui::MenuItem("SFX", NULL, &show_sfx);
-                ImGui::Separator();
-                ImGui::MenuItem("Docs", NULL, &show_docs);
 
                 #ifdef DEBUG
                 ImGui::MenuItem("Demo", NULL, &show_demo);
@@ -1986,7 +1979,9 @@ void Editor::Draw()
         }   
 
         if (ImGui::BeginMenu("Help"))
-        {
+        {                
+            ImGui::MenuItem("Documentation", NULL, &show_docs);
+            ImGui::Separator();
             ImGui::MenuItem("About", NULL, &show_credits);        
             ImGui::EndMenu();
         }  

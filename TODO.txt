@@ -1,20 +1,13 @@
 Main
-
-	quitar filewatcher poner alternativa
 	Boton build falso
 	
 Editor
-	
 	Nueva Documentación como Demo
 	crt presets
 	palette presets
 	sfx presets
 
 Editor Code
-
-	shift + mover no selecciona
-	deselecionar script al salir 
-	scroll horizontal
 
 Documentación
 
@@ -26,6 +19,3 @@ Documentación
 	consola comandos
 
 Basic
-
-	Investigar cuelges con recursivas
-	NOT () mirar
