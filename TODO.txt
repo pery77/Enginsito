@@ -18,3 +18,51 @@ Documentación
 	consola comandos
 
 Basic
+
+
+------------------------
+Documentation
+
+	Main
+		Concept
+	
+		Limitations
+		
+		Caracteristics
+
+			Screen
+
+			Colors
+			
+			Export
+
+	Console
+		
+		Commands
+
+	Editor
+		
+		Keys
+
+	Code
+
+		Basic
+			GameFlow
+			Keywords
+			Maths
+			String
+			Data
+		
+		Enginsito
+			Inputs
+				Mouse
+				Pad
+				Keyboard
+			Draw
+			Sound
+			Tools
+		
+
+	MML
+	Keys
+
