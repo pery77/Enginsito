@@ -660,6 +660,21 @@ void Editor::DrawPalette()
         selectedColor = oldColor;
         editorEngineRef->spriteManager->SetColor(selectedId, selectedColor.x * 255, selectedColor.y * 255, selectedColor.z * 255);
     }
+    ImGui::BeginGroup();
+
+        std::string name = "default";
+        if (editorEngineRef->bios->CurrentProject.name != "")
+                name = editorEngineRef->bios->CurrentProject.name;
+    
+        ImGui::Text(TextFormat("Preset %s", name.c_str()));
+        ImGui::SameLine();
+        if(ImGui::Button("Export"))
+        {
+            name += ".colPreset";
+            Tools::console->AddLog("Saving Color preset");
+            editorEngineRef->DumpMemory(name.c_str(), 0, 48);
+        }
+    ImGui::EndGroup();
 }
 
 void Editor::SpriteRect(int id, ImVec2 pos, ImVec2 size, int x, int y, ImTextureID my_tex_id) 
@@ -1357,9 +1372,18 @@ void Editor::DrawSFX()
     ImGui::BeginGroup();
         ImGui::Text(" ");
         ImGui::Text(" ");
-        if(ImGui::Button("Export", ImVec2(80,90)))
-        {
 
+        std::string name = "default";
+        if (editorEngineRef->bios->CurrentProject.name != "")
+                name = editorEngineRef->bios->CurrentProject.name;
+    
+        ImGui::Text(TextFormat("Preset\n%s", name.c_str()));
+
+        if(ImGui::Button("Export", ImVec2(80,70)))
+        {
+            name += ".sfxPreset";
+            Tools::console->AddLog("Saving Sfx preset");
+            editorEngineRef->DumpMemory(name.c_str(), 3376, 176);
         }
     ImGui::EndGroup();
 }

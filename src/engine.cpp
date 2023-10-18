@@ -82,7 +82,16 @@ void Engine::DropFileUpdate()
             ReadHexFile(firstFilePath);
             return;
         }
-
+        if (strcmp(fileExtension, ".colPreset") == 0)
+        {
+            LoadMemory(firstFilePath, 0, 48);
+            return;
+        }
+        if (strcmp(fileExtension, ".sfxPreset") == 0)
+        {
+            LoadMemory(firstFilePath, 3376, 176);
+            return;
+        }        
         if (strcmp(fileExtension, ".crtPreset") == 0)
         {
             LoadMemory(firstFilePath, 4080, 11);
@@ -193,9 +202,11 @@ unsigned char* Engine::GetMemory()
 void Engine::DumpMemory(const char *path, unsigned short start, unsigned short total) 
 {
     FILE *f = fopen(path, "wb");
-    if (f) {
+    if (f) 
+    {
         SetVersion();
-        if (start + total <= 4096) {
+        if (start + total <= 4096) 
+        {
             size_t r = fwrite(&MainMemory[start], 1, total, f);
         }
         fclose(f);
@@ -204,12 +215,11 @@ void Engine::DumpMemory(const char *path, unsigned short start, unsigned short t
 
 void Engine::LoadMemory(const char *path, unsigned short start, unsigned short total) 
 {
-
     FILE *f = fopen(path, "rb");
-    if (f) {
-        //size_t r = fread(MainMemory, sizeof(MainMemory), 1, f);
-        if (start + total <= 4096) {
-            //fseek(f, start, SEEK_SET);
+    if (f) 
+    {
+        if (start + total <= 4096) 
+        {
             size_t r = fread(&MainMemory[start], 1, total, f);
             Tools::console->AddLog("Loading %i bytes", r);
             Tools::console->AddLog("From %i to %i", start, start + total);

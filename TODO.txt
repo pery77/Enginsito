@@ -1,10 +1,7 @@
 Main
 
 Editor
-				presets save, drop
-	crt 				x      x
-	palette             x      v .hex
-	sfx 				x      x
+
 
 Editor Code
 
@@ -35,6 +32,8 @@ Documentation
 			Colors
 			
 			Export
+
+			Import
 
 	Console
 		
