@@ -80,6 +80,13 @@ void Engine::DropFileUpdate()
         if (strcmp(fileExtension, ".hex") == 0)
         {
             ReadHexFile(firstFilePath);
+            return;
+        }
+
+        if (strcmp(fileExtension, ".crtPreset") == 0)
+        {
+            LoadMemory(firstFilePath, 4080, 11);
+            return;
         }
 #ifdef DEBUG
         if (strcmp(fileExtension, ".data") == 0)
@@ -183,21 +190,29 @@ unsigned char* Engine::GetMemory()
     return MainMemory;
 }
 
-void Engine::DumpMemory(const char *path) 
+void Engine::DumpMemory(const char *path, unsigned short start, unsigned short total) 
 {
     FILE *f = fopen(path, "wb");
     if (f) {
         SetVersion();
-        size_t r = fwrite(MainMemory, sizeof(MainMemory[0]), 4096, f);
+        if (start + total <= 4096) {
+            size_t r = fwrite(&MainMemory[start], 1, total, f);
+        }
         fclose(f);
     }
 }
 
-void Engine::LoadMemory(const char *path) 
+void Engine::LoadMemory(const char *path, int start, int total) 
 {
     FILE *f = fopen(path, "rb");
     if (f) {
-        size_t r = fread(MainMemory, sizeof(MainMemory), 1, f);
+        //size_t r = fread(MainMemory, sizeof(MainMemory), 1, f);
+        if (start + total <= 4096) {
+            fseek(f, start, SEEK_SET);
+            size_t r = fread(&MainMemory[start], 1, total, f);
+            Tools::console->AddLog("Loading %i bytes", r);
+            Tools::console->AddLog("From %i to %i", start, start + total);
+        }
         fclose(f);
     }
 }

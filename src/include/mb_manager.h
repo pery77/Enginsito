@@ -77,8 +77,6 @@ class MBManager{
         static int peek(struct mb_interpreter_t* s, void** l);
         static int poke(struct mb_interpreter_t* s, void** l);
         static int toSigned(struct mb_interpreter_t* s, void** l);
-        static int dumpMemory(struct mb_interpreter_t* s, void** l);
-        static int loadMemory(struct mb_interpreter_t* s, void** l);
         static int savedata(struct mb_interpreter_t* s, void** l);
         static int loaddata(struct mb_interpreter_t* s, void** l);
         static int quit(struct mb_interpreter_t* s, void** l);

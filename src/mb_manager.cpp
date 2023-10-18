@@ -180,8 +180,6 @@ int MBManager::OpenBas(const char *file){
 	mb_register_func(bas, "QUIT", quit);
 	mb_register_func(bas, "SAVEDATA", savedata);
 	mb_register_func(bas, "LOADDATA", loaddata);
-	//mb_register_func(bas, "SAVE", dumpMemory);
-	//mb_register_func(bas, "LOAD", loadMemory);
 
 /*
 	mb_reg_fun(bas, getChar);
@@ -1681,34 +1679,6 @@ int MBManager::toSigned(struct mb_interpreter_t* s, void** l){
 	return result;
 }
 
-int MBManager::dumpMemory(struct mb_interpreter_t* s, void** l) {
-	int result = MB_FUNC_OK;
-	char* path = 0;
-
-	mb_assert(s && l);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		mb_check(mb_pop_string(s, l, &path));
-	mb_check(mb_attempt_close_bracket(s, l));
-	
-	basicEngineRef->DumpMemory(path);
-	
-	return result;
-}
-int MBManager::loadMemory(struct mb_interpreter_t* s, void** l) {
-	int result = MB_FUNC_OK;
-	char* path = 0;
-
-	mb_assert(s && l);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		mb_check(mb_pop_string(s, l, &path));
-	mb_check(mb_attempt_close_bracket(s, l));
-	
-	basicEngineRef->LoadMemory(path);
-	
-	return result;
-}
 int MBManager::savedata(struct mb_interpreter_t* s, void** l) {
 	int result = MB_FUNC_OK;
 	int slot = 0;

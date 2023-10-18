@@ -800,6 +800,24 @@ void Editor::DrawCRT()
     ImGui::RadioButton("TV", &grille, 1); 
     ImGui::SameLine();
     ImGui::RadioButton("LCD", &grille, 2);
+    ImGui::SameLine(); 
+    ImGui::Text("         ");
+    ImGui::SameLine(); 
+
+    ImGui::BeginGroup();
+    std::string name = "default";
+    if (editorEngineRef->bios->CurrentProject.name != "")
+            name = editorEngineRef->bios->CurrentProject.name;
+    
+    ImGui::Text(TextFormat("Preset name %s", name.c_str()));
+    if (ImGui::Button("Export"))
+    {
+        name += ".crtPreset";
+        Tools::console->AddLog("Saving Crt preset");
+        editorEngineRef->DumpMemory(name.c_str(), 4080, 11);
+    }
+    ImGui::EndGroup();
+
     ImGui::EndGroup();
 
     if(ImGui::IsWindowFocused())
