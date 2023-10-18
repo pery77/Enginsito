@@ -202,13 +202,14 @@ void Engine::DumpMemory(const char *path, unsigned short start, unsigned short t
     }
 }
 
-void Engine::LoadMemory(const char *path, int start, int total) 
+void Engine::LoadMemory(const char *path, unsigned short start, unsigned short total) 
 {
+
     FILE *f = fopen(path, "rb");
     if (f) {
         //size_t r = fread(MainMemory, sizeof(MainMemory), 1, f);
         if (start + total <= 4096) {
-            fseek(f, start, SEEK_SET);
+            //fseek(f, start, SEEK_SET);
             size_t r = fread(&MainMemory[start], 1, total, f);
             Tools::console->AddLog("Loading %i bytes", r);
             Tools::console->AddLog("From %i to %i", start, start + total);

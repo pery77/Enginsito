@@ -272,7 +272,7 @@ void Bios::TryToSaveMemory()
     if (Tools::FileMemoryExist(CurrentProject.memoryFile))
     {
         Tools::console->AddLog("Saving current memory: [%s]", CurrentProject.memoryFile.c_str());
-        biosEngineRef->DumpMemory(CurrentProject.memoryFile.c_str());
+        biosEngineRef->DumpMemory(CurrentProject.memoryFile.c_str(), 0, 4096);
     }
 }
 
@@ -281,13 +281,13 @@ void Bios::TryToLoadMemory()
     if (Tools::FileMemoryExist(CurrentProject.memoryFile))
     {
         Tools::console->AddLog("Loading data file [%s]", CurrentProject.memoryFile.c_str());
-        biosEngineRef->LoadMemory(CurrentProject.memoryFile.c_str());
+        biosEngineRef->LoadMemory(CurrentProject.memoryFile.c_str(), 0, 4096);
     } 
     else
     {
         Tools::console->AddLog("Creating data file [%s]", CurrentProject.memoryFile.c_str());
-        biosEngineRef->DumpMemory(CurrentProject.memoryFile.c_str());
-        biosEngineRef->LoadMemory(CurrentProject.memoryFile.c_str());
+        biosEngineRef->DumpMemory(CurrentProject.memoryFile.c_str(), 0, 4096);
+        biosEngineRef->LoadMemory(CurrentProject.memoryFile.c_str(), 0 ,4096);
     }
 }
 
