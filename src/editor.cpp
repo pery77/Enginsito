@@ -186,6 +186,12 @@ Editor::Editor(Engine* _engine)
     style.WindowMenuButtonPosition = ImGuiDir_Right;
     style.SelectableTextAlign = ImVec2(0.02f, 0.0f);
 
+    SetImGuiColors();
+    
+}
+
+void Editor::SetImGuiColors()
+{
     ImVec4* colors = ImGui::GetStyle().Colors;
     colors[ImGuiCol_Text]                   = Col_T_1;
     colors[ImGuiCol_TextDisabled]           = Col_T_2;
@@ -229,7 +235,49 @@ Editor::Editor(Engine* _engine)
     colors[ImGuiCol_PlotLinesHovered]       = Col_S1_B1;
     colors[ImGuiCol_DockingEmptyBg]         = Col_P_D2;
     colors[ImGuiCol_TextSelectedBg]         = Col_P_B1;
-    
+}
+
+inline ImVec4 hexToVec3(const std::string& hex) 
+{     
+    std::string redStr = hex.substr(0, 2);
+    std::string greenStr = hex.substr(2, 2);
+    std::string blueStr = hex.substr(4, 2);
+
+    // Convierte los componentes hexadecimales en valores de punto flotante
+    float r = std::stoul(redStr, nullptr, 16) / 255.0f;
+    float g = std::stoul(greenStr, nullptr, 16) / 255.0f;
+    float b = std::stoul(blueStr, nullptr, 16) / 255.0f;
+
+    return ImVec4(r, g, b, 1.0f);
+}
+
+void Editor::LoadEditorPalette(std::string colors[17])
+{
+    //Text
+    Col_T_1 = hexToVec3(colors[0]);
+    Col_T_2 = hexToVec3(colors[1]);
+    //Primary
+    Col_P_B1 = hexToVec3(colors[2]);
+    Col_P_B2 = hexToVec3(colors[3]);
+    Col_P_M  = hexToVec3(colors[4]);
+    Col_P_D1 = hexToVec3(colors[5]);
+    Col_P_D2 = hexToVec3(colors[6]);
+
+    //Secondary 1
+    Col_S1_B1 = hexToVec3(colors[7]);
+    Col_S1_B2 = hexToVec3(colors[8]);
+    Col_S1_M  = hexToVec3(colors[9]);
+    Col_S1_D1 = hexToVec3(colors[10]);
+    Col_S1_D2 = hexToVec3(colors[11]);
+
+    //Secondary 2
+    Col_S2_B1 = hexToVec3(colors[12]);
+    Col_S2_B2 = hexToVec3(colors[13]);
+    Col_S2_M  = hexToVec3(colors[14]);
+    Col_S2_D1 = hexToVec3(colors[15]);
+    Col_S2_D2 = hexToVec3(colors[16]);
+
+    SetImGuiColors();
 }
 
 Editor::~Editor()
@@ -313,6 +361,7 @@ void Editor::DrawFPS()
                         0.0f, 60.0f, ImVec2(pw_size.x, pw_size.y-20)); 
     ImGui::PopStyleColor();
 }
+
 void Editor::Link(const char* text, const char* link, float size)
 { 
     if (ImGui::Button(text, ImVec2(size, 0.0f)))
@@ -2125,6 +2174,30 @@ void Editor::Draw()
             {
                 ImGui::PushItemWidth(120.0f);
                 ImGui::DragFloat("Font size", &io.FontGlobalScale, 0.05f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
+                ImGui::SameLine();
+                if (ImGui::Button("Nes"))
+                {
+                    std::string colors[17] = {
+                    "FF8080",
+                    "FF7070",
+                    "5D5678",
+                    "5D45B5",
+                    "6F61A3",
+                    "342F48",
+                    "1E1833",
+                    "769667", 
+                    "75DF42", 
+                    "8DCC6F", 
+                    "425B36", 
+                    "264019", 
+                    "AD7D77", 
+                    "FF604C", 
+                    "EC8D80", 
+                    "69433F", 
+                    "4A221D"
+                    };
+                    LoadEditorPalette(colors);
+                }
             }
             if (ImGui::CollapsingHeader("Sequencer"))
             {

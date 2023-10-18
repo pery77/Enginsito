@@ -121,6 +121,9 @@ class Editor
 
     void Package();
     bool CheckJsonFile();
+
+    void LoadEditorPalette(std::string colors[17]);
+    void SetImGuiColors();
     
     //Text
     ImVec4 Col_T_1 = ImVec4(0.70f, 0.70f, 0.70f, 1.00f);

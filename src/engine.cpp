@@ -97,6 +97,11 @@ void Engine::DropFileUpdate()
             LoadMemory(firstFilePath, 4080, 11);
             return;
         }
+        if (strcmp(fileExtension, ".ecolors") == 0)
+        {
+            ReadEditorColorFile(firstFilePath);
+            return;
+        }
 #ifdef DEBUG
         if (strcmp(fileExtension, ".data") == 0)
         {
@@ -119,6 +124,7 @@ void Engine::DropFileUpdate()
 #endif        
     }
 }
+
 void Engine::ReadHexFile(const char* filePath)
 {
     FILE* file = fopen(filePath, "r");
@@ -150,6 +156,21 @@ void Engine::ReadHexFile(const char* filePath)
     }
 
     fclose(file);
+}
+
+void Engine::ReadEditorColorFile(const char* filePath)
+{
+    std::string colors[17]; 
+    std::ifstream file(filePath);
+    if (file.is_open()) 
+    {
+        for (int i = 0; i < 17; ++i) 
+        {
+            std::getline(file, colors[i]);
+        }
+    }
+    file.close();
+    editor->LoadEditorPalette(colors);
 }
 /*
 void Engine::UpdateFileWatcher()

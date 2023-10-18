@@ -48,6 +48,7 @@ class Engine
         void DumpMemory(const char *path, unsigned short start, unsigned short total);
         void LoadMemory(const char *path, unsigned short start, unsigned short total);
         void ReadHexFile(const char* filePath);
+        void ReadEditorColorFile(const char* filePath);
 
         unsigned char Peek(unsigned short dir);
         void Poke(unsigned short dir,unsigned char value);
