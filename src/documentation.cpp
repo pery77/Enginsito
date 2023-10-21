@@ -7,11 +7,8 @@
 #include <string>
 #include <sstream>
 #include <vector>
-#include <algorithm>
-#include <cctype>
-#include <iostream>
-#include <string>
-#include <string_view>
+
+#include "TextEditor.h"
 
 //Lazy guy toys.
 struct KeyData {
@@ -160,34 +157,49 @@ void GenerateKeysCodeFromEnumBecauseImTooLazy()
     //Copy pasted from console to mb_manager.cpp
     for (const KeyData& data : keyData) {
     //Copy pasted from console to mb_manager.cpp
-    //    std::cout << "key.value.integer = " << data.name << ";\n";
-    //    std::cout << "mb_add_var(bas, &context, \"" << data.name << "\", key, true);\n";
+        std::cout << "key.value.integer = " << data.name << ";\n";
+        std::cout << "mb_add_var(bas, &context, \"" << data.name << "\", key, true);\n";
     //And this for text editor keywords2
-    //    std::cout << "\"" << data.name << "\",";
+        std::cout << "\"" << data.name << "\",";
     }
 }
 
-
+TextEditor codeEditor;
+const char* lastName = "";
 Documentation::Documentation()
 {
-    GenerateKeysCodeFromEnumBecauseImTooLazy();
+    //GenerateKeysCodeFromEnumBecauseImTooLazy();
+    codeEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::Basic());
+    codeEditor.SetTabSize(1);
+    codeEditor.SetReadOnly(true);
 }
 
 Documentation::~Documentation()
 {
 }
 
+void keyword(const char* name, const char* args, const char* description, const char* example)
+{
+    if(ImGui::Button(TextFormat("%s(%s)",name, args)))
+    {
+        codeEditor.SetText(TextFormat("'%s\n'Example: \n%s", description, example));
+        codeEditor.Deselect();
+    }
+}
 
 void Documentation::Draw(bool* p_open)
 {
+
     if (ImGui::CollapsingHeader("Main"))
     {
         ImGui::SeparatorText(" ");
     }
+
     if (ImGui::CollapsingHeader("Console"))
     {
         ImGui::SeparatorText(" ");
     }
+
     if (ImGui::CollapsingHeader("Editor"))
     {
         ImGui::SeparatorText("Keys");
@@ -200,36 +212,107 @@ void Documentation::Draw(bool* p_open)
         )|"
         );
     }
+    
     if (ImGui::CollapsingHeader("Code"))
     {
-        ImGui::SeparatorText(" ");
-    }
-    if (ImGui::CollapsingHeader("MML"))
-    {
-            ImGui::Text(R"|(
-    A - G	    note on	        C(C4) D4.(D4+8) C12C12C12(triplets)
-    + or #	    sharp	
-    -	        flat	
-    =	        natural	
-    R	        rest	        R1 (whole rest)
-    O	        octave	        O0 ... O8 (O4 default)
-    > <	        octave up/down	
-    L	        length	        L4 default
-    Q	        note off ratio	n/8 (Q8 default)
-    ^	        tie	            C4^16
-    &	        no note off	
-    T	        tempo	        T120 default
-    V	        volume	        V0 ... V127(max) V+10 V-10
-    KJ KI	    transpose(maJor/mInor)	KJg(G major)
-    [ ]	        loop	        [...]4 (repeat 4 times)
-    :	        skip on the last loop	
-    @	        program change
-        )|");
+        ImGui::BeginGroup();
+        ImGui::Text("                              ");
+        if (ImGui::TreeNode("Basic"))
+        {
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("Enginsito"))
+        {
+            if (ImGui::TreeNode("Inputs"))
+            {
+                if (ImGui::TreeNode("Keyboard"))
+                {
+                    ImGui::TreePop();
+                }
+                if (ImGui::TreeNode("Mouse"))
+                {
+                    ImGui::TreePop();
+                }
+                if (ImGui::TreeNode("Gamepad"))
+                {
+                    ImGui::TreePop();
+                }                
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode("Draw"))
+            {
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode("Sound"))
+            {
+                ImGui::TreePop();
+            } 
+            if (ImGui::TreeNode("Memory"))
+            {
+                ImGui::TreePop();
+            }
+            if (ImGui::TreeNode("Tools"))
+            {
+                keyword("formatText", "text, value", "Return formatted text %i for integer or %f for float", 
+                "formatText(\"Score: %06i\",score)");
+                keyword("fontSpace", "space", "Set font separation in pixels", 
+                "fontSpace(16)");
+                keyword("textSize", "text, textSize", "Return the size in pixels of the text at current text,\n'textSize is from 1 to 4", 
+                "textSize(\"Hello\", 1)");
+                keyword("quit", "","Close Enginsito", "quit()");
+                ImGui::TreePop();
+            }      
+            ImGui::TreePop();
+        }
+        ImGui::EndGroup();
+        ImGui::SameLine();
+        
+        codeEditor.Render("keyword");
     }
 
+
+    if (ImGui::CollapsingHeader("MML"))
+    {
+        if (ImGui::TreeNode("MML Info"))
+        {
+
+            ImGui::TextWrapped(R"|(Music Macro Language (MML) is a text-based programming language 
+used to create music for various types of computer and video game systems, 
+as well as some early personal computers and synthesizers.
+MML allows composers and programmers to define musical sequences and melodies
+using a series of text commands and notations.
+        )|");
+            ImGui::TreePop();
+        }
+        
+        if (ImGui::TreeNode("MML Code"))
+        {
+            ImGui::Text(R"|(
+    A - G       note on         C(C4) D4.(D4+8) C12C12C12(triplets)
+    + or #      sharp	
+    -           flat	
+    =           natural	
+    R           rest            R1 (whole rest)
+    O           octave          O0 ... O8 (O4 default)
+    > <         octave up/down	
+    L           length          L4 default
+    Q           note off ratio  n/8 (Q8 default)
+    ^           tie             C4^16
+    &           no note off	
+    T           tempo           T120 default
+    V           volume          V0 ... V127(max) V+10 V-10
+    KJ KI       transpose(maJor/mInor)	KJg(G major)
+    [ ]         loop            [...]4 (repeat 4 times)
+    :           skip on the last loop	
+    @           program change
+        )|");
+            ImGui::TreePop();
+        }
+    }
+  
     if (ImGui::CollapsingHeader("Key Codes"))
     {
-        if (ImGui::TreeNode("Alphanumeric keys"))
+        if (ImGui::TreeNode("Alphanumeric keys##kc"))
         {          
             ImGui::Text(R"|(
     KEY_APOSTROPHE      = 39 ->    Key: '
@@ -283,7 +366,7 @@ void Documentation::Draw(bool* p_open)
         ImGui::TreePop();  
         }
 
-        if (ImGui::TreeNode("Functions"))
+        if (ImGui::TreeNode("Functions##kc"))
         {
             ImGui::Text(R"|(
     KEY_SPACE           = 32  ->   Key: Space
@@ -332,7 +415,7 @@ void Documentation::Draw(bool* p_open)
         ImGui::TreePop();
         }
 
-        if (ImGui::TreeNode("Keypad key"))
+        if (ImGui::TreeNode("Keypad key##kc"))
         {
             ImGui::Text(R"|(
     KEY_KP_0            = 320 ->   Key: Keypad 0
@@ -357,7 +440,7 @@ void Documentation::Draw(bool* p_open)
         ImGui::TreePop();
         }
 
-        if (ImGui::TreeNode("Mouse"))
+        if (ImGui::TreeNode("Mouse##kc"))
         {
             ImGui::Text(R"|(
     MOUSE_BUTTON_LEFT    = 0  ->    Mouse button left
@@ -372,7 +455,7 @@ void Documentation::Draw(bool* p_open)
         ImGui::TreePop();
         }
 
-        if (ImGui::TreeNode("Gamepad"))
+        if (ImGui::TreeNode("Gamepad##kc"))
         {
             ImGui::SeparatorText("Buttons");
             ImGui::Text(R"|(
