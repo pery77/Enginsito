@@ -70,18 +70,13 @@ class MBManager{
         //Tools
         static int formatText(struct mb_interpreter_t* s, void** l);
 
-        static int setColor(struct mb_interpreter_t* s, void** l);
-        static int getColor(struct mb_interpreter_t* s, void** l);
-        static int getFiles(struct mb_interpreter_t* s, void** l);
-        static int getFolders(struct mb_interpreter_t* s, void** l);
         static int peek(struct mb_interpreter_t* s, void** l);
         static int poke(struct mb_interpreter_t* s, void** l);
-        static int toSigned(struct mb_interpreter_t* s, void** l);
+    
         static int savedata(struct mb_interpreter_t* s, void** l);
         static int loaddata(struct mb_interpreter_t* s, void** l);
         static int quit(struct mb_interpreter_t* s, void** l);
 
-        static int saveFile(struct mb_interpreter_t* s, void** l);
         //Input
         //Keys
         static int keyPressed(struct mb_interpreter_t* s, void** l);
@@ -126,34 +121,10 @@ class MBManager{
         static int musicStop(struct mb_interpreter_t* s, void** l);
         static int getMusicPosition(struct mb_interpreter_t* s, void** l);
         static int getMusicSize(struct mb_interpreter_t* s, void** l);
-        static int getMusicTick(struct mb_interpreter_t* s, void** l);
-        static int setOsc(struct mb_interpreter_t* s, void** l);
-        static int setEnv(struct mb_interpreter_t* s, void** l);
-        static int setLFO(struct mb_interpreter_t* s, void** l);
-        static int setFilter(struct mb_interpreter_t* s, void** l);
-        static int setSlider(struct mb_interpreter_t* s, void** l);
         
         //Sprites
         static int drawSprite(struct mb_interpreter_t* s, void** l);
         static int drawMetaSprite(struct mb_interpreter_t* s, void** l);
-        static int addMetaSprite(struct mb_interpreter_t* s, void** l);
-        static int getMetaSprite(struct mb_interpreter_t* s, void** l);
-        static int setSprite(struct mb_interpreter_t* s, void** l);
-        static int getSpriteByte(struct mb_interpreter_t* s, void** l);
-
-        //CRT
-        static int crtEnabled(struct mb_interpreter_t* s, void** l);
-        static int crtBlurPower(struct mb_interpreter_t* s, void** l);
-        static int crtBlurFactor(struct mb_interpreter_t* s, void** l);
-        static int crtChromatic(struct mb_interpreter_t* s, void** l);
-        static int crtCurvature(struct mb_interpreter_t* s, void** l);
-        static int crtVignetting(struct mb_interpreter_t* s, void** l);
-        static int crtScanline(struct mb_interpreter_t* s, void** l);
-        static int crtSetGrille(struct mb_interpreter_t* s, void** l);
-        static int crtVerticalLine(struct mb_interpreter_t* s, void** l);
-        static int crtGrilleForce(struct mb_interpreter_t* s, void** l);
-        static int crtNoise(struct mb_interpreter_t* s, void** l);
-        static int crtFliker(struct mb_interpreter_t* s, void** l);
 
         static int my_print(struct mb_interpreter_t* s, const char* fmt, ...);
         static int my_input(struct mb_interpreter_t* s, const char* pmt, char* buf, int n);

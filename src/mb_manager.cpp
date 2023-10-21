@@ -110,7 +110,7 @@ int MBManager::OpenBas(const char *file){
 	mb_add_var(bas, &context, "MOUSE_X", cMouseX, true);
 	mb_add_var(bas, &context, "MOUSE_Y", cMouseY, true);
 	
-	//Keys
+	//Keys enum
 	mb_value_t key;
 	mb_make_int(key, 0);
 
@@ -325,7 +325,7 @@ int MBManager::OpenBas(const char *file){
 	key.value.integer = KEY_KP_EQUAL;
 	mb_add_var(bas, &context, "KEY_KP_EQUAL", key, true);
 
-//Mouse
+	//Mouse enum
 	key.value.integer = MOUSE_BUTTON_LEFT;
 	mb_add_var(bas, &context, "MOUSE_BUTTON_LEFT", key, true);
 	key.value.integer = MOUSE_BUTTON_RIGHT;
@@ -341,30 +341,81 @@ int MBManager::OpenBas(const char *file){
 	key.value.integer = MOUSE_BUTTON_BACK;
 	mb_add_var(bas, &context, "MOUSE_BUTTON_BACK", key, true);
  
+	//Gamepad enum       
+	key.value.integer = GAMEPAD_BUTTON_UNKNOWN;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_UNKNOWN", key, true);   
+	key.value.integer = GAMEPAD_BUTTON_LEFT_FACE_UP;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_LEFT_FACE_UP", key, true);    
+	key.value.integer = GAMEPAD_BUTTON_LEFT_FACE_RIGHT;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_LEFT_FACE_RIGHT", key, true);      
+	key.value.integer = GAMEPAD_BUTTON_LEFT_FACE_DOWN;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_LEFT_FACE_DOWN", key, true);      
+	key.value.integer = GAMEPAD_BUTTON_LEFT_FACE_LEFT;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_LEFT_FACE_LEFT", key, true);       
+	key.value.integer = GAMEPAD_BUTTON_RIGHT_FACE_UP;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_RIGHT_FACE_UP", key, true);     
+	key.value.integer = GAMEPAD_BUTTON_RIGHT_FACE_RIGHT;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_RIGHT_FACE_RIGHT", key, true);     
+	key.value.integer = GAMEPAD_BUTTON_RIGHT_FACE_DOWN;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_RIGHT_FACE_DOWN", key, true);     
+	key.value.integer = GAMEPAD_BUTTON_RIGHT_FACE_LEFT;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_RIGHT_FACE_LEFT", key, true);      
+	key.value.integer = GAMEPAD_BUTTON_LEFT_TRIGGER_1;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_LEFT_TRIGGER_1", key, true);       
+	key.value.integer = GAMEPAD_BUTTON_LEFT_TRIGGER_2;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_LEFT_TRIGGER_2", key, true);    
+	key.value.integer = GAMEPAD_BUTTON_RIGHT_TRIGGER_1;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_RIGHT_TRIGGER_1", key, true);      
+	key.value.integer = GAMEPAD_BUTTON_RIGHT_TRIGGER_2;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_RIGHT_TRIGGER_2", key, true);          
+	key.value.integer = GAMEPAD_BUTTON_MIDDLE_LEFT;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_MIDDLE_LEFT", key, true);               
+	key.value.integer = GAMEPAD_BUTTON_MIDDLE;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_MIDDLE", key, true);        
+	key.value.integer = GAMEPAD_BUTTON_MIDDLE_RIGHT;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_MIDDLE_RIGHT", key, true);          
+	key.value.integer = GAMEPAD_BUTTON_LEFT_THUMB;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_LEFT_THUMB", key, true);         
+	key.value.integer = GAMEPAD_BUTTON_RIGHT_THUMB;
+	mb_add_var(bas, &context, "GAMEPAD_BUTTON_RIGHT_THUMB", key, true);
 
+    
+	key.value.integer = GAMEPAD_AXIS_LEFT_X;
+	mb_add_var(bas, &context, "GAMEPAD_AXIS_LEFT_X", key, true);
+	key.value.integer = GAMEPAD_AXIS_LEFT_Y;
+	mb_add_var(bas, &context, "GAMEPAD_AXIS_LEFT_Y", key, true);
+	key.value.integer = GAMEPAD_AXIS_RIGHT_X;
+	mb_add_var(bas, &context, "GAMEPAD_AXIS_RIGHT_X", key, true);
+	key.value.integer = GAMEPAD_AXIS_RIGHT_Y;
+	mb_add_var(bas, &context, "GAMEPAD_AXIS_RIGHT_Y", key, true);
+	key.value.integer = GAMEPAD_AXIS_LEFT_TRIGGER;
+	mb_add_var(bas, &context, "GAMEPAD_AXIS_LEFT_TRIGGER", key, true);
+	key.value.integer = GAMEPAD_AXIS_RIGHT_TRIGGER;
+	mb_add_var(bas, &context, "GAMEPAD_AXIS_RIGHT_TRIGGER", key, true);
+	
 	//Draw
-	mb_register_func(bas, "CLS", cls);
+	mb_register_func(bas, "CLS", 		cls);
 
-	mb_register_func(bas, "PIXEL", drawPixel);
-	mb_register_func(bas, "LINE", drawLine);
-	mb_register_func(bas, "CIRCLE", drawCircle);
-	mb_register_func(bas, "RING", drawRing);
-	mb_register_func(bas, "ELLIPSE", drawEllipse);
-	mb_register_func(bas, "TRIANGLE", drawTriangle);
-	mb_register_func(bas, "RECT", drawRect);
-	mb_register_func(bas, "RECTROUND", drawRectRound);
-	mb_register_func(bas, "POLY", drawPoly);
+	mb_register_func(bas, "PIXEL", 		drawPixel);
+	mb_register_func(bas, "LINE", 		drawLine);
+	mb_register_func(bas, "CIRCLE", 	drawCircle);
+	mb_register_func(bas, "RING", 		drawRing);
+	mb_register_func(bas, "ELLIPSE", 	drawEllipse);
+	mb_register_func(bas, "TRIANGLE",	drawTriangle);
+	mb_register_func(bas, "RECT", 		drawRect);
+	mb_register_func(bas, "RECTROUND",  drawRectRound);
+	mb_register_func(bas, "POLY", 		drawPoly);
 
-	mb_register_func(bas, "TEXT", drawText);
+	mb_register_func(bas, "TEXT", 		drawText);
 
-	mb_register_func(bas, "SPRITE", drawSprite);
-	mb_register_func(bas, "META", drawMetaSprite);
+	mb_register_func(bas, "SPRITE", 	drawSprite);
+	mb_register_func(bas, "META", 		drawMetaSprite);
 
 	//Mouse inputs
 	mb_register_func(bas, "MOUSEWHEEL", 	mouseWheel); 
 	mb_register_func(bas, "MOUSEPRESSED", 	mousePressed); 
-	mb_register_func(bas, "MOUSEDOWN", 	mouseDown); 
-	mb_register_func(bas, "MOUSERELEASED", mouseReleased); 
+	mb_register_func(bas, "MOUSEDOWN", 		mouseDown); 
+	mb_register_func(bas, "MOUSERELEASED", 	mouseReleased); 
 	mb_register_func(bas, "MOUSEUP", 		mouseUp); 
 	mb_register_func(bas, "MOUSESETPOS", 	setMousePosition); 
 
@@ -372,29 +423,29 @@ int MBManager::OpenBas(const char *file){
 	mb_register_func(bas, "KEYPRESSED", 	keyPressed);
 	mb_register_func(bas, "KEYDOWN", 		keyDown);
 	mb_register_func(bas, "KEYRELEASED", 	keyReleased);
-	mb_register_func(bas, "KEYUP", 		keyUp);
+	mb_register_func(bas, "KEYUP", 			keyUp);
 	mb_register_func(bas, "KEYGET", 		getKey);
 	mb_register_func(bas, "KEYCHAR", 		getKeyChar);
 	
 	//Joy
-	mb_register_func(bas, "JOYISAVIABLE",  isGamepadAvailable);
+	mb_register_func(bas, "JOYISAVIABLE",  	isGamepadAvailable);
 	mb_register_func(bas, "JOYNAME", 		getGamepadName);
-	mb_register_func(bas, "JOYPRESSED",	buttonPressed);
+	mb_register_func(bas, "JOYPRESSED",		buttonPressed);
 	mb_register_func(bas, "JOYDOWN",		buttonDown);
 	mb_register_func(bas, "JOYRELEASED", 	buttonReleased);
 	mb_register_func(bas, "JOYUP",			buttonUp);
-	mb_register_func(bas, "JOYGET",		getButton);
+	mb_register_func(bas, "JOYGET",			getButton);
 
-	mb_register_func(bas, "JOYAXISCOUNT", getAxisCount);
-	mb_register_func(bas, "JOYAXISVALUE", axisValue);
+	mb_register_func(bas, "JOYAXISCOUNT", 	getAxisCount);
+	mb_register_func(bas, "JOYAXISVALUE", 	axisValue);
 
 	//Text tools
-	mb_register_func(bas, "FORMATTEXT", formatText);
-	mb_register_func(bas, "FONTSPACE",  setFontSpacing);
-	mb_register_func(bas, "TEXTSIZE",   measureText);
+	mb_register_func(bas, "FORMATTEXT", 	formatText);
+	mb_register_func(bas, "FONTSPACE",  	setFontSpacing);
+	mb_register_func(bas, "TEXTSIZE",   	measureText);
 
 	//Sound
-	mb_register_func(bas, "CHPRESET",  setPreset); 
+	mb_register_func(bas, "CHPRESET",  	setPreset); 
 	mb_register_func(bas, "CHSET",  	setSequence); 
 	mb_register_func(bas, "CHON",   	playNote);
 	mb_register_func(bas, "CHOFF",  	stopNote);
@@ -404,28 +455,15 @@ int MBManager::OpenBas(const char *file){
 	mb_register_func(bas, "CHSIZE", 	getMusicSize);
 	mb_register_func(bas, "CHFRAME",	getFrameAverage);
 	mb_register_func(bas, "CHGETNOTE",	getNoteName);
-	//mb_register_func(bas, "CHTICK", 	getMusicTick);
 
 	//Memory
-	mb_register_func(bas, "PEEK", peek);
-	mb_register_func(bas, "POKE", poke);
-	mb_register_func(bas, "QUIT", quit);
-	mb_register_func(bas, "SAVEDATA", savedata);
-	mb_register_func(bas, "LOADDATA", loaddata);
+	mb_register_func(bas, "PEEK", 		peek);
+	mb_register_func(bas, "POKE", 		poke);
+	mb_register_func(bas, "SAVEDATA", 	savedata);
+	mb_register_func(bas, "LOADDATA", 	loaddata);
 
-/*
-	mb_reg_fun(bas, getChar);
-	mb_reg_fun(bas, setSprite);
-	mb_reg_fun(bas, getSpriteByte);
-	mb_reg_fun(bas, toSigned);
-	mb_reg_fun(bas, addMetaSprite);
-	mb_reg_fun(bas, getMetaSprite);
-	mb_reg_fun(bas, setColor);
-	mb_reg_fun(bas, getColor);
-	mb_reg_fun(bas, getFiles);
-	mb_reg_fun(bas, getFolders);
-	mb_reg_fun(bas, saveFile);
-*/
+	mb_register_func(bas, "QUIT", 		quit);
+
     int loadState = mb_load_file(bas, file);
 	basFile = file;
 	Tools::console->AddLog("Loading: [ %s ]\n", basFile);
@@ -897,211 +935,6 @@ int MBManager::setFontSpacing(struct mb_interpreter_t* s, void** l){
 
    	basicEngineRef->spriteManager->SetFontSpacing(spacing);
 
-	return result;
-}
-
-int MBManager::setSprite(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-	int id = 0;
-	int b0,b1,b2,b3,b4,b5,b6,b7 = 0;
-
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &id));
-			mb_check(mb_pop_int(s, l, &b0));
-			mb_check(mb_pop_int(s, l, &b1));
-			mb_check(mb_pop_int(s, l, &b2));
-			mb_check(mb_pop_int(s, l, &b3));
-			mb_check(mb_pop_int(s, l, &b4));
-			mb_check(mb_pop_int(s, l, &b5));
-			mb_check(mb_pop_int(s, l, &b6));
-			mb_check(mb_pop_int(s, l, &b7));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->spriteManager->SetSprite(id,b0,b1,b2,b3,b4,b5,b6,b7);
-
-	return result;
-}
-
-int MBManager::getSpriteByte(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int id = 0;
-	int byte = 0;
-	int ret = 0;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &id));
-			mb_check(mb_pop_int(s, l, &byte));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	ret = basicEngineRef->spriteManager->GetSpriteByte(id, byte);
-	mb_check(mb_push_int(s, l, ret));
-	return result;
-}
-int MBManager::setColor(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-    int color = 0;
-    int r = 0;
-    int g = 0;
-    int b = 0;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_int(s, l, &color));
-		mb_check(mb_pop_int(s, l, &r));
-		mb_check(mb_pop_int(s, l, &g));
-		mb_check(mb_pop_int(s, l, &b));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-	basicEngineRef->spriteManager->SetColor(color,r,g,b);
-
-	return result;
-}
-int MBManager::getColor(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-    int color = 0;
-    int channel = 0;
-	int ret = 0;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_int(s, l, &color));
-		mb_check(mb_pop_int(s, l, &channel));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-	Color retColor = basicEngineRef->spriteManager->GetColor(color);
-	
-	switch (channel){
-		case 1:
-			ret = retColor.g;
-			break;
-		case 2:
-			ret = retColor.b;
-			break;
-		default:
-			ret = retColor.r;
-			break;
-	} 
-	
-	mb_check(mb_push_int(s, l, ret));
-
-	return result;
-}
-
-int MBManager::getFiles(struct mb_interpreter_t* s, void** l) {
-	int result = MB_FUNC_OK;
-	char* arg = 0;
-	
-	void* arr = 0;
-	int d[1] = { 0 };
-	int i = 0;
-
-	mb_value_t val;
-
-	mb_assert(s && l);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		mb_check(mb_pop_string(s, l, &arg));
-	mb_check(mb_attempt_close_bracket(s, l));
-
-	std::stringstream ss = Tools::GetFiles(arg);
-    std::string temp;
-
-	int lines = 0;
-	while (std::getline(ss, temp)){
-		lines++;
-    }
-	if (lines > 0){
-		ss = Tools::GetFiles(arg);
-		d[0] = lines;
-		mb_init_array(s, l, MB_DT_STRING, d, 1, &arr);
-
-		while (std::getline(ss, temp)){
-			//temp.push_back('\n');
-			val.type = MB_DT_STRING;
-			val.value.string = (char *)temp.c_str();
-			d[0] = i++;
-			mb_set_array_elem(s, l, arr, d, 1, val);
-		}
-		val.type = MB_DT_ARRAY;
-		val.value.array = arr;
-		mb_check(mb_push_value(s, l, val));
-	}
-
-	return result;
-}
-int MBManager::getFolders(struct mb_interpreter_t* s, void** l) {
-	int result = MB_FUNC_OK;
-	char* arg = 0;
-	
-	void* arr = 0;
-	int d[1] = { 0 };
-	int i = 0;
-
-	mb_value_t val;
-
-	mb_assert(s && l);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		mb_check(mb_pop_string(s, l, &arg));
-	mb_check(mb_attempt_close_bracket(s, l));
-
-	std::stringstream ss = Tools::GetFolders(arg);
-    std::string temp;
-
-	int lines = 0;
-	while (std::getline(ss, temp)){
-		lines++;
-    }
-	if (lines > 0){
-		ss = Tools::GetFolders(arg);
-		d[0] = lines;
-		mb_init_array(s, l, MB_DT_STRING, d, 1, &arr);
-
-		while (std::getline(ss, temp)){
-			//temp.push_back('\n');
-			val.type = MB_DT_STRING;
-			val.value.string = (char *)temp.c_str();
-			d[0] = i++;
-			mb_set_array_elem(s, l, arr, d, 1, val);
-		}
-		val.type = MB_DT_ARRAY;
-		val.value.array = arr;
-		mb_check(mb_push_value(s, l, val));
-	}
-
-	return result;
-}
-int MBManager::saveFile(struct mb_interpreter_t* s, void** l) {
-	int result = MB_FUNC_OK;
-	char* arg = 0;
-	char* txt = 0;
-
-	mb_assert(s && l);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		mb_check(mb_pop_string(s, l, &arg));
-		mb_check(mb_pop_string(s, l, &txt));
-	mb_check(mb_attempt_close_bracket(s, l));
-	
-	bool saved = SaveFileText(arg, txt);
-	
-	if (saved) Tools::console->AddLog("Saved OK: %s\n", arg);
-	else Tools::console->AddLog("[ERROR] saving: %s\n", arg);
-	
 	return result;
 }
 
@@ -1643,21 +1476,7 @@ int MBManager::getMusicSize(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
-int MBManager::getMusicTick(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;	
-	mb_assert(s && l);
 
-    mb_value_t ret;
-    mb_make_int(ret, 0);
-
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	mb_check(mb_attempt_close_bracket(s, l));
-//TODO devolver tick del canal
-    //ret.value.integer = basicEngineRef->audioManager->AudioTick;
-    mb_check(mb_push_value(s, l, ret));
-	return result;
-}
 int MBManager::getFrameAverage(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1693,62 +1512,6 @@ int MBManager::getNoteName(struct mb_interpreter_t* s, void** l){
 
     ret.value.string = basicEngineRef->audioManager->GetNoteName(channel);
     mb_check(mb_push_value(s, l, ret));
-	return result;
-}
-int MBManager::setEnv(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;	
-	mb_assert(s && l);
-
-    int channel, attk, dec, sus, rel, amp = 0;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-    if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_int(s, l, &channel));
-		mb_check(mb_pop_int(s, l, &attk));
-		mb_check(mb_pop_int(s, l, &dec));
-		mb_check(mb_pop_int(s, l, &sus));
-		mb_check(mb_pop_int(s, l, &rel));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-    basicEngineRef->audioManager->SetEnv(channel, attk, dec, sus, rel);
-
-	return result;
-}
-
-int MBManager::setLFO(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;	
-	mb_assert(s && l);
-
-    int channel, note, amp = 0;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-    if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_int(s, l, &channel));
-		mb_check(mb_pop_int(s, l, &note));
-		mb_check(mb_pop_int(s, l, &amp));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-    basicEngineRef->audioManager->SetLFO(channel, note, amp);
-
-	return result;
-}
-int MBManager::setOsc(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;	
-	mb_assert(s && l);
-
-    int channel, osc;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-    if(mb_has_arg(s, l)) {
-		mb_check(mb_pop_int(s, l, &channel));
-		mb_check(mb_pop_int(s, l, &osc));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-    basicEngineRef->audioManager->SetOSC(channel, osc);
-
 	return result;
 }
 
@@ -1803,64 +1566,7 @@ int MBManager::drawMetaSprite(struct mb_interpreter_t* s, void** l){
 	
 	return result;
 }
-// id, postition, sprite_id, offset_x,  offset_y,  color, flags
-int MBManager::addMetaSprite(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
 
-	int id, pos = 0;
-	int spriteId,x,y,col,flag = 0;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &id));
-			mb_check(mb_pop_int(s, l, &pos));
-			mb_check(mb_pop_int(s, l, &spriteId));
-			mb_check(mb_pop_int(s, l, &x));
-			mb_check(mb_pop_int(s, l, &y));
-			mb_check(mb_pop_int(s, l, &col));
-			mb_check(mb_pop_int(s, l, &flag));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->spriteManager->AddMetaSprite(id,pos,spriteId,x,y,col,flag);
-
-	return result;
-}
-int MBManager::getMetaSprite(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	int id = 0;
-	
-	void* arr = 0;
-	int d[1] = { 0 };
-	int i = 0;
-
-	mb_value_t val;
-
-	mb_assert(s && l);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		mb_check(mb_pop_int(s, l, &id));
-	mb_check(mb_attempt_close_bracket(s, l));
-
-	d[0] = 20;
-	mb_init_array(s, l, MB_DT_REAL, d, 1, &arr);
-
-	std::array<int,20> r = basicEngineRef->spriteManager->GetMetaSprite(id);
-    for(int i=0;i<20;i++)
-    {
-		val.type = MB_DT_INT;
-		val.value.integer = r[i];
-		d[0] = i;
-		mb_set_array_elem(s, l, arr, d, 1, val);
-    }
-	
-	val.type = MB_DT_ARRAY;
-	val.value.array = arr;
-	mb_check(mb_push_value(s, l, val));
-
-	return result;
-}
 // Memory
 int MBManager::peek(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
@@ -1892,21 +1598,6 @@ int MBManager::poke(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
    	basicEngineRef->Poke(dir,value);
-
-	return result;
-}
-int MBManager::toSigned(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	mb_check(mb_push_int(s, l, Tools::ToSigned(value)));
 
 	return result;
 }
@@ -1995,187 +1686,6 @@ int MBManager::quit(struct mb_interpreter_t* s, void** l) {
 	
 	basicEngineRef->bios->ShouldClose = true;
 	
-	return result;
-}
-// CRT
-int MBManager::crtEnabled(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetState(value == 0 ? false : true);
-	return result;
-}
-int MBManager::crtBlurPower(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurPower, value);
-	return result;
-}
-int MBManager::crtBlurFactor(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::BlurFactor, value);
-	return result;
-}
-int MBManager::crtChromatic(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::Chromatic, value);
-	return result;
-}
-int MBManager::crtCurvature(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::Curvature, value);
-	return result;
-}
-int MBManager::crtVignetting(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::Vignetting, value);
-	return result;
-}
-int MBManager::crtScanline(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::ScanLine, value);
-	return result;
-}
-int MBManager::crtSetGrille(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetGrilleTexture(value);
-	return result;
-}
-int MBManager::crtVerticalLine(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::VerticalLine, value);
-	return result;
-}
-int MBManager::crtGrilleForce(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::GrilleForce, value);
-	return result;
-}
-int MBManager::crtNoise(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::Noise, value);
-	return result;
-}
-int MBManager::crtFliker(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	int value;
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &value));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->postProcessing->SetCRTValue(CRTProperty::Fliker, value);
 	return result;
 }
 
