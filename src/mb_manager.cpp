@@ -325,6 +325,23 @@ int MBManager::OpenBas(const char *file){
 	key.value.integer = KEY_KP_EQUAL;
 	mb_add_var(bas, &context, "KEY_KP_EQUAL", key, true);
 
+//Mouse
+	key.value.integer = MOUSE_BUTTON_LEFT;
+	mb_add_var(bas, &context, "MOUSE_BUTTON_LEFT", key, true);
+	key.value.integer = MOUSE_BUTTON_RIGHT;
+	mb_add_var(bas, &context, "MOUSE_BUTTON_RIGHT", key, true);
+	key.value.integer = MOUSE_BUTTON_MIDDLE;
+	mb_add_var(bas, &context, "MOUSE_BUTTON_MIDDLE", key, true);
+	key.value.integer = MOUSE_BUTTON_SIDE;
+	mb_add_var(bas, &context, "MOUSE_BUTTON_SIDE", key, true);
+	key.value.integer = MOUSE_BUTTON_EXTRA;
+	mb_add_var(bas, &context, "MOUSE_BUTTON_EXTRA", key, true);
+	key.value.integer = MOUSE_BUTTON_FORWARD;
+	mb_add_var(bas, &context, "MOUSE_BUTTON_FORWARD", key, true);
+	key.value.integer = MOUSE_BUTTON_BACK;
+	mb_add_var(bas, &context, "MOUSE_BUTTON_BACK", key, true);
+ 
+
 	//Draw
 	mb_register_func(bas, "CLS", cls);
 
@@ -344,12 +361,12 @@ int MBManager::OpenBas(const char *file){
 	mb_register_func(bas, "META", drawMetaSprite);
 
 	//Mouse inputs
-	mb_register_func(bas, "MOUSE_WHEEL", 	mouseWheel); 
-	mb_register_func(bas, "MOUSE_PRESSED", 	mousePressed); 
-	mb_register_func(bas, "MOUSE_DOWN", 	mouseDown); 
-	mb_register_func(bas, "MOUSE_RELEASED", mouseReleased); 
-	mb_register_func(bas, "MOUSE_UP", 		mouseUp); 
-	mb_register_func(bas, "MOUSE_SETPOS", 	setMousePosition); 
+	mb_register_func(bas, "MOUSEWHEEL", 	mouseWheel); 
+	mb_register_func(bas, "MOUSEPRESSED", 	mousePressed); 
+	mb_register_func(bas, "MOUSEDOWN", 	mouseDown); 
+	mb_register_func(bas, "MOUSERELEASED", mouseReleased); 
+	mb_register_func(bas, "MOUSEUP", 		mouseUp); 
+	mb_register_func(bas, "MOUSESETPOS", 	setMousePosition); 
 
 	//Keys inputs
 	mb_register_func(bas, "KEYPRESSED", 	keyPressed);
