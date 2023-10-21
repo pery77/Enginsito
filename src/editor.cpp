@@ -873,7 +873,7 @@ void Editor::DrawCRT()
     if (editorEngineRef->bios->CurrentProject.name != "")
             name = editorEngineRef->bios->CurrentProject.name;
     
-    ImGui::Text(TextFormat("Preset name %s", name.c_str()));
+    ImGui::Text(TextFormat("Preset %s", name.c_str()));
     if (ImGui::Button("Export"))
     {
         name += ".crtPreset";
