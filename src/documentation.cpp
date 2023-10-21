@@ -190,7 +190,15 @@ void Documentation::Draw(bool* p_open)
     }
     if (ImGui::CollapsingHeader("Editor"))
     {
-        ImGui::SeparatorText(" ");
+        ImGui::SeparatorText("Keys");
+            ImGui::Text(R"|(
+    ESC ->  Pause/Exit Game 
+    F1  ->  Show/Hide Editor
+    F2  ->  Adjust windows size and center
+    F11 ->  Toggle Fullscreen
+    F12 ->  Take Screenshoot
+        )|"
+        );
     }
     if (ImGui::CollapsingHeader("Code"))
     {
@@ -198,13 +206,32 @@ void Documentation::Draw(bool* p_open)
     }
     if (ImGui::CollapsingHeader("MML"))
     {
-        ImGui::SeparatorText(" ");
-    }    
+            ImGui::Text(R"|(
+    A - G	    note on	        C(C4) D4.(D4+8) C12C12C12(triplets)
+    + or #	    sharp	
+    -	        flat	
+    =	        natural	
+    R	        rest	        R1 (whole rest)
+    O	        octave	        O0 ... O8 (O4 default)
+    > <	        octave up/down	
+    L	        length	        L4 default
+    Q	        note off ratio	n/8 (Q8 default)
+    ^	        tie	            C4^16
+    &	        no note off	
+    T	        tempo	        T120 default
+    V	        volume	        V0 ... V127(max) V+10 V-10
+    KJ KI	    transpose(maJor/mInor)	KJg(G major)
+    [ ]	        loop	        [...]4 (repeat 4 times)
+    :	        skip on the last loop	
+    @	        program change
+        )|");
+    }
+
     if (ImGui::CollapsingHeader("Key Codes"))
     {
         if (ImGui::TreeNode("Alphanumeric keys"))
-        {
-        ImGui::Text(R"|(
+        {          
+            ImGui::Text(R"|(
     KEY_APOSTROPHE      = 39 ->    Key: '
     KEY_COMMA           = 44 ->    Key: ,
     KEY_MINUS           = 45 ->    Key: -
@@ -252,13 +279,13 @@ void Documentation::Draw(bool* p_open)
     KEY_BACKSLASH       = 92 ->    Key: \
     KEY_RIGHT_BRACKET   = 93 ->    Key: ]
     KEY_GRAVE           = 96 ->    Key: `            
-    )|"
-        );
-
+    )|");
+        ImGui::TreePop();  
         }
-    if (ImGui::TreeNode("Functions"))
+
+        if (ImGui::TreeNode("Functions"))
         {
-        ImGui::Text(R"|(
+            ImGui::Text(R"|(
     KEY_SPACE           = 32  ->   Key: Space
     KEY_ESCAPE          = 256 ->   Key: Esc
     KEY_ENTER           = 257 ->   Key: Enter
@@ -302,10 +329,12 @@ void Documentation::Draw(bool* p_open)
     KEY_KB_MENU         = 348 ->   Key: KB menu            
         )|"
         );
+        ImGui::TreePop();
         }
+
         if (ImGui::TreeNode("Keypad key"))
         {
-        ImGui::Text(R"|(
+            ImGui::Text(R"|(
     KEY_KP_0            = 320 ->   Key: Keypad 0
     KEY_KP_1            = 321 ->   Key: Keypad 1
     KEY_KP_2            = 322 ->   Key: Keypad 2
@@ -325,10 +354,12 @@ void Documentation::Draw(bool* p_open)
     KEY_KP_EQUAL        = 336 ->   Key: Keypad =        
         )|"
         );
+        ImGui::TreePop();
         }
+
         if (ImGui::TreeNode("Mouse"))
         {
-        ImGui::Text(R"|(
+            ImGui::Text(R"|(
     MOUSE_BUTTON_LEFT    = 0  ->    Mouse button left
     MOUSE_BUTTON_RIGHT   = 1  ->    Mouse button right
     MOUSE_BUTTON_MIDDLE  = 2  ->    Mouse button middle (pressed wheel)
@@ -338,11 +369,13 @@ void Documentation::Draw(bool* p_open)
     MOUSE_BUTTON_BACK    = 6  ->    Mouse button back (advanced mouse device)
         )|"
         );
+        ImGui::TreePop();
         }
+
         if (ImGui::TreeNode("Gamepad"))
         {
-        ImGui::SeparatorText("Buttons");
-        ImGui::Text(R"|(
+            ImGui::SeparatorText("Buttons");
+            ImGui::Text(R"|(
     GAMEPAD_BUTTON_UNKNOWN          = 0     -> Unknown button, just for error checking
     GAMEPAD_BUTTON_LEFT_FACE_UP     = 1     -> Gamepad left DPAD up button
     GAMEPAD_BUTTON_LEFT_FACE_RIGHT  = 2     -> Gamepad left DPAD right button
@@ -361,8 +394,7 @@ void Documentation::Draw(bool* p_open)
     GAMEPAD_BUTTON_MIDDLE_RIGHT     = 15    -> Gamepad center buttons, right one (i.e. PS3: Start)
     GAMEPAD_BUTTON_LEFT_THUMB       = 16    -> Gamepad joystick pressed button left
     GAMEPAD_BUTTON_RIGHT_THUMB      = 17    -> Gamepad joystick pressed button right            
-        )|"
-        );
+        )|");
         ImGui::SeparatorText("Axis");
         ImGui::Text(R"|(
     GAMEPAD_AXIS_LEFT_X             = 0     ->  Gamepad left stick X axis
@@ -371,8 +403,8 @@ void Documentation::Draw(bool* p_open)
     GAMEPAD_AXIS_RIGHT_Y            = 3     ->  Gamepad right stick Y axis
     GAMEPAD_AXIS_LEFT_TRIGGER       = 4     ->  Gamepad back trigger left, pressure level: [1..-1]
     GAMEPAD_AXIS_RIGHT_TRIGGER      = 5     ->  Gamepad back trigger right, pressure level: [1..-1]
-        )|"
-        );    
+        )|");
+        ImGui::TreePop();  
         }
     }
 
