@@ -6,7 +6,7 @@ class Documentation
 private:
     void Keyword(const char* name, const char* args, const char* program = "");
 public:
-    std::string ProgramPath = "";
+    std::string ProgramName = "";
     Documentation();
     ~Documentation();
 

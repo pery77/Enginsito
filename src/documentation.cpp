@@ -183,11 +183,11 @@ void Documentation::Keyword(const char* name, const char* args, const char* prog
     if (program == "")
         program = name;
 
-    ProgramPath = "assets/docs/" + std::string(program) + ".bas";
-    std::ifstream inFile(ProgramPath.c_str());
-    
     if (ImGui::Button(TextFormat("%s(%s)", name, args)))
     {
+        ProgramName = program;
+        std::string programFile = "assets/docs/" + ProgramName + ".bas";
+        std::ifstream inFile(programFile.c_str());
         if (inFile.is_open())
         {
             std::stringstream strStream;
@@ -199,8 +199,8 @@ void Documentation::Keyword(const char* name, const char* args, const char* prog
         }
         else
         {
-            Tools::console->AddLog("[ERROR] Opening: [ %s ]\n", ProgramPath.c_str());
-            ProgramPath = "";
+            Tools::console->AddLog("[ERROR] Opening: [ %s ]\n", programFile.c_str());
+            ProgramName = "";
         }
     }
 }
@@ -269,8 +269,8 @@ void Documentation::Draw(bool* p_open)
             {
                 Keyword("peek", "direction","peekpoke");
                 Keyword("poke", "direction, newValue","peekpoke");
-                Keyword("loadstate", "direction, newValue","loadsave");
-                Keyword("savestate", "direction, newValue","loadsave");
+                Keyword("loaddata", "slot, data", "loadsave");
+                Keyword("savedata", "slot, data", "loadsave");
                 ImGui::TreePop();
             }
             if (ImGui::TreeNode("Tools"))
@@ -294,6 +294,7 @@ void Documentation::Draw(bool* p_open)
     else
     {
         codeEditor.SetText("");
+        ProgramName = "";
     }
 
 

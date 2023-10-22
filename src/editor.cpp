@@ -595,6 +595,22 @@ void Editor::DrawCode(bool* p_open)
                         codeEditor.MoveLine(ImGuiDir_Down);
                     ImGui::EndMenu();
                 }
+                if (docs.ProgramName != "")
+                {
+                    if (ImGui::BeginMenu("Load example"))
+                    {
+                        if (ImGui::MenuItem(docs.ProgramName.c_str(), nullptr, nullptr, true))
+                        {
+                            ClearError();
+                            SaveCurrentFile();
+                            editorEngineRef->bios->CurrentPath = "docs/";
+                            editorEngineRef->bios->SetProgram(docs.ProgramName);
+                            codeEditor.Deselect();
+                            OpenFile();
+                        }
+                        ImGui::EndMenu();
+                    }
+                }
             ImGui::EndMenuBar();
         }
 
