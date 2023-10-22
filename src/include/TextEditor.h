@@ -165,6 +165,7 @@ public:
 		Keywords mKeywords;
 		Keywords mKeywords2;
 		Keywords mKeywords3;
+		Keywords stupidsense; 
 		Identifiers mIdentifiers;
 		Identifiers mPreprocIdentifiers;
 		std::string mCommentStart, mCommentEnd, mSingleLineComment;
@@ -280,8 +281,10 @@ public:
 	static const Palette& GetBasicPalette();
 
 	std::string findWord;
+	std::unordered_set<std::string> GetStupidsense();
 
 private:
+
 	typedef std::vector<std::pair<std::regex, PaletteIndex>> RegexList;
 
 	struct EditorState

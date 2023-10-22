@@ -2585,6 +2585,22 @@ void TextEditor::UndoRecord::Redo(TextEditor * aEditor)
 	aEditor->EnsureCursorVisible();
 }
 
+std::unordered_set<std::string> TextEditor::GetStupidsense(){
+		
+		std::unordered_set<std::string> filtered;
+		auto c = GetCursorPosition();
+		c.mColumn -= 1;
+	 
+		std::string id = GetWordAt(c);
+		std::transform(id.begin(), id.end(), id.begin(), ::toupper);
+		for (auto& k : mLanguageDefinition.stupidsense)
+		{
+			if (k == id)
+				filtered.insert(k);
+		}
+		return filtered;
+}
+
 static bool TokenizeCStyleString(const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end)
 {
 	const char * p = in_begin;
@@ -2806,6 +2822,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 {
 	static bool inited = false;
 	static LanguageDefinition langDef;
+	
 	if (!inited)
 	{
 		static const char* const keywords[] = {
@@ -2815,7 +2832,10 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 		};
 
 		for (auto& k : keywords)
+		{
 			langDef.mKeywords.insert(k);
+			langDef.stupidsense.insert(k);
+		}
 
 		static const char* const identifiers[] = {
 			"ABS", "SGN", "SQR", "FLOOR", "CEIL", "FIX", "ROUND", "SRND", "RND", "SIN", "COS", "TAN", "ASIN", "ACOS", "ATAN",
@@ -2827,6 +2847,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 			Identifier id;
 			id.mDeclaration = "Built-in function";
 			langDef.mIdentifiers.insert(std::make_pair(std::string(k), id));
+			langDef.stupidsense.insert(k);
 		}
 
 		static const char* const keywords2[] = {
@@ -2858,7 +2879,10 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 		};
 
 		for (auto& k : keywords2)
+		{
 			langDef.mKeywords2.insert(k);
+			langDef.stupidsense.insert(k);
+		}
 		
 		static const char* const keywords3[] = {
 			"CLS", "PIXEL", "LINE", "CIRCLE", "RING", "ELLIPSE", "TRIANGLE", "RECT", "RECTROUND", "POLY", "TEXT", "SPRITE", "META",
@@ -2870,7 +2894,10 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 		};
 
 		for (auto& k : keywords3)
+		{
 			langDef.mKeywords3.insert(k);
+			langDef.stupidsense.insert(k);
+		}
 
 		langDef.mTokenize = [](const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end, PaletteIndex & paletteIndex) -> bool
 		{

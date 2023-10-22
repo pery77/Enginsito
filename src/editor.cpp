@@ -561,7 +561,7 @@ void Editor::DrawCode(bool* p_open)
 	auto ctrl = io.ConfigMacOSXBehaviors ? io.KeySuper : io.KeyCtrl;
 	auto alt = io.ConfigMacOSXBehaviors ? io.KeyCtrl : io.KeyAlt;
 
-    ImGui::Begin("Code Editor", p_open, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
+    ImGui::Begin("Code Editor", p_open, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);    
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("Edit"))
@@ -653,10 +653,23 @@ void Editor::DrawCode(bool* p_open)
             ImGui::Text("?/0");
 
         ImGui::Separator();
+        ImGui::BeginGroup();
+        ImGui::Text("  Stupidsense  ");
+    	for (auto& k : codeEditor.GetStupidsense())
+		{
+            if (ImGui::Button(k.c_str()))
+            {
+                codeEditor.InsertText(k);
+            }
+		}
+        ImGui::EndGroup(); 
+        ImGui::SameLine();
+        ImGui::BeginGroup();
         if (editorEngineRef->bios->CurrentProject.name != "")
             codeEditor.Render("TextEditor");
         else
             ImGui::Text("Load or create a program in File Browser");
+        ImGui::EndGroup(); 
     ImGui::End();
 }
 
