@@ -165,7 +165,7 @@ void GenerateKeysCodeFromEnumBecauseImTooLazy()
 }
 
 TextEditor codeEditor;
-const char* lastName = "";
+
 Documentation::Documentation()
 {
     //GenerateKeysCodeFromEnumBecauseImTooLazy();
@@ -178,12 +178,30 @@ Documentation::~Documentation()
 {
 }
 
-void keyword(const char* name, const char* args, const char* description, const char* example)
+void Documentation::Keyword(const char* name, const char* args, const char* program )
 {
-    if(ImGui::Button(TextFormat("%s(%s)",name, args)))
+    if (program == "")
+        program = name;
+
+    ProgramPath = "assets/docs/" + std::string(program) + ".bas";
+    std::ifstream inFile(ProgramPath.c_str());
+    
+    if (ImGui::Button(TextFormat("%s(%s)", name, args)))
     {
-        codeEditor.SetText(TextFormat("'%s\n'Example: \n%s", description, example));
-        codeEditor.Deselect();
+        if (inFile.is_open())
+        {
+            std::stringstream strStream;
+            strStream << inFile.rdbuf();
+            std::string str = strStream.str();
+            codeEditor.SetText(str);
+            codeEditor.Deselect();
+            inFile.close();
+        }
+        else
+        {
+            Tools::console->AddLog("[ERROR] Opening: [ %s ]\n", ProgramPath.c_str());
+            ProgramPath = "";
+        }
     }
 }
 
@@ -249,25 +267,33 @@ void Documentation::Draw(bool* p_open)
             } 
             if (ImGui::TreeNode("Memory"))
             {
+                Keyword("peek", "direction","peekpoke");
+                Keyword("poke", "direction, newValue","peekpoke");
+                Keyword("loadstate", "direction, newValue","loadsave");
+                Keyword("savestate", "direction, newValue","loadsave");
                 ImGui::TreePop();
             }
             if (ImGui::TreeNode("Tools"))
-            {
-                keyword("formatText", "text, value", "Return formatted text %i for integer or %f for float", 
-                "formatText(\"Score: %06i\",score)");
-                keyword("fontSpace", "space", "Set font separation in pixels", 
-                "fontSpace(16)");
-                keyword("textSize", "text, textSize", "Return the size in pixels of the text at current text,\n'textSize is from 1 to 4", 
-                "textSize(\"Hello\", 1)");
-                keyword("quit", "","Close Enginsito", "quit()");
+            {   
+                Keyword("formatText", "text, value");
+                Keyword("fontSpace",  "space");
+                Keyword("textSize",   "text, textSize");
+                Keyword("quit",       "");
+
                 ImGui::TreePop();
             }      
             ImGui::TreePop();
         }
         ImGui::EndGroup();
         ImGui::SameLine();
-        
+
+        ImGui::BeginGroup();
         codeEditor.Render("keyword");
+        ImGui::EndGroup();
+    }
+    else
+    {
+        codeEditor.SetText("");
     }
 
 

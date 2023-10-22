@@ -1,11 +1,13 @@
 #pragma once
+#include <string>
 
 class Documentation
 {
 private:
-    /* data */
+    void Keyword(const char* name, const char* args, const char* program = "");
 public:
-    Documentation(/* args */);
+    std::string ProgramPath = "";
+    Documentation();
     ~Documentation();
 
     void Draw(bool* p_open);

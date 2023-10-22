@@ -438,10 +438,10 @@ void Editor::OpenFile()
     std::stringstream strStream;
     strStream << inFile.rdbuf();
     std::string str = strStream.str();
-    //std::cout << str << "\n";
     codeEditor.SetText(str);
     editorFile = editorEngineRef->bios->CurrentProject.name;
     DoStep = false;
+    inFile.close();
 }
 
 void Editor::DrawshowFileBrowser()

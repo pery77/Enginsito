@@ -530,6 +530,7 @@ int MBManager::drawPixel(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::drawLine(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -556,6 +557,7 @@ int MBManager::drawLine(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::drawCircle(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -587,6 +589,7 @@ int MBManager::drawCircle(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::drawRing(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -626,6 +629,7 @@ int MBManager::drawRing(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::drawEllipse(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -659,6 +663,7 @@ int MBManager::drawEllipse(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::drawTriangle(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -696,6 +701,7 @@ int MBManager::drawTriangle(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::drawRect(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -730,6 +736,7 @@ int MBManager::drawRect(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::drawRectRound(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -770,6 +777,7 @@ int MBManager::drawRectRound(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::drawPoly(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -834,111 +842,8 @@ int MBManager::drawText(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
-int MBManager::measureText(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
 
-    char* arg = 0;
-	int size = 0;
-
-    mb_value_t ret;
-    mb_make_int(ret, 0);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		mb_check(mb_pop_string(s, l, &arg));
-		mb_check(mb_pop_int(s, l, &size));
-	mb_check(mb_attempt_close_bracket(s, l));
-
-	if (size < 1) size = 1;
-	if (size > 4) size = 4;
-
-    ret.value.integer = MeasureTextEx(basicEngineRef->spriteManager->font, arg, (float)size * 8, 0.0).x;
-
-    mb_check(mb_push_value(s, l, ret));
-	return result;
-}
-
-//Tools
-int MBManager::formatText(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-
-	char* arg = nullptr;
-	mb_value_t val;
-	mb_make_nil(val);
-	std::vector<mb_value_t> vals;
-
-    mb_value_t ret;
-    mb_make_string(ret, 0);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-		mb_check(mb_pop_string(s, l, &arg));	
-		while(mb_has_arg(s, l)) 
-		{
-			mb_make_nil(val);
-			mb_check(mb_pop_value(s, l, &val));
-			vals.push_back(val);
-		}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-	std::array<mb_value_t, 8> args{ MB_DT_NIL };
-	for (size_t i = 0; i < vals.size() && i < 8; i++) {
-		args[i] = vals[i];
-	}
-
-	if (args[0].type == MB_DT_INT) 
-	{
-		ret.value.string = (char *)TextFormat(arg, args[0].value.integer, args[1].value.integer, args[2].value.integer, args[3].value.integer,
-												   args[4].value.integer, args[5].value.integer, args[6].value.integer, args[7].value.integer);
-	}
-	else
-	{
-		ret.value.string = (char *)TextFormat(arg, args[0].value.float_point, args[1].value.float_point, args[2].value.float_point, args[3].value.float_point,
-												   args[4].value.float_point, args[5].value.float_point, args[6].value.float_point, args[7].value.float_point);
-	}
-
-    mb_check(mb_push_value(s, l, ret));
-
-	return result;
-}
-
-int MBManager::getChar(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-	int charValue = 0;
-
-    mb_value_t ret;
-    mb_make_string(ret, 0);
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &charValue));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-    ret.value.string = (char*)TextFormat("%s",Tools::GetCharFromCodepoint(charValue).c_str());
-    mb_check(mb_push_value(s, l, ret));
-	return result;
-}
-
-int MBManager::setFontSpacing(struct mb_interpreter_t* s, void** l){
-	int result = MB_FUNC_OK;
-	mb_assert(s && l);
-	int spacing = 0;
-
-
-	mb_check(mb_attempt_open_bracket(s, l));
-	if(mb_has_arg(s, l)) {
-			mb_check(mb_pop_int(s, l, &spacing));
-	}
-	mb_check(mb_attempt_close_bracket(s, l));
-
-   	basicEngineRef->spriteManager->SetFontSpacing(spacing);
-
-	return result;
-}
-
-// Input
+//Keyboard
 int MBManager::keyPressed(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -958,6 +863,7 @@ int MBManager::keyPressed(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::keyDown(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -977,6 +883,7 @@ int MBManager::keyDown(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::keyReleased(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -996,6 +903,7 @@ int MBManager::keyReleased(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::keyUp(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1030,6 +938,7 @@ int MBManager::getKey(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::getKeyChar(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1045,6 +954,7 @@ int MBManager::getKeyChar(struct mb_interpreter_t* s, void** l){
 	return result;
 }
 
+//Gamepad
 int MBManager::isGamepadAvailable(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1064,6 +974,7 @@ int MBManager::isGamepadAvailable(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::getGamepadName(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1104,6 +1015,7 @@ int MBManager::buttonPressed(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::buttonDown(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1124,6 +1036,7 @@ int MBManager::buttonDown(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::buttonReleased(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1144,6 +1057,7 @@ int MBManager::buttonReleased(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::buttonUp(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1164,6 +1078,7 @@ int MBManager::buttonUp(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::getButton(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1178,6 +1093,7 @@ int MBManager::getButton(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::getAxisCount(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1197,6 +1113,7 @@ int MBManager::getAxisCount(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::axisValue(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1218,6 +1135,7 @@ int MBManager::axisValue(struct mb_interpreter_t* s, void** l){
 	return result;
 }
 
+//Mouse
 int MBManager::mouseWheel(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1254,6 +1172,7 @@ int MBManager::mousePressed(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::mouseDown(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1273,6 +1192,7 @@ int MBManager::mouseDown(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::mouseReleased(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1292,6 +1212,7 @@ int MBManager::mouseReleased(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::mouseUp(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1311,6 +1232,7 @@ int MBManager::mouseUp(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::setMousePosition(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1347,6 +1269,7 @@ int MBManager::setSequence(struct mb_interpreter_t* s, void** l){
     basicEngineRef->audioManager->SetSequence(id, arg);
 	return result;
 }
+
 int MBManager::setPreset(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1365,6 +1288,7 @@ int MBManager::setPreset(struct mb_interpreter_t* s, void** l){
     basicEngineRef->audioManager->SetChannelPreset(channel, preset);
 	return result;
 }
+
 int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1383,6 +1307,7 @@ int MBManager::playNote(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::stopNote(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1399,6 +1324,7 @@ int MBManager::stopNote(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::musicPlay(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1421,6 +1347,7 @@ int MBManager::musicPlay(struct mb_interpreter_t* s, void** l){
 	
 	return result;
 }
+
 int MBManager::musicStop(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1438,6 +1365,7 @@ int MBManager::musicStop(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::getMusicPosition(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1457,6 +1385,7 @@ int MBManager::getMusicPosition(struct mb_interpreter_t* s, void** l){
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
+
 int MBManager::getMusicSize(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;	
 	mb_assert(s && l);
@@ -1542,6 +1471,7 @@ int MBManager::drawSprite(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::drawMetaSprite(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1584,6 +1514,7 @@ int MBManager::peek(struct mb_interpreter_t* s, void** l){
 
 	return result;
 }
+
 int MBManager::poke(struct mb_interpreter_t* s, void** l){
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1677,6 +1608,7 @@ int MBManager::loaddata(struct mb_interpreter_t* s, void** l) {
 	return result;
 }
 
+//Tools
 int MBManager::quit(struct mb_interpreter_t* s, void** l) {
 	int result = MB_FUNC_OK;
 	mb_assert(s && l);
@@ -1689,6 +1621,91 @@ int MBManager::quit(struct mb_interpreter_t* s, void** l) {
 	return result;
 }
 
+int MBManager::formatText(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+	char* arg = nullptr;
+	mb_value_t val;
+	mb_make_nil(val);
+	std::vector<mb_value_t> vals;
+
+    mb_value_t ret;
+    mb_make_string(ret, 0);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_string(s, l, &arg));	
+		while(mb_has_arg(s, l)) 
+		{
+			mb_make_nil(val);
+			mb_check(mb_pop_value(s, l, &val));
+			vals.push_back(val);
+		}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	std::array<mb_value_t, 8> args{ MB_DT_NIL };
+	for (size_t i = 0; i < vals.size() && i < 8; i++) {
+		args[i] = vals[i];
+	}
+
+	if (args[0].type == MB_DT_INT) 
+	{
+		ret.value.string = (char *)TextFormat(arg, args[0].value.integer, args[1].value.integer, args[2].value.integer, args[3].value.integer,
+												   args[4].value.integer, args[5].value.integer, args[6].value.integer, args[7].value.integer);
+	}
+	else
+	{
+		ret.value.string = (char *)TextFormat(arg, args[0].value.float_point, args[1].value.float_point, args[2].value.float_point, args[3].value.float_point,
+												   args[4].value.float_point, args[5].value.float_point, args[6].value.float_point, args[7].value.float_point);
+	}
+
+    mb_check(mb_push_value(s, l, ret));
+
+	return result;
+}
+
+int MBManager::setFontSpacing(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+	int spacing = 0;
+
+
+	mb_check(mb_attempt_open_bracket(s, l));
+	if(mb_has_arg(s, l)) {
+			mb_check(mb_pop_int(s, l, &spacing));
+	}
+	mb_check(mb_attempt_close_bracket(s, l));
+
+   	basicEngineRef->spriteManager->SetFontSpacing(spacing);
+
+	return result;
+}
+
+int MBManager::measureText(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;
+	mb_assert(s && l);
+
+    char* arg = 0;
+	int size = 0;
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_string(s, l, &arg));
+		mb_check(mb_pop_int(s, l, &size));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+	if (size < 1) size = 1;
+	if (size > 4) size = 4;
+
+    ret.value.integer = MeasureTextEx(basicEngineRef->spriteManager->font, arg, (float)size * 8, 0.0).x;
+
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+
+//..
 int MBManager::my_print(struct mb_interpreter_t* s, const char* fmt, ...) {
 	char buf[64];
 	char* ptr = buf;
