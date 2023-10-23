@@ -281,7 +281,7 @@ public:
 	static const Palette& GetBasicPalette();
 
 	std::string findWord;
-	std::unordered_set<std::string> GetStupidsense();
+	std::vector<std::string> GetStupidsense();
 
 private:
 

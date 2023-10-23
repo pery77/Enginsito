@@ -655,10 +655,15 @@ void Editor::DrawCode(bool* p_open)
         ImGui::Separator();
         ImGui::BeginGroup();
         ImGui::Text("  Stupidsense  ");
-    	for (auto& k : codeEditor.GetStupidsense())
+    	for (std::string& k : codeEditor.GetStupidsense())
 		{
-            if (ImGui::Button(k.c_str()))
+            if (ImGui::Selectable(k.c_str()))
             {
+                auto pos = codeEditor.GetCursorPosition();
+                pos.mColumn -= 1;
+                codeEditor.SetCursorPosition(pos);
+                codeEditor.SelectWordUnderCursor();
+                codeEditor.Delete();
                 codeEditor.InsertText(k);
             }
 		}

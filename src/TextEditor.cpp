@@ -2585,20 +2585,24 @@ void TextEditor::UndoRecord::Redo(TextEditor * aEditor)
 	aEditor->EnsureCursorVisible();
 }
 
-std::unordered_set<std::string> TextEditor::GetStupidsense(){
+std::vector<std::string>TextEditor::GetStupidsense(){
 		
-		std::unordered_set<std::string> filtered;
-		auto c = GetCursorPosition();
-		c.mColumn -= 1;
-	 
-		std::string id = GetWordAt(c);
-		std::transform(id.begin(), id.end(), id.begin(), ::toupper);
-		for (auto& k : mLanguageDefinition.stupidsense)
+	std::vector<std::string> filtered;
+	auto c = GetCursorPosition();
+	c.mColumn -= 1;
+	
+	std::string id = GetWordAt(c);
+	if (id == "") return filtered;
+	std::transform(id.begin(), id.end(), id.begin(), ::toupper);
+	for (auto& k : mLanguageDefinition.stupidsense)
+	{
+    	if (k.find(id) != std::string::npos) 
 		{
-			if (k == id)
-				filtered.insert(k);
-		}
-		return filtered;
+        	filtered.push_back(k); 
+    	}
+	}
+	std::sort(filtered.begin(), filtered.end());
+	return filtered;
 }
 
 static bool TokenizeCStyleString(const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end)
