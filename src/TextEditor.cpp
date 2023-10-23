@@ -2585,6 +2585,38 @@ void TextEditor::UndoRecord::Redo(TextEditor * aEditor)
 	aEditor->EnsureCursorVisible();
 }
 
+bool customCompare(const std::string& a, const std::string& b, const std::string& id) {
+    if (a.compare(0, id.size(), id) == 0 && b.compare(0, id.size(), id) != 0) {
+        return true;
+    }
+    if (a.compare(0, id.size(), id) != 0 && b.compare(0, id.size(), id) == 0) {
+        return false;
+    }
+    return a < b;
+}
+
+void TextEditor::InsertKeyword(std::string keyword)
+{
+	UndoRecord u;
+	u.mBefore = mState;
+
+	auto pos = GetCursorPosition();
+
+	u.mAdded = keyword;
+	u.mAddedStart = pos;
+
+    pos.mColumn -= 1;
+    SetCursorPosition(pos);
+    SelectWordUnderCursor();
+    Delete();
+
+    InsertText(keyword);
+
+	u.mAddedEnd = pos;
+	u.mAfter = mState;
+	
+	AddUndo(u);
+}
 std::vector<std::string>TextEditor::GetStupidsense(){
 		
 	std::vector<std::string> filtered;
@@ -2601,7 +2633,10 @@ std::vector<std::string>TextEditor::GetStupidsense(){
         	filtered.push_back(k); 
     	}
 	}
-	std::sort(filtered.begin(), filtered.end());
+
+    std::sort(filtered.begin(), filtered.end(), [&](const std::string& a, const std::string& b) {
+        return customCompare(a, b, id);
+    });
 	return filtered;
 }
 

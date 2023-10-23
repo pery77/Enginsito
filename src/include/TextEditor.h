@@ -282,6 +282,7 @@ public:
 
 	std::string findWord;
 	std::vector<std::string> GetStupidsense();
+	void InsertKeyword(std::string keyword);
 
 private:
 

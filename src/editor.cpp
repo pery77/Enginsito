@@ -653,27 +653,27 @@ void Editor::DrawCode(bool* p_open)
             ImGui::Text("?/0");
 
         ImGui::Separator();
+
         ImGui::BeginGroup();
-        ImGui::Text("  Stupidsense  ");
+        ImGui::BeginChild("Stupidsenese", ImVec2(ImGui::GetContentRegionAvail().x * 0.3f, ImGui::GetContentRegionAvail().y), true);
     	for (std::string& k : codeEditor.GetStupidsense())
 		{
             if (ImGui::Selectable(k.c_str()))
             {
-                auto pos = codeEditor.GetCursorPosition();
-                pos.mColumn -= 1;
-                codeEditor.SetCursorPosition(pos);
-                codeEditor.SelectWordUnderCursor();
-                codeEditor.Delete();
-                codeEditor.InsertText(k);
+                codeEditor.InsertKeyword(k);
             }
 		}
-        ImGui::EndGroup(); 
+
+        ImGui::EndChild();
+        ImGui::EndGroup();
+
         ImGui::SameLine();
         ImGui::BeginGroup();
         if (editorEngineRef->bios->CurrentProject.name != "")
             codeEditor.Render("TextEditor");
         else
             ImGui::Text("Load or create a program in File Browser");
+
         ImGui::EndGroup(); 
     ImGui::End();
 }
