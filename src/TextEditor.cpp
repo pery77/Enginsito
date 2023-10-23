@@ -2597,24 +2597,28 @@ bool customCompare(const std::string& a, const std::string& b, const std::string
 
 void TextEditor::InsertKeyword(std::string keyword)
 {
+	if (IsReadOnly())
+		return;
+
 	UndoRecord u;
 	u.mBefore = mState;
 
 	auto pos = GetCursorPosition();
-
 	u.mAdded = keyword;
-	u.mAddedStart = pos;
+
 
     pos.mColumn -= 1;
     SetCursorPosition(pos);
     SelectWordUnderCursor();
     Delete();
 
-    InsertText(keyword);
+	u.mAdded = keyword;
+	u.mAddedStart = GetActualCursorCoordinates();
 
-	u.mAddedEnd = pos;
+	InsertText(keyword);
+
+	u.mAddedEnd = GetActualCursorCoordinates();
 	u.mAfter = mState;
-	
 	AddUndo(u);
 }
 std::vector<std::string>TextEditor::GetStupidsense(){
