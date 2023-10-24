@@ -21,6 +21,7 @@ static bool show_player = false;
 static bool show_memory = false;
 static bool show_credits = false;
 static bool show_docs = false;
+static bool stupidsenseOpen = false;
 
 static unsigned char spriteCopy[8]{};
 static unsigned char metaSpriteCopy[20]{};
@@ -554,12 +555,30 @@ void Editor::ClearError()
     codeEditor.SetErrorMarkers(markers);
 }
 
+
+
 void Editor::DrawCode(bool* p_open)
 {	
     ImGuiIO& io = ImGui::GetIO();
 	auto shift = io.KeyShift;
 	auto ctrl = io.ConfigMacOSXBehaviors ? io.KeySuper : io.KeyCtrl;
 	auto alt = io.ConfigMacOSXBehaviors ? io.KeyCtrl : io.KeyAlt;
+
+    bool stupidsenseFocus;
+    ImVec2 stupidSensePos = ImVec2(0,0);
+
+    if (ImGui::IsKeyReleased(ImGuiKey_LeftCtrl))
+    {
+        if (!stupidsenseFocus)
+        {
+            stupidsenseFocus = true;
+        }
+        else
+        {
+            ImGui::SetWindowFocus("Code Editor"); //TODO: Fix this.
+            stupidsenseFocus = false;
+        }
+    }
 
     ImGui::Begin("Code Editor", p_open, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);    
         if (ImGui::BeginMenuBar())
@@ -651,30 +670,46 @@ void Editor::DrawCode(bool* p_open)
             ImGui::Text("%i/%i",codeEditor.findWordIndex + 1, codeEditor.findWordsPositions.size());
         else
             ImGui::Text("?/0");
-
+        
+        ImGui::SameLine();
+        if (ImGui::Checkbox("SloppySense##chcbox", &stupidsenseOpen))
+        {
+            stupidSensePos = ImGui::GetCursorScreenPos();
+            ImGui::SetWindowPos("SloppySense", stupidSensePos, ImGuiCond_Always);
+        }
         ImGui::Separator();
 
-        ImGui::BeginGroup();
-        ImGui::BeginChild("Stupidsenese", ImVec2(ImGui::GetContentRegionAvail().x * 0.3f, ImGui::GetContentRegionAvail().y), true);
-    	for (std::string& k : codeEditor.GetStupidsense())
-		{
-            if (ImGui::Selectable(k.c_str()))
-            {
-                codeEditor.InsertKeyword(k);
-            }
-		}
-
-        ImGui::EndChild();
-        ImGui::EndGroup();
-
-        ImGui::SameLine();
-        ImGui::BeginGroup();
         if (editorEngineRef->bios->CurrentProject.name != "")
+        {
             codeEditor.Render("TextEditor");
+        }
         else
+        {
             ImGui::Text("Load or create a program in File Browser");
+        }
 
-        ImGui::EndGroup(); 
+    if (stupidsenseOpen)
+    {   
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, Col_P_D2);
+        ImGui::Begin("SloppySense", &stupidsenseOpen, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
+            bool firstElement = true;
+        	for (std::string& k : codeEditor.GetStupidsense())
+	    	{
+                if (firstElement && stupidsenseFocus)
+                {
+                    ImGui::SetKeyboardFocusHere();
+                    firstElement = false;
+                }
+                if (ImGui::Selectable(k.c_str()))
+                {
+                    codeEditor.InsertKeyword(k);
+                }
+	    	}
+
+        ImGui::End();
+        ImGui::PopStyleColor();
+    }
+
     ImGui::End();
 }
 

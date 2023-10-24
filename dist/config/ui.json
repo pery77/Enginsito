@@ -1,5 +1,5 @@
 {
-    "currentLayout": 4,
+    "currentLayout": 0,
     "layout_1": {
         "show_code": true,
         "show_console": true,
@@ -13,7 +13,7 @@
         "show_palette": false,
         "show_player": true,
         "show_screen": true,
-        "show_sfx": false,
+        "show_sfx": true,
         "show_sprites": false,
         "show_tools": false
     },
@@ -55,7 +55,7 @@
         "show_code": false,
         "show_console": true,
         "show_crt": false,
-        "show_docs": false,
+        "show_docs": true,
         "show_filebrowser": false,
         "show_fps": false,
         "show_makeSprite": true,
@@ -63,13 +63,13 @@
         "show_metaSprite": true,
         "show_palette": true,
         "show_player": false,
-        "show_screen": false,
+        "show_screen": true,
         "show_sfx": false,
         "show_sprites": true,
         "show_tools": false
     },
     "layout_5": {
-        "show_code": true,
+        "show_code": false,
         "show_console": true,
         "show_crt": true,
         "show_docs": true,
@@ -85,8 +85,8 @@
         "show_sprites": true,
         "show_tools": true
     },
-    "window_height": 922,
-    "window_position_x": 260,
-    "window_position_y": 162,
-    "window_width": 1499
+    "window_height": 1001,
+    "window_position_x": 0,
+    "window_position_y": 29,
+    "window_width": 1920
 }

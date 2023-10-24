@@ -263,14 +263,29 @@ void Documentation::Draw(bool* p_open)
             }
             if (ImGui::TreeNode("Sound"))
             {
+                ImGui::SeparatorText("Channels");
+                Keyword("chPreset", "ch, preset",     "sound");
+                Keyword("chSet",    "ch, sequence",   "sound");
+                Keyword("chPlay",   "ch, [sequence]", "sound");
+                Keyword("chStop",   "ch",             "sound");
+                ImGui::SeparatorText("Notes");
+                Keyword("chOn",  "ch, note, volume", "notes");
+                Keyword("chOff", "ch",               "notes");
+                ImGui::SeparatorText("Info");
+                Keyword("chPos",        "ch",        "soundInfo");
+                Keyword("chSize",       "ch",        "soundInfo");
+                Keyword("chFrame",      "ch, frame", "soundInfo");
+                Keyword("chGetNote",    "ch",        "soundInfo");
+                Keyword("chGetNoteNum", "ch",        "soundInfo");
+
                 ImGui::TreePop();
             } 
             if (ImGui::TreeNode("Memory"))
             {
-                Keyword("peek", "direction","peekpoke");
+                Keyword("peek", "direction",          "peekpoke");
                 Keyword("poke", "direction, newValue","peekpoke");
-                Keyword("loaddata", "slot, data", "loadsave");
-                Keyword("savedata", "slot, data", "loadsave");
+                Keyword("loadData", "slot, data", "loadsave");
+                Keyword("saveData", "slot, data", "loadsave");
                 ImGui::TreePop();
             }
             if (ImGui::TreeNode("Tools"))
