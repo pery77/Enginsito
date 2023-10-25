@@ -55,7 +55,7 @@
         "show_code": false,
         "show_console": true,
         "show_crt": false,
-        "show_docs": true,
+        "show_docs": false,
         "show_filebrowser": false,
         "show_fps": false,
         "show_makeSprite": true,

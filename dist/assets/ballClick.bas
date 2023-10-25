@@ -3,8 +3,7 @@ let bx = 160
 let by = 100
 
 def collision()
-	d = sqr(exp((bx - mouse_x)) + exp((by - mouse_y)))
-	print d
+	d = sqr((bx - mouse_x)^2 + (by - mouse_y)^2)
 	if (d<radio) then
 		return 1
 	endif

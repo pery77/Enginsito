@@ -2621,7 +2621,7 @@ void TextEditor::InsertKeyword(std::string keyword)
 	u.mAfter = mState;
 	AddUndo(u);
 }
-std::vector<std::string>TextEditor::GetStupidsense(){
+std::vector<std::string>TextEditor::CodeHelperGetList(){
 		
 	std::vector<std::string> filtered;
 	auto c = GetCursorPosition();
@@ -2630,7 +2630,7 @@ std::vector<std::string>TextEditor::GetStupidsense(){
 	std::string id = GetWordAt(c);
 	if (id == "") return filtered;
 	std::transform(id.begin(), id.end(), id.begin(), ::toupper);
-	for (auto& k : mLanguageDefinition.stupidsense)
+	for (auto& k : mLanguageDefinition.codeHelperList)
 	{
     	if (k.find(id) != std::string::npos) 
 		{
@@ -2877,7 +2877,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 		for (auto& k : keywords)
 		{
 			langDef.mKeywords.insert(k);
-			langDef.stupidsense.insert(k);
+			langDef.codeHelperList.insert(k);
 		}
 
 		static const char* const identifiers[] = {
@@ -2890,7 +2890,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 			Identifier id;
 			id.mDeclaration = "Built-in function";
 			langDef.mIdentifiers.insert(std::make_pair(std::string(k), id));
-			langDef.stupidsense.insert(k);
+			langDef.codeHelperList.insert(k);
 		}
 
 		static const char* const keywords2[] = {
@@ -2924,7 +2924,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 		for (auto& k : keywords2)
 		{
 			langDef.mKeywords2.insert(k);
-			langDef.stupidsense.insert(k);
+			langDef.codeHelperList.insert(k);
 		}
 		
 		static const char* const keywords3[] = {
@@ -2939,7 +2939,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 		for (auto& k : keywords3)
 		{
 			langDef.mKeywords3.insert(k);
-			langDef.stupidsense.insert(k);
+			langDef.codeHelperList.insert(k);
 		}
 
 		langDef.mTokenize = [](const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end, PaletteIndex & paletteIndex) -> bool

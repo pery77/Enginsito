@@ -165,7 +165,7 @@ public:
 		Keywords mKeywords;
 		Keywords mKeywords2;
 		Keywords mKeywords3;
-		Keywords stupidsense; 
+		Keywords codeHelperList; 
 		Identifiers mIdentifiers;
 		Identifiers mPreprocIdentifiers;
 		std::string mCommentStart, mCommentEnd, mSingleLineComment;
@@ -281,7 +281,7 @@ public:
 	static const Palette& GetBasicPalette();
 
 	std::string findWord;
-	std::vector<std::string> GetStupidsense();
+	std::vector<std::string> CodeHelperGetList();
 	void InsertKeyword(std::string keyword);
 
 private:

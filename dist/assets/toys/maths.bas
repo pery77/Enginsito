@@ -34,7 +34,7 @@ def slider(v,x,y,w,max)
         v = v + (mouse_wheel() * vMul)* 0.01;
     ENDIF
 
-    IF mouse_down(0) AND hover THEN
+    IF mousedown(0) AND hover THEN
         v = v + (mouse_x - mx - 4*0.01);
     ENDIF
     
@@ -59,7 +59,7 @@ def button(x,y,txt)
     if hover then 
         colB = 4
         colH = 3 
-        if mouse_down(0) then 
+        if mousedown(0) then 
             colH = colB
             colB = 1
         endif

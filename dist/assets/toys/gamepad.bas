@@ -1,8 +1,8 @@
 print "Pads"
 nPads = 0
 for p = 0 to 8
-    if joy_isaviable(p) <> 0 then     
-        print joy_name(p);
+    if joyisaviable(p) <> 0 then     
+        print joyname(p);
         nPads = nPads + 1
     endif
 next
@@ -14,7 +14,7 @@ def drawPad(id)
     y = 20
     col = 1
     for b = 1 to 17
-        if joy_Down(id,b) then 
+        if joyDown(id,b) then 
             col = 6
             colT = 3
         else 
@@ -25,10 +25,10 @@ def drawPad(id)
         circle(x + (b - 1) * 18,y + id * 40, 8, 1, 2)
         text(formattext("%02i",b), x+(b-1)*18-7,y + id*40-4, 1,colT)
     next
-    axCount = joy_AxisCount(id)
+    axCount = joyAxisCount(id)
     text(formattext("Axis Count: %i", axCount), x-4, y+10, 1, 3)
     for ax = 0 to axCount - 1
-        av = joy_AxisValue(id,ax)
+        av = joyAxisValue(id,ax)
         text(formattext("Axis %02i: %03i",ax, av), x,y + ax * 10 + 20, 1, 3)
         rect(x+100, y + ax * 10 + 20, 190, 6, 0, 2)
         rect(x+100, y + ax * 10 + 20, 190 * ((av + 100)/200.0) , 6, 0, 6)
@@ -38,7 +38,7 @@ enddef
 
 
 def tick()
-    k = key_get()
+    k = keyget()
     IF k <> 0 THEN 
         print "Key code: " 
         print k;

@@ -21,7 +21,7 @@ static bool show_player = false;
 static bool show_memory = false;
 static bool show_credits = false;
 static bool show_docs = false;
-static bool stupidsenseOpen = false;
+static bool codeHelperOpen = false;
 
 static unsigned char spriteCopy[8]{};
 static unsigned char metaSpriteCopy[20]{};
@@ -565,7 +565,7 @@ void Editor::DrawCode(bool* p_open)
 	auto alt = io.ConfigMacOSXBehaviors ? io.KeyCtrl : io.KeyAlt;
 
     bool stupidsenseFocus;
-    ImVec2 stupidSensePos = ImVec2(0,0);
+    ImVec2 codeHelperPos = ImVec2(0,0);
 
     if (ImGui::IsKeyReleased(ImGuiKey_LeftCtrl))
     {
@@ -672,10 +672,10 @@ void Editor::DrawCode(bool* p_open)
             ImGui::Text("?/0");
         
         ImGui::SameLine();
-        if (ImGui::Checkbox("SloppySense##chcbox", &stupidsenseOpen))
+        if (ImGui::Checkbox("Code Helper##chcbox", &codeHelperOpen))
         {
-            stupidSensePos = ImGui::GetCursorScreenPos();
-            ImGui::SetWindowPos("SloppySense", stupidSensePos, ImGuiCond_Always);
+            codeHelperPos = ImGui::GetCursorScreenPos();
+            ImGui::SetWindowPos("Code Helper", codeHelperPos, ImGuiCond_Always);
         }
         ImGui::Separator();
 
@@ -688,12 +688,12 @@ void Editor::DrawCode(bool* p_open)
             ImGui::Text("Load or create a program in File Browser");
         }
 
-    if (stupidsenseOpen)
+    if (codeHelperOpen)
     {   
         ImGui::PushStyleColor(ImGuiCol_WindowBg, Col_P_D2);
-        ImGui::Begin("SloppySense", &stupidsenseOpen, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
+        ImGui::Begin("Code Helper", &codeHelperOpen, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse);
             bool firstElement = true;
-        	for (std::string& k : codeEditor.GetStupidsense())
+        	for (std::string& k : codeEditor.CodeHelperGetList())
 	    	{
                 if (firstElement && stupidsenseFocus)
                 {
