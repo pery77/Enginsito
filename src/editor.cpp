@@ -151,7 +151,7 @@ Editor::Editor(Engine* _engine)
 {
     editorEngineRef = _engine;
     codeEditor.SetLanguageDefinition(lang);
-    codeEditor.SetTabSize(1);
+    codeEditor.SetTabSize(4);
 
     mem_edit.HighlightColor = IM_COL32Vec4(Col_P_B1);
     mem_edit.OptShowAscii = false;

@@ -1490,8 +1490,17 @@ void TextEditor::InsertText(const char * aValue)
 	int totalLines = pos.mLine - start.mLine;
 
 	totalLines += InsertTextAt(pos, aValue);
-
 	SetSelection(pos, pos);
+
+	int count = 0;
+	int size = strlen(aValue);
+    for (size_t i = 0; i < size; i++) {
+        if (aValue[i] == '\t') {
+            count += mTabSize-1;
+        } 
+	}
+	
+	pos.mColumn += count;
 	SetCursorPosition(pos);
 	Colorize(start.mLine - 1, totalLines + 2);
 }
@@ -1886,7 +1895,7 @@ void TextEditor::Backspace()
 
 			u.mRemovedStart = u.mRemovedEnd = GetActualCursorCoordinates();
 			--u.mRemovedStart.mColumn;
-			--mState.mCursorPosition.mColumn;
+			mState.mCursorPosition.mColumn = GetCharacterColumn(mState.mCursorPosition.mLine, cindex);
 
 			while (cindex < line.size() && cend-- > cindex)
 			{
