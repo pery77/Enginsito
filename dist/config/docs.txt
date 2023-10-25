@@ -196,12 +196,6 @@ META(id, x, y)
 - SOUND -
 -=======-
 
-CH_PRESET(ch, preset)   -> 'Set channel preset 
-CH_SET(ch, sequence)    -> 'Set sequence in this channel
-CH_ON(ch, note, volume) -> 'Start sound until stop it whit ch_off()
-CH_OFF(ch)              -> 'Stop note in this channel
-CH_PLAY(ch, [sequence]) -> 'Play Channel optional -> and set [sequence] optional
-CH_STOP(ch)             -> 'Stop Channel
 CH_POS(ch)              -> 'Return current song position
 CH_SIZE(ch)             -> 'Return channel song size
 CH_FRAME(ch, frame)     -> 'Return average chanel frame

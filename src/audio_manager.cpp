@@ -321,3 +321,7 @@ char* AudioManager::GetNoteName(uint8_t channel) {
     
     return fullName;
 }
+
+uint8_t AudioManager::GetNoteNum(uint8_t channel) {
+    return synth->channels[channel].note;
+}

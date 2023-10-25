@@ -112,6 +112,7 @@ class MBManager{
         //Sound
         static int getFrameAverage(struct mb_interpreter_t* s, void** l); 
         static int getNoteName(struct mb_interpreter_t* s, void** l); 
+        static int getNoteNum(struct mb_interpreter_t* s, void** l); 
         static int setPreset(struct mb_interpreter_t* s, void** l); 
         static int setSequence(struct mb_interpreter_t* s, void** l); 
         static int playNote(struct mb_interpreter_t* s, void** l);

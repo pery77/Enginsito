@@ -61,6 +61,7 @@ class AudioManager
 	float GetCurve(uint8_t preset);
 
     char* GetNoteName(uint8_t channel);
+    uint8_t GetNoteNum(uint8_t channel);
 
     void SetChannelPreset(uint8_t channel, uint8_t preset);
 

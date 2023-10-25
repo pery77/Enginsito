@@ -445,16 +445,17 @@ int MBManager::OpenBas(const char *file){
 	mb_register_func(bas, "TEXTSIZE",   	measureText);
 
 	//Sound
-	mb_register_func(bas, "CHPRESET",  	setPreset); 
-	mb_register_func(bas, "CHSET",  	setSequence); 
-	mb_register_func(bas, "CHON",   	playNote);
-	mb_register_func(bas, "CHOFF",  	stopNote);
-	mb_register_func(bas, "CHPLAY", 	musicPlay);
-	mb_register_func(bas, "CHSTOP", 	musicStop);
-	mb_register_func(bas, "CHPOS",  	getMusicPosition);
-	mb_register_func(bas, "CHSIZE", 	getMusicSize);
-	mb_register_func(bas, "CHFRAME",	getFrameAverage);
-	mb_register_func(bas, "CHGETNOTE",	getNoteName);
+	mb_register_func(bas, "CHPRESET",  	  setPreset); 
+	mb_register_func(bas, "CHSET",  	  setSequence); 
+	mb_register_func(bas, "CHON",   	  playNote);
+	mb_register_func(bas, "CHOFF",  	  stopNote);
+	mb_register_func(bas, "CHPLAY", 	  musicPlay);
+	mb_register_func(bas, "CHSTOP", 	  musicStop);
+	mb_register_func(bas, "CHPOS",  	  getMusicPosition);
+	mb_register_func(bas, "CHSIZE", 	  getMusicSize);
+	mb_register_func(bas, "CHFRAME",	  getFrameAverage);
+	mb_register_func(bas, "CHGETNOTE",	  getNoteName);
+	mb_register_func(bas, "CHGETNOTENUM", getNoteNum);
 
 	//Memory
 	mb_register_func(bas, "PEEK", 		peek);
@@ -1440,6 +1441,24 @@ int MBManager::getNoteName(struct mb_interpreter_t* s, void** l){
 	mb_check(mb_attempt_close_bracket(s, l));
 
     ret.value.string = basicEngineRef->audioManager->GetNoteName(channel);
+    mb_check(mb_push_value(s, l, ret));
+	return result;
+}
+
+int MBManager::getNoteNum(struct mb_interpreter_t* s, void** l){
+	int result = MB_FUNC_OK;	
+	mb_assert(s && l);
+
+    mb_value_t ret;
+    mb_make_int(ret, 0);
+
+	int channel;
+
+	mb_check(mb_attempt_open_bracket(s, l));
+		mb_check(mb_pop_int(s, l, &channel));
+	mb_check(mb_attempt_close_bracket(s, l));
+
+    ret.value.integer = basicEngineRef->audioManager->GetNoteNum(channel);
     mb_check(mb_push_value(s, l, ret));
 	return result;
 }
