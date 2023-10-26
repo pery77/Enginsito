@@ -133,10 +133,10 @@ def tick()
     timer = timer + delta
     moveTick = moveTick + delta
 
-    if key_down(65) then dx =-1
-    if key_down(68) then dx = 1
-    if key_down(83) then delayFall = 20
-    if key_pressed(32) then rotate = 1
+    if keydown(65) then dx =-1
+    if keydown(68) then dx = 1
+    if keydown(83) then delayFall = 20
+    if keypressed(32) then rotate = 1
 
     'MOVE
     if moveTick > delayMove then
@@ -220,9 +220,9 @@ def tick()
 enddef
 
 def draw()
-    'Only draw deco and clear screen first time
-    if not drawed then
-        cls(1)
+	'Only draw deco and clear screen first time
+	if not drawed then
+		cls(1)
         drawDeco()
         drawed = 1
         line(160,0,160,200,1,9)

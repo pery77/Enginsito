@@ -171,35 +171,7 @@ JOY_GET()                   -> ' return the last joy button pressed
 JOY_AXISCOUNT(id)           -> ' return how many axis the joy have
 JOY_AXISVALUE(id, axisId)   -> ' return axis value
 
-- DRAW -
--======-
-CLS(col)            -> ' Clear screen.
-PIXEL(x, y, col)
-LINE(x1, y1, x2, y2, thick, col)
-CIRCLE(x, y, radius, style, col)
-RING(x, y, radioIn, radioOut, startAngle, endAngle, segments, style, col)
-ELLIPSE(x, y, rh, rv, style, col)
-TRIANGLE(x1, y1, x2, y2, x3, y3, style col)
-RECT(x, y, w, h, thick, col)
-RECTROUND(x, t, w, h, thick, roundnes, segments, col)
-POLY(x, y, sides, radius, rotation, thick, col)
-TEXT(string, x, y, size, col)
-SPRITE(id, x, y, col, [flags])
-META(id, x, y)
 
-' x,y ,x1,y1 >... positions
-' col > color (0-15)
-' style 0 fill, other line thickness
-' segments > quality
-' Flags > rotation 0-1-2-3 flip h + 8, flip v + 16
-
-- SOUND -
--=======-
-
-CH_POS(ch)              -> 'Return current song position
-CH_SIZE(ch)             -> 'Return channel song size
-CH_FRAME(ch, frame)     -> 'Return average chanel frame
-CH_GETNOTE(ch)          -> 'Return last note name
 
 
 

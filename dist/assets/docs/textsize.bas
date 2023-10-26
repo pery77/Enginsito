@@ -1,5 +1,6 @@
+'TEXTSIZE(text, scale)
 'Return the size in pixels of the text at current text
-'textSize is from 1 to 4
+'scale is from 1 to 4
 
 hello1 = textSize("Hello",1)
 hello2 = textSize("Hello",2)

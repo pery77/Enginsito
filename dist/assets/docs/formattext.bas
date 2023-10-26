@@ -1,3 +1,4 @@
+'FORMATTEXT(text, value)
 'Return formatted text 
 'use %i for integer or %f for float
 

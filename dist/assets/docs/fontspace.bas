@@ -1,3 +1,4 @@
+'FONTSPACE(space)
 'Set font separation in pixels
 
 def draw()

@@ -583,8 +583,11 @@ int MBManager::drawCircle(struct mb_interpreter_t* s, void** l){
 		case 0:
 			DrawCircle(x, y, r, basicEngineRef->spriteManager->GetColor(col));
 			break;
-		default:
+		case 1:
 			DrawCircleLines(x, y, r, basicEngineRef->spriteManager->GetColor(col));
+			break;
+		default:
+			DrawRing((Vector2){x, y}, r - style, r, 0, 360, 32, basicEngineRef->spriteManager->GetColor(col));
 			break;
 	}
 
@@ -748,7 +751,7 @@ int MBManager::drawRectRound(struct mb_interpreter_t* s, void** l){
 	int h = 0;
 	int lineThick = 0;
 	int roundness = 0;
-	int segments = 0;
+	int segments = 0; //Segment auto
 	int col = 0;
 
 	mb_check(mb_attempt_open_bracket(s, l));
@@ -758,14 +761,12 @@ int MBManager::drawRectRound(struct mb_interpreter_t* s, void** l){
 		mb_check(mb_pop_int(s, l, &w));
 		mb_check(mb_pop_int(s, l, &h));
 		mb_check(mb_pop_int(s, l, &roundness));
-		mb_check(mb_pop_int(s, l, &segments));
 		mb_check(mb_pop_int(s, l, &lineThick));
 		mb_check(mb_pop_int(s, l, &col));
 	}
 	mb_check(mb_attempt_close_bracket(s, l));
  
 	float fRound = (float)(roundness) * 0.1f;
-	if (segments < 1) segments = 1;
 	switch (lineThick)
 	{
 		case 0:

@@ -170,7 +170,7 @@ Documentation::Documentation()
 {
     //GenerateKeysCodeFromEnumBecauseImTooLazy();
     codeEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::Basic());
-    codeEditor.SetTabSize(1);
+    codeEditor.SetTabSize(4);
     codeEditor.SetReadOnly(true);
 }
 
@@ -183,7 +183,7 @@ void Documentation::Keyword(const char* name, const char* args, const char* prog
     if (program == "")
         program = name;
 
-    if (ImGui::Button(TextFormat("%s(%s)", name, args)))
+    if (ImGui::Button(TextFormat("%s", name)))
     {
         ProgramName = program;
         std::string programFile = "assets/docs/" + ProgramName + ".bas";
@@ -203,6 +203,7 @@ void Documentation::Keyword(const char* name, const char* args, const char* prog
             ProgramName = "";
         }
     }
+    ImGui::SetItemTooltip(TextFormat("%s(%s)", name, args));
 }
 
 void Documentation::Draw(bool* p_open)
@@ -259,25 +260,38 @@ void Documentation::Draw(bool* p_open)
             }
             if (ImGui::TreeNode("Draw"))
             {
+                Keyword("cls",      "color",                              "");
+                Keyword("pixel",    "x, y, color",                        "");
+                Keyword("line",     "x1, y1, x2, y2, thickness, color",   "");
+                Keyword("rect",     "x, y, width, height, border, color", "");
+                Keyword("circle",   "x, y, radius, border, color",        "");
+                ImGui::Separator();
+                Keyword("text", "text, x, y, scale, color",     "");
+                Keyword("sprite", "id, x, y, color, [flags]",   "");
+                Keyword("meta", "id, x, y, [flags]",            "");
+                ImGui::Separator();
+                Keyword("rectRound", "x, y, width, height, radius, roundness, border, color",    "");
+                Keyword("ring", "x, y, radiusIn, radiusOut, startAngle, endAngle, style, color", "");
+                Keyword("ellipse", "x, y, radiusHorizontal, radiusVertical, style, color",       "");
+                Keyword("triangle", "x1, y1, x2, y2, x3, y3, style, color",  "");
+                Keyword("poly", "x, y, sides, radius, rotation, thickness, color",     "");
                 ImGui::TreePop();
             }
             if (ImGui::TreeNode("Sound"))
             {
-                ImGui::SeparatorText("Channels");
-                Keyword("chPreset", "ch, preset",     "sound");
-                Keyword("chSet",    "ch, sequence",   "sound");
-                Keyword("chPlay",   "ch, [sequence]", "sound");
-                Keyword("chStop",   "ch",             "sound");
-                ImGui::SeparatorText("Notes");
-                Keyword("chOn",  "ch, note, volume", "notes");
-                Keyword("chOff", "ch",               "notes");
-                ImGui::SeparatorText("Info");
-                Keyword("chPos",        "ch",        "soundInfo");
-                Keyword("chSize",       "ch",        "soundInfo");
-                Keyword("chFrame",      "ch, frame", "soundInfo");
-                Keyword("chGetNote",    "ch",        "soundInfo");
-                Keyword("chGetNoteNum", "ch",        "soundInfo");
-
+                Keyword("chPreset", "channel, preset",     "sound");
+                Keyword("chSet",    "channel, sequence",   "sound");
+                Keyword("chPlay",   "channel, [sequence]", "sound");
+                Keyword("chStop",   "channel",             "sound");
+                ImGui::Separator();
+                Keyword("chOn",  "channel, note, volume", "notes");
+                Keyword("chOff", "channel",               "notes");
+                ImGui::Separator();
+                Keyword("chPos",        "channel",        "soundInfo");
+                Keyword("chSize",       "channel",        "soundInfo");
+                Keyword("chFrame",      "channel, frame", "soundInfo");
+                Keyword("chGetNote",    "channel",        "soundInfo");
+                Keyword("chGetNoteNum", "channel",        "soundInfo");
                 ImGui::TreePop();
             } 
             if (ImGui::TreeNode("Memory"))
@@ -292,7 +306,7 @@ void Documentation::Draw(bool* p_open)
             {   
                 Keyword("formatText", "text, value");
                 Keyword("fontSpace",  "space");
-                Keyword("textSize",   "text, textSize");
+                Keyword("textSize",   "text, scale");
                 Keyword("quit",       "");
 
                 ImGui::TreePop();

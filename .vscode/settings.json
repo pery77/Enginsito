@@ -73,6 +73,7 @@
         "ranges": "cpp",
         "span": "cpp",
         "valarray": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "set": "cpp"
     }
 }
