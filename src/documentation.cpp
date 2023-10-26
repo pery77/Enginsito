@@ -203,7 +203,20 @@ void Documentation::Keyword(const char* name, const char* args, const char* prog
             ProgramName = "";
         }
     }
-    ImGui::SetItemTooltip(TextFormat("%s(%s)", name, args));
+    ImVec4 identifier =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[7]);
+    ImVec4 key =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[22]);
+    ImVec4 punt =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[5]);
+    if (ImGui::BeginItemTooltip())
+    {
+        ImGui::TextColored(key, name);
+        ImGui::SameLine();        
+        ImGui::TextColored(punt,"(");
+        ImGui::SameLine();
+        ImGui::TextColored(identifier, args);
+        ImGui::SameLine();
+        ImGui::TextColored(punt,")");
+        ImGui::EndTooltip();
+    }
 }
 
 void Documentation::Draw(bool* p_open)
@@ -234,8 +247,7 @@ void Documentation::Draw(bool* p_open)
     
     if (ImGui::CollapsingHeader("Code"))
     {
-        ImGui::BeginGroup();
-        ImGui::Text("                              ");
+        ImGui::BeginChild("CodeWords",ImVec2(ImGui::GetContentRegionAvail().x * 0.3f, 0), true );
         if (ImGui::TreeNode("Basic"))
         {
             ImGui::TreePop();
@@ -313,7 +325,7 @@ void Documentation::Draw(bool* p_open)
             }      
             ImGui::TreePop();
         }
-        ImGui::EndGroup();
+        ImGui::EndChild();
         ImGui::SameLine();
 
         ImGui::BeginGroup();
@@ -329,6 +341,7 @@ void Documentation::Draw(bool* p_open)
 
     if (ImGui::CollapsingHeader("MML"))
     {
+        ImGui::BeginChild("MMLCh",ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
         if (ImGui::TreeNode("MML Info"))
         {
 
@@ -364,10 +377,12 @@ using a series of text commands and notations.
         )|");
             ImGui::TreePop();
         }
+        ImGui::EndChild();
     }
   
     if (ImGui::CollapsingHeader("Key Codes"))
     {
+        ImGui::BeginChild("KeyCodesCh",ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
         if (ImGui::TreeNode("Alphanumeric keys##kc"))
         {          
             ImGui::Text(R"|(
@@ -545,6 +560,7 @@ using a series of text commands and notations.
         )|");
         ImGui::TreePop();  
         }
+        ImGui::EndChild();
     }
 
 }

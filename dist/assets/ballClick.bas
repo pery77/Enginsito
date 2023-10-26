@@ -23,3 +23,20 @@ def draw()
 	circle(bx,by,radio,2,hit)
 	sprite(224, mouse_x,mouse_y, 3)
 enddef
+
+	if collision()=1 then
+		hit = 5
+	endif
+	
+	circle(bx,by,radio,2,hit)
+	sprite(224, mouse_x,mouse_y, 3)
+		if collision()=1 then
+		hit = 5
+	endif
+	
+	circle(bx,by,radio,2,hit)
+	circle(bx,by,radio,2,hit)
+	circle(bx,by,radio,2,hit)
+				sprite(224, mouse_x,mouse_y, 3)
+	circle(bx,by,radio,2,hit)
+	sprite(224, mouse_x,mouse_y, 3)

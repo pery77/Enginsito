@@ -981,8 +981,14 @@ void Editor::DrawPlayer()
 
     float buttonPosX = (playerSize.x - totalButtonWidth) / 2;
     float buttonPosY = (playerSize.y - buttonSize.y) / 2;
+    
+    ImGui::PushStyleColor(ImGuiCol_Text, Col_T_2);
+    if (playerSize.x>485)
+        ImGui::Text(TextFormat("Frame: %07i", editorEngineRef->basicIntepreter->GetCurrentFrame()));
+    else if (playerSize.x>330)
+        ImGui::Text(TextFormat("%07i", editorEngineRef->basicIntepreter->GetCurrentFrame()));
+    ImGui::PopStyleColor();
 
-    ImGui::Text(TextFormat("Frame: %07i", editorEngineRef->basicIntepreter->GetCurrentFrame()));
     ImGui::SameLine();
     ImGui::SetCursorPosX(buttonPosX);
 

@@ -2,6 +2,8 @@
 'CHOFF(ch)              -> Stop note in this channel
 
 let playing = 0
+CHPRESET(0,0)
+
 def draw()
 	cls(0)
 	text(str(playing),10,10,1,6)
