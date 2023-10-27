@@ -78,7 +78,7 @@ int MBManager::updateVars(struct mb_interpreter_t* s, void** l){
 	mb_assert(s && l);
 
 	cFrame.value.integer = currentframe;
-	cDelta.value.integer = (int)(GetFrameTime()*1000);
+	cDelta.value.float_point = GetFrameTime();
 	cMouseX.value.integer = basicEngineRef->VirtualMouseX;
 	cMouseY.value.integer = basicEngineRef->VirtualMouseY;
 
@@ -100,7 +100,7 @@ int MBManager::OpenBas(const char *file){
 	//mb_set_inputer(bas, my_input);
 
 	mb_make_int(cFrame, 0);
-	mb_make_int(cDelta, 0);
+	mb_make_real(cDelta, 0);
 	mb_make_int(cMouseX, 0);
 	mb_make_int(cMouseY, 0);
 

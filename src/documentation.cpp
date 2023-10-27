@@ -254,18 +254,53 @@ void Documentation::Draw(bool* p_open)
         }
         if (ImGui::TreeNode("Enginsito"))
         {
+            if (ImGui::TreeNode("Game Flow"))
+            {
+                Keyword("INIT",  "", "flow");
+                Keyword("TICK",  "", "flow");
+                Keyword("DRAW",  "", "flow");
+                Keyword("PAUSE", "", "flow");
+                Keyword("CLOSE", "", "flow");
+                ImGui::TreePop();
+            }
             if (ImGui::TreeNode("Inputs"))
             {
                 if (ImGui::TreeNode("Keyboard"))
-                {
+                {   
+                    Keyword("keyPressed",  "keyCode", "keyboard");
+                    Keyword("keyReleased", "keyCode", "keyboard");
+                    Keyword("keyUp",       "keyCode", "keyboard");
+                    Keyword("keyDown",     "keyCode", "keyboard");
+                    ImGui::Separator();
+                    Keyword("keyGet",  "", "keyboardGet");
+                    Keyword("keyChar", "", "keyboardGet");
+         
                     ImGui::TreePop();
                 }
                 if (ImGui::TreeNode("Mouse"))
                 {
+                    Keyword("mousePressed",  "button", "mouse");
+                    Keyword("mouseReleased", "button", "mouse");
+                    Keyword("mouseUp",       "button", "mouse");
+                    Keyword("mouseDown",     "button", "mouse");
+                    ImGui::Separator();
+                    Keyword("mouseWheel",  "", "mouseextra");
+                    Keyword("mouseSetPos", "", "mouseextra");
                     ImGui::TreePop();
                 }
                 if (ImGui::TreeNode("Gamepad"))
                 {
+                    Keyword("joyIsAviable", "id",           "gamepad");
+                    Keyword("joyName",      "id",           "gamepad");
+                    ImGui::Separator();
+                    Keyword("joyPressed",   "id, button",   "gamepad");
+                    Keyword("joyReleased",  "id, button",   "gamepad");
+                    Keyword("joyUp",        "id, button",   "gamepad");
+                    Keyword("joyDown",      "id, button",   "gamepad");
+                    ImGui::Separator();
+                    Keyword("joyGet",       "",             "gamepad");
+                    Keyword("joyAxisCount", "id",           "gamepad");
+                    Keyword("joyAxisValue", "id, axisId",   "gamepad");
                     ImGui::TreePop();
                 }                
                 ImGui::TreePop();

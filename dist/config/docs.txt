@@ -122,55 +122,7 @@ ITERATOR     -> ' Gets an iterator of a list or a dictionary,
                 ' overridablefor referenced usertype and class instance.
 MOVE_NEXT    -> ' Moves an iterator to next position over a list or a dictionary, 
                 '  overridable for referenced user type and class instance.
-
-
-- FLOW -
--======-
- * Gameflow Functions *
- INIT()     -> ' When the program start
- TICK()     -> ' In each frame if not paused
- DRAW()     -> ' In each frame after tick if not paused
- PAUSE()    -> ' In each frame only in pause mode
- CLOSE()      -> ' When the program end
-
-* Time *
-frame       -> ' number of frame since game started
-delta       -> ' return the millisecond frame duration
-
--INPUTS-
--======-
-
-* Mouse *
-MOUSE_WHEEL()           -> ' get the whell value
-MOUSE_PRESSED(button)	-> ' true if button is pressed
-MOUSE_DOWN(button)      -> ' true if button is down
-MOUSE_RELEASED(button)  -> ' true if button is released
-MOUSE_UP(button)        -> ' true if button is up
-MOUSE_SETPOS(x, y)      -> ' set the cursor at position x, y
-    'button -> 0, left, 1 right, 2 middel, 3...
-
-Mouse_X -> 'position x of mouse 
-Mouse_Y -> 'position y of mouse 
-
-* Keys *
-KEY_PRESSED(key)    -> ' return true if key is pressed
-KEY_DOWN(key)       -> ' return true if key is down
-KEY_RELEASED(key)   -> ' return true if key is released
-KEY_UP(key)         -> ' return true if key is up
-KEY_GET()           -> ' return the key code pressed
-KEY_CHAR()          -> ' return the char pressed
-
-* Joystics *
-JOY_ISAVIABLE(id)           -> ' return true if the joy id is ok
-JOY_NAME(id)                -> ' return the name of the joystic id
-JOY_PRESSED(id, button)     -> ' return true if button is pressed
-JOY_DOWN(id, button)        -> ' return true if button is down
-JOY_RELEASED(id, button)    -> ' return true if button is released
-JOY_UP(id, button)          -> ' return true if button is up
-JOY_GET()                   -> ' return the last joy button pressed
-JOY_AXISCOUNT(id)           -> ' return how many axis the joy have
-JOY_AXISVALUE(id, axisId)   -> ' return axis value
-
+PRINT 
 
 
 
