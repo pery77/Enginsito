@@ -32,8 +32,8 @@ gameOverTime = 0
 menuTime = 0
 waveInfoTime = 0
 
-CH_PRESET(2,5) 'alien ship
-CH_PRESET(3,4) 'alien steps
+CHPRESET(2,5) 'alien ship
+CHPRESET(3,4) 'alien steps
 
 'Tools
 'Collision
@@ -145,17 +145,17 @@ class player
 
     def update()
 
-        if key_down(65) or joy_down(0, 4) then ' key A move left also pad left 
+        if keydown(65) or joydown(0, 4) then ' key A move left also pad left 
             x = x - speed
             if x < 0 then x = 0 endif
         endif
 
-        if key_down(68) or joy_down(0, 2) then ' key D move right also pad right
+        if keydown(68) or joydown(0, 2) then ' key D move right also pad right
             x = x + speed
             if x > 303 then x = 303 endif
         endif
 
-        if key_pressed(32) or joy_pressed(0, 6) then ' key Space shot also pad button 6
+        if keypressed(32) or joypressed(0, 6) then ' key Space shot also pad button 6
             if len(bullets) < maxbullets then
                 b = new (bullet)
                 b.x = x + 7 
@@ -163,7 +163,7 @@ class player
                 b.speed = -2
                 b.explosionFrame = 0
                 push(bullets, b)
-                ch_play(0, "@0o5c")
+                chplay(0, "@0o5c")
             endif
         endif
 
@@ -176,7 +176,7 @@ class player
                     gameState = GAME_OVER
                 endif
                 remove(aliensBullets, index_of(aliensBullets, b))
-                ch_play(0, "@1o2g")
+                chplay(0, "@1o2g")
             endif
         next
 
@@ -273,7 +273,7 @@ class alien
             b.speed = 1
             b.explosionFrame = 0
             push(aliensBullets, b)
-            ch_play(1, "@3o6d")
+            chplay(1, "@3o6d")
         endif
     enddef
 
@@ -302,7 +302,7 @@ class alien
                 remove(bullets, index_of(bullets, b))
                 dead = 1
                 addScore((shape + 1) * 10)
-                ch_play(1, "@2o3c")
+                chplay(1, "@2o3c")
             endif
         next
 
@@ -341,8 +341,8 @@ class ship
                 dead = 1
                 price = rnd(1,3) * 50
                 addScore(price)
-                ch_off(2)
-                ch_play(1, "@2o3c")
+                choff(2)
+                chplay(1, "@2o3c")
             endif
         next
     enddef
@@ -435,7 +435,7 @@ def startGame()
 
     makeAlienWave()
     gameState = WAVE_INFO
-    ch_off(2)
+    choff(2)
 
 enddef
 
@@ -525,7 +525,7 @@ def alienMovement()
         alienStep = alienStep + 1
     
         'alien sound steps if ship is not present
-         ch_on(3, 44 - alienStep mod 4, 30)
+         chon(3, 44 - alienStep mod 4, 30)
 
         maxX = 0
         minX = 320
@@ -568,7 +568,7 @@ def alienMovement()
 enddef
 
 def alienShipUpdate()
-    alienShipTime = alienShipTime + delta
+    alienShipTime = alienShipTime + delta * 0.001
     if alienShipTime > 6000 then
         alienShipTime = 0
         r = rnd(0,99)
@@ -577,7 +577,7 @@ def alienShipUpdate()
             alienShip.x = 320
             alienShip.dead = 0
             alienShip.deadCounter = 0
-            ch_on(2,78,50)
+            chon(2,78,50)
         endif
     endif
 
@@ -585,7 +585,7 @@ def alienShipUpdate()
         alienShip.update()
         if alienShip.x < -16 then 
             alienShip = nil
-            ch_off(2)
+            choff(2)
         elseif alienShip.deadCounter > 60 then
             alienShip = nil
         endif
@@ -595,7 +595,7 @@ enddef
 'Main update
 def tick()
     if gameState = WAVE_INFO then
-        waveInfoTime = waveInfoTime + delta
+        waveInfoTime = waveInfoTime + delta * 1000
         if waveInfoTime > 3000 then
             waveInfoTime = 0
             gameState = PLAYING
@@ -603,7 +603,7 @@ def tick()
     endif
 
     if gameState = PLAYER_DEAD then
-        recoveryPlayerTick = recoveryPlayerTick + delta
+        recoveryPlayerTick = recoveryPlayerTick + delta * 1000
         if recoveryPlayerTick > 4000 then
             recoveryPlayerTick = 0
             playerShip.dead = 0
@@ -612,15 +612,15 @@ def tick()
     endif
 
     if gameState = MENU then
-        menuTime = menuTime + delta
-         if key_released(257) or joy_released(0, 15) and menuTime > 1000 then
+        menuTime = menuTime + delta * 1000
+         if keyreleased(257) or joyreleased(0, 15) and menuTime > 1000 then
             startGame()
          endif
     endif
 
     if gameState = GAME_OVER then
-        gameOverTime = gameOverTime + delta
-        if key_released(257) or joy_released(0, 15) then
+        gameOverTime = gameOverTime + delta * 1000
+        if keyreleased(257) or joyreleased(0, 15) then
             gameState = MENU
         endif
     endif

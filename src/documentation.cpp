@@ -203,18 +203,26 @@ void Documentation::Keyword(const char* name, const char* args, const char* prog
             ProgramName = "";
         }
     }
+    ImVec4 bas =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[1]);
     ImVec4 identifier =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[7]);
     ImVec4 key =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[22]);
     ImVec4 punt =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[5]);
     if (ImGui::BeginItemTooltip())
     {
-        ImGui::TextColored(key, name);
-        ImGui::SameLine();        
-        ImGui::TextColored(punt,"(");
-        ImGui::SameLine();
-        ImGui::TextColored(identifier, args);
-        ImGui::SameLine();
-        ImGui::TextColored(punt,")");
+        if (args != "-")
+        {
+            ImGui::TextColored(key, name);
+            ImGui::SameLine();        
+            ImGui::TextColored(punt,"(");
+            ImGui::SameLine();
+            ImGui::TextColored(identifier, args);
+            ImGui::SameLine();
+            ImGui::TextColored(punt,")");
+        }
+        else
+        {
+            ImGui::TextColored(bas, name);
+        }
         ImGui::EndTooltip();
     }
 }
@@ -249,18 +257,52 @@ void Documentation::Draw(bool* p_open)
     {
         ImGui::BeginChild("CodeWords",ImVec2(ImGui::GetContentRegionAvail().x * 0.3f, 0), true );
         if (ImGui::TreeNode("Basic"))
-        {
+        {   
+            if (ImGui::TreeNode("Comments"))
+            {
+                Keyword("rem", "-", "comments");
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Operators"))
+            {
+                ImGui::TextWrapped("+, -, *, /, ^, =, <, >, <=, >=, <>");
+                Keyword("mod", "-", "operators");
+                Keyword("and", "-", "operators");
+                Keyword("or",  "-", "operators");
+                Keyword("not", "-", "operators");
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Variables"))
+            {
+                Keyword("let", "-", "vars");
+                Keyword("dim", "-", "vars");
+                Keyword("is",  "-", "vars");
+                Keyword("nil", "-", "vars");
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Conditionals"))
+            {
+                Keyword("if",    "-", "if");
+                Keyword("then",  "-", "if");
+                Keyword("elif",  "-", "if");
+                Keyword("else",  "-", "if");
+                Keyword("endif", "-", "if");
+                ImGui::TreePop();
+            }
             ImGui::TreePop();
         }
         if (ImGui::TreeNode("Enginsito"))
         {
             if (ImGui::TreeNode("Game Flow"))
             {
-                Keyword("INIT",  "", "flow");
-                Keyword("TICK",  "", "flow");
-                Keyword("DRAW",  "", "flow");
-                Keyword("PAUSE", "", "flow");
-                Keyword("CLOSE", "", "flow");
+                Keyword("INIT()",  "-", "flow");
+                Keyword("TICK()",  "-", "flow");
+                Keyword("DRAW()",  "-", "flow");
+                Keyword("PAUSE()", "-", "flow");
+                Keyword("CLOSE()", "-", "flow");
                 ImGui::TreePop();
             }
             if (ImGui::TreeNode("Inputs"))
