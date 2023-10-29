@@ -1,0 +1,11 @@
+def draw()
+	cls(9)
+	circle(160,100,100,3,4)
+	text("AROA",100,80,4,15)
+	text("nora",120,120,3,12)
+	text("zaira",85,30,4,0)
+	text("kiwi",120,150,3,8)
+	meta(0,280,20)
+	sprite(1,30,20,13)
+	sprite(2,30,160,0)
+enddef
