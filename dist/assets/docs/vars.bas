@@ -1,3 +1,8 @@
+'[
+LET     -> Used to assign a value to a variable. (Optional)
+DIM     -> It is used to declare and allocate memory for variables or arrays.
+NIL     -> Represents a null or empty value.
+']
 let a = 2 ' Assignment statement begins with LET
 pi = 3.14 ' Another assignment statement without LET
 

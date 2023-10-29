@@ -7,14 +7,14 @@
         "show_docs": true,
         "show_filebrowser": true,
         "show_fps": true,
-        "show_makeSprite": false,
+        "show_makeSprite": true,
         "show_memory": false,
         "show_metaSprite": false,
-        "show_palette": false,
+        "show_palette": true,
         "show_player": true,
         "show_screen": true,
         "show_sfx": false,
-        "show_sprites": false,
+        "show_sprites": true,
         "show_tools": false
     },
     "layout_2": {
@@ -76,17 +76,17 @@
         "show_filebrowser": false,
         "show_fps": true,
         "show_makeSprite": true,
-        "show_memory": true,
+        "show_memory": false,
         "show_metaSprite": true,
         "show_palette": true,
         "show_player": true,
         "show_screen": false,
         "show_sfx": true,
-        "show_sprites": true,
+        "show_sprites": false,
         "show_tools": true
     },
-    "window_height": 1001,
-    "window_position_x": 0,
-    "window_position_y": 29,
-    "window_width": 2560
+    "window_height": 1050,
+    "window_position_x": 263,
+    "window_position_y": 57,
+    "window_width": 1680
 }

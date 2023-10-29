@@ -1,3 +1,10 @@
+'[
+IF      -> Begins a conditional statement that executes a block of code if a certain condition is met.
+THEN    -> Specifies the code to be executed if the condition of an "IF" statement is true.
+ELIF    -> Used within an "IF" statement to specify an additional condition to be checked if the previous condition was false.
+ELSE    -> Specifies the code to be executed if none of the previous conditions in an "IF" statement were true.
+ENDIF   -> Marks the end of an "IF" statement.
+']
 ' Conditional Example
 
 ' Define two boolean variables for demonstration purposes

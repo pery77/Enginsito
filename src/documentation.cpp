@@ -292,6 +292,14 @@ void Documentation::Draw(bool* p_open)
                 Keyword("endif", "-", "if");
                 ImGui::TreePop();
             }
+
+            if (ImGui::TreeNode("Loops"))
+            {
+                Keyword("for",   "-", "");
+                Keyword("while", "-", "");
+                Keyword("do",    "-", "");
+                ImGui::TreePop();
+            }
             ImGui::TreePop();
         }
         if (ImGui::TreeNode("Enginsito"))

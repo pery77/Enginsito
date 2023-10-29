@@ -1,4 +1,9 @@
 '[
+AND     -> A logical operator used to perform a logical conjunction (also known as a logical AND) between two conditions.
+OR      -> A logical operator used to perform a logical disjunction (also known as a logical OR) between two conditions.
+NOT     -> A logical operator used to negate a conditionresulting in its opposite value.
+MOD     -> Performs the modulo operation, which calculates the remainder after division.
+
 Operator Precedence
 
 Level Operation
