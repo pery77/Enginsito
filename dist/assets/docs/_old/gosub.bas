@@ -1,13 +1,14 @@
 REM This program is an example of MY-BASIC
 REM For more information, see https://github.com/paladin-t/my_basic/
 'yes, copy-pasted :(
-cls(0)
+
 begin:
 	n = 10
 	dim arr(n)
 	gosub calc
 	gosub show
-	end
+	print "END"
+	end	'end finish whit ERROR 0 (no error) keep calm
 
 calc:
 	arr(0) = 1
@@ -18,6 +19,6 @@ calc:
 
 show:
 	for i = 0 to n - 1
-		print arr(i), ", "
+		print arr(i)
 	next
 	return
