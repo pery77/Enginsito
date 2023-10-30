@@ -33,7 +33,7 @@ void MBManager::managerError(int state){
 
     mb_error_e error = mb_get_last_error(bas, &basFile, &pos, &row, &col);
 	const char* errorDes = mb_get_error_desc(error);
-    if(state > 0){
+    if(state > 0 && error > 0){
         Tools::console->AddLog("[ERROR] [%i]:%s\nline: %i, col: %i, pos; %i\n",error, errorDes, row, col, pos);
 
 		char buffer[256];
@@ -1727,7 +1727,7 @@ int MBManager::measureText(struct mb_interpreter_t* s, void** l){
 
 //..
 int MBManager::my_print(struct mb_interpreter_t* s, const char* fmt, ...) {
-	char buf[64];
+	char buf[256];
 	char* ptr = buf;
 	size_t len = sizeof(buf);
 	int result = 0;

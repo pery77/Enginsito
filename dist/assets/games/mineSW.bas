@@ -13,7 +13,7 @@ OVER = 1
 WIN = 2
 
 state = PLAY
-'peryEngine is realy bad in recursive :(
+'enginsito is really bad in recursive :(
 def floodfill(x,y)
     if grid(x,y)<>0 then return
     i = x
@@ -32,12 +32,10 @@ def floodfill(x,y)
         if grid(x,y+1) = 0 then
             CALL floodfill(x,y+1)
         endif
-    endif
-    if y-1 >= 1 then
+    elif y-1 >= 1 then
         if grid(x,y-1) = 0 then
-            'CALL floodfill(x,y-1) 'crash :too much recursive
-            print mem
-            floodfill(x,y-1) 'crash :too much recursive
+            CALL floodfill(x,y-1) 'crash :too much recursive
+            'floodfill(x,y-1) 'crash :too much recursive
         endif
     endif
 enddef

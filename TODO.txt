@@ -1,3 +1,10 @@
+Vadriadic
+colorear funciones y variables del usuario
+mirar find ( bug cuando escribes)
+print , misma linea
+temas Editor
+temas Code
+
 Main
 
 Editor

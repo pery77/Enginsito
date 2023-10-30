@@ -1,4 +1,12 @@
-def draw()
-	cls(0)
-	circle(50,40,20,5,13)
-enddef
+goto b
+
+a:
+print 1
+end
+
+b:
+print 2
+
+c:
+print 3
+end

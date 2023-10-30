@@ -2880,7 +2880,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 		static const char* const keywords[] = {
 			"REM", "NIL", "MOD", "AND", "OR", "NOT", "IS", "LET", "DIM", "IF", "THEN", "ELSEIF", "ELIF", "ELSE", "ENDIF", "FOR", "IN", "TO",
 			"STEP", "NEXT", "WHILE", "WEND", "DO", "UNTIL", "EXIT", "GOTO", "GOSUB", "RETURN",
-			"CALL", "DEF", "ENDDEF", "CLASS", "ENDCLASS", "ME", "NEW", "VAR", "REFLECT", "MEM", "TYPE", "END"
+			"CALL", "DEF", "ENDDEF", "CLASS", "ENDCLASS", "ME", "NEW", "VAR", "REFLECT", "MEM", "TYPE", "END", "PRINT"
 		};
 
 		for (auto& k : keywords)
@@ -2891,7 +2891,7 @@ const TextEditor::LanguageDefinition& TextEditor::LanguageDefinition::Basic()
 
 		static const char* const identifiers[] = {
 			"ABS", "SGN", "SQR", "FLOOR", "CEIL", "FIX", "ROUND", "SRND", "RND", "SIN", "COS", "TAN", "ASIN", "ACOS", "ATAN",
-			"EXP", "LOG", "ASC", "CHR", "LEFT", "LEN", "MID", "RIGHT", "STR", "VAL", "PRINT", "LIST", "DICT", "PUSH", "POP", "BACK", "INSERT",
+			"EXP", "LOG", "ASC", "CHR", "LEFT", "LEN", "MID", "RIGHT", "STR", "VAL", "LIST", "DICT", "PUSH", "POP", "BACK", "INSERT",
 			"SORT", "EXISTS", "INDEX_OF", "GET", "SET", "REMOVE", "CLEAR", "CLONE", "TO_ARRAY", "ITERATOR", "MOVE_NEXT"
 		};
 		for (auto& k : identifiers)

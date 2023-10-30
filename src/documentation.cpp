@@ -300,6 +300,93 @@ void Documentation::Draw(bool* p_open)
                 Keyword("do",    "-", "");
                 ImGui::TreePop();
             }
+
+            if (ImGui::TreeNode("Functions"))
+            {
+                Keyword("goto",   "-", "goto");
+                Keyword("gosub",  "-", "gosub");
+                Keyword("return", "-", "gosub");
+                Keyword("end",    "-", "gosub");
+                Keyword("call",   "-", "call");
+                ImGui::Separator();
+                Keyword("def",    "-", "def");
+                Keyword("enddef", "-", "def");
+                ImGui::Separator();
+                Keyword("print",  "-", "print");
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Classes"))
+            {
+                Keyword("class",    "-", "class");
+                Keyword("endclass", "-", "class");
+                Keyword("me",   "-", "class");
+                Keyword("new",  "-", "class");
+                Keyword("var",  "-", "class");
+                Keyword("is",   "-", "class");
+                ImGui::Separator();
+                Keyword("reflect", "-", "class");
+                Keyword("mem",     "-", "class");
+                Keyword("type",    "-", "class");
+                Keyword("get",   "-", "class");
+                Keyword("set",   "-", "class");
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Maths"))
+            {
+                Keyword("abs", "number", "maths");
+                Keyword("sgn", "number", "maths");
+                Keyword("sqr", "number", "maths");
+                Keyword("exp", "number", "maths");
+                Keyword("log", "number", "maths");
+                Keyword("mod", "number", "maths");
+                ImGui::Separator();
+                Keyword("sin",  "number", "trigonometric");
+                Keyword("cos",  "number", "trigonometric");
+                Keyword("tan",  "number", "trigonometric");
+                Keyword("asin", "number", "trigonometric");
+                Keyword("acos", "number", "trigonometric");
+                Keyword("atan", "number", "trigonometric");
+                ImGui::Separator();
+                Keyword("ceil",  "number", "rounding");
+                Keyword("round", "number", "rounding");
+                Keyword("floor", "number", "rounding");
+                Keyword("fix",   "number", "rounding");
+                ImGui::Separator();
+                Keyword("srnd",  "number",         "random");
+                Keyword("rnd",   "max, [min,max]", "random");
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("String"))
+            {
+                Keyword("asc",   "char",    "string");
+                Keyword("chr",   "code",    "string");
+                ImGui::Separator();
+                Keyword("left",  "string, position",          "string");
+                Keyword("right", "string, position",          "string");
+                Keyword("mid",   "string, position, length",  "string");
+                ImGui::Separator();
+                Keyword("str",   "numbrer", "string");
+                Keyword("val",   "string",  "string");
+                Keyword("len",   "string",  "string");
+                Keyword("print", "-",       "string");
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Collection"))
+            {
+                Keyword("list",   "",    "");
+                Keyword("dict",   "",    "");
+              
+                ImGui::Separator();
+                
+
+                ImGui::TreePop();
+            }
+
             ImGui::TreePop();
         }
         if (ImGui::TreeNode("Enginsito"))

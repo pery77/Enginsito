@@ -1,69 +1,3 @@
-------
-funci9ones
-GOTO    -> ' Transfers the program execution to a specified line number or label.
-GOSUB   -> ' Transfers the program execution to a specified subroutine or procedure and returns to the calling code afterwards.
-RETURN  -> ' Marks the end of a subroutine or procedure and returns to the calling code.
-CALL    -> ' Used to invoke a subroutine or function.
-
-DEF     -> ' Begins the definition of a user-defined function.
-ENDDEF  -> ' Marks the end of a user-defined function.
-
-poo
-CLASS   -> ' Begins the definition of a user-defined class.
-ENDCLASS-> ' Marks the end of a user-defined class.
-ME      -> ' Refers to the current instance of a class.
-NEW     -> ' Creates a new instance of a class.
-VAR     -> ' Used to declare a variable within a class.
-IS
-
-
-REFLECT -> ' Provides reflection capabilities to access and manipulate class members dynamically.
-MEM     -> ' Refers to the memory address of a variable or object.
-TYPE    -> ' Used to define a custom data type or structure.
-END     -> ' Marks the end of the program or a code block.
-
-
-
-Mathematical Functions
-----------------------
-ABS      -> ' Returns the absolute value of a number.
-SGN      -> ' Returns the sign of a number.
-SQR      -> ' Returns the square root of a number.
-FLOOR    -> ' Returns the greatest integer not greater than a number.
-CEIL     -> ' Returns the least integer not less than a number.
-FIX      -> ' Returns the integer part of a number.
-ROUND    -> ' Rounds a number to the nearest integer.
-SRND     -> ' Sets the seed for the random number generator.
-RND      -> ' Returns a random float number between [0.0, 1.0] with RND, or [0, max] with
-            ' RND(max), or [MIN, MAX] with RND(min,max).
-EXP      -> ' Returns the base-e exponential of a number.
-LOG      -> ' Returns the natural logarithm (base e) of a specified number.
-MOD     -> ' Performs the modulo operation, which calculates the remainder after division.
-
-Trigonometric Functions
------------------------
-SIN  -> ' Returns the sine of an angle (in radians).
-COS  -> ' Returns the cosine of an angle (in radians).
-TAN  -> ' Returns the tangent of an angle (in radians).
-ASIN -> ' Returns the arcsine of a number, resulting in an angle (in radians).
-ACOS -> ' Returns the arccosine of a number, resulting in an angle (in radians).
-ATAN -> ' Returns the arctangent of a number, resulting in an angle (in radians).
-
-String Manipulation Functions
------------------------------
-ASC   -> ' Returns the ASCII code value of a character.
-CHR   -> ' Returns the character associated with an ASCII code.
-LEFT  -> ' Returns a specific number of characters from the left of a string.
-MID   -> ' Returns a specific number of characters from the specific position of a string.
-RIGHT -> ' Returns a specific number of characters from the right of a string.
-STR   -> ' Converts a number to a string.
-PRINT -> ' Displays output to the console or standard output device.
-
-VAL   -> ' Returns the number representation of a string, or the value of a dictionary iterator,
-         'overridable for referenced usertype and class instance.
-LEN   -> ' Returns the length of a string or an array, or the element count of a LIST or a DICT,
-         'overridable for referenced usertype and class instance.
-
 Data Structures and Operations
 ------------------------------
 
@@ -94,7 +28,6 @@ ITERATOR     -> ' Gets an iterator of a list or a dictionary,
                 ' overridablefor referenced usertype and class instance.
 MOVE_NEXT    -> ' Moves an iterator to next position over a list or a dictionary, 
                 '  overridable for referenced user type and class instance.
-PRINT 
 
 
 
