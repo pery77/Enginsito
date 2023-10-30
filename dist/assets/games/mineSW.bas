@@ -35,7 +35,9 @@ def floodfill(x,y)
     endif
     if y-1 >= 1 then
         if grid(x,y-1) = 0 then
-           ' CALL floodfill(x,y-1) 'crash :too much recursive
+            'CALL floodfill(x,y-1) 'crash :too much recursive
+            print mem
+            floodfill(x,y-1) 'crash :too much recursive
         endif
     endif
 enddef
@@ -49,11 +51,11 @@ def sp(x,y,t)
     hover = mouse_X > xw AND mouse_Y > yw AND mouse_X < xw + w AND mouse_Y < yw + w
     if hover then
         toogleFlag = 0
-        if mouse_released(0) then 
+        if mousereleased(0) then 
             sgrid(x,y) = grid(x,y)
             floodfill(x,y)
         endif
-        if mouse_released(1) then toogleFlag = 1
+        if mousereleased(1) then toogleFlag = 1
         if toogleFlag and sgrid (x,y) > 9 then
             if sgrid (x,y) = 11 then sgrid (x,y) = 10 else sgrid (x,y) = 11
         endif
@@ -112,7 +114,7 @@ enddef
 create()
 
 def tick()
-    if key_down(32) then 
+    if keydown(32) then 
         create()
         state = PLAY
     endif

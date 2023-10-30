@@ -29,39 +29,30 @@ Documentation
 
 			Screen
 
-			Colors
+			ColorsS
 			
-			Export
 
-			Import
 
 	Console
 		
 		Commands
+		Boot
 
 	Editor
 		
 		Keys
+			
+		Export
 
-	Code
+		Import
+
+	CodeS
 
 		Basic
-			GameFlow
 			Keywords
 			Maths
 			String
 			Data
 		
-		Enginsito
-			Inputs
-				Mouse
-				Pad
-				Keyboard
-			Draw
-			Sound
-			Tools
-		
 
-	MML
-	Keys
 

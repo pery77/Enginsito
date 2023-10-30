@@ -32,8 +32,8 @@ gameOverTime = 0
 menuTime = 0
 waveInfoTime = 0
 
-CH_PRESET(2,5) 'alien ship
-CH_PRESET(3,4) 'alien steps
+CHPRESET(2,5) 'alien ship
+CHPRESET(3,4) 'alien steps
 
 'Tools
 'Collision
