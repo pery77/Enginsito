@@ -1,24 +1,14 @@
 Data Structures and Operations
 ------------------------------
 
-LIST         -> ' Creates a list.
-DICT         -> ' Creates a dictionary.
-PUSH         -> ' Pushes a value to the tail of a list, overridable for
-               '  referenced usertype and class instance.
-POP          -> ' Pops a value from the tail of a list, overridable for
-                '  referenced usertype and class instance.
-BACK         -> ' Peeks the value at tail of a list, overridable for
-                '  referenced usertype and class instance.
-INSERT       -> ' Inserts a value at a specific position of a list,
-                '  overridable for referenced usertype and class instance.
-SORT         -> ' Sorts a list increasingly, overridable for referenced usertype and class instance.
 EXISTS       -> ' Tells whether a list contains a specific value, or whether a dictionary contains 
                 '  a specific key, overridable for referenced usertype and class instance.
+
+
+
 INDEX_OF     -> ' Gets the index of a value in a list, overridable for referenced usertype and class instance.
-GET          -> ' Returns the value at a specific index in a list, or the value with a specific key in a dictionary, 
-                '  or a member of a class instance, overridable for referenced usertype and class instance.
-SET          -> ' Sets the value at a specific index in a list, or the value with a specific key in a dictionary,
-                '  or a member variable of a class instance, overridable for referenced usertype and class instance.
+
+
 REMOVE       -> ' Removes the element at a specific index in a list, or the element with a specific key in a dictionary,
                 '  overridable for referenced usertype and class instance.
 CLEAR        -> ' Clears a list or a dictionary, overridable for referenced usertype and class instance.

@@ -378,12 +378,21 @@ void Documentation::Draw(bool* p_open)
 
             if (ImGui::TreeNode("Collection"))
             {
-                Keyword("list",   "",    "");
-                Keyword("dict",   "",    "");
-              
+                Keyword("list",   "...",    "");
+                Keyword("dict",   "...",    "");
                 ImGui::Separator();
-                
-
+                Keyword("push",  "list, value", "pushpop");
+                Keyword("pop",   "list",        "pushpop");
+                ImGui::Separator();
+                Keyword("insert", "list, position, value", "insort");
+                Keyword("sort",   "list",                   "insort");
+                ImGui::Separator();
+                Keyword("get", "list, position",        "getset");
+                Keyword("set", "list, position, value", "getset");
+                ImGui::Separator();
+                Keyword("iterator",  "list", "iterator");
+                Keyword("move_next", "list", "iterator");
+                ImGui::Separator();                
                 ImGui::TreePop();
             }
 

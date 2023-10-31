@@ -33,4 +33,4 @@ print f
 let f = 2 'you can use let if you want
 print f
 
-'you can compare classes whit IS (see OOP documentation)
+'you can compare classes whit IS (see Classes documentation)

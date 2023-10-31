@@ -14,8 +14,10 @@ WIN = 2
 
 state = PLAY
 'enginsito is really bad in recursive :(
-def floodfill(x,y)
+def floodfill(x,y, dir)
     if grid(x,y)<>0 then return
+    sgrid(x,y) = 0
+    '[
     i = x
     while i <= 10 
         sgrid(i,y) = 0
@@ -28,15 +30,25 @@ def floodfill(x,y)
         i = i - 1
         if grid(i,y) <> 0 then i = 0
     wend
-    if y+1 <= 10 then
-        if grid(x,y+1) = 0 then
-            CALL floodfill(x,y+1)
-        endif
-    elif y-1 >= 1 then
-        if grid(x,y-1) = 0 then
-            CALL floodfill(x,y-1) 'crash :too much recursive
-            'floodfill(x,y-1) 'crash :too much recursive
-        endif
+    ']
+    if dir = 1 then
+		if y+1 <= 10 then
+        	if grid(x,y+1) = 0 then floodfill(x,y+1,1)
+    	endif
+    if dir = 2
+	    if y-1 >= 1 then
+	        if grid(x,y-1) = 0 then floodfill(x,y-1,2) 
+		endif
+    endif
+    if dir = 3 then
+	    if x+1 <= 10 then
+	        if grid(x+1,y) = 0 then floodfill(x+1,y,3) 
+		endif
+    endif
+    if dir = 4 then
+	    if x-1 >= 1 then
+	        if grid(x-1,y) = 0 then floodfill(x-1,y,4) 
+		endif
     endif
 enddef
 
@@ -51,7 +63,10 @@ def sp(x,y,t)
         toogleFlag = 0
         if mousereleased(0) then 
             sgrid(x,y) = grid(x,y)
-            floodfill(x,y)
+            floodfill(x,y,1)
+            floodfill(x,y,2)
+            floodfill(x,y,3)
+            floodfill(x,y,4)
         endif
         if mousereleased(1) then toogleFlag = 1
         if toogleFlag and sgrid (x,y) > 9 then

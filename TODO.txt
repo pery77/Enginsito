@@ -1,9 +1,13 @@
-Vadriadic
+MEJORAS
 colorear funciones y variables del usuario
-mirar find ( bug cuando escribes)
-print , misma linea
 temas Editor
 temas Code
+print , misma linea
+doble click cadenas
+BUGS
+mirar find ( bug cuando escribes)
+cadenas comment color
+
 
 Main
 
