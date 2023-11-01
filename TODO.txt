@@ -40,7 +40,9 @@ Documentation
 
 			Screen
 
-			ColorsS
+			Colors
+
+			Memory map
 			
 
 
@@ -49,21 +51,6 @@ Documentation
 		Commands
 		Boot
 
-	Editor
-		
-		Keys
-			
-		Export
-
-		Import
-
-	CodeS
-
-		Basic
-			Keywords
-			Maths
-			String
-			Data
 		
 
 

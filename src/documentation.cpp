@@ -242,15 +242,22 @@ void Documentation::Draw(bool* p_open)
 
     if (ImGui::CollapsingHeader("Editor"))
     {
+        ImGui::BeginChild("EditorCh",ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
         ImGui::SeparatorText("Keys");
             ImGui::Text(R"|(
     ESC ->  Pause/Exit Game 
     F1  ->  Show/Hide Editor
     F2  ->  Adjust windows size and center
+    F5  ->  Run
     F11 ->  Toggle Fullscreen
     F12 ->  Take Screenshoot
         )|"
         );
+        ImGui::SeparatorText("Export");
+        ImGui::TextWrapped("Some modules have the option to export to facilitate the exchange of information between projects. When you do this, a file with the configuration of the current project will appear next to the executable.");
+        ImGui::SeparatorText("Import");
+        ImGui::TextWrapped("To import a previous export to the current project, just drag and drop the configuration file onto the editor.");
+        ImGui::EndChild();
     }
     
     if (ImGui::CollapsingHeader("Code"))
@@ -383,6 +390,7 @@ void Documentation::Draw(bool* p_open)
                 ImGui::Separator();
                 Keyword("push",  "list, value", "pushpop");
                 Keyword("pop",   "list",        "pushpop");
+                Keyword("back",  "list",        "pushpop");
                 ImGui::Separator();
                 Keyword("insert", "list, position, value", "insort");
                 Keyword("sort",   "list",                   "insort");
@@ -390,9 +398,17 @@ void Documentation::Draw(bool* p_open)
                 Keyword("get", "list, position",        "getset");
                 Keyword("set", "list, position, value", "getset");
                 ImGui::Separator();
-                Keyword("iterator",  "list", "iterator");
-                Keyword("move_next", "list", "iterator");
-                ImGui::Separator();                
+                Keyword("iterator",  "list",     "iterator");
+                Keyword("move_next", "iterator", "iterator");
+                ImGui::Separator();
+                Keyword("exists",   "list, value", "exists");
+                Keyword("index_of", "list, value", "exists");
+                ImGui::Separator();
+                Keyword("remove",   "list, position", "remove");
+                Keyword("clear",    "list",           "remove");
+                Keyword("clone",    "list",           "remove");
+                Keyword("to_array", "list",           "remove");
+                ImGui::Separator();                         
                 ImGui::TreePop();
             }
 
@@ -526,12 +542,7 @@ void Documentation::Draw(bool* p_open)
         if (ImGui::TreeNode("MML Info"))
         {
 
-            ImGui::TextWrapped(R"|(Music Macro Language (MML) is a text-based programming language 
-used to create music for various types of computer and video game systems, 
-as well as some early personal computers and synthesizers.
-MML allows composers and programmers to define musical sequences and melodies
-using a series of text commands and notations.
-        )|");
+            ImGui::TextWrapped("Music Macro Language (MML) is a text-based programming language used to create music for various types of computer and video game systems, as well as some early personal computers and synthesizers. MML allows composers and programmers to define musical sequences and melodies using a series of text commands and notations.");
             ImGui::TreePop();
         }
         
