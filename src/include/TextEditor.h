@@ -283,6 +283,7 @@ public:
 	std::string findWord;
 	std::vector<std::string> CodeHelperGetList();
 	void InsertKeyword(std::string keyword);
+	Keywords mCustomKeywords;
 
 private:
 

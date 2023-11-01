@@ -5,7 +5,6 @@ temas Code
 print , misma linea
 doble click cadenas
 BUGS
-mirar find ( bug cuando escribes)
 cadenas comment color
 
 

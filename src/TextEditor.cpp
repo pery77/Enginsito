@@ -2268,11 +2268,25 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 					if (!mLanguageDefinition.mCaseSensitive)
 						std::transform(id.begin(), id.end(), id.begin(), ::toupper);
 
+	//mCustomKeywords.clear();
+    //mCustomKeywords.insert("PERY");
+	//printf("%s\n", first);
+
 					if(id == findWord)
 					{
 						token_color = PaletteIndex::ErrorMarker;
 						FindWord f(i, col);
-						findWordsPositions.push_back(f);
+
+    					bool exists = false;
+    					for (const FindWord& a : findWordsPositions) {
+    					    if ((a.line == f.line) && (a.column == f.column)) {
+    					        exists = true;
+    					        break;
+    					    }
+    					}
+    					if (!exists) {
+    					    findWordsPositions.push_back(f);
+    					}
 					}	
 					else if (!line[first - bufferBegin].mPreprocessor)
 					{
@@ -2286,6 +2300,8 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 							token_color = PaletteIndex::KnownIdentifier;
 						else if (mLanguageDefinition.mPreprocIdentifiers.count(id) != 0)
 							token_color = PaletteIndex::PreprocIdentifier;
+						else if (mCustomKeywords.count(id) != 0)
+							token_color = PaletteIndex::CurrentLineEdge;							
 					}
 					else
 					{
@@ -2299,9 +2315,6 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 
 				first = token_end;
 			}
-
-
-
 		}
 	}
 }
