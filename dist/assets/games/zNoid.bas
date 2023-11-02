@@ -1,23 +1,23 @@
 REM Global 
 def playSound(s)
-	ch_set(2,s)
-	ch_play(2) 
+	chset(2,s)
+	chplay(2) 
 enddef
 
-currentScore = 0
-lifes = 3
-blocks = list()
-currentLevel = 0
-nextLevel = 0
+let currentScore = 0
+let lifes = 3
+let blocks = list()
+let currentLevel = 0
+let nextLevel = 0
 
-MENU 	 = 0
-LAUNCH 	 = 1
-GAME 	 = 2
-GAMEOVER = 3
-WIN 	 = 4
+let MENU 	 = 0
+let LAUNCH 	 = 1
+let GAME 	 = 2
+let GAMEOVER = 3
+let WIN 	 = 4
 
-state = MENU
-launchTime = 0
+let state = MENU
+let launchTime = 0
 
 def getHi()
 	hc = peek(0xfe0) * 256 + peek(0xfe1)
@@ -82,10 +82,10 @@ class pad
 			endif
 		endif
 		'Inputs
-		if key_down(65) or key_down(263) then
+		if keydown(65) or keydown(263) then
 			speed = speed - acc
 		endif
-		if key_down(68) or key_down(262) then
+		if keydown(68) or keydown(262) then
 			speed = speed + acc
 		endif
 		
@@ -267,7 +267,7 @@ enddef
 REM main loops
 def tick()
 	if state = MENU then
-		if key_released(257) then
+		if keyreleased(257) then
 			currentLevel = 0
 			loadLevel()
 			launchGame()
@@ -308,7 +308,7 @@ def tick()
 	endif
 
 	if state = GAMEOVER or state = WIN then
-		if key_released(257) then
+		if keyreleased(257) then
 			start()
 		endif
 	endif
@@ -335,7 +335,7 @@ def draw()
 		background()
 		drawBorder()
 		drawScore()
-		drawBlocks()
+
 		drawLifes()
 		gameBall.draw()
 		gamePad.draw()

@@ -24,7 +24,7 @@
 #define PROGRAM_EXTENSION   ".bas"
 #define MEM_EXTENSION       ".data"
 
-#define PE_VERSION          260
+#define PE_VERSION          300
 
 struct Vector2i {
 	int x;

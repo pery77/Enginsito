@@ -1,21 +1,21 @@
 REM Based in this video
 REM https://www.youtube.com/watch?v=zH_omFPqMO4
 
-ROWS = 20
-COLS = 12
-POSX = 20
-POSY = 8
+let ROWS = 20
+let COLS = 12
+let POSX = 20
+let POSY = 8
 
-DELAY_DOWN = 400
+let DELAY_DOWN = 400
 
-MENU = 0
-PLAY = 1
-GAMEOVER = 2
+let MENU = 0
+let PLAY = 1
+let GAMEOVER = 2
 
-state = MENU
+let state = MENU
 
-offsetX = POSX + 8
-offsetY = POSY + 8
+let offsetX = POSX + 8
+let offsetY = POSY + 8
 
 dim field(21, 13)
 dim figures(7,4)
@@ -25,23 +25,23 @@ class point
     var y = 0
 endclass
 
-drawed = 0
-dx = 0
-rotation = 0
-color = 0
+let drawed = 0
+let dx = 0
+let rotation = 0
+let color = 0
 
-timer = 0
-delayFall = DELAY_DOWN
-delayMove = 70
+let timer = 0
+let delayFall = DELAY_DOWN
+let delayMove = 70
 
-a = list()
-b = list()
+let a = list()
+let b = list()
 
 for c = 0 to 3
     push(a, new (point))
     push(b, new (point))
 next
-shapeData = list(    
+let shapeData = list(    
     1,3,5,7, ' I    [0][1]  T > [-][-]
     2,4,5,7, ' Z    [2][3]      [-][3]
     3,5,4,6, ' S    [4][5]      [4][5]
@@ -80,6 +80,7 @@ enddef
 
 def drawField()
     rect(POSX+8, POSY+8, (COLS + 1) * 8, (ROWS + 1) * 8,0 ,0)
+    
     for r = 0 to ROWS
         y = r * 8 + 8
         for c = 0 to COLS
@@ -118,7 +119,7 @@ def check()
         if fy < 0 then fy = 0
         if i.x < 0 or i.x >= COLS + 1 or i.y >= ROWS+1 then 
             return 0
-        elseif field(fy, i.x) then
+        elif field(fy, i.x) then
             return 0
         endif
     next
@@ -130,8 +131,9 @@ def init()
 enddef
 
 def tick()
-    timer = timer + delta
-    moveTick = moveTick + delta
+
+    timer = timer + delta * 1000
+    moveTick = moveTick + delta * 1000
 
     if keydown(65) then dx =-1
     if keydown(68) then dx = 1
@@ -225,8 +227,8 @@ def draw()
 		cls(1)
         drawDeco()
         drawed = 1
-        line(160,0,160,200,1,9)
-        line(0,100,320,100,1,9)
+        'line(160,0,160,200,1,9)
+        'line(0,100,320,100,1,9)
     endif
 
     drawField()

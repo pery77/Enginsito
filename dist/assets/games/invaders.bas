@@ -568,7 +568,7 @@ def alienMovement()
 enddef
 
 def alienShipUpdate()
-    alienShipTime = alienShipTime + delta * 0.001
+    alienShipTime = alienShipTime + delta * 1000
     if alienShipTime > 6000 then
         alienShipTime = 0
         r = rnd(0,99)

@@ -683,6 +683,7 @@ ImU32 TextEditor::GetGlyphColor(const Glyph & aGlyph) const
 	if (aGlyph.mMultiLineComment)
 		return mPalette[(int)PaletteIndex::MultiLineComment];
 	auto const color = mPalette[(int)aGlyph.mColorIndex];
+	/*
 	if (aGlyph.mPreprocessor)
 	{
 		const auto ppcolor = mPalette[(int)PaletteIndex::Preprocessor];
@@ -692,6 +693,7 @@ ImU32 TextEditor::GetGlyphColor(const Glyph & aGlyph) const
 		const int c3 = (((ppcolor >> 24) & 0xff) + ((color >> 24) & 0xff)) / 2;
 		return ImU32(c0 | (c1 << 8) | (c2 << 16) | (c3 << 24));
 	}
+	*/
 	return color;
 }
 
@@ -931,16 +933,16 @@ void TextEditor::Render()
 				ImVec2 vend(lineStartScreenPos.x + mTextStart + ssend, lineStartScreenPos.y + mCharAdvance.y);
 				drawList->AddRectFilled(vstart, vend, mPalette[(int)PaletteIndex::Selection]);
 			}
-
 			// Draw breakpoints
 			auto start = ImVec2(lineStartScreenPos.x + scrollX, lineStartScreenPos.y);
 
+/*
 			if (mBreakpoints.count(lineNo + 1) != 0)
 			{
 				auto end = ImVec2(lineStartScreenPos.x + contentSize.x + 2.0f * scrollX, lineStartScreenPos.y + mCharAdvance.y);
 				drawList->AddRectFilled(start, end, mPalette[(int)PaletteIndex::Breakpoint]);
 			}
-
+*/
 			// Draw error markers
 			auto errorIt = mErrorMarkers.find(lineNo + 1);
 			if (errorIt != mErrorMarkers.end())
@@ -2114,17 +2116,17 @@ const TextEditor::Palette & TextEditor::GetBasicPalette()
 		0xff5b91ce,	// String
 		0xff0000ff, // Find
 		0xffb2b2b2, // Punctuation
-			0xff0000ff,	// Preprocessor
+		//	0xff0000ff,	// Preprocessor
 		0xffababab, // Identifier, no found, none
 		0xffd69c56, // Known identifier
-			0xff0000ff, // Preproc identifier
+		//	0xff0000ff, // Preproc identifier
 		0xff55996a, // Comment (single line)
 		0xff55996a, // Comment (multi line)
 		0xff181202, // Background
 		0xffd6d6d6, // Cursor
 		0xff382f15, // Selection
 		0x90000099, // ErrorMarker
-			0xff0000ff, // Breakpoint
+		//	0xff0000ff, // Breakpoint
 		0xff28210a, // Line number
 		0x40343434, // Current line fill
 		0x40221114, // Current line fill (inactive)
@@ -2361,17 +2363,10 @@ void TextEditor::ColorizeRange(int aFromLine, int aToLine)
 							token_color = PaletteIndex::Keyword3;
 						else if (mLanguageDefinition.mIdentifiers.count(id) != 0)
 							token_color = PaletteIndex::KnownIdentifier;
-						else if (mLanguageDefinition.mPreprocIdentifiers.count(id) != 0)
-							token_color = PaletteIndex::PreprocIdentifier;
 						else if (mCustomKeywords.count(id) != 0)
 							token_color = PaletteIndex::CustomVars;
 						else if (mCustomFunc.count(id) != 0)
 							token_color = PaletteIndex::CustomFunc;						
-					}
-					else
-					{
-						if (mLanguageDefinition.mPreprocIdentifiers.count(id) != 0)
-							token_color = PaletteIndex::PreprocIdentifier;
 					}
 				}
 

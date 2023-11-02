@@ -74,8 +74,8 @@ class pad
 	
 	def update()
 	
-		if key_down(upKey) then y = y - 3 
-		if key_down(downKey) then y = y + 3
+		if keydown(upKey) then y = y - 3 
+		if keydown(downKey) then y = y + 3
 		
 		if collision(x,y,6,32,theBall.x,theBall.y,6) then theBall.HitX()
 			

@@ -5,5 +5,5 @@ enddef
 while i >= 0 
     print i
     i = i - 1
-    if rnd(0,10)<5 then call addi()
+    if rnd(0,10)<5 then addi()
 wend
