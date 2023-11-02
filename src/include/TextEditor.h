@@ -20,7 +20,7 @@ public:
 		Keyword,
 		Number,
 		String,
-		CharLiteral,
+		Find,
 		Punctuation,
 		Preprocessor,
 		Identifier,
@@ -39,6 +39,8 @@ public:
 		CurrentLineEdge,
 		Keyword2,
 		Keyword3,
+		CustomVars,
+		CustomFunc,
 		Max,
 	};
 
@@ -284,6 +286,8 @@ public:
 	std::vector<std::string> CodeHelperGetList();
 	void InsertKeyword(std::string keyword);
 	Keywords mCustomKeywords;
+	Keywords mCustomFunc;
+	void RegisterCustomVars();
 
 private:
 

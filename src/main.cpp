@@ -107,6 +107,7 @@ int main(int argc, char *argv[])
         //Interpreter
         if (IsKeyReleased(KEY_F5) || engine->bios->ShouldRun)
         { 
+            engine->editor->codeEditor.RegisterCustomVars();
             engine->bios->ShouldRun = false;
             engine->editor->PlayerState = Running;
 

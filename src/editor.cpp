@@ -677,6 +677,11 @@ void Editor::DrawCode(bool* p_open)
             codeHelperPos = ImGui::GetCursorScreenPos();
             ImGui::SetWindowPos("Code Helper", codeHelperPos, ImGuiCond_Always);
         }
+        ImGui::SameLine();
+        if (ImGui::Button(ICON_FA_ARROWS_ROTATE))
+        {
+            codeEditor.RegisterCustomVars();
+        }
         ImGui::Separator();
 
         if (editorEngineRef->bios->CurrentProject.name != "")
