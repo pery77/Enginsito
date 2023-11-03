@@ -1,7 +1,7 @@
-bullets = list()
-rocks = list()
-aliens = list()
-aliensBullets = list()
+let bullets = list()
+let rocks = list()
+let aliens = list()
+let aliensBullets = list()
 
 hiScore = 0 
 score = nil ' overwrited in startGame()
@@ -65,12 +65,12 @@ enddef
 
 'Classes
 class bullet
-    x = 0
-    y = 0
-    speed = 0
-    explosionFrame = 0
-    frames = list(5,4,4,5,16)
-    maxFrames = 50
+    var x = 0
+    var y = 0
+    var speed = 0
+    var explosionFrame = 0
+    var frames = list(5,4,4,5,16)
+    var maxFrames = 50
 
     def draw()
         if explosionFrame > 0 and explosionFrame < maxFrames then
@@ -91,7 +91,7 @@ class bullet
 
     enddef
 
-    def update()
+      def update()
 
         if explosionFrame > 0 then
             explosionFrame = explosionFrame + 1

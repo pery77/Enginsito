@@ -287,6 +287,8 @@ public:
 	Keywords mCustomFunc;
 	Keywords mCustomClass;
 	void RegisterCustomVars();
+	void ProcessPattern(const std::string& patron, const char* bufferBegin, const char* bufferEnd, Keywords& container);
+   
 
 private:
 

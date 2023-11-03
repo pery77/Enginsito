@@ -1,5 +1,5 @@
 {
-    "currentLayout": 4,
+    "currentLayout": 0,
     "current_theme": 1,
     "layout_1": {
         "show_code": true,
@@ -127,8 +127,8 @@
             "tx_ 2": "404040"
         }
     },
-    "window_height": 995,
-    "window_position_x": 542,
-    "window_position_y": -1012,
-    "window_width": 1573
+    "window_height": 1051,
+    "window_position_x": -296,
+    "window_position_y": -1051,
+    "window_width": 1920
 }

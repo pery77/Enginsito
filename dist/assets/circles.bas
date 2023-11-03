@@ -8,6 +8,6 @@ def draw()
 		an = 2 * pi * a / n + sin(frame*0.1)
 		x = r * cos(an)+160
 		y = r * sin(an)+100
-		circle(x,y,sin(time*0.01)*5+11,1,a)
+		circle(x,y,sin(time*0.01)*5+11,2,a)
 	next
 enddef

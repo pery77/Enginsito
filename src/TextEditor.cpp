@@ -2189,8 +2189,33 @@ void TextEditor::Colorize(int aFromLine, int aLines)
 	mCheckComments = true;
 }
 
+void TextEditor::ProcessPattern(const std::string& patron, const char* bufferBegin, const char* bufferEnd, Keywords& container) {
+    std::regex regex(patron, std::regex::icase);
+    const char* start = bufferBegin;
+    std::cmatch results;
+
+    while (std::regex_search(start, bufferEnd, results, regex)) {
+        for (size_t i = 1; i < results.size(); ++i) {
+            container.insert(results[i].str());
+        }
+        start = results[0].second;
+    }
+}
+
+bool ShouldProcess(const char* buffer, const char* words[], int total) {
+    for (int i = 0; i < total; ++i) {
+        if (strncmp(buffer, words[i], strlen(words[i])) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void TextEditor::RegisterCustomVars()
 {
+	int endLine = (int)mLines.size();
+	if (endLine <= 1) return;
+
 	mCustomKeywords.clear();
 	mCustomFunc.clear();
 	mCustomClass.clear();
@@ -2199,7 +2224,6 @@ void TextEditor::RegisterCustomVars()
 	std::cmatch results;
 	std::string id;
 
-	int endLine = (int)mLines.size();
 	int col = 0;
 
 	for (int i = 0; i < endLine; ++i)
@@ -2210,59 +2234,33 @@ void TextEditor::RegisterCustomVars()
 			continue;
 
 		buffer.resize(line.size());
+		bool check = true;
 		for (size_t j = 0; j < line.size(); ++j)
 		{
 			auto& col = line[j];
 			buffer[j] = col.mChar;
 		}
 
+    	size_t inicio = buffer.find_first_not_of(" \t");
+    	if (inicio != std::string::npos) 
+    	    buffer = buffer.substr(inicio);
+    	
+        std::transform(buffer.begin(), buffer.end(), buffer.begin(), ::toupper);
+
 		const char * bufferBegin = &buffer.front();
 		const char * bufferEnd = bufferBegin + buffer.size();
-	
-		std::cmatch results;
 
-		//std::regex patron("let\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*=");
-		std::regex patron("(?:let|dim|var)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*(=|\\()");
-		const char *start = bufferBegin;
+		const char* customWords[] = { "LET", "DIM", "VAR", "CLASS", "DEF" };
+    	int total = sizeof(customWords) / sizeof(customWords[0]);
 
-		while (std::regex_search(start, bufferEnd, results, patron)) {
-    		for (size_t i = 1; i < results.size(); ++i) {
-    			std::string toUp = results[i].str();
-    			std::transform(toUp.begin(), toUp.end(), toUp.begin(), ::toupper);
-    			mCustomKeywords.insert(toUp);
-    		}
-    		start = results[0].second;
-    	}
-
-		std::regex patronDef("def\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\(");
-		start = bufferBegin;
-		while (std::regex_search(start, bufferEnd, results, patronDef)) {
-    		for (size_t i = 1; i < results.size(); ++i) {
-    			std::string toUp = results[i].str();
-    			std::transform(toUp.begin(), toUp.end(), toUp.begin(), ::toupper);
-    			mCustomFunc.insert(toUp);
-    		}
-    		start = results[0].second;
-    	}
-
-		std::regex patronClass("class\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*");
-		start = bufferBegin;
-		while (std::regex_search(start, bufferEnd, results, patronClass)) {
-    		for (size_t i = 1; i < results.size(); ++i) {
-    			std::string toUp = results[i].str();
-    			std::transform(toUp.begin(), toUp.end(), toUp.begin(), ::toupper);
-    			mCustomClass.insert(toUp);
-    		}
-    		start = results[0].second;
-    	}
+    	if (ShouldProcess(bufferBegin, customWords, total))
+		{
+			ProcessPattern("(?:LET|DIM|VAR)\\s+([A-Z_][A-Z0-9_]*)\\s*(=|\\()", bufferBegin, bufferEnd, mCustomKeywords);
+			ProcessPattern("DEF\\s+([A-Z_][A-Z0-9_]*)\\s*\\(", bufferBegin, bufferEnd, mCustomFunc);
+			ProcessPattern("CLASS\\s+([A-Z_][A-Z0-9_]*)\\s*", bufferBegin, bufferEnd, mCustomClass);
+		}
 	}
-
-	//printf("::\n");
-    //for (const std::string& elemento : mCustomKeywords) {
-    //	printf("%s\n", elemento.c_str());
-    //}	
-	//printf("____________________\n");
-
+	
 	ColorizeRange(0, (int)mLines.size());
 }
 
