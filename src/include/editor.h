@@ -124,7 +124,9 @@ class Editor
 
     void LoadEditorPalette(std::string colors[17]);
     void SetImGuiColors();
-    
+    void SetTheme();
+
+    std::vector<const char*> themeNames;
     //Text
     ImVec4 Col_T_1 = ImVec4(0.70f, 0.70f, 0.70f, 1.00f);
     ImVec4 Col_T_2 = ImVec4(0.39f, 0.39f, 0.39f, 1.00f);

@@ -39,6 +39,8 @@ static float iScale;
 static Color drawMetaExampleColor;
 int currentLayout = 0;
 
+static int selectedTheme = 0;
+
 Documentation docs;
 
 bool Editor::CheckJsonFile()
@@ -80,7 +82,17 @@ void Editor::LoadUIJson()
     show_metaSprite     = data[layout]["show_metaSprite"].get<bool>();
     show_sfx            = data[layout]["show_sfx"].get<bool>();
     show_docs           = data[layout]["show_docs"].get<bool>();
+
+    themeNames.clear();
     
+    const auto& themes = data["themes"];
+    for (auto it = themes.begin(); it != themes.end(); ++it) 
+    {
+        themeNames.push_back(it.key().c_str());
+    }
+    
+    selectedTheme = data["current_theme"];
+
     ImGui::LoadIniSettingsFromDisk(Tools::GetCurrentLayout(currentLayout));
 }
 
@@ -102,6 +114,7 @@ void Editor::SaveUIJson()
     data["window_position_x"]   = window_position_x;
     data["window_position_y"]   = window_position_y;
     data["currentLayout"]       = currentLayout;
+    data["current_theme"]       = selectedTheme;
 
     data[layout]["show_player"]         = show_player;
     data[layout]["show_fps"]            = show_FPS;
@@ -118,7 +131,6 @@ void Editor::SaveUIJson()
     data[layout]["show_metaSprite"]     = show_metaSprite;
     data[layout]["show_sfx"]            = show_sfx;
     data[layout]["show_docs"]           = show_docs;
-
     std::stringstream ss;
 	ss << CONFIG_FOLDER << "/ui.json";
     std::ofstream o(ss.str().c_str());
@@ -188,6 +200,7 @@ Editor::Editor(Engine* _engine)
     style.SelectableTextAlign = ImVec2(0.02f, 0.0f);
 
     SetImGuiColors();
+    SetTheme();
     
 }
 
@@ -236,6 +249,56 @@ void Editor::SetImGuiColors()
     colors[ImGuiCol_PlotLinesHovered]       = Col_S1_B1;
     colors[ImGuiCol_DockingEmptyBg]         = Col_P_D2;
     colors[ImGuiCol_TextSelectedBg]         = Col_P_B1;
+}
+
+void Editor::SetTheme()
+{
+    //Default colors
+    std::string colors[17]= {
+        "B4B4B4",
+        "646464",
+        "3A5862",
+        "233B44",
+        "152F38",
+        "0A2128",
+        "021218",
+        "9C875B",
+        "6C5B36",
+        "5A4720",
+        "41300E",
+        "261A02",
+        "9C6A5B",
+        "6C4236",
+        "5A2D20",
+        "41190E",
+        "260A02"
+        };
+
+    const std::string& themeName = themeNames[selectedTheme];
+    const auto& themeData = data["themes"][themeName];
+
+    if (themeData.find("tx_01") != themeData.end()) colors[0] = themeData["tx_01"];
+    if (themeData.find("tx_02") != themeData.end()) colors[1] = themeData["tx_02"];
+
+    if (themeData.find("mc_b1") != themeData.end()) colors[2] = themeData ["mc_b1"];
+    if (themeData.find("mc_b2") != themeData.end()) colors[3] = themeData ["mc_b2"];
+    if (themeData.find("mc_m0") != themeData.end()) colors[4] = themeData ["mc_m0"];
+    if (themeData.find("mc_d1") != themeData.end()) colors[5] = themeData ["mc_d1"];
+    if (themeData.find("mc_d2") != themeData.end()) colors[6] = themeData ["mc_d2"];
+
+    if (themeData.find("s1_b1") != themeData.end()) colors[7]  = themeData["s1_b1"];
+    if (themeData.find("s1_b2") != themeData.end()) colors[8]  = themeData["s1_b2"];
+    if (themeData.find("s1_m0") != themeData.end()) colors[9]  = themeData["s1_m0"];
+    if (themeData.find("s1_d1") != themeData.end()) colors[10] = themeData["s1_d1"];
+    if (themeData.find("s1_d2") != themeData.end()) colors[11] = themeData["s1_d2"];
+
+    if (themeData.find("s2_b1") != themeData.end()) colors[12] = themeData["s2_b1"];
+    if (themeData.find("s2_b2") != themeData.end()) colors[13] = themeData["s2_b2"];
+    if (themeData.find("s2_m0") != themeData.end()) colors[14] = themeData["s2_m0"];
+    if (themeData.find("s2_d1") != themeData.end()) colors[15] = themeData["s2_d1"];
+    if (themeData.find("s2_d2") != themeData.end()) colors[16] = themeData["s2_d2"];
+
+    LoadEditorPalette(colors);
 }
 
 inline ImVec4 hexToVec3(const std::string& hex) 
@@ -2261,62 +2324,9 @@ void Editor::Draw()
 
                 if (data.find("themes") != data.end()) 
                 {
-                    const auto& themes = data["themes"];
-                    std::vector<const char*> themeNames;
-
-                    for (auto it = themes.begin(); it != themes.end(); ++it) {
-                        themeNames.push_back(it.key().c_str());
-                    }
-
-                    static int selectedTheme = 0;
-
                     if (ImGui::Combo("Themes", &selectedTheme, themeNames.data(), themeNames.size())) 
                     {
-                        //Default colors
-                        std::string colors[17]= {
-                            "B4B4B4",
-                            "646464",
-                            "3A5862",
-                            "233B44",
-                            "152F38",
-                            "0A2128",
-                            "021218",
-                            "9C875B",
-                            "6C5B36",
-                            "5A4720",
-                            "41300E",
-                            "261A02",
-                            "9C6A5B",
-                            "6C4236",
-                            "5A2D20",
-                            "41190E",
-                            "260A02"
-                        };
-                        const std::string& themeName = themeNames[selectedTheme];
-                        const auto& themeData = themes[themeName];
-
-                        if (themeData.find("tx_01") != themeData.end()) colors[0] = themeData["tx_01"];
-                        if (themeData.find("tx_02") != themeData.end()) colors[1] = themeData["tx_02"];
-
-                        if (themeData.find("mc_b1") != themeData.end()) colors[2] = themeData ["mc_b1"];
-                        if (themeData.find("mc_b2") != themeData.end()) colors[3] = themeData ["mc_b2"];
-                        if (themeData.find("mc_m0") != themeData.end()) colors[4] = themeData ["mc_m0"];
-                        if (themeData.find("mc_d1") != themeData.end()) colors[5] = themeData ["mc_d1"];
-                        if (themeData.find("mc_d2") != themeData.end()) colors[6] = themeData ["mc_d2"];
-
-                        if (themeData.find("s1_b1") != themeData.end()) colors[7]  = themeData["s1_b1"];
-                        if (themeData.find("s1_b2") != themeData.end()) colors[8]  = themeData["s1_b2"];
-                        if (themeData.find("s1_m0") != themeData.end()) colors[9]  = themeData["s1_m0"];
-                        if (themeData.find("s1_d1") != themeData.end()) colors[10] = themeData["s1_d1"];
-                        if (themeData.find("s1_d2") != themeData.end()) colors[11] = themeData["s1_d2"];
-
-                        if (themeData.find("s2_b1") != themeData.end()) colors[12] = themeData["s2_b1"];
-                        if (themeData.find("s2_b2") != themeData.end()) colors[13] = themeData["s2_b2"];
-                        if (themeData.find("s2_m0") != themeData.end()) colors[14] = themeData["s2_m0"];
-                        if (themeData.find("s2_d1") != themeData.end()) colors[15] = themeData["s2_d1"];
-                        if (themeData.find("s2_d2") != themeData.end()) colors[16] = themeData["s2_d2"];
-
-                        LoadEditorPalette(colors);
+                        SetTheme();
                     }
                 }
             }
