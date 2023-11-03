@@ -2255,28 +2255,69 @@ void Editor::Draw()
                 ImGui::PushItemWidth(120.0f);
                 ImGui::DragFloat("Font size", &io.FontGlobalScale, 0.05f, 0.5f, 2.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
                 ImGui::SameLine();
-                if (ImGui::Button("Nes"))
+
+                ImGui::Text("    ");
+                ImGui::SameLine();
+
+                if (data.find("themes") != data.end()) 
                 {
-                    std::string colors[17] = {
-                    "FF8080",
-                    "FF7070",
-                    "5D5678",
-                    "5D45B5",
-                    "6F61A3",
-                    "342F48",
-                    "1E1833",
-                    "769667", 
-                    "75DF42", 
-                    "8DCC6F", 
-                    "425B36", 
-                    "264019", 
-                    "AD7D77", 
-                    "FF604C", 
-                    "EC8D80", 
-                    "69433F", 
-                    "4A221D"
-                    };
-                    LoadEditorPalette(colors);
+                    const auto& themes = data["themes"];
+                    std::vector<const char*> themeNames;
+
+                    for (auto it = themes.begin(); it != themes.end(); ++it) {
+                        themeNames.push_back(it.key().c_str());
+                    }
+
+                    static int selectedTheme = 0;
+
+                    if (ImGui::Combo("Themes", &selectedTheme, themeNames.data(), themeNames.size())) 
+                    {
+                        //Default colors
+                        std::string colors[17]= {
+                            "B4B4B4",
+                            "646464",
+                            "3A5862",
+                            "233B44",
+                            "152F38",
+                            "0A2128",
+                            "021218",
+                            "9C875B",
+                            "6C5B36",
+                            "5A4720",
+                            "41300E",
+                            "261A02",
+                            "9C6A5B",
+                            "6C4236",
+                            "5A2D20",
+                            "41190E",
+                            "260A02"
+                        };
+                        const std::string& themeName = themeNames[selectedTheme];
+                        const auto& themeData = themes[themeName];
+
+                        if (themeData.find("tx_01") != themeData.end()) colors[0] = themeData["tx_01"];
+                        if (themeData.find("tx_02") != themeData.end()) colors[1] = themeData["tx_02"];
+
+                        if (themeData.find("mc_b1") != themeData.end()) colors[2] = themeData ["mc_b1"];
+                        if (themeData.find("mc_b2") != themeData.end()) colors[3] = themeData ["mc_b2"];
+                        if (themeData.find("mc_m0") != themeData.end()) colors[4] = themeData ["mc_m0"];
+                        if (themeData.find("mc_d1") != themeData.end()) colors[5] = themeData ["mc_d1"];
+                        if (themeData.find("mc_d2") != themeData.end()) colors[6] = themeData ["mc_d2"];
+
+                        if (themeData.find("s1_b1") != themeData.end()) colors[7]  = themeData["s1_b1"];
+                        if (themeData.find("s1_b2") != themeData.end()) colors[8]  = themeData["s1_b2"];
+                        if (themeData.find("s1_m0") != themeData.end()) colors[9]  = themeData["s1_m0"];
+                        if (themeData.find("s1_d1") != themeData.end()) colors[10] = themeData["s1_d1"];
+                        if (themeData.find("s1_d2") != themeData.end()) colors[11] = themeData["s1_d2"];
+
+                        if (themeData.find("s2_b1") != themeData.end()) colors[12] = themeData["s2_b1"];
+                        if (themeData.find("s2_b2") != themeData.end()) colors[13] = themeData["s2_b2"];
+                        if (themeData.find("s2_m0") != themeData.end()) colors[14] = themeData["s2_m0"];
+                        if (themeData.find("s2_d1") != themeData.end()) colors[15] = themeData["s2_d1"];
+                        if (themeData.find("s2_d2") != themeData.end()) colors[16] = themeData["s2_d2"];
+
+                        LoadEditorPalette(colors);
+                    }
                 }
             }
             if (ImGui::CollapsingHeader("Sequencer"))

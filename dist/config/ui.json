@@ -1,5 +1,6 @@
 {
     "currentLayout": 0,
+    "current_theme": "default",
     "layout_1": {
         "show_code": true,
         "show_console": true,
@@ -84,6 +85,47 @@
         "show_sfx": true,
         "show_sprites": false,
         "show_tools": true
+    },
+    "themes": {
+        "dark": {
+            "mc_b1": "000000",
+            "mc_b2": "000000",
+            "mc_d1": "000000",
+            "mc_d2": "000000",
+            "mc_m0": "000000",
+            "s1_b1": "000000",
+            "s1_b2": "000000",
+            "s1_d1": "000000",
+            "s1_d2": "000000",
+            "s1_m0": "000000",
+            "s2_b1": "000000",
+            "s2_b2": "000000",
+            "s2_d1": "000000",
+            "s2_d2": "000000",
+            "s2_m0": "000000",
+            "tx_ 1": "b4b4b4",
+            "tx_ 2": "646464"
+        },
+        "default": {},
+        "light": {
+            "mc_b1": "ffffff",
+            "mc_b2": "ffffff",
+            "mc_d1": "ffffff",
+            "mc_d2": "ffffff",
+            "mc_m0": "ffffff",
+            "s1_b1": "ffffff",
+            "s1_b2": "ffffff",
+            "s1_d1": "ffffff",
+            "s1_d2": "ffffff",
+            "s1_m0": "ffffff",
+            "s2_b1": "ffffff",
+            "s2_b2": "ffffff",
+            "s2_d1": "ffffff",
+            "s2_d2": "ffffff",
+            "s2_m0": "ffffff",
+            "tx_ 1": "111111",
+            "tx_ 2": "333333"
+        }
     },
     "window_height": 1001,
     "window_position_x": 0,
