@@ -38,6 +38,7 @@ public:
 		Keyword3,
 		CustomVars,
 		CustomFunc,
+		CustomClass,
 		Max,
 	};
 
@@ -284,6 +285,7 @@ public:
 	void InsertKeyword(std::string keyword);
 	Keywords mCustomKeywords;
 	Keywords mCustomFunc;
+	Keywords mCustomClass;
 	void RegisterCustomVars();
 
 private:
