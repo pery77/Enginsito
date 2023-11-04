@@ -241,12 +241,18 @@ void Documentation::Draw(bool* p_open)
         if (ImGui::TreeNode("Limitations"))
         {
             ImGui::Text(R"|(
-You should ensure that your game always runs at 60 fps.
-Strings are limited to 4000 characters.
-Declare functions and variables before using them.
-Use 'let' to declare variables so that Enginsito can color them in the editor.
-You can only use recursive calls by calling the function inside it once.
-Draw only inside draw() function.
+* You should ensure that your game always runs at 60 fps.
+* Strings are limited to 4000 characters.
+* Declare functions and variables before using them.
+* Use 'let' to declare variables so that Enginsito can color them in the editor.
+* You can only use recursive calls by calling the function inside it once.
+* Draw only inside draw() function.
+* Enginsito automatically manages the saving of the project, 
+this happens when you press play, when you change the project 
+or when you close enginsito.
+It is comfortable but dangerous, I highly recommend the use of
+a version control system (VCS), learn about this. 
+This is extremely important in video game development.
 )|"); 
             ImGui::TreePop();
         }
