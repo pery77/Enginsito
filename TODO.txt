@@ -1,55 +1,7 @@
 MEJORAS
-colorear funciones y variables del usuario (dim class )
 temas Editor
 temas Code
-print , misma linea
 doble click cadenas
+
 BUGS
 cadenas comment color
-
-
-Main
-
-Editor
-
-
-Editor Code
-
-Documentación
-
-	Pantalla, tamaño, origen
-	FPS
-	Faltas de ortografia
-	mas ayuda (¿web?)
-	reflejar limitaciones 4000 string, orden declaraciones if multininea
-	consola comandos
-
-Basic
-
-
-------------------------
-Documentation
-
-	Main
-		Concept
-	
-		Limitations
-		
-		Caracteristics
-
-			Screen
-
-			Colors
-
-			Memory map
-			
-
-
-	Console
-		
-		Commands
-		Boot
-
-		
-
-

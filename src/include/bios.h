@@ -75,7 +75,6 @@ RUN - run current program.
 DIR - list current directory.
 CD  - change directory.
 CD. - directory up.
-PRINT p - print p in screen.
 MEM  - print loaded program in memory.
 LOAD - load program in memory.
 EDITOR 0|1 - enable disable editor

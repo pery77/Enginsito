@@ -175,12 +175,6 @@ void Bios::ProcessCommand()
         return;
     }
 
-    if (checkCommand(lastCommand.command,"PRINT")){
-        lastCommand.args[0].push_back('\n');
-        screenLines += lastCommand.args[0];
-        return;
-    }
-
     if (checkCommand(lastCommand.command,"CD.")){
         RemoveSubPath();
         

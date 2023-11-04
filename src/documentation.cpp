@@ -232,18 +232,105 @@ void Documentation::Draw(bool* p_open)
 
     if (ImGui::CollapsingHeader("Main"))
     {
-        ImGui::SeparatorText(" ");
+        ImGui::BeginChild("MainCh",ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
+        if (ImGui::TreeNode("Concept"))
+        {
+            ImGui::TextWrapped("Enginsito straddles the line between a tool and a game; it's essentially a delightful toy that will take you on a fun journey into the world of game development. Enginsito deliberately keeps its feature set minimal, offering a unique experience that encourages you to focus on creating small wonders. It includes everything you need to craft games reminiscent of the retro era, akin to the Atari console or the early 8-bit computers.");
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("Limitations"))
+        {
+            ImGui::Text(R"|(
+You should ensure that your game always runs at 60 fps.
+Strings are limited to 4000 characters.
+Declare functions and variables before using them.
+Use 'let' to declare variables so that Enginsito can color them in the editor.
+You can only use recursive calls by calling the function inside it once.
+Draw only inside draw() function.
+)|"); 
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("Characteristics"))
+        {
+                if (ImGui::TreeNode("Screen"))
+                {
+                    ImGui::TextWrapped(R"|(
+The screen has a resolution of 320 x 200 pixels.
+The origin (0,0) is at the top left.
+Runs at 60 FPS
+)|"); 
+                    ImGui::TreePop();
+                }
+                if (ImGui::TreeNode("Colors"))
+                {
+                    ImGui::TextWrapped("Enginsito has 16 programmable colors per project.");
+                    ImGui::TreePop();
+                }
+                if (ImGui::TreeNode("Memory Map"))
+                {
+                    ImGui::Text(R"|(
+0    (0x000)- 47   (0x02F)  Palette (Color C -> R G B) (Color 0 -> 0 1 2) (Color 1 -> 3 4 5)
+48   (0x030)- 2095 (0x82F)  Graphics (8 bytes per sprite, 256 sprites)
+2096 (0x830)- 3375 (0xD2F)  MetaSprites   (20 bytes per meta, 64 metas)
+3376 (0xD30)- 3551 (0xDDF)  Sfx (11 bytes per sfx, 16 sfx)
+3552 (0xDE0)- 3583 (0xDFF)  Save data 2 bytes 0 -  15 slots
+3584 (0xE00)- 3647 (0xE3F)  Save data 4 bytes 16 - 31 slots
+3648 (0xE40)- 4079 (0xFEF)  Unused 
+4080 (0xFF0)- 4090 (0xFFA)  CRT 4080 Blur, 4081 BlurFactor, 4082 Chromatic, 4083 Curvature, 
+                  4084 Vignetting, 4085 ScanLine, 4086 VerticalLine, 4087 GrilleForce
+                  4088 Noise, 4089 Fliker, 4090 Grille
+4091 (0xFFC)- 4093 (0xFFD) not used at moment.
+4094 (0xFFE)- 4095 (0xFFF) version (2 bytes)
+)|");       
+                    ImGui::TreePop();
+                }
+            ImGui::TreePop();
+        }
+        ImGui::EndChild();
     }
 
     if (ImGui::CollapsingHeader("Console"))
     {
-        ImGui::SeparatorText(" ");
+        ImGui::BeginChild("ConsoleCh",ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
+        if (ImGui::TreeNode("Console Info"))
+        {
+            ImGui::TextWrapped("When the editor is hidden, you can continue interacting with Enginsito through the command console.");
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("Console Commands"))
+        {
+            ImGui::Text(R"|(
+HELP - show this. 
+CLS  - clear screen.
+EXIT - close program.
+COLOR b f - change console colors.
+RUN - run current program.
+DIR - list current directory.
+CD  - change directory.
+CD. - directory up.
+MEM  - print loaded program in memory.
+LOAD - load program in memory.
+EDITOR 0|1 - enable disable editor
+FULLSCREEN - toggle fullscreen
+)|");           
+            ImGui::TreePop();
+        }
+
+        if (ImGui::TreeNode("Boot"))
+        {
+            ImGui::SeparatorText("Boot");
+            ImGui::TextWrapped("There is a file called 'boot.txt' in the 'config' folder that will execute the commands written in it.");
+            ImGui::TreePop();
+        }
+        ImGui::EndChild();
+
     }
 
     if (ImGui::CollapsingHeader("Editor"))
     {
         ImGui::BeginChild("EditorCh",ImVec2(0, 0), true, ImGuiWindowFlags_HorizontalScrollbar);
-        ImGui::SeparatorText("Keys");
+        if (ImGui::TreeNode("Keys"))
+        {        
             ImGui::Text(R"|(
     ESC ->  Pause/Exit Game 
     F1  ->  Show/Hide Editor
@@ -253,10 +340,18 @@ void Documentation::Draw(bool* p_open)
     F12 ->  Take Screenshoot
         )|"
         );
-        ImGui::SeparatorText("Export");
-        ImGui::TextWrapped("Some modules have the option to export to facilitate the exchange of information between projects. When you do this, a file with the configuration of the current project will appear next to the executable.");
-        ImGui::SeparatorText("Import");
-        ImGui::TextWrapped("To import a previous export to the current project, just drag and drop the configuration file onto the editor.");
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNode("Export"))
+        { 
+            ImGui::TextWrapped("Some modules have the option to export to facilitate the exchange of information between projects. When you do this, a file with the configuration of the current project will appear next to the executable.");
+            ImGui::TreePop();
+        }        
+        if (ImGui::TreeNode("Import"))
+        { 
+            ImGui::TextWrapped("To import a previous export to the current project, just drag and drop the configuration file onto the editor.");
+            ImGui::TreePop();
+        }        
         ImGui::EndChild();
     }
     
