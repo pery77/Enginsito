@@ -204,8 +204,8 @@ void Documentation::Keyword(const char* name, const char* args, const char* prog
         }
     }
     ImVec4 bas =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[1]);
-    ImVec4 identifier =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[7]);
-    ImVec4 key =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[22]);
+    ImVec4 identifier =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[6]);
+    ImVec4 key =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[19]);
     ImVec4 punt =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[5]);
     if (ImGui::BeginItemTooltip())
     {
