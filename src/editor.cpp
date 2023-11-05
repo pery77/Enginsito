@@ -277,8 +277,8 @@ void Editor::SetTheme()
     const std::string& themeName = themeNames[selectedTheme];
     const auto& themeData = data["themes"][themeName];
 
-    if (themeData.find("tx_01") != themeData.end()) colors[0] = themeData["tx_01"];
-    if (themeData.find("tx_02") != themeData.end()) colors[1] = themeData["tx_02"];
+    if (themeData.find("txt_1") != themeData.end()) colors[0] = themeData["txt_1"];
+    if (themeData.find("txt_2") != themeData.end()) colors[1] = themeData["txt_2"];
 
     if (themeData.find("mc_b1") != themeData.end()) colors[2] = themeData ["mc_b1"];
     if (themeData.find("mc_b2") != themeData.end()) colors[3] = themeData ["mc_b2"];
@@ -2329,6 +2329,41 @@ void Editor::Draw()
                         SetTheme();
                     }
                 }
+                ImGui::SameLine();
+
+                if (ImGui::Button("SAVE"))
+                {
+                    Tools::console->AddLog("Saving");
+                    std::stringstream ss;
+	                ss << CONFIG_FOLDER << "/ui.json";
+                    std::ofstream o(ss.str().c_str());
+                    o << std::setw(4) << data << std::endl;
+                    o.close();
+                }
+                const std::string& themeName = themeNames[selectedTheme];
+                const auto& themeData = data["themes"][themeName];
+                for (auto it = themeData.begin(); it != themeData.end(); ++it) 
+                {
+                    std::string colS = it.value().get<std::string>();
+                    ImGui::Text("%s - %s", it.key().c_str(),colS.c_str());
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(300);
+                    ImVec4 col = hexToVec3(colS);
+                    float col1[4] = { col.x, col.y, col.z, col.w};
+                    char hexColor[7];
+                    if (ImGui::ColorEdit4(it.key().c_str(), col1, ImGuiColorEditFlags_DisplayHex))
+                    {
+                        ImVec4 color = ImVec4(col1[0], col1[1], col1[2], col1[3]);
+                        int r = static_cast<int>(color.x * 255);
+                        int g = static_cast<int>(color.y * 255);
+                        int b = static_cast<int>(color.z * 255);
+
+                        snprintf(hexColor, sizeof(hexColor), "%02X%02X%02X", r, g, b);
+                        data["themes"][themeName][it.key().c_str()] = hexColor;
+                        SetTheme();
+                    }
+                }
+
             }
             if (ImGui::CollapsingHeader("Sequencer"))
             {
