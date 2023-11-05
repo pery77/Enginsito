@@ -43,6 +43,32 @@ static int selectedTheme = 0;
 
 Documentation docs;
 
+const std::string pNames[] =  {
+        "c_00_Default",
+        "c_01_Keyword",
+        "c_02_Number",
+        "c_03_String",
+        "c_04_Find",
+        "c_05_Punctuation",
+        "c_06_Identifier",
+        "c_07_KnownIdentifier",
+        "c_08_Comment_single",
+        "c_09_Comment_multi",
+        "c_10_Background",
+        "c_11_Cursor",
+        "c_12_Selection",
+        "c_13_ErrorMarker",
+        "c_14_Line number",
+        "c_15_Current_Line_Fill",
+        "c_16_Current_Line_Fill(inactive)",
+        "c_17_Current_Line_Edge",
+        "c_18_Keyword_2",
+        "c_19_Keyword_3",
+        "c_20_Custom_Vars",
+        "c_21_Custom_Func",
+        "c_22_Custom_Class"
+        } ;
+
 bool Editor::CheckJsonFile()
 {
 	std::stringstream ss;
@@ -251,6 +277,19 @@ void Editor::SetImGuiColors()
     colors[ImGuiCol_TextSelectedBg]         = Col_P_B1;
 }
 
+inline ImVec4 hexToVec3(const std::string& hex) 
+{     
+    std::string redStr = hex.substr(0, 2);
+    std::string greenStr = hex.substr(2, 2);
+    std::string blueStr = hex.substr(4, 2);
+
+    float r = std::stoul(redStr, nullptr, 16) / 255.0f;
+    float g = std::stoul(greenStr, nullptr, 16) / 255.0f;
+    float b = std::stoul(blueStr, nullptr, 16) / 255.0f;
+
+    return ImVec4(r, g, b, 1.0f);
+}
+
 void Editor::SetTheme()
 {
     //Default colors
@@ -298,21 +337,16 @@ void Editor::SetTheme()
     if (themeData.find("s2_d1") != themeData.end()) colors[15] = themeData["s2_d1"];
     if (themeData.find("s2_d2") != themeData.end()) colors[16] = themeData["s2_d2"];
 
+    TextEditor::Palette p = codeEditor.GetPalette();
+    for(int i = 0; i<p.size();++i)
+    {
+        std::string colS = data["themes"][themeName][pNames[i].c_str()].get<std::string>();
+        ImVec4 col = hexToVec3(colS);
+        p[i] = ImGui::ColorConvertFloat4ToU32(col);
+    }
+    codeEditor.SetPalette(p);
+
     LoadEditorPalette(colors);
-}
-
-inline ImVec4 hexToVec3(const std::string& hex) 
-{     
-    std::string redStr = hex.substr(0, 2);
-    std::string greenStr = hex.substr(2, 2);
-    std::string blueStr = hex.substr(4, 2);
-
-    // Convierte los componentes hexadecimales en valores de punto flotante
-    float r = std::stoul(redStr, nullptr, 16) / 255.0f;
-    float g = std::stoul(greenStr, nullptr, 16) / 255.0f;
-    float b = std::stoul(blueStr, nullptr, 16) / 255.0f;
-
-    return ImVec4(r, g, b, 1.0f);
 }
 
 void Editor::LoadEditorPalette(std::string colors[17])
@@ -2329,41 +2363,75 @@ void Editor::Draw()
                         SetTheme();
                     }
                 }
-                ImGui::SameLine();
+#ifdef DEBUG                
+                if (ImGui::TreeNode("Theme Editor"))
+                {
+                    const std::string& themeName = themeNames[selectedTheme];
+                    const auto& themeData = data["themes"][themeName];
 
-                if (ImGui::Button("SAVE"))
-                {
-                    Tools::console->AddLog("Saving");
-                    std::stringstream ss;
-	                ss << CONFIG_FOLDER << "/ui.json";
-                    std::ofstream o(ss.str().c_str());
-                    o << std::setw(4) << data << std::endl;
-                    o.close();
-                }
-                const std::string& themeName = themeNames[selectedTheme];
-                const auto& themeData = data["themes"][themeName];
-                for (auto it = themeData.begin(); it != themeData.end(); ++it) 
-                {
-                    std::string colS = it.value().get<std::string>();
-                    ImGui::Text("%s - %s", it.key().c_str(),colS.c_str());
-                    ImGui::SameLine();
-                    ImGui::SetNextItemWidth(300);
-                    ImVec4 col = hexToVec3(colS);
-                    float col1[4] = { col.x, col.y, col.z, col.w};
-                    char hexColor[7];
-                    if (ImGui::ColorEdit4(it.key().c_str(), col1, ImGuiColorEditFlags_DisplayHex))
+                    if (ImGui::Button("SAVE"))
                     {
-                        ImVec4 color = ImVec4(col1[0], col1[1], col1[2], col1[3]);
-                        int r = static_cast<int>(color.x * 255);
-                        int g = static_cast<int>(color.y * 255);
-                        int b = static_cast<int>(color.z * 255);
-
-                        snprintf(hexColor, sizeof(hexColor), "%02X%02X%02X", r, g, b);
-                        data["themes"][themeName][it.key().c_str()] = hexColor;
-                        SetTheme();
+                        std::stringstream ss;
+	                    ss << CONFIG_FOLDER << "/ui.json";
+                        std::ofstream o(ss.str().c_str());
+                        o << std::setw(4) << data << std::endl;
+                        o.close();
                     }
-                }
+                    /*
+                    ImGui::SameLine();
+                    if (ImGui::Button("Get Code"))
+                    {
+                        TextEditor::Palette p = codeEditor.GetPalette();
+                        for(int i = 0; i<p.size();++i)
+                        {
+                            unsigned int alpha = (p[i] >> 24) & 0xFF;
+                            unsigned int red = (p[i] >> 16) & 0xFF;
+                            unsigned int green = (p[i] >> 8) & 0xFF;
+                            unsigned int blue = p[i] & 0xFF;
 
+                            std::stringstream ss;
+                            ss << "#" << std::hex << std::setw(2) << std::setfill('0') << alpha
+                               << std::setw(2) << std::setfill('0') << red
+                               << std::setw(2) << std::setfill('0') << green
+                               << std::setw(2) << std::setfill('0') << blue;
+                        }
+                    }
+                    ImGui::SameLine();
+                    
+                    if (ImGui::Button("Set Code"))
+                    {
+                        TextEditor::Palette p = codeEditor.GetPalette();
+                        for(int i = 0; i<p.size();++i)
+                        {
+                            std::string colS = data["themes"][themeName][pNames[i].c_str()].get<std::string>();
+                            ImVec4 col = hexToVec3(colS);
+                            p[i] = ImGui::ColorConvertFloat4ToU32(col);
+                        }
+                        codeEditor.SetPalette(p);
+                    }*/
+                    for (auto it = themeData.begin(); it != themeData.end(); ++it) 
+                    {
+                        std::string colS = it.value().get<std::string>();
+                        ImGui::SetNextItemWidth(300);
+                        ImVec4 col = hexToVec3(colS);
+                        float col1[4] = { col.x, col.y, col.z, col.w};
+                        char hexColor[7];
+                        if (ImGui::ColorEdit4(it.key().c_str(), col1, ImGuiColorEditFlags_DisplayHex))
+                        {
+                            ImVec4 color = ImVec4(col1[0], col1[1], col1[2], col1[3]);
+                            int r = static_cast<int>(color.x * 255);
+                            int g = static_cast<int>(color.y * 255);
+                            int b = static_cast<int>(color.z * 255);
+
+                            snprintf(hexColor, sizeof(hexColor), "%02X%02X%02X", r, g, b);
+                            data["themes"][themeName][it.key().c_str()] = hexColor;
+                            SetTheme();
+                        }
+                    }
+                    ImGui::TreePop();
+                }
+#endif //DEBUG Theme editor                
+            
             }
             if (ImGui::CollapsingHeader("Sequencer"))
             {

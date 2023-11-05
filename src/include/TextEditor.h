@@ -278,7 +278,7 @@ public:
 	void Undo(int aSteps = 1);
 	void Redo(int aSteps = 1);
 
-	static const Palette& GetBasicPalette();
+	static Palette& GetBasicPalette();
 
 	std::string findWord;
 	std::vector<std::string> CodeHelperGetList();

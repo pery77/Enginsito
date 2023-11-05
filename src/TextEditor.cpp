@@ -1053,9 +1053,9 @@ void TextEditor::Render()
 						const ImVec2 p2(x2, y);
 						const ImVec2 p3(x2 - s * 0.2f, y - s * 0.2f);
 						const ImVec2 p4(x2 - s * 0.2f, y + s * 0.2f);
-						drawList->AddLine(p1, p2, 0x80303040);
-						drawList->AddLine(p2, p3, 0x80303040);
-						drawList->AddLine(p2, p4, 0x80303040);
+						drawList->AddLine(p1, p2, mPalette[(int)PaletteIndex::LineNumber]);
+						drawList->AddLine(p2, p3, mPalette[(int)PaletteIndex::LineNumber]);
+						drawList->AddLine(p2, p4, mPalette[(int)PaletteIndex::LineNumber]);
 					}
 				}
 				else if (glyph.mChar == ' ')
@@ -1065,7 +1065,7 @@ void TextEditor::Render()
 						const auto s = ImGui::GetFontSize();
 						const auto x = textScreenPos.x + bufferOffset.x + spaceSize * 0.5f;
 						const auto y = textScreenPos.y + bufferOffset.y + s * 0.5f;
-						drawList->AddCircleFilled(ImVec2(x, y), 1.5f, 0x80404050, 4);
+						drawList->AddCircleFilled(ImVec2(x, y), 1.5f, mPalette[(int)PaletteIndex::LineNumber], 4);
 					}
 					bufferOffset.x += spaceSize;
 					i++;
@@ -2107,34 +2107,35 @@ void TextEditor::FindNext()
 	SetCursorPosition(Coordinates(findWordsPositions[findWordIndex].line, findWordsPositions[findWordIndex].column));
 }
 
-const TextEditor::Palette & TextEditor::GetBasicPalette()
-{
-	const static Palette p = { {
-			0xff00ffff,	// Default $ Ñ ...
-			0xffc586c0,	// Keyword	print and or let ...
-			0xffa8ceb5,	// Number
-			0xff5b91ce,	// String
-			0xff0000ff, // Find
-			0xffb2b2b2, // Punctuation
-			0xffababab, // Identifier, no found, none
-			0xffd69c56, // Known identifier
-			0xff55996a, // Comment (single line)
-			0xff55996a, // Comment (multi line)
-			0xff181202, // Background
-			0xffd6d6d6, // Cursor
-			0xff382f15, // Selection
-			0x400000ff, // ErrorMarker
-			0xff28210a, // Line number
-			0x40343434, // Current line fill
-			0x40221114, // Current line fill (inactive)
-			0x40aaaaaa, // Current line edge
-			0xffa0589b, // Keyword 2 init draw pause close tick
-			0xff7dba17, // Keyword 3 pixel rect circle ...
-			0xffaadcdc, // custom vars let def
-			0xffff0000, // custom func let def
-			0xffffFFff  // custom class
+TextEditor::Palette & TextEditor::GetBasicPalette()
+{	
+	static Palette p = { {
+			0xff00ffff,	//  0 Default $ Ñ ...
+			0xffc586c0,	//  1 Keyword	print and or let ...
+			0xffa8ceb5,	//  2 Number
+			0xff5b91ce,	//  3 String
+			0xff0000ff, //  4 Find
+			0xffb2b2b2, //  5 Punctuation
+			0xffababab, //  6 Identifier, no found, none
+			0xffd69c56, //  7 Known identifier
+			0xff55996a, //  8 Comment (single line)
+			0xff55996a, //  9 Comment (multi line)
+			0xff181202, // 10 Background
+			0xffd6d6d6, // 11 Cursor
+			0xff382f15, // 12 Selection
+			0x400000ff, // 13 ErrorMarker
+			0xff28210a, // 14 Line number
+			0x40343434, // 15 Current line fill
+			0x40221114, // 16 Current line fill (inactive)
+			0x40aaaaaa, // 17 Current line edge
+			0xffa0589b, // 18 Keyword 2 init draw pause close tick
+			0xff7dba17, // 19 Keyword 3 pixel rect circle ...
+			0xffaadcdc, // 20 custom vars let def
+			0xffff0000, // 21 custom func let def
+			0xffffFFff  // 22 custom class
 		} };
 	return p;
+	
 }
 std::string TextEditor::GetText() const
 {

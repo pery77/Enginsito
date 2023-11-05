@@ -203,10 +203,10 @@ void Documentation::Keyword(const char* name, const char* args, const char* prog
             ProgramName = "";
         }
     }
-    ImVec4 bas =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[1]);
-    ImVec4 identifier =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[6]);
-    ImVec4 key =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[19]);
-    ImVec4 punt =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetBasicPalette()[5]);
+    ImVec4 bas =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetPalette()[1]);
+    ImVec4 identifier =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetPalette()[6]);
+    ImVec4 key =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetPalette()[19]);
+    ImVec4 punt =  ImGui::ColorConvertU32ToFloat4(codeEditor.GetPalette()[5]);
     if (ImGui::BeginItemTooltip())
     {
         if (args != "-")
