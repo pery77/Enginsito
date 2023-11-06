@@ -14,7 +14,7 @@ def drawBrick(x,y)
     if Mouse_X > x and Mouse_X< 17 + x then
 		if Mouse_Y > y and Mouse_Y < y+8 then
             hover = 5
-            if mouse_released(0) then 
+            if mousereleased(0) then 
                 states(id) = 1-states(id)
             endif
 		endif

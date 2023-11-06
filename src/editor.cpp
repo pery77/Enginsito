@@ -345,6 +345,7 @@ void Editor::SetTheme()
         p[i] = ImGui::ColorConvertFloat4ToU32(col);
     }
     codeEditor.SetPalette(p);
+    docs.codeEditor.SetPalette(p);
 
     LoadEditorPalette(colors);
 }
@@ -481,8 +482,9 @@ void Editor::Credits()
     {    
         c = ImGui::GetWindowWidth() / 2.0f;
 
-        ImGui::SetCursorPosX(c - 40);
-        ImGui::Image(&iconTexture, ImVec2(80,80));
+        ImGui::SetCursorPosX(c - 64);
+        ImGui::SetCursorPosY(32);
+        ImGui::Image(&iconTexture, ImVec2(128,128));
 
         const char * pbp = "Programmed by Pery - 2023";
         ImGui::SetCursorPosX(c - ImGui::CalcTextSize(pbp).x / 2.0f);
@@ -745,6 +747,7 @@ void Editor::DrawCode(bool* p_open)
                     
         ImGui::Text("Find");
         ImGui::SameLine();
+        ImGui::SetNextItemWidth(300);
         if (ImGui::InputText("###find", str0, IM_ARRAYSIZE(str0)))
         {
             codeEditor.Find(str0);

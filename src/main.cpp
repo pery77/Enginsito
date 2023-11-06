@@ -7,6 +7,10 @@
 #include "bios.h"
 #include "editor.h"
 #include "sprite_manager.h"
+#include "splash.h"
+
+#include <thread> // Para std::this_thread::sleep_for
+#include <chrono> // Para std::chrono::seconds
 
 void raylibLog(int msgType, const char *text, va_list args) 
 {
@@ -42,21 +46,24 @@ int main(int argc, char *argv[])
     HideCursor();
     SetExitKey(KEY_NULL);
 
+    Texture splash;
+    splash = Tools::TextureFromCode(SPLASH_FORMAT, SPLASH_HEIGHT, SPLASH_WIDTH, SPLASH_DATA, 1); 
+    SetTextureFilter(splash, TEXTURE_FILTER_POINT);
+
     BeginDrawing();
-        ClearBackground(DARKBLUE);
-        DrawText( "Loading...",4, 4, 20, WHITE);
+        DrawTexture(splash, 0, 0, WHITE);
     EndDrawing();
-
     rlImGuiSetup(true);
-
     InitAudioDevice();
+    std::this_thread::sleep_for(std::chrono::seconds(1));
 
     engine->Init();
-    
+
     bool showImgui = engine->editor->Enabled;
-    
     engine->bios->LoadBoot();
+
     
+    UnloadTexture(splash);
     // Game Loop
     while (!(engine->bios->ShouldClose || WindowShouldClose()))
     {

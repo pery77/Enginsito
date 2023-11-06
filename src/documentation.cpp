@@ -2,13 +2,10 @@
 #include "imgui/imgui.h"
 #include "tools.h"
 
-
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <vector>
-
-#include "TextEditor.h"
 
 //Lazy guy toys.
 struct KeyData {
@@ -164,12 +161,9 @@ void GenerateKeysCodeFromEnumBecauseImTooLazy()
     }
 }
 
-TextEditor codeEditor;
-
 Documentation::Documentation()
 {
     //GenerateKeysCodeFromEnumBecauseImTooLazy();
-    codeEditor.SetLanguageDefinition(TextEditor::LanguageDefinition::Basic());
     codeEditor.SetTabSize(4);
     codeEditor.SetReadOnly(true);
 }

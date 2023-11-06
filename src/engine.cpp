@@ -121,6 +121,12 @@ void Engine::DropFileUpdate()
             output.close();
 
         }
+        if (strcmp(fileExtension, ".png") == 0)
+        {
+                Image i = LoadImage(firstFilePath);
+                ExportImageAsCode(i, "splash.h");
+                UnloadImage(i);
+        }
 #endif        
     }
 }

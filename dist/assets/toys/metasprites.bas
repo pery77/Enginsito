@@ -1,9 +1,9 @@
 flag = 0
 def tick()
-	flag = flag + MOUSE_WHEEL()
+	flag = flag + MOUSEWHEEL()
 	flag = flag mod 4
-	flag = flag + MOUSE_DOWN(0)*8	
-	flag = flag + MOUSE_DOWN(1)*16
+	flag = flag + MOUSEDOWN(0)*8	
+	flag = flag + MOUSEDOWN(1)*16
 enddef
 
 def draw()

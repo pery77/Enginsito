@@ -10,7 +10,7 @@ def button(x,y,txt)
     if hover then 
         colB = 9
         colH = 3 
-        if mouse_down(0) then 
+        if mousedown(0) then 
             colH = colB
             colB = 1
         endif
@@ -21,7 +21,7 @@ def button(x,y,txt)
     xc = 20 - (textSize(txt,1) * 0.5)
     text(txt,x + xc,y+3,1,colH)
 
-    return (mouse_released(0) AND hover)
+    return (mousereleased(0) AND hover)
 enddef
 
 let a = 99
@@ -41,20 +41,20 @@ def draw()
 	'mouse whell add and sub score
 	if mouse_x > 160 and mouse_y < 100 then
 		rect(160,0,159,100,2,5)
-		a = a + mouse_wheel()
+		a = a + mousewheel()
 		text("use mouse wheel",180,50,1,15)
 	endif
 	
 	if mouse_x < 160 and mouse_y > 100 then
-		mouse_setpos( 220, 50)
+		mousesetpos( 220, 50)
 	endif
 	
-	if mouse_pressed(2) then
+	if mousepressed(2) then
 		oldx = mouse_x
 		oldy = mouse_y
 	endif
 	
-	if mouse_down(2) then
+	if mousedown(2) then
 		line(oldx,oldy,mouse_x,mouse_y,2,6)
 	endif
 	'draw the cursor

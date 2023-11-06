@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "TextEditor.h"
 
 class Documentation
 {
@@ -9,6 +10,6 @@ public:
     std::string ProgramName = "";
     Documentation();
     ~Documentation();
-
+    TextEditor codeEditor;
     void Draw(bool* p_open);
 };
