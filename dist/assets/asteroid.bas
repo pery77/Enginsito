@@ -10,6 +10,7 @@ class polygon
 	var theta = 0
 	var posX = 160
 	var posY = 100
+	var collider = 0
 
 	def addVertex(x, y)
 		p = new(vertex)
@@ -48,6 +49,7 @@ class polygon
 				lineRotated(x, y ,sX ,sY)
 			endif
 		next
+		'circle(posX,posY,collider,1,15) 'uncomment to show collider
 	enddef
 
 endclass
@@ -66,7 +68,7 @@ class bullet
 		y = _y
 		speed = _s
 		angle = _a - 1.5707
-		life = 200
+		life = 120
 	enddef
 	
 	def borderCheck()
@@ -84,7 +86,7 @@ class bullet
 	enddef
 
 	def draw()
-		circle(x, y, 1, 0,col)
+		circle(x, y, 1, 0, col)
 	enddef
 	
 endclass
@@ -113,6 +115,7 @@ class ship(polygon)
 	 	posY = 100
 	 	posXT = posX
 	 	posYT = posY
+	 	collider = 9
 	enddef
 
 	def impulse(a)
@@ -167,10 +170,85 @@ class ship(polygon)
 
 endclass
 
+class asteroid(polygon)
+	
+	var radio = 0
+	var maxV  = 0
+	var noise = 0
+	var turn  = 0
+	var speed = 0
+	var direction = 0
+	var life = 1
+	
+	def create()
+		
+		radio = rnd(5,15)
+		noise = radio * 0.3
+		maxV =  rnd(7,11)
+		turn =  rnd(-10,10) * 0.001
+		speed = rnd(1,3) * 0.1
+		life = 1
+		max = 0
+		min = 100
+		collider = 100
+		for n = 0 to maxV-1
+			a = (n / maxV) * 6.2832
+			x =  radio * cos(a) + rnd(-noise,noise)
+			y =  radio * sin(a) + rnd(-noise,noise)
+			addvertex(x,y)
+			col = 5
+			r = sqr(x^2 + y^2)
+			if r < min then min = r
+			if r > max then max = r
+		next
+		collider = (min+max)/2
+
+	enddef
+
+	def borderCheck()
+
+		if posX < 0 then posX = 320
+		if posX > 320 then posX = 0
+		if posY < 0 then posY = 200
+		if posY > 200 then posY = 0
+
+	enddef
+
+	def tick()
+		theta = theta + turn
+		posX = posX + cos(direction) * speed
+		posY = posY + sin(direction) * speed
+		bordercheck()
+	enddef
+	
+	def debug()
+		circle(posX,posY,collider,1,1)
+		text(str(life),posX-4,posY-4,1,1)
+	enddef
+
+endclass
 '--------------------------------------------------------------
 
 let player = new(ship)
 player.create()
+
+let asteroidsList = list()
+
+let totalAsteroids = 11
+let noise = 30
+let radio = 80
+
+for n = 0 to totalAsteroids-1
+	minR = 0
+	as = new(asteroid)
+	as.create()
+	a = (n / totalAsteroids) * 6.2832
+	as.posX = 160 + radio * cos(a) + rnd(-noise,noise)
+	as.posY = 100 + radio * sin(a) + rnd(-noise,noise)
+	as.direction = a
+
+	push(asteroidsList, as)
+next
 
 def shot()
 	s = new(bullet)
@@ -181,6 +259,12 @@ def shot()
 	chplay(1, "@1o6c")
 enddef
 
+def getCollision(x1,y1,r1,x2,y2,r2)
+	dis = sqr((x2-x1)^2 + (y2-y1)^2)
+	if dis+r2 <= r1 or dis+r1 <= r2 then return 1
+	return 0
+enddef
+	
 def tick()
 	player.tick()
 	if keypressed(key_space) then shot()
@@ -189,10 +273,19 @@ def tick()
 		b.tick()
 	next
 	
-	if len(bulletList) then 
-		b = get(bulletList, 0) 
-		if b.life<0 then remove(bulletList, 0)
-	endif
+	for a in asteroidsList
+		a.tick()
+	next
+
+	for b in bulletList
+		for a in asteroidsList
+			if getCollision(a.posX, a.posY, a.collider, b.x, b.y, 1) then
+				remove(bulletList, index_of(bulletlist,b))
+				remove(asteroidsList, index_of(asteroidsList,a))
+			endif
+		next
+		if b.life<0 then remove(bulletList, index_of(bulletlist,b))
+	next
 
 enddef
 
@@ -202,6 +295,11 @@ def draw()
 	
 	for b in bulletList
 		b.draw()
+	next
+	
+	for a in asteroidsList
+		a.draw()
+		'a.debug()
 	next
 
 enddef
