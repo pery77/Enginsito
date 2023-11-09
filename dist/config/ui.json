@@ -21,7 +21,7 @@
     "layout_2": {
         "show_code": false,
         "show_console": false,
-        "show_crt": false,
+        "show_crt": true,
         "show_docs": false,
         "show_filebrowser": false,
         "show_fps": false,
@@ -30,7 +30,7 @@
         "show_metaSprite": false,
         "show_palette": false,
         "show_player": false,
-        "show_screen": false,
+        "show_screen": true,
         "show_sfx": false,
         "show_sprites": false,
         "show_tools": false
@@ -59,20 +59,20 @@
         "show_docs": false,
         "show_filebrowser": false,
         "show_fps": false,
-        "show_makeSprite": false,
+        "show_makeSprite": true,
         "show_memory": true,
-        "show_metaSprite": true,
+        "show_metaSprite": false,
         "show_palette": true,
         "show_player": false,
         "show_screen": true,
-        "show_sfx": true,
+        "show_sfx": false,
         "show_sprites": true,
         "show_tools": true
     },
     "layout_5": {
         "show_code": true,
         "show_console": true,
-        "show_crt": false,
+        "show_crt": true,
         "show_docs": true,
         "show_filebrowser": true,
         "show_fps": true,
@@ -84,7 +84,7 @@
         "show_screen": true,
         "show_sfx": true,
         "show_sprites": false,
-        "show_tools": false
+        "show_tools": true
     },
     "themes": {
         "dark": {
@@ -256,8 +256,8 @@
             "txt_2": "282F2F"
         }
     },
-    "window_height": 1001,
-    "window_position_x": 0,
-    "window_position_y": 29,
-    "window_width": 1920
+    "window_height": 1050,
+    "window_position_x": 160,
+    "window_position_y": 40,
+    "window_width": 1680
 }

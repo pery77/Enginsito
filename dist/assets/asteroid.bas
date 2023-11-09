@@ -74,8 +74,8 @@ class bullet
 	def borderCheck()
 		if x < 0 then x = 320
 		if x > 320 then x = 0
-		if y < 0 then y = 200
-		if y > 200 then y = 0
+		if y < 10 then y = 200
+		if y > 200 then y = 10
 	enddef
 	
 	def tick()
@@ -105,6 +105,8 @@ class ship(polygon)
 	var posXT = 0
 	var posYT = 0
 	var current_speed = 0
+	var shield = 6
+	var maxShield = 6
 	
 	def create()
 		addVertex(0,-(size*1.5))
@@ -133,12 +135,12 @@ class ship(polygon)
 			posX = 0
 			posXT = posXT - 320
 		endif
-		if posY < 0 then
+		if posY < 10 then
 			posY = 200
 			posYT = posYT + 200
 		endif
 		if posY > 200 then
-			posY = 0
+			posY = 10
 			posYT = posYT - 200
 		endif
 	enddef
@@ -209,8 +211,8 @@ class asteroid(polygon)
 
 		if posX < 0 then posX = 320
 		if posX > 320 then posX = 0
-		if posY < 0 then posY = 200
-		if posY > 200 then posY = 0
+		if posY < 10 then posY = 200
+		if posY > 200 then posY = 10
 
 	enddef
 
@@ -227,19 +229,46 @@ class asteroid(polygon)
 	enddef
 
 endclass
+
+class particle
+
+	var x = 0
+	var y = 0
+	var life  = 0
+	var size  = 0
+	var speed = 0
+	var dir   = 0
+	var color = 6
+	
+	def tick()
+		x = x + cos(dir) * speed
+		y = y + sin(dir) * speed
+		life = life - 1
+	enddef
+	
+	def draw()
+		if size < 2 then 
+			pixel(x, y, color)
+		else
+			circle(x, y, size, 0, color)
+		endif
+	enddef
+	
+endclass
 '--------------------------------------------------------------
 
 let player = new(ship)
 player.create()
 
 let asteroidsList = list()
+let particles = list()
 
 let totalAsteroids = 11
 let noise = 30
 let radio = 80
 
 for n = 0 to totalAsteroids-1
-	minR = 0
+
 	as = new(asteroid)
 	as.create()
 	a = (n / totalAsteroids) * 6.2832
@@ -249,6 +278,25 @@ for n = 0 to totalAsteroids-1
 
 	push(asteroidsList, as)
 next
+
+def explosion(_x,_y)
+
+	t = rnd(20,30)
+	for i = 0 to t-1
+	
+		p = new(particle)
+		a = (i / t) * 6.2832
+		p.x = _x + 2 * cos(a) 
+		p.y = _y + 2 * sin(a)
+		p.dir = a + rnd(0,314) * 0.01
+		p.size = rnd(1,2)
+		p.speed = rnd(0,100) * 0.01 / p.size
+		p.life = rnd(15,40)
+
+		push(particles, p)
+		
+	next
+enddef
 
 def shot()
 	s = new(bullet)
@@ -261,10 +309,9 @@ enddef
 
 def getCollision(x1,y1,r1,x2,y2,r2)
 	dis = sqr((x2-x1)^2 + (y2-y1)^2)
-	if dis+r2 <= r1 or dis+r1 <= r2 then return 1
-	return 0
+	return (dis <= r1 + r2)
 enddef
-	
+
 def tick()
 	player.tick()
 	if keypressed(key_space) then shot()
@@ -276,12 +323,33 @@ def tick()
 	for a in asteroidsList
 		a.tick()
 	next
+	
+	for p in particles
+		p.tick()
+	next
+	
+	for p in particles
+		if p.life<0 then remove(particles, index_of(particles, p))
+	next
+	
+	for a in asteroidsList
+		if getCollision(a.posX, a.posY, a.collider, player.posX, player.posY, player.collider) then
+			player.shield = player.shield-1
+			a.direction = a.direction+1.5707
+			'chplay(2, "@2o2e")
+		endif
+	next
 
 	for b in bulletList
+		_X = b.x
+		_Y = b.y
 		for a in asteroidsList
-			if getCollision(a.posX, a.posY, a.collider, b.x, b.y, 1) then
+			if getCollision(a.posX, a.posY, a.collider, _X, _Y, 1) then
+
+				explosion(_X, _Y)
 				remove(bulletList, index_of(bulletlist,b))
 				remove(asteroidsList, index_of(asteroidsList,a))
+				chplay(2, "@2o2e")
 			endif
 		next
 		if b.life<0 then remove(bulletList, index_of(bulletlist,b))
@@ -289,17 +357,33 @@ def tick()
 
 enddef
 
+def gameUI()
+	rect(0,0,320,10,0,1)
+	text("SHIELD" 2,2,1,4)
+	
+	for n = 0 to player.maxshield-1
+		sprite(0,58+n*4,2,2 + (n<player.shield) + ((n<1)*2))
+	next
+	
+enddef
+
 def draw()
+
 	cls(0)
 	player.draw()
-	
+
 	for b in bulletList
 		b.draw()
 	next
-	
+
 	for a in asteroidsList
 		a.draw()
 		'a.debug()
 	next
 
+	for p in particles
+		p.draw()
+	next
+
+	gameUI()
 enddef
