@@ -182,9 +182,9 @@ class asteroid(polygon)
 	var direction = 0
 	var life = 1
 	
-	def create()
-		
-		radio = rnd(5,15)
+	def create(_radio)
+	
+		radio = _radio
 		noise = radio * 0.3
 		maxV =  rnd(7,11)
 		turn =  rnd(-10,10) * 0.001
@@ -225,7 +225,7 @@ class asteroid(polygon)
 	
 	def debug()
 		circle(posX,posY,collider,1,1)
-		text(str(life),posX-4,posY-4,1,1)
+		text(str(radio),posX-4,posY-4,1,15)
 	enddef
 
 endclass
@@ -244,6 +244,7 @@ class particle
 		x = x + cos(dir) * speed
 		y = y + sin(dir) * speed
 		life = life - 1
+		if life < 10 then size = 1
 	enddef
 	
 	def draw()
@@ -263,21 +264,25 @@ player.create()
 let asteroidsList = list()
 let particles = list()
 
-let totalAsteroids = 11
-let noise = 30
-let radio = 80
+def createAsteroidField()
+	let totalAsteroids = 11
+	let noise = 30
+	let radio = 80
 
-for n = 0 to totalAsteroids-1
+	for n = 0 to totalAsteroids-1
 
-	as = new(asteroid)
-	as.create()
-	a = (n / totalAsteroids) * 6.2832
-	as.posX = 160 + radio * cos(a) + rnd(-noise,noise)
-	as.posY = 100 + radio * sin(a) + rnd(-noise,noise)
-	as.direction = a
+		as = new(asteroid)
+		
+		as.create(rnd(5,15))
+		a = (n / totalAsteroids) * 6.2832
+		as.posX = 160 + radio * cos(a) + rnd(-noise,noise)
+		as.posY = 100 + radio * sin(a) + rnd(-noise,noise)
+		as.direction = a
+		
 
-	push(asteroidsList, as)
-next
+		push(asteroidsList, as)
+	next
+enddef
 
 def explosion(_x,_y)
 
@@ -298,10 +303,24 @@ def explosion(_x,_y)
 	next
 enddef
 
+def smoke()
+	p = new(particle)
+	p.x = player.posX 
+	p.y = player.posY 
+	p.dir = player.theta + 1.5707 + rnd(-10,10) *0.02
+	p.size = 1
+	p.speed = player.current_speed * 0.01
+	p.life = rnd(5,8)
+	p.color = 7
+
+	push(particles, p)
+
+enddef
+
 def shot()
 	s = new(bullet)
 	bSpeed = player.current_speed * 0.02
-	if bSpeed > 5 then bSpeed = 5
+	if bSpeed > 1 then bSpeed = 1
 	s.create(player.posX, player.posY, 2+bSpeed, player.theta)
 	push(bulletList, s)
 	chplay(1, "@1o6c")
@@ -312,9 +331,30 @@ def getCollision(x1,y1,r1,x2,y2,r2)
 	return (dis <= r1 + r2)
 enddef
 
+def slice(_sLX, _sLY, _radio, _sD)
+
+	for n = 0 to 1
+
+		as = new(asteroid)
+		as.create(_radio/2)
+		as.posX = _sLX
+		as.posY = _sLY
+		as.direction = 1
+		as.col = 15
+		if n = 1 then as.direction = as.direction * -1
+		as.speed = 1
+		push(asteroidsList, as)
+	next
+enddef
+
+
+createAsteroidField()
+
+'--- UPDATE ---
 def tick()
 	player.tick()
 	if keypressed(key_space) then shot()
+
 
 	for b in bulletList
 		b.tick()
@@ -344,16 +384,27 @@ def tick()
 		_X = b.x
 		_Y = b.y
 		for a in asteroidsList
+			_size = a.radio
+			_sLX = a.posX
+			_sLY = a.posY
+			_sD  = a.direction
+			
 			if getCollision(a.posX, a.posY, a.collider, _X, _Y, 1) then
 
 				explosion(_X, _Y)
+				if _size > 8 then slice(_sLX, _sLY, _size, _sD)
 				remove(bulletList, index_of(bulletlist,b))
 				remove(asteroidsList, index_of(asteroidsList,a))
 				chplay(2, "@2o2e")
+				
 			endif
 		next
 		if b.life<0 then remove(bulletList, index_of(bulletlist,b))
 	next
+	
+	if player.current_speed>40 then
+		smoke()
+	endif
 
 enddef
 
