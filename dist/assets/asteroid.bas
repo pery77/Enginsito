@@ -49,7 +49,7 @@ class polygon
 				lineRotated(x, y ,sX ,sY)
 			endif
 		next
-		'circle(posX,posY,collider,1,15) 'uncomment to show collider
+		'circle(posX,posY,collider,1,7) 'uncomment to show collider
 	enddef
 
 endclass
@@ -345,6 +345,7 @@ def slice(_sLX, _sLY, _radio, _sD)
 		as.speed = 1
 		push(asteroidsList, as)
 	next
+
 enddef
 
 
