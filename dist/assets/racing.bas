@@ -44,67 +44,62 @@ def drawQuad(col, x1 ,y1, w1, x2, y2, w2)
 	line(p1x, p1y, p2x, p2y, 1 ,7)
 	line(p3x, p3y, p4x, p4y, 1 ,7)
 	
-	'line(p2x, p2y, p3x, p3y, 1 ,col)
+	'line(p2x, p2y, p3x, p3y, 1 ,7)
 	'line(p4x, p4y, p1x, p1y, 1 ,7)
 
 enddef
 
 let lines = list()
-let maxRoad = 2000
+let maxRoad = 300
 for i = 0 to maxRoad
 
 	l = new(linea)
 	l.z = i * segL
 	
-	if i > 100 and i < 170 then l.curve = 1
+	if i > 100 and i < 170 then l.curve = 2
 	if i > 300 and i < 400 then l.curve = -2
 	
-	l.y = sin(i/30) * 1000
+	l.y = abs(sin(i/50) * 1500)
 	
 	push(lines, l)
 	
 next
 
 let nL = len(lines)
+
 let pos = 0
 let playerX = 0
 
 def tick()
 
-	if keydown(key_w) then pos = pos + 100
-	if keydown(key_s) then pos = pos - 100
+	if keydown(key_w) then pos = pos + 200
+	if keydown(key_s) then pos = pos - 200
 	if keydown(key_d) then playerX = playerX + 30
 	if keydown(key_a) then playerX = playerX - 30
-	
-	if pos/segL > maxRoad-1 then pos = (maxRoad-1) * segL
-	if pos < 0 then pos = 0
-	
+
 enddef
 
 def draw()
 
 	cls (10)
-	'rect(0,100,320,200,0,14)
 	
 	startPos = pos / segL
 	cx = 0 
 	dx = 0
 	l = get(lines, startPos)
-	camH = 1500 + l.y
+	camH = 1000 + (l.y * 0.8)
 	maxY = 200
 	
 	endN = startPos + 200
-t = 0
+
 	for n = startPos to endN
 
 		l = get(lines, n mod nL)
-		l.project(playerX-cx,camH,pos)
 		p = get(lines, n-1 mod nL)
+
+		l.project(playerX-cx, camH, pos)
 		cx = cx + dx
 		dx = dx + l.curve
-		
-		h = p.yS - l.yS
-		
 
 		if l.yS <= maxY and l.yS > 105 then
 
@@ -120,13 +115,13 @@ t = 0
 			drawQuad(grassCol,0,p.yS,320,0,l.yS,320)
 			drawQuad(rumbleCol,p.xS,p.yS,p.wS*1.2,l.xS,l.yS,l.wS*1.2)
 			drawQuad(roadCol,p.xS,p.yS,p.wS,l.xS,l.yS,l.wS)
-			t = t +1
 		
 		endif
 
 	next
 
 	text(str(pos/segL),20,20,1,3)
-	text(str(t),20,30,1,3)
+	rect(160-45,150,90,32,1,4)
+
 
 enddef

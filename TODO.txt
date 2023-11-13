@@ -1,7 +1,9 @@
 MEJORAS
-temas Editor
-temas Code
 doble click cadenas
+raylib 5.0
+compilar para web
+
 
 BUGS
 cadenas comment color
+falta documentacion Build

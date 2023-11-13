@@ -23,30 +23,20 @@ class point3d
  	var y = 0.0
  	var z = 0.0
  	
-  	var px = x
- 	var py = y
- 	var pz = z
- 		
- 	var npx = 0
- 	var npy = 0
- 	var npz = 0
- 		
- 	var fov = 200
- 	
  	def transform(rot, pos, scale)
- 		px = x
- 		py = y
- 		pz = z
+ 		let px = x
+ 		let py = y
+ 		let pz = z
  	
  		'rot z axis
- 		npx = (px*cos(rot.z))-(py*sin(rot.z))
- 		npy = (px*sin(rot.z))+(py*cos(rot.z))
+ 		let npx = (px*cos(rot.z))-(py*sin(rot.z))
+ 		let npy = (px*sin(rot.z))+(py*cos(rot.z))
  		px = npx
  		py = npy
  	
  		'rot y axix
  		npx = (px*cos(rot.y))-(pz*sin(rot.y))
- 		npz = (px*sin(rot.y))+(pz*cos(rot.y))
+ 		let npz = (px*sin(rot.y))+(pz*cos(rot.y))
  		px = npx
  		pz = npz
  	
@@ -61,10 +51,9 @@ class point3d
  		py = (py*scale) + pos.y - camera.y
  		pz = (pz*scale) + pos.z - camera.z
  	
- 		fov = 200.0
- 	
- 		auxp2d.x = 160.0 + ((fov*px)/pz);
- 		auxp2d.y = 100.0 - ((fov*py)/pz);
+ 		let fov = 200.0
+ 		auxp2d.x = 160.0 + ((fov*px)/pz)
+ 		auxp2d.y = 100.0 - ((fov*py)/pz)
 	enddef
 endclass
 
